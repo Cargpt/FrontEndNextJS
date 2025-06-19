@@ -1,0 +1,21 @@
+'use client'
+
+import React from "react";
+import ChatBox from "../../components/Chat/ChatBox";
+import Support from "../../components/Chat/Support";
+import { useBotType } from "../../Context/BotTypeContext";
+import AdvisorIntro from "../../components/AdvisorIntro/AdvisorIntro";
+
+const Page = () => {
+  const { botType } = useBotType();
+
+  return (
+    <>
+      {/* <AdvisorIntro showInitialExample={true} onBotClick={() => {}} /> */}
+      {botType === "want" && <ChatBox />}
+      {botType === "support" && <Support />}
+    </>
+  );
+};
+
+export default Page;

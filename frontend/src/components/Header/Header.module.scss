@@ -1,0 +1,74 @@
+.header {
+  display: flex;
+  .container {
+    display: flex;
+    padding: 10px;
+    width: 100%;
+    .menues {
+      .menuContainer {
+        left: 16px;
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        align-items: flex-start;
+        flex-shrink: 1;
+        background-color: #eeeeef;
+        .menuIcon {
+          top: 8px;
+          left: 8px;
+          width: 24px;
+          height: 24px;
+          display: flex;
+          overflow: hidden;
+          position: absolute;
+          align-items: flex-start;
+          flex-shrink: 0;
+        }
+      }
+      .carLogo {
+        width: 240px;
+        height: 44px;
+        margin-left: 80px;
+      }
+    }
+    .notificationContainer {
+      margin-left: auto;
+      position: relative;
+      .notificationContainerNew {
+        top: -16px;
+        left: 20px;
+        width: 40px;
+        height: 40px;
+        align-items: flex-start;
+        flex-shrink: 1;
+        background-color: #eeeeef;
+        .notificationIcon {
+          top: 9.5px;
+          left: 8px;
+          width: 24px;
+          height: 24px;
+          position: absolute;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .notificationContainer {
+    margin-right: 10px;
+  }
+
+  .notificationDropdown {
+    width: 90%;
+    right: 0;
+    left: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .notificationDropdown {
+    width: 95%;
+  }
+}
