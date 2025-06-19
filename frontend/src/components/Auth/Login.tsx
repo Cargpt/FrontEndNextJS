@@ -139,7 +139,7 @@ finally {
                     // Include unique user ID
                   };
 
-                  const response = await axiosInstance.post(`/api/CreateUser`, payload, {
+                  const response = await axiosInstance.post(`/api/createUser/`, payload, {
                     headers: {
                       Authorization: `Bearer ${idToken}`,
                     },
@@ -178,7 +178,7 @@ finally {
                   userId: uniqueUserId,  // Include unique user ID
                 };
 
-                const response = await axiosInstance.post(`/api/CreateUser`, payload, {
+                const response = await axiosInstance.post(`/api/createUser/`, payload, {
 
                 });
 
