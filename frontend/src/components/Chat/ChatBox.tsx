@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Avatar,
@@ -105,6 +105,15 @@ useEffect(() => {
   
   
 }, [messages]);
+
+const bottomRef = useRef<HTMLDivElement | null>(null);
+
+useEffect(() => {
+  if (bottomRef.current) {
+    bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+  }
+}, [messages]);
+
   console.log("messages", messages);
   return (
     <>
@@ -133,7 +142,32 @@ useEffect(() => {
         }}
       >
         {messages.map((msg) => (
-          renderMessage(msg)
+         <Stack
+  key={msg.id}
+  direction="row"
+  spacing={1}
+  alignItems="flex-start"
+  justifyContent={msg.sender === 'user' ? 'flex-end' : 'flex-start'}
+  sx={{ mb: 2 }}
+>
+  {msg.sender === 'bot' && (
+    <Image src={bot} alt="bot" width={40} height={40} />
+  )}
+  <Paper
+    sx={{
+      p: 1.5,
+      maxWidth: '75%',
+      bgcolor: msg.sender === 'user' ? 'primary.main' : 'grey.200',
+      color: msg.sender === 'user' ? 'white' : 'black',
+    }}
+  >
+    {renderMessage(msg)}
+  </Paper>
+  {msg.sender === 'user' && (
+    <Avatar sx={{ bgcolor: 'secondary.main' }}>U</Avatar>
+  )}
+</Stack>
+
           // <React.Fragment key={msg.id}>
           //   <Stack
           //     direction="row"
@@ -187,6 +221,7 @@ useEffect(() => {
         )}
       </Box>
     </Paper>
+    <div ref={bottomRef} />
     </>
   );
 };
