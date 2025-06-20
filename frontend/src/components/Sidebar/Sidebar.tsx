@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -22,14 +22,18 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const [cookies, setCookie, removeCookie] = useCookies();
-  const [_, forceUpdate] = useState(false);
-  const hasCookies = Object.keys(cookies).length > 0;
+  const [hasToken, setHasToken] = useState<boolean>(false);
+
+   useEffect(() => {
+    setHasToken(!!cookies.token);
+  }, [cookies.token]);
 
   const handleLogout = () => {
     Object.keys(cookies).forEach((cookieName) => {
       console.log("handle ", cookieName);
       removeCookie(cookieName, { path: "/" });
     });
+    setHasToken(false)
     onClose();
   };
 
@@ -122,7 +126,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                       <span style={{ fontSize: "13px" }}>All Notification</span>
                     </Link>
                   </li>
-                  {hasCookies && (
+                  {hasToken && (
                     <li
                       onClick={handleLogout}
                       role="button"
