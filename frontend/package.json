@@ -19,13 +19,16 @@
     "react": "^19.0.0",
     "react-cookie": "^8.0.1",
     "react-dom": "^19.0.0",
+    "react-slick": "^0.30.3",
     "sass": "^1.89.2",
+    "slick-carousel": "^1.8.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/react-slick": "^0.23.13",
     "typescript": "^5"
   }
 }

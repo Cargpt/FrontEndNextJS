@@ -24,7 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const [cookies, setCookie, removeCookie] = useCookies();
   const [hasToken, setHasToken] = useState<boolean>(false);
 
-   useEffect(() => {
+  useEffect(() => {
     setHasToken(!!cookies.token);
   }, [cookies.token]);
 
@@ -33,7 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
       console.log("handle ", cookieName);
       removeCookie(cookieName, { path: "/" });
     });
-    setHasToken(false)
+    setHasToken(false);
     onClose();
   };
 
@@ -45,7 +45,12 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
         </Typography>
         <Button
           variant="contained"
-          style={{ backgroundColor: "rgb(198, 220, 248)" }}
+          style={{
+            backgroundColor: "rgb(198, 220, 248)",
+            display: "flex",
+            gap: 5,
+            alignItems: "center",
+          }}
         >
           <span>
             <Image
@@ -101,7 +106,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                   }}
                 >
                   <li>
-                    <Link href="/about">
+                    <Link href="/about" style={{ display: "flex", gap: 5 }}>
                       <span>
                         <Image
                           src="/assets/info-circle-fill.svg"
@@ -114,7 +119,10 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/notificationContainer">
+                    <Link
+                      href="/notificationContainer"
+                      style={{ display: "flex", gap: 5 }}
+                    >
                       <span>
                         <Image
                           src="/assets/bell-fill.svg"
@@ -130,7 +138,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                     <li
                       onClick={handleLogout}
                       role="button"
-                      style={{ cursor: "pointer" }}
+                      style={{ display: "flex", gap: 5, cursor: "pointer" }}
                     >
                       <span role="button">
                         <Image

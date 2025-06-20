@@ -13,6 +13,7 @@
         align-items: flex-start;
         flex-shrink: 1;
         background-color: #eeeeef;
+        cursor: pointer;
         .menuIcon {
           top: 8px;
           left: 8px;
@@ -23,7 +24,6 @@
           position: absolute;
           align-items: flex-start;
           flex-shrink: 0;
-          cursor: pointer;
         }
       }
       .carLogo {

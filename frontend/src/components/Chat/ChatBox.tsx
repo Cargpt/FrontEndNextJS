@@ -11,6 +11,7 @@ import {
 import Image from 'next/image';
 import bot from "../../../public/assets/lisa.svg"
 import BrandModelSelectCard from './Model/BrandModelSelectCard';
+import ModelCarousel from '../ModelCarousel/ModelCarousel';
 interface Message {
   id: string;
   text: string;
@@ -58,6 +59,7 @@ const ChatBox: React.FC = () => {
   }, [messages]);
 
   return (
+    <>
     <Paper
       elevation={3}
       sx={{
@@ -137,6 +139,8 @@ const ChatBox: React.FC = () => {
         )}
       </Box>
     </Paper>
+    <ModelCarousel />
+    </>
   );
 };
 
