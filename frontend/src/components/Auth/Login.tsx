@@ -185,7 +185,7 @@ finally {
                 if (response.token) {
                   localStorage.setItem("auth_token", response.token);
                  
-                  setCookie("token", response.token); // Store the token
+                  setCookie("token", response.token, {path: "/", maxAge: 365 * 60 * 60}); // Store the token
                   localStorage.setItem("auth_token", response.token);
 
                 } else {

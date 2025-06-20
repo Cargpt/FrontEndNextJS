@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -9,9 +9,6 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
 } from "@mui/material";
 import { ArrowForwardIosSharp } from "@mui/icons-material";
 import Link from "next/link";
@@ -24,16 +21,16 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
-  const [cookies, removeCookie] = useCookies();
+  const [cookies, setCookie, removeCookie] = useCookies();
+  const [_, forceUpdate] = useState(false);
+  const hasCookies = Object.keys(cookies).length > 0;
 
   const handleLogout = () => {
-    // Remove all cookies
     Object.keys(cookies).forEach((cookieName) => {
+      console.log("handle ", cookieName);
       removeCookie(cookieName, { path: "/" });
     });
-
-    // Optionally: redirect to login or home page
-    // router.push("/login") if using `useRouter` from Next.js
+    onClose();
   };
 
   return (
@@ -87,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
               </Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <div>
+              <div style={{ paddingBottom: "2rem" }}>
                 <ul
                   className="menu"
                   style={{
@@ -125,17 +122,23 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                       <span style={{ fontSize: "13px" }}>All Notification</span>
                     </Link>
                   </li>
-                  <li onClick={handleLogout}>
-                    <span style={{ marginLeft: "16px" }}>
-                      <Image
-                        src="/assets/box-arrow-right.svg"
-                        alt="arrow"
-                        height={13}
-                        width={13}
-                      />
-                    </span>
-                    <span style={{ fontSize: "13px" }}>Logout</span>
-                  </li>
+                  {hasCookies && (
+                    <li
+                      onClick={handleLogout}
+                      role="button"
+                      style={{ cursor: "pointer" }}
+                    >
+                      <span role="button">
+                        <Image
+                          src="/assets/box-arrow-right.svg"
+                          alt="arrow"
+                          height={13}
+                          width={13}
+                        />
+                      </span>
+                      <span style={{ fontSize: "13px" }}>Logout</span>
+                    </li>
+                  )}
                 </ul>
               </div>
             </AccordionDetails>
