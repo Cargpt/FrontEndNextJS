@@ -12,8 +12,8 @@ const Page = () => {
   return (
     <>
       {/* <AdvisorIntro showInitialExample={true} onBotClick={() => {}} /> */}
-      {botType === "want" && <ChatBox />}
-      {botType === "support" && <Support />}
+      {botType.includes("want") && <ChatBox />}
+      {botType.includes("support") && <Support />}
     </>
   );
 };

@@ -1,5 +1,6 @@
 "use client";
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { useChats } from "./ChatContext";
 
 type BotType = string;
 
@@ -13,7 +14,14 @@ const BotTypeContext = createContext<BotTypeContextType | undefined>(undefined);
 export const BotTypeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [botType, setBotType] = useState<BotType>("want");
+  const [botType, setBotType] = useState<BotType>("");
+  const {addChat}=useChats()
+    useEffect(() => {
+       if(botType) 
+      return () => {
+        
+      };
+    }, [botType]);
 
   return (
     <BotTypeContext.Provider value={{ botType, setBotType }}>

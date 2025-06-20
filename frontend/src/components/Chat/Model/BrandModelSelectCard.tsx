@@ -16,14 +16,18 @@ import { axiosInstance1 } from "@/utils/axiosInstance";
 import BrandSelector from "./InlineRadio";
 import {
   DEFAULTSEARCHPARAMS,
-  fuelOptions,
-  transmissionOptions,
+  
 } from "@/utils/services";
+import { useChats } from "@/Context/ChatContext";
+import { useBotType } from "@/Context/BotTypeContext";
 
 // Type-safe options
 const brandOptions = ["Toyota", "Honda", "Ford"] as const;
+type BrandModelSelectCardProps = {
+  handleUserMessage: (message: any) => void;
 
-const BrandModelSelectCard: React.FC = () => {
+}
+const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMessage}) => {
   const [brand, setBrand] = useState<Brand | null>(null);
 
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -31,11 +35,11 @@ const BrandModelSelectCard: React.FC = () => {
   const [model, setModel] = useState<ModelProps | null>(null);
   const [models, setModels] = useState<ModelProps[]>([]);
   const [carFeatures, setCarFeatures] = useState<CarFeaturesProps>({
-    FuelType: [],
-    TransmissionType: [],
-    Seats: [],
-    bugetTypes: [],
-    BodyNames: [],
+    FuelType: ["petrol", "diesel", "electric"],
+    TransmissionType: ["manual", "automatic"],
+    Seats: [2, 4, 5, 7],
+    bugetTypes: ["0-5L", "5-10L", "10-15L", "15-20L", "20-25L", "25-30L"],
+    BodyNames: [ "suv", "sedan", "hatchback", "coupe", "convertible"],
   });
 
   const [carFilter, setCarFilter] = useState<CarFilter>(DEFAULTSEARCHPARAMS);
@@ -48,22 +52,12 @@ const BrandModelSelectCard: React.FC = () => {
     }));
   };
 
-  // const handleBrandChange = (event: SelectChangeEvent<string>) => {
-  //   event.preventDefault()
-
-  //   const selectedBrand = event.target.value;
-  //   setBrand(selectedBrand);
-  //   setModel(''); // reset model when brand changes
-  // };
-
-  // const handleModelChange = (event: SelectChangeEvent<string>) => {
-  //   setModel(event.target.value);
-  // };
-
+  
+  const {addChat, chats}=useChats()
   const fetchBrands = async () => {
     try {
       const data = await axiosInstance1.get("/api/brands/");
-      console.log(data?.data);
+      
       setBrands(data?.data);
     } catch (error) {}
   };
@@ -95,11 +89,19 @@ const BrandModelSelectCard: React.FC = () => {
 
   useEffect(() => {
     fetchBrands();
+
+
   }, []);
 
+const {botType}=useBotType()
+
+  
   useEffect(() => {
     if (brand) {
+
       setCarFilter({ ...carFilter, brand_name: brand.BrandName });
+
+     
       fetchBrandModes();
     }
     return () => {};
@@ -108,11 +110,12 @@ const BrandModelSelectCard: React.FC = () => {
   useEffect(() => {
     if (model) {
       setCarFilter({ ...carFilter, model_name: model.ModelName });
-
+       
       fetchCarFeatures();
     }
     return () => {};
   }, [model]);
+
 
   const fetchDataBasedOnParameters = async () => {
     try {
@@ -122,6 +125,8 @@ const BrandModelSelectCard: React.FC = () => {
         payload
       );
       console.log("/api/cars-for-prameter/", data);
+        handleUserMessage({...payload})
+
     } catch (error) {}
   };
 
@@ -129,8 +134,8 @@ const BrandModelSelectCard: React.FC = () => {
   return (
     <Card sx={{ minWidth: "600px", p: 2 }}>
       <CardContent>
-        <Typography variant="h6" gutterBottom>
-          Select Car Brand & Model
+        <Typography variant="h5" gutterBottom>
+          {botType}
         </Typography>
 
         <Box sx={{ display: "flex", gap: 2 }}>
@@ -160,10 +165,12 @@ const BrandModelSelectCard: React.FC = () => {
               labelId="model-label"
               value={model?.ModelID}
               label="Model"
-              onChange={(e) =>
+              onChange={(e) =>{
                 setModel(
                   models.filter((m) => m.ModelID === Number(e.target.value))[0]
                 )
+              
+              }
               }
             >
               {models.length > 0 &&

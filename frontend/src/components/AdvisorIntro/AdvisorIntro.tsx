@@ -126,7 +126,7 @@ const AdvisorIntro: React.FC<AdvisorIntroProps> = ({
         {options.map((option, index) => (
           <ListItemButton
             key={index}
-            onClick={() => handleOptionClick(option.type)}
+            onClick={() => handleOptionClick(option.label)}
             style={{ backgroundColor: "#d3e3ff", borderRadius: "25px" }}
           >
             <ListItemIcon>
