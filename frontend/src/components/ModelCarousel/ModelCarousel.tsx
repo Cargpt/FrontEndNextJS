@@ -64,7 +64,8 @@ const modelCars = cars[0][modelKey]; // array of 9 car objects
           <CardContent>
             <Stack display="flex" alignItems="center">
               <Image
-                src={car.ImageUrl || carimg}
+                // src={car.ImageUrl || carimg}
+                src={car.CarImageDetails?.[0]?.CarImageURL || carimg}
                 alt="car-img"
                 height={200}
                 width={200}
@@ -88,13 +89,13 @@ const modelCars = cars[0][modelKey]; // array of 9 car objects
                 color="text.secondary"
                 fontSize="15px"
               >
-                ₹ {car.Price} L
+                ₹ {(car.Price / 100000).toFixed(1)} L
               </Typography>
             </Stack>
 
           <div style={{display: "flex", justifyContent:"space-between", alignItems:"center"}}>
-            <Button variant="contained" onClick={onClick}>I know exactly i want</Button>
-           <Button variant="contained" onClick={handleNeedAdviceSupport}>I need advisor support</Button>
+            <Button variant="contained" onClick={onClick} style={{textTransform: "capitalize", fontSize: "10px", padding: "6px"}}>I know exactly i want</Button>
+           <Button variant="contained" onClick={handleNeedAdviceSupport} style={{textTransform: "capitalize", fontSize: "10px", padding: "6px"}}>I need advisor support</Button>
            </div>
           </CardContent>
         </Card>
