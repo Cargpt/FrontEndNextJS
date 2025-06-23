@@ -1,4 +1,5 @@
 // context/ChatsContext.tsx
+import { DEFAULTSEARCHPARAMS } from '@/utils/services';
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 export type ChatMessage = {
@@ -16,6 +17,8 @@ type ChatsContextType = {
   cars: any[];
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  updateFilter: (name: string, value: number | string) => void;
+  filter: CarFilter;
 };
 
 
@@ -23,7 +26,8 @@ interface Message {
   id: string;
   sender: 'user' | 'bot';
   render: 'brandModelSelect' | 'carOptions' | 'text' | 'selectOption';
-  message: string | any
+  message: string | any,
+
   
 }
 
@@ -39,13 +43,22 @@ export const ChatsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
        sender: 'user',
      }
   ]);
+    const [filter, setFilter] = useState<CarFilter>(DEFAULTSEARCHPARAMS);
+  
    const [cars, setCars] = useState<any[]>([])
   const addChat = (chat: Omit<ChatMessage, 'id'>) => {
     setChats(prev => [...prev, { id: Date.now().toString(), ...chat }]);
   };
 
+  const updateFilter = (name: string, value: number | string) => {
+    setFilter(prev => ({
+      ...prev,
+      [name]: name === 'budget' || name === 'seat_capacity' ? Number(value) : value,
+    }));
+  }
+
   return (
-    <ChatsContext.Provider value={{ chats, addChat, cars, setCars, messages, setMessages }}>
+    <ChatsContext.Provider value={{ chats, addChat, cars, setCars, messages, setMessages, filter, updateFilter }}>
       {children}
     </ChatsContext.Provider>
   );
