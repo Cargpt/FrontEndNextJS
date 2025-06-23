@@ -137,7 +137,6 @@ const {botType}=useBotType()
         "/api/cars-for-prameter/",
         payload
       );
-      console.log("data1223344", data);
         if(data?.data.length===0){
           setDisableBtn(false)
           setError("No cars found for the selected parameters.");

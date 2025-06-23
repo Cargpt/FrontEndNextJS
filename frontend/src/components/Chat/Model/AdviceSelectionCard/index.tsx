@@ -13,6 +13,7 @@ import AdviceSelectionBody from "./AdviceSelectionBody";
 import AdviceSelectionFuel from "./AdviceSelectionFuel";
 import AdviceSelectionBrand from "./AdviceSelectionBrand";
 import AdviceSelectionTransmission from "./AdviceSelectionTransmission";
+import { useChats } from "@/Context/ChatContext";
 
 const AdviceSelectionCard = () => {
   const [selections, setSelections] = useState<{
@@ -35,11 +36,12 @@ const AdviceSelectionCard = () => {
       setSelections(JSON.parse(savedSelections));
     }
   }, []);
+  const {updateFilter, filter}=useChats()
 
   const handleSelect = (type: keyof typeof selections, value: string) => {
     const updated = { ...selections, [type]: value };
     setSelections(updated);
-    localStorage.setItem("carAdviceSelections", JSON.stringify(updated));
+   if(updated.budget) updateFilter("budget", updated.budget);
     console.log("Updated Selections:", updated);
   };
 
@@ -47,19 +49,18 @@ const AdviceSelectionCard = () => {
 
 
 
-  console.log("Current Selections:", selections);
+  console.log("Current Selections:", filter);
   return (
-    <Card>
+    <Card style={{ display: "flex", flexDirection: "column", gap: "5px", border: "none", borderBottom:"none", boxShadow:"none" }}>
       <CardContent
-        style={{ display: "flex", flexDirection: "column", gap: "5px" }}
+        style={{ display: "flex", flexDirection: "column", gap: "5px", border: "none", borderBottom:"none", boxShadow:"none" }}
       >
         <Typography
           variant="body2"
           component="p"
           sx={{ cursor: "pointer", mb: 2 }}
         >
-          Thank you for letting me help. I will provide you with all the car
-          information you need. Tell me your requirements:
+          Hi! :👋 I can help you choose the right car based on your preferences. Let's get started!
         </Typography>
 
         <Typography
