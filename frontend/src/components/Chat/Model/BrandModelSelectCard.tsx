@@ -27,6 +27,9 @@ type BrandModelSelectCardProps = {
   handleUserMessage: (message: any) => void;
 
 }
+import Snackbar from '@mui/material/Snackbar';
+
+
 const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMessage}) => {
   const [brand, setBrand] = useState<Brand | null>(null);
 
@@ -42,6 +45,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMe
     BodyNames: [ "suv", "sedan", "hatchback", "coupe", "convertible"],
   });
 
+
+  const [disableBtn, setDisableBtn] = useState<boolean>(false);
   const [carFilter, setCarFilter] = useState<CarFilter>(DEFAULTSEARCHPARAMS);
 
   const handleChange = (name: string, value: number | string) => {
@@ -67,7 +72,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMe
     };
     try {
       const data = await axiosInstance1.post("/api/models/", payload);
-      console.log("data", data);
+      
       setModels(data?.models || []);
     } catch (error) {}
   };
@@ -82,7 +87,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMe
         "/api/brand-model-parameters/",
         payload
       );
-      console.log("data", data);
+      
       setCarFeatures(data?.data);
 
 
@@ -120,73 +125,125 @@ const {botType}=useBotType()
 
 
   const fetchDataBasedOnParameters = async () => {
+    setDisableBtn(true);
     try {
       const payload = { ...carFilter };
       const data = await axiosInstance1.post(
         "/api/cars-for-prameter/",
         payload
       );
-      console.log("/api/cars-for-prameter/", data);
+      console.log("data1223344", data);
+        if(data?.data.length===0){
+          setDisableBtn(false)
+          handleClick({ open: true });
+          return false;
+        }
+
       setCars((prev:any)=> ([...prev, {[`${brand?.BrandName}_${model?.ModelName}`]: data?.data}]))
-      
+
 
         handleUserMessage({...payload})
 
-    } catch (error) {}
+    } catch (error) {
+      setDisableBtn(false);
+    }
   };
 
-  console.log("carFilter", carFilter);
+
+  
+  interface State {
+  vertical: 'top' | 'bottom';
+  horizontal: 'left' | 'center' | 'right';  
+  open: boolean;
+  }
+interface  SnackbarOrigin {
+  open: boolean;
+}
+
+
+
+  const [state, setState] = React.useState<State>({
+    open: false,
+    vertical: 'bottom',
+    horizontal: 'center',
+  });
+  const { vertical, horizontal, open } = state;
+
+  const handleClick = (newState: SnackbarOrigin) => () => {
+    setState({ ...state, open:newState.open});
+  };
+
+  const handleClose = () => {
+    setState({ ...state, open: false });
+  };
+
+  console.log("state", state)
+
   return (
-    <Card sx={{ minWidth: "600px", p: 2 }}>
+    <Card sx={{ minWidth: "300px", p: 2 }}>
       <CardContent>
         <Typography variant="h5" gutterBottom>
           {botType}
         </Typography>
 
-        <Box sx={{ display: "flex", gap: 2 }}>
-          {/* Brand Selector */}
-          <FormControl fullWidth>
-            <InputLabel id="brand-label">Brand</InputLabel>
-            <Select
-              labelId="brand-label"
-              value={brand?.BrandID}
-              label="Brand"
-              onChange={(e) =>
-                setBrand(brands.filter((b) => b.BrandID === e.target.value)[0])
-              }
-            >
-              {brands.map((brand: Brand, index: number) => (
-                <MenuItem key={index} value={brand.BrandID}>
-                  {brand.BrandName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+       <Box
+  sx={{
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 1,
+    flexDirection: {
+      xs: "column", // Stack vertically on extra-small screens
+      sm: "row",    // Side-by-side on small screens and up
+    
+    },
+  }}
+>
+  {/* Brand Selector */}
+  <FormControl  sx={{ m: 1, minWidth: 120 }} size="small">
+    <InputLabel id="brand-label">Brand</InputLabel>
+    <Select
+      labelId="brand-label"
+      value={brand?.BrandID ?? ""}
+      label="Brand"
+      onChange={(e) => {
+        const selectedBrand = brands.find((b) => b.BrandID === e.target.value);
+        if (selectedBrand) {
+          setBrand(selectedBrand);
+        }
+      }}
+    >
+      {brands.map((brand: Brand, index: number) => (
+        <MenuItem key={index} value={brand.BrandID}>
+          {brand.BrandName}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
 
-          {/* Model Selector */}
-          <FormControl fullWidth disabled={!brand}>
-            <InputLabel id="model-label">Model</InputLabel>
-            <Select
-              labelId="model-label"
-              value={model?.ModelID}
-              label="Model"
-              onChange={(e) =>{
-                setModel(
-                  models.filter((m) => m.ModelID === Number(e.target.value))[0]
-                )
-              
-              }
-              }
-            >
-              {models.length > 0 &&
-                models.map((model: ModelProps, index: number) => (
-                  <MenuItem key={index} value={model.ModelID}>
-                    {model.ModelName}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-        </Box>
+  {/* Model Selector */}
+  <FormControl  sx={{ m: 1, minWidth: 120 }} size="small" disabled={!brand}>
+    <InputLabel id="model-label">Model</InputLabel>
+    <Select
+      labelId="model-label"
+      value={model?.ModelID ?? ""}
+      label="Model"
+      onChange={(e) => {
+        const selectedModel = models.find(
+          (m) => m.ModelID === Number(e.target.value)
+        );
+        if (selectedModel) {
+          setModel(selectedModel);
+        }
+      }}
+    >
+      {models.map((model: ModelProps, index: number) => (
+        <MenuItem key={index} value={model.ModelID}>
+          {model.ModelName}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+</Box>
 
         <div style={{ marginTop: "1rem" }}>
           {carFeatures?.FuelType.length > 0 && (
@@ -249,6 +306,7 @@ const {botType}=useBotType()
             }}
           >
             <Button
+            disabled={disableBtn }
               variant="contained"
               color="primary"
               onClick={fetchDataBasedOnParameters}
@@ -270,6 +328,13 @@ const {botType}=useBotType()
               </svg>
             </Button>
           </div>
+          <Snackbar
+  anchorOrigin={{ vertical, horizontal }}
+  open={open}
+  onClose={handleClose}
+  message={`No cars found for the selected parameters. Please try different options.`}
+  key={vertical + horizontal}
+/>
         </div>
       </CardContent>
     </Card>

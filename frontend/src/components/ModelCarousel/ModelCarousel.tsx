@@ -13,6 +13,8 @@ type Props = {
 }
 const ModelCarousel: React.FC<Props> = ({onClick, selectedItem}) => {
   const {cars}=useChats()
+  const modelKey = Object.keys(cars[0])[0]; // e.g., "Hyundai_Creta"
+const modelCars = cars[0][modelKey]; // array of 9 car objects
   const settings: Settings = {
     dots: true,
     infinite: false,
@@ -53,53 +55,59 @@ const ModelCarousel: React.FC<Props> = ({onClick, selectedItem}) => {
   return (
     <div className="slider-container" style={{ padding: "30px", width: "100%" }}>
       <Slider {...settings}>
-        <div>
-          <Card>
-            <CardContent>
-              <Stack display="flex" alignItems="center">
+  {modelCars.map((car: any) => (
+    <div key={car.CarID} style={{ padding: "0 8px", boxSizing: "border-box" }}>
+      <Box width="100%">
+        <Card>
+          <CardContent>
+            <Stack display="flex" alignItems="center">
               <Image
-                src={carimg}
-                alt="card-img"
+                src={car.ImageUrl || carimg}
+                alt="car-img"
                 height={200}
                 width={200}
                 style={{ objectFit: "contain" }}
               />
-              </Stack>
-              <Stack display="flex" flexDirection="row" alignItems="center" gap="15px" justifyContent="space-around">
-                <Typography variant="h6" mt={2} fontSize="15px">
-                  Maruti Suzuki S-Presso STD
-                </Typography>
-                  <Typography variant="h6" mt={2} color="text.secondary" fontSize="15px">&#8377; 4.3L</Typography>
-              </Stack>
-              <div style={{display: "flex", justifyContent:"space-between", alignItems:"center"}}>
-                <Button variant="contained">AI Car Advisor Score:</Button> 
+            </Stack>
+
+            <Stack
+              display="flex"
+              flexDirection="row"
+              alignItems="center"
+              gap="15px"
+              justifyContent="space-around"
+            >
+              <Typography variant="h6" mt={2} fontSize="15px">
+                {car.BrandName} {car.ModelName}
+              </Typography>
+              <Typography
+                variant="h6"
+                mt={2}
+                color="text.secondary"
+                fontSize="15px"
+              >
+                ₹ {car.Price} L
+              </Typography>
+            </Stack>
+
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Button variant="contained">AI Car Advisor Score:</Button>
               <Button variant="contained">EMI</Button>
               <Button variant="contained">User Sentiments</Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            </div>
+          </CardContent>
+        </Card>
+      </Box>
+    </div>
+  ))}
+</Slider>
 
-        {/* Dummy slides */}
-        <div>
-          <h3>Slide 2</h3>
-        </div>
-        <div>
-          <h3>Slide 3</h3>
-        </div>
-        <div>
-          <h3>Slide 4</h3>
-        </div>
-        <div>
-          <h3>Slide 5</h3>
-        </div>
-        <div>
-          <h3>Slide 6</h3>
-        </div>
-        <div>
-          <h3>Slide 7</h3>
-        </div>
-      </Slider>
     </div>
   );
 };
