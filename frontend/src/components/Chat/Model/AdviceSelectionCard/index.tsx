@@ -43,6 +43,11 @@ const AdviceSelectionCard = () => {
     console.log("Updated Selections:", updated);
   };
 
+
+
+
+
+  console.log("Current Selections:", selections);
   return (
     <Card>
       <CardContent
