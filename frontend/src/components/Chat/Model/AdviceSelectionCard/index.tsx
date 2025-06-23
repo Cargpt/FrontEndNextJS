@@ -36,14 +36,19 @@ const AdviceSelectionCard = () => {
       setSelections(JSON.parse(savedSelections));
     }
   }, []);
-  const {updateFilter, filter}=useChats()
+  const {updateFilter, filter, setMessages}=useChats()
 
   const handleSelect = (type: keyof typeof selections, value: string) => {
     const updated = { ...selections, [type]: value };
     setSelections(updated);
-   if(updated.budget) updateFilter("budget", updated.budget);
+   if(updated.budget) {
+    updateFilter("budget", updated.budget)
+    
+  };
     console.log("Updated Selections:", updated);
   };
+
+
 
 
 
