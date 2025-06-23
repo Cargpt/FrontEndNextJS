@@ -2,17 +2,23 @@ import React from "react";
 import Slider, { Settings } from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Card, CardContent, Typography, Box, Stack } from "@mui/material";
+import { Card, CardContent, Typography, Box, Stack, Button } from "@mui/material";
 import Image from "next/image";
 import carimg from "../../../public/assets/card-img.png";
 
-const ModelCarousel: React.FC = () => {
+interface ModelCarouselProps {
+  budget: number | null;
+}
+
+const ModelCarousel: React.FC<ModelCarouselProps> = ({ budget }) => {
+
+  console.log("Budget received:", budget);
   const settings: Settings = {
     dots: true,
     infinite: false,
     speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 4,
+    slidesToShow: 3,
+    slidesToScroll: 3,
     initialSlide: 0,
     responsive: [
       {
@@ -43,7 +49,7 @@ const ModelCarousel: React.FC = () => {
   };
 
   return (
-    <div className="slider-container" style={{ padding: "30px" }}>
+    <div className="slider-container" style={{ padding: "30px", width: "100%" }}>
       <Slider {...settings}>
         <div>
           <Card>
@@ -63,7 +69,11 @@ const ModelCarousel: React.FC = () => {
                 </Typography>
                   <Typography variant="h6" mt={2} color="text.secondary" fontSize="15px">&#8377; 4.3L</Typography>
               </Stack>
-              <div style={{display: "flex", justifyContent:"space-between", alignItems:"center"}}><button>I know exactly i want</button> <button>I need advisor support</button></div>
+              <div style={{display: "flex", justifyContent:"space-between", alignItems:"center"}}>
+                <Button variant="contained">AI Car Advisor Score:</Button> 
+              <Button variant="contained">EMI</Button>
+              <Button variant="contained">User Sentiments</Button>
+              </div>
             </CardContent>
           </Card>
         </div>

@@ -32,6 +32,7 @@ const ChatBox: React.FC = () => {
     },
   ]);
   const [loading, setLoading] = useState(false);
+  const [budget, setBudget] = useState<number | null>(500000);
 
   useEffect(() => {
     // Simulate bot reply after a delay
@@ -63,7 +64,7 @@ const ChatBox: React.FC = () => {
       case 'brandModelSelect':
         return <BrandModelSelectCard  handleUserMessage={handleUserMessage}/>;
       case 'carOptions':
-        return <ModelCarousel />;
+        return <ModelCarousel budget={budget} />;
       case 'text':
         return <div>{message.message}</div>; // Default text rendering
       default:
