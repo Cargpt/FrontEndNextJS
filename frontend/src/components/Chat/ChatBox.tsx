@@ -12,6 +12,7 @@ import Image from 'next/image';
 import bot from "../../../public/assets/lisa.svg"
 import BrandModelSelectCard from './Model/BrandModelSelectCard';
 import ModelCarousel from '../ModelCarousel/ModelCarousel';
+import { useChats } from '@/Context/ChatContext';
 interface Message {
   id: string;
   sender: 'user' | 'bot';
@@ -23,22 +24,25 @@ interface Message {
 
 
 const ChatBox: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      message: 'I know exactly what I want',
-      render: 'text',
-      sender: 'user',
-    },
-  ]);
+  const {cars, messages, setMessages}=useChats()
+  // const [messages, setMessages] = useState<Message[]>([
+  //   {
+  //     id: '1',
+  //     message: 'I know exactly what I want',
+  //     render: 'text',
+  //     sender: 'user',
+  //   },
+  // ]);
+  
   const [loading, setLoading] = useState(false);
 
+  
   useEffect(() => {
     // Simulate bot reply after a delay
     const timer = setTimeout(() => {
       const lastMsg = messages[messages.length - 1];
 
-      if (lastMsg.sender === 'user') {
+      if (lastMsg.sender === 'user' && lastMsg.message === 'I know exactly what I want') {
         setLoading(true);
         setTimeout(() => {
           const botMessage: Message = {
@@ -54,7 +58,7 @@ const ChatBox: React.FC = () => {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [messages]);
 
 
   const handleIknowWhatEaxactlyWhatIWant = () => {
@@ -80,7 +84,7 @@ const ChatBox: React.FC = () => {
       case 'brandModelSelect':
         return <BrandModelSelectCard  handleUserMessage={handleUserMessage}/>;
       case 'carOptions':
-        return <ModelCarousel onClick={handleIknowWhatEaxactlyWhatIWant} />;
+        return <ModelCarousel onClick={handleIknowWhatEaxactlyWhatIWant} selectedItem={message.message} />;
       case 'text':
         return <div>{message.message}</div>; // Default text rendering
       default:
@@ -111,7 +115,7 @@ useEffect(() => {
    if(lastItem.message=="I am looking for cars based on the selected parameters."){
       const botMessage: Message = {
         id: String(Date.now()),
-        message: {},
+        message: cars[cars.length-1],
         render: "carOptions", // Change this to 'carOptions' if you want to show the carousel
         sender: 'bot',
       };
@@ -131,7 +135,7 @@ useEffect(() => {
   }
 }, [messages]);
 
-  console.log("messages", messages);
+  console.log("messages", messages, cars);
   return (
     <>
     <Paper

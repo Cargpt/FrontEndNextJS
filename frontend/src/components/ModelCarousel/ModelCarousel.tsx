@@ -5,11 +5,14 @@ import "slick-carousel/slick/slick-theme.css";
 import { Card, CardContent, Typography, Box, Stack } from "@mui/material";
 import Image from "next/image";
 import carimg from "../../../public/assets/card-img.png";
+import { useChats } from "@/Context/ChatContext";
 
 type Props = {
  onClick?: () => void;
+ selectedItem: any;
 }
-const ModelCarousel: React.FC<Props> = ({onClick}) => {
+const ModelCarousel: React.FC<Props> = ({onClick, selectedItem}) => {
+  const {cars}=useChats()
   const settings: Settings = {
     dots: true,
     infinite: false,
@@ -45,6 +48,8 @@ const ModelCarousel: React.FC<Props> = ({onClick}) => {
     ],
   };
 
+
+  console.log("cars", cars)
   return (
     <div className="slider-container" style={{ padding: "30px" }}>
       <Slider {...settings}>
