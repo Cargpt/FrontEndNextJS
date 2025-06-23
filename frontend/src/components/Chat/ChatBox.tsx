@@ -57,13 +57,30 @@ const ChatBox: React.FC = () => {
   }, []);
 
 
+  const handleIknowWhatEaxactlyWhatIWant = () => {
+    // const lastItem = messages[messages.length - 1];
+    const userMessage: Message = {
+      id: String(Date.now()),
+      message: "I know exactly what I want",
+      render: 'text',
+      sender: 'user',
+    };
+
+    // // const newsMessages: Message[] = [...messages.slice(0, messages.length - 1), {
+    // //   ...lastItem,
+    // //   message: "I know exactly what I want"
+    // // }];
+    // newsMessages.push(userMessage);
+    setMessages(prev=> [...prev, userMessage]);
+
+  }
 
   const renderMessage = (message:Message) => {
     switch (message.render) {
       case 'brandModelSelect':
         return <BrandModelSelectCard  handleUserMessage={handleUserMessage}/>;
       case 'carOptions':
-        return <ModelCarousel />;
+        return <ModelCarousel onClick={handleIknowWhatEaxactlyWhatIWant} />;
       case 'text':
         return <div>{message.message}</div>; // Default text rendering
       default:

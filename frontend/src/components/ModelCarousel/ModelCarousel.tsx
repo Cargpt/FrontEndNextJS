@@ -6,7 +6,10 @@ import { Card, CardContent, Typography, Box, Stack } from "@mui/material";
 import Image from "next/image";
 import carimg from "../../../public/assets/card-img.png";
 
-const ModelCarousel: React.FC = () => {
+type Props = {
+ onClick?: () => void;
+}
+const ModelCarousel: React.FC<Props> = ({onClick}) => {
   const settings: Settings = {
     dots: true,
     infinite: false,
@@ -63,7 +66,7 @@ const ModelCarousel: React.FC = () => {
                 </Typography>
                   <Typography variant="h6" mt={2} color="text.secondary" fontSize="15px">&#8377; 4.3L</Typography>
               </Stack>
-              <div style={{display: "flex", justifyContent:"space-between", alignItems:"center"}}><button>I know exactly i want</button> <button>I need advisor support</button></div>
+              <div style={{display: "flex", justifyContent:"space-between", alignItems:"center"}}><button onClick={onClick}>I know exactly i want</button> <button>I need advisor support</button></div>
             </CardContent>
           </Card>
         </div>
