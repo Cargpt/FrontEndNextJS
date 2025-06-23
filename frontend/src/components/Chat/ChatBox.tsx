@@ -56,6 +56,20 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
+
+       if (lastMsg.sender === 'user' && lastMsg.message === 'I need advisor support') {
+        setLoading(true);
+        setTimeout(() => {
+          const botMessage: Message = {
+            id: String(Date.now()),
+            message: {},
+            render:"selectOption", // Change this to 'carOptions' if you want to show the carousel
+            sender: 'bot',
+          };
+          setMessages(prev => [...prev, botMessage]);
+          setLoading(false);
+        }, 1000);
+      }
     }, 1000);
 
     return () => clearTimeout(timer);
@@ -137,7 +151,7 @@ const handleNeedAdviceSupport = () => {
   const userMessage: Message = {
     id: String(Date.now()),
     message: "I need advisor support",
-    render: 'selectOption',
+    render: 'text',
     sender: 'user',
   };
 
