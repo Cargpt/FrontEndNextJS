@@ -325,7 +325,7 @@ const {botType}=useBotType()
       </CardContent>
       {
         error && (
-          <DialogSelect onClose={handleClose} message={error} header="Error"  open={openDialouge}/>
+          <DialogSelect onClose={handleClose} message={error} header=""  open={openDialouge}/>
 
 
         )
