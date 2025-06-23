@@ -108,7 +108,7 @@ const AdviceSelectionCard = () => {
             </svg>
           </Button>
         </div>
-        <AdviceSelectionBody
+        {/* <AdviceSelectionBody
           selections={selections}
           handleSelect={handleSelect}
         />
@@ -123,7 +123,7 @@ const AdviceSelectionCard = () => {
         <AdviceSelectionBrand
           selections={selections}
           handleSelect={handleSelect}
-        />
+        /> */}
       </CardContent>
     </Card>
   );

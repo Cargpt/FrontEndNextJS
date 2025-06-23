@@ -10,8 +10,10 @@ import { useChats } from "@/Context/ChatContext";
 type Props = {
  onClick?: () => void;
  selectedItem: any;
+ handleNeedAdviceSupport: () => void;
 }
-const ModelCarousel: React.FC<Props> = ({onClick, selectedItem}) => {
+
+const ModelCarousel: React.FC<Props> = ({onClick, selectedItem, handleNeedAdviceSupport}) => {
   const {cars}=useChats()
   const modelKey = Object.keys(cars[0])[0]; // e.g., "Hyundai_Creta"
 const modelCars = cars[0][modelKey]; // array of 9 car objects
@@ -90,17 +92,10 @@ const modelCars = cars[0][modelKey]; // array of 9 car objects
               </Typography>
             </Stack>
 
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Button variant="contained">AI Car Advisor Score:</Button>
-              <Button variant="contained">EMI</Button>
-              <Button variant="contained">User Sentiments</Button>
-            </div>
+          <div style={{display: "flex", justifyContent:"space-between", alignItems:"center"}}>
+            <Button variant="contained" onClick={onClick}>I know exactly i want</Button>
+           <Button variant="contained" onClick={handleNeedAdviceSupport}>I need advisor support</Button>
+           </div>
           </CardContent>
         </Card>
       </Box>

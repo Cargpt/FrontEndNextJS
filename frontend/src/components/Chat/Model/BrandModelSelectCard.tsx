@@ -28,6 +28,7 @@ type BrandModelSelectCardProps = {
 
 }
 import Snackbar from '@mui/material/Snackbar';
+import DialogSelect from "./DialogSelect";
 
 
 const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMessage}) => {
@@ -62,6 +63,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMe
   const fetchBrands = async () => {
     try {
       const data = await axiosInstance1.get("/api/brands/");
+      setBrand(data?.data[0] || null);
+      
       
       setBrands(data?.data);
     } catch (error) {}
@@ -74,6 +77,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMe
       const data = await axiosInstance1.post("/api/models/", payload);
       
       setModels(data?.models || []);
+      setModel(data?.models[0] || null);
     } catch (error) {}
   };
 
@@ -123,6 +127,7 @@ const {botType}=useBotType()
     return () => {};
   }, [model]);
 
+  const [error, setError] = useState<string>("");
 
   const fetchDataBasedOnParameters = async () => {
     setDisableBtn(true);
@@ -135,7 +140,9 @@ const {botType}=useBotType()
       console.log("data1223344", data);
         if(data?.data.length===0){
           setDisableBtn(false)
-          handleClick({ open: true });
+          setError("No cars found for the selected parameters.");
+          setOpenDialouge(true);
+;
           return false;
         }
 
@@ -150,37 +157,23 @@ const {botType}=useBotType()
   };
 
 
+ 
+
+
+  const [openDialouge, setOpenDialouge] = useState<boolean>(
+    false
+    
+);
+
   
-  interface State {
-  vertical: 'top' | 'bottom';
-  horizontal: 'left' | 'center' | 'right';  
-  open: boolean;
-  }
-interface  SnackbarOrigin {
-  open: boolean;
-}
-
-
-
-  const [state, setState] = React.useState<State>({
-    open: false,
-    vertical: 'bottom',
-    horizontal: 'center',
-  });
-  const { vertical, horizontal, open } = state;
-
-  const handleClick = (newState: SnackbarOrigin) => () => {
-    setState({ ...state, open:newState.open});
-  };
 
   const handleClose = () => {
-    setState({ ...state, open: false });
+    setOpenDialouge(false);
   };
 
-  console.log("state", state)
 
   return (
-    <Card sx={{ minWidth: "300px", p: 2 }}>
+    <Card sx={{ minWidth: "300px", p: 2, boxShadow:0 }}>
       <CardContent>
         <Typography variant="h5" gutterBottom>
           {botType}
@@ -328,15 +321,17 @@ interface  SnackbarOrigin {
               </svg>
             </Button>
           </div>
-          <Snackbar
-  anchorOrigin={{ vertical, horizontal }}
-  open={open}
-  onClose={handleClose}
-  message={`No cars found for the selected parameters. Please try different options.`}
-  key={vertical + horizontal}
-/>
+         
         </div>
       </CardContent>
+      {
+        error && (
+          <DialogSelect onClose={handleClose} message={error} header="Error"  open={openDialouge}/>
+
+
+        )
+      }
+    
     </Card>
   );
 };

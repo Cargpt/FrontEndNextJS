@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Box,
   Avatar,
@@ -7,21 +7,25 @@ import {
   Paper,
   Stack,
   CircularProgress,
-} from "@mui/material";
-import Image from "next/image";
-import bot from "../../../public/assets/lisa.svg";
-import BrandModelSelectCard from "./Model/BrandModelSelectCard";
-import ModelCarousel from "../ModelCarousel/ModelCarousel";
-import { useChats } from "@/Context/ChatContext";
+} from '@mui/material';
+import Image from 'next/image';
+import bot from "../../../public/assets/lisa.svg"
+import BrandModelSelectCard from './Model/BrandModelSelectCard';
+import ModelCarousel from '../ModelCarousel/ModelCarousel';
+import { useChats } from '@/Context/ChatContext';
+import AdviceSelectionCard from './Model/AdviceSelectionCard';
 interface Message {
   id: string;
-  sender: "user" | "bot";
-  render: "brandModelSelect" | "carOptions" | "text";
-  message: string | any;
+  sender: 'user' | 'bot';
+  render: 'brandModelSelect' | 'carOptions' | 'text' | 'selectOption';
+  message: string | any
+  
 }
 
+
+
 const ChatBox: React.FC = () => {
-  const { cars, messages, setMessages } = useChats();
+  const {cars, messages, setMessages}=useChats()
   // const [messages, setMessages] = useState<Message[]>([
   //   {
   //     id: '1',
@@ -30,28 +34,39 @@ const ChatBox: React.FC = () => {
   //     sender: 'user',
   //   },
   // ]);
-
+  
   const [loading, setLoading] = useState(false);
-  const [budget, setBudget] = useState<number | null>(500000);
 
+  
   useEffect(() => {
     // Simulate bot reply after a delay
     const timer = setTimeout(() => {
       const lastMsg = messages[messages.length - 1];
 
-      if (
-        lastMsg.sender === "user" &&
-        lastMsg.message === "I know exactly what I want"
-      ) {
+      if (lastMsg.sender === 'user' && lastMsg.message === 'I know exactly what I want') {
         setLoading(true);
         setTimeout(() => {
           const botMessage: Message = {
             id: String(Date.now()),
             message: {},
-            render: "brandModelSelect", // Change this to 'carOptions' if you want to show the carousel
-            sender: "bot",
+            render:"brandModelSelect", // Change this to 'carOptions' if you want to show the carousel
+            sender: 'bot',
           };
-          setMessages((prev) => [...prev, botMessage]);
+          setMessages(prev => [...prev, botMessage]);
+          setLoading(false);
+        }, 1000);
+      }
+
+       if (lastMsg.sender === 'user' && lastMsg.message === 'I need advisor support') {
+        setLoading(true);
+        setTimeout(() => {
+          const botMessage: Message = {
+            id: String(Date.now()),
+            message: {},
+            render:"selectOption", // Change this to 'carOptions' if you want to show the carousel
+            sender: 'bot',
+          };
+          setMessages(prev => [...prev, botMessage]);
           setLoading(false);
         }, 1000);
       }
@@ -60,13 +75,14 @@ const ChatBox: React.FC = () => {
     return () => clearTimeout(timer);
   }, [messages]);
 
+
   const handleIknowWhatEaxactlyWhatIWant = () => {
     // const lastItem = messages[messages.length - 1];
     const userMessage: Message = {
       id: String(Date.now()),
       message: "I know exactly what I want",
-      render: "text",
-      sender: "user",
+      render: 'text',
+      sender: 'user',
     };
 
     // // const newsMessages: Message[] = [...messages.slice(0, messages.length - 1), {
@@ -74,134 +90,148 @@ const ChatBox: React.FC = () => {
     // //   message: "I know exactly what I want"
     // // }];
     // newsMessages.push(userMessage);
-    setMessages((prev) => [...prev, userMessage]);
-  };
+    setMessages(prev=> [...prev, userMessage]);
 
-  const renderMessage = (message: Message) => {
+  }
+
+  const renderMessage = (message:Message) => {
     switch (message.render) {
-      case "brandModelSelect":
-        return <BrandModelSelectCard handleUserMessage={handleUserMessage} />;
-      case "carOptions":
-        return (
-          <ModelCarousel
-            onClick={handleIknowWhatEaxactlyWhatIWant}
-            selectedItem={message.message}
-          />
-        );
-      case "text":
+      case 'brandModelSelect':
+        return <BrandModelSelectCard  handleUserMessage={handleUserMessage}/>;
+      case 'carOptions':
+        return <ModelCarousel onClick={handleIknowWhatEaxactlyWhatIWant} selectedItem={message.message} handleNeedAdviceSupport={handleNeedAdviceSupport} />;
+      case 'text':
         return <div>{message.message}</div>; // Default text rendering
+      case 'selectOption':
+        return <AdviceSelectionCard />  
       default:
         return null;
     }
-  };
+
+  }
 
   const handleUserMessage = (text: any) => {
     const lastItem = messages[messages.length - 1];
-    const userMessage: Message = {
+    const userMessage:Message = {
       id: String(Date.now()),
       message: "I am looking for cars based on the selected parameters.",
-      render: "text",
-      sender: "user",
-    };
+      render: 'text',
+      sender: 'user',
+    }
 
-    const newsMessages: Message[] = [
-      ...messages.slice(0, messages.length - 1),
-      {
-        ...lastItem,
-        message: text,
-      },
-    ];
+    const newsMessages:Message[]=[...messages.slice(0, messages.length-1), { 
+      ...lastItem,
+      message:text
+      }]
     newsMessages.push(userMessage);
-    setMessages(newsMessages);
-  };
-  useEffect(() => {
-    const lastItem = messages[messages.length - 1];
-    if (
-      lastItem.message ==
-      "I am looking for cars based on the selected parameters."
-    ) {
+      setMessages(newsMessages);
+   
+  }
+useEffect(() => {
+   const lastItem = messages[messages.length - 1]
+   if(lastItem.message=="I am looking for cars based on the selected parameters."){
       const botMessage: Message = {
         id: String(Date.now()),
-        message: cars[cars.length - 1],
-        render: "carOptions", 
-        sender: "bot",
+        message: cars[cars.length-1],
+        render: "carOptions", // Change this to 'carOptions' if you want to show the carousel
+        sender: 'bot',
       };
-      setMessages((prev) => [...prev, botMessage]);
-    }
-  }, [messages]);
+      setMessages(prev=> [...prev, botMessage]);
 
-  const bottomRef = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
+   }
+  
+  
+}, [messages]);
 
-  console.log("messages", messages, cars);
+const bottomRef = useRef<HTMLDivElement | null>(null);
+
+
+const handleNeedAdviceSupport = () => {
+  const userMessage: Message = {
+    id: String(Date.now()),
+    message: "I need advisor support",
+    render: 'text',
+    sender: 'user',
+  };
+
+  setMessages(prev => [...prev, userMessage]);
+
+ 
+  
+}
+
+useEffect(() => {
+  if (bottomRef.current) {
+    bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+  }
+}, [messages]);
+
+  
   return (
     <>
-      <Paper
-        elevation={3}
-        sx={{
-          p: 2,
-          width: "100%",
+    <Paper
+      elevation={3}
+      sx={{
+        p: 2,
+        width: '100%',
 
-          display: "flex",
-          flexDirection: "column",
-          mx: "auto",
+        display: 'flex',
+        flexDirection: 'column',
+        mx: 'auto',
+      }}
+    >
+      <Typography variant="h6" gutterBottom>
+        Chat
+      </Typography>
+
+      {/* Message List */}
+      <Box
+        sx={{
+          flexGrow: 1,
+          overflowY: 'auto',
+          mb: 2,
+          pr: 1,
         }}
       >
-        <Typography variant="h6" gutterBottom>
-          Chat
-        </Typography>
+        {messages.map((msg) => (
+         <Stack
+  key={msg.id}
+  direction="row"
+  spacing={1}
+  alignItems="flex-start"
+  justifyContent={msg.sender === 'user' ? 'flex-end' : 'flex-start'}
+  sx={{ mb: 2 }}
+>
+  {msg.sender === 'bot' && (
+    <Image src={bot} alt="bot" width={40} height={40} />
+  )}
+  <Paper
+    sx={{
+      p: 1.5,
+      maxWidth: '75%',
+      bgcolor: msg.sender === 'user' ? 'primary.main' : 'gray.100',
+      color: msg.sender === 'user' ? 'white' : 'black',
+    }}
+  >
+    {renderMessage(msg)}
+  </Paper>
+  {msg.sender === 'user' && (
+    <Avatar sx={{ bgcolor: 'secondary.main' }}>U</Avatar>
+  )}
+</Stack>
 
-        {/* Message List */}
-        <Box
-          sx={{
-            flexGrow: 1,
-            overflowY: "auto",
-            mb: 2,
-            pr: 1,
-          }}
-        >
-          {messages.map((msg) => (
-            <Stack
-              key={msg.id}
-              direction="row"
-              spacing={1}
-              alignItems="flex-start"
-              justifyContent={msg.sender === "user" ? "flex-end" : "flex-start"}
-              sx={{ mb: 2 }}
-            >
-              {msg.sender === "bot" && (
-                <Image src={bot} alt="bot" width={40} height={40} />
-              )}
-              <Paper
-                sx={{
-                  p: 1.5,
-                  maxWidth: "75%",
-                  bgcolor: msg.sender === "user" ? "primary.main" : "grey.200",
-                  color: msg.sender === "user" ? "white" : "black",
-                }}
-              >
-                {renderMessage(msg)}
-              </Paper>
-              {msg.sender === "user" && (
-                <Avatar sx={{ bgcolor: "secondary.main" }}>U</Avatar>
-              )}
-            </Stack>
-          ))}
+        ))}
 
-          {loading && (
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Avatar sx={{ bgcolor: "primary.main" }}>B</Avatar>
-              <CircularProgress size={20} />
-            </Stack>
-          )}
-        </Box>
-      </Paper>
-      <div ref={bottomRef} />
+        {loading && (
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Avatar sx={{ bgcolor: 'primary.main' }}>B</Avatar>
+            <CircularProgress size={20} />
+          </Stack>
+        )}
+      </Box>
+    </Paper>
+    <div ref={bottomRef} />
     </>
   );
 };

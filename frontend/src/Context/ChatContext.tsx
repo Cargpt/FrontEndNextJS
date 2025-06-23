@@ -5,7 +5,7 @@ export type ChatMessage = {
   id: string;
   message?: string; // optional if using a component
   sender: 'user' | 'bot';
-  render?: 'brandModelSelect' | 'carOptions' | 'text';
+  render?: 'brandModelSelect' | 'carOptions' | 'text' | 'selectOption'; // type of component to render
   data?: any; // used to pass props to component renders
 };
 
@@ -22,7 +22,7 @@ type ChatsContextType = {
 interface Message {
   id: string;
   sender: 'user' | 'bot';
-  render: 'brandModelSelect' | 'carOptions' | 'text';
+  render: 'brandModelSelect' | 'carOptions' | 'text' | 'selectOption';
   message: string | any
   
 }
