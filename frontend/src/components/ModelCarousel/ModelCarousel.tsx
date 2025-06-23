@@ -63,6 +63,7 @@ const ModelCarousel: React.FC = () => {
                 </Typography>
                   <Typography variant="h6" mt={2} color="text.secondary" fontSize="15px">&#8377; 4.3L</Typography>
               </Stack>
+              <div style={{display: "flex", justifyContent:"space-between", alignItems:"center"}}><button>I know exactly i want</button> <button>I need advisor support</button></div>
             </CardContent>
           </Card>
         </div>
