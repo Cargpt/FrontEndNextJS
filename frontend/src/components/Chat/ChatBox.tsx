@@ -13,10 +13,11 @@ import bot from "../../../public/assets/lisa.svg"
 import BrandModelSelectCard from './Model/BrandModelSelectCard';
 import ModelCarousel from '../ModelCarousel/ModelCarousel';
 import { useChats } from '@/Context/ChatContext';
+import AdviceSelectionCard from './Model/AdviceSelectionCard';
 interface Message {
   id: string;
   sender: 'user' | 'bot';
-  render: 'brandModelSelect' | 'carOptions' | 'text';
+  render: 'brandModelSelect' | 'carOptions' | 'text' | 'selectOption';
   message: string | any
   
 }
@@ -84,9 +85,11 @@ const ChatBox: React.FC = () => {
       case 'brandModelSelect':
         return <BrandModelSelectCard  handleUserMessage={handleUserMessage}/>;
       case 'carOptions':
-        return <ModelCarousel onClick={handleIknowWhatEaxactlyWhatIWant} selectedItem={message.message} />;
+        return <ModelCarousel onClick={handleIknowWhatEaxactlyWhatIWant} selectedItem={message.message} handleNeedAdviceSupport={handleNeedAdviceSupport} />;
       case 'text':
         return <div>{message.message}</div>; // Default text rendering
+      case 'selectOption':
+        return <AdviceSelectionCard />  
       default:
         return null;
     }
@@ -129,13 +132,28 @@ useEffect(() => {
 
 const bottomRef = useRef<HTMLDivElement | null>(null);
 
+
+const handleNeedAdviceSupport = () => {
+  const userMessage: Message = {
+    id: String(Date.now()),
+    message: "I need advisor support",
+    render: 'selectOption',
+    sender: 'user',
+  };
+
+  setMessages(prev => [...prev, userMessage]);
+
+ 
+  
+}
+
 useEffect(() => {
   if (bottomRef.current) {
     bottomRef.current.scrollIntoView({ behavior: 'smooth' });
   }
 }, [messages]);
 
-  console.log("messages", messages, cars);
+  
   return (
     <>
     <Paper
