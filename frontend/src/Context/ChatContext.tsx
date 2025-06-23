@@ -12,19 +12,40 @@ export type ChatMessage = {
 type ChatsContextType = {
   chats: ChatMessage[];
   addChat: (chat: Omit<ChatMessage, 'id'>) => void;
+  setCars: React.Dispatch<React.SetStateAction<any[]>>;
+  cars: any[];
+  messages: Message[];
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 };
+
+
+interface Message {
+  id: string;
+  sender: 'user' | 'bot';
+  render: 'brandModelSelect' | 'carOptions' | 'text';
+  message: string | any
+  
+}
 
 const ChatsContext = createContext<ChatsContextType | undefined>(undefined);
 
 export const ChatsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [chats, setChats] = useState<ChatMessage[]>([]);
-
+  const [messages, setMessages] = useState<Message[]>([
+    {
+       id: '1',
+       message: 'I know exactly what I want',
+       render: 'text',
+       sender: 'user',
+     }
+  ]);
+   const [cars, setCars] = useState<any[]>([])
   const addChat = (chat: Omit<ChatMessage, 'id'>) => {
     setChats(prev => [...prev, { id: Date.now().toString(), ...chat }]);
   };
 
   return (
-    <ChatsContext.Provider value={{ chats, addChat }}>
+    <ChatsContext.Provider value={{ chats, addChat, cars, setCars, messages, setMessages }}>
       {children}
     </ChatsContext.Provider>
   );

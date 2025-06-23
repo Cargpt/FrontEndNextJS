@@ -53,7 +53,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMe
   };
 
   
-  const {addChat, chats}=useChats()
+  const {addChat, chats, setCars}=useChats()
   const fetchBrands = async () => {
     try {
       const data = await axiosInstance1.get("/api/brands/");
@@ -84,6 +84,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMe
       );
       console.log("data", data);
       setCarFeatures(data?.data);
+
+
     } catch (error) {}
   };
 
@@ -125,6 +127,9 @@ const {botType}=useBotType()
         payload
       );
       console.log("/api/cars-for-prameter/", data);
+      setCars((prev:any)=> ([...prev, {[`${brand?.BrandName}_${model?.ModelName}`]: data?.data}]))
+      
+
         handleUserMessage({...payload})
 
     } catch (error) {}
