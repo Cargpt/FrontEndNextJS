@@ -34,6 +34,16 @@ onChange?.(event.target.name, isNaN(Number(newValue)) ?  newValue : Number(newVa
 
     }
       };
+      useEffect(()=>{
+        setSelectedValue(options[0])
+if(label.toLowerCase().replace(/\s+/g, "_")==="budget"){
+           onChange?.(label.toLowerCase().replace(/\s+/g, "_"), Number(getUpperLimitInRupees(options[0])));
+ 
+    }else{
+onChange?.(label.toLowerCase().replace(/\s+/g, "_"), isNaN(Number(options[0])) ?  options[0] : Number(options[0]));
+
+    }
+      }, [options])
 
 
   

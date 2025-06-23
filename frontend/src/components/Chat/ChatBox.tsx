@@ -178,7 +178,7 @@ useEffect(() => {
     sx={{
       p: 1.5,
       maxWidth: '75%',
-      bgcolor: msg.sender === 'user' ? 'primary.main' : 'grey.200',
+      bgcolor: msg.sender === 'user' ? 'primary.main' : 'gray.100',
       color: msg.sender === 'user' ? 'white' : 'black',
     }}
   >
@@ -189,49 +189,6 @@ useEffect(() => {
   )}
 </Stack>
 
-          // <React.Fragment key={msg.id}>
-          //   <Stack
-          //     direction="row"
-          //     spacing={1}
-          //     alignItems="flex-start"
-          //     justifyContent={msg.sender === 'user' ? 'flex-end' : 'flex-start'}
-          //     sx={{ mb: 1 }}
-          //   >
-          //     {msg.sender === 'bot' && (
-          //       <Image src={bot} alt='bot' width={40} height={40}/>
-          //     )}
-          //     <Paper
-          //       sx={{
-          //         p: 1.5,
-          //         maxWidth: '70%',
-          //         bgcolor:
-          //           msg.sender === 'user' ? 'primary.main' : 'grey.200',
-          //         color: msg.sender === 'user' ? 'white' : 'black',
-          //       }}
-          //     >
-
-          //        {
-          //       msg.sender==='bot' &&
-          //       <BrandModelSelectCard/>
-                
-          //        }
-          //        {msg.text=="I am looking for cars based on the selected parameters."}
-
-
-
-          //     <Typography variant="body2">{msg.text}</Typography>
-
-
-                 
-          //     </Paper>
-          //     {msg.sender === 'user' && (
-          //       <Avatar sx={{ bgcolor: 'secondary.main' }}>U</Avatar>
-          //     )}
-          //   </Stack>
-
-          //   {/* 🧠 Conditional Component Rendering */}
-
-          // </React.Fragment>
         ))}
 
         {loading && (
