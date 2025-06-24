@@ -15,7 +15,7 @@ interface BasicCardProps {
 }
 const BasicCard:React.FC<BasicCardProps>=({title})=> {
   return (
-    <Card sx={{ maxWidth: 345, margin: 'auto' }}>
+    <Card sx={{ maxWidth: 345, margin: 'auto', border: "none", borderBottom:"none", boxShadow:"none" }}>
       <CardMedia
         component="img"
         height="140"

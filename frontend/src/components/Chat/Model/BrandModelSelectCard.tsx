@@ -172,7 +172,7 @@ const {botType}=useBotType()
 
 
   return (
-    <Card sx={{ minWidth: "300px", p: 2, boxShadow:0 }}>
+    <Card sx={{ minWidth: "300px", p: 2, boxShadow: "none", border: "none", borderBottom:"none" }}>
       <CardContent>
         <Typography variant="h5" gutterBottom>
           {botType}
