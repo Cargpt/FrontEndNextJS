@@ -25,18 +25,18 @@ import { useBotType } from "@/Context/BotTypeContext";
 const brandOptions = ["Toyota", "Honda", "Ford"] as const;
 type BrandModelSelectCardProps = {
   handleUserMessage: (message: any) => void;
+  brands: Brand[];
 
 }
 import Snackbar from '@mui/material/Snackbar';
 import DialogSelect from "./DialogSelect";
 
 
-const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMessage}) => {
-  const [brand, setBrand] = useState<Brand | null>(null);
+const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMessage, brands}) => {
+  const [brand, setBrand] = useState<Brand>(brands[0]);
 
-  const [brands, setBrands] = useState<Brand[]>([]);
 
-  const [model, setModel] = useState<ModelProps | null>(null);
+  const [model, setModel] = useState<ModelProps | null>();
   const [models, setModels] = useState<ModelProps[]>([]);
   const [carFeatures, setCarFeatures] = useState<CarFeaturesProps>({
     FuelType: ["petrol", "diesel", "electric"],
@@ -60,15 +60,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMe
 
   
   const {addChat, chats, setCars}=useChats()
-  const fetchBrands = async () => {
-    try {
-      const data = await axiosInstance1.get("/api/brands/");
-      setBrand(data?.data[0] || null);
-      
-      
-      setBrands(data?.data);
-    } catch (error) {}
-  };
+  
   const fetchBrandModes = async () => {
     const payload = {
       brand_id: brand?.BrandID,
@@ -98,12 +90,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({handleUserMe
     } catch (error) {}
   };
 
-  useEffect(() => {
-    fetchBrands();
-
-
-  }, []);
-
+  
 const {botType}=useBotType()
 
   
@@ -325,7 +312,7 @@ const {botType}=useBotType()
       </CardContent>
       {
         error && (
-          <DialogSelect onClose={handleClose} message={error} header="Error"  open={openDialouge}/>
+          <DialogSelect onClose={handleClose} message={error} header=""  open={openDialouge}/>
 
 
         )

@@ -14,10 +14,14 @@ import BrandModelSelectCard from './Model/BrandModelSelectCard';
 import ModelCarousel from '../ModelCarousel/ModelCarousel';
 import { useChats } from '@/Context/ChatContext';
 import AdviceSelectionCard from './Model/AdviceSelectionCard';
+import { BUDGET } from '@/utils/services';
+import CarModel from './Model/AdviceSelectionCard/CarOptions';
+import { axiosInstance1 } from '@/utils/axiosInstance';
+import CarRecommendationTable from './Model/AdviceSelectionCard/Recommondation';
 interface Message {
   id: string;
   sender: 'user' | 'bot';
-  render: 'brandModelSelect' | 'carOptions' | 'text' | 'selectOption';
+  render: 'brandModelSelect' | 'carOptions' | 'text' | 'selectOption' | 'flueOption' | 'bodyOption' | 'transmissionOption' | 'brandOption' |'selectedFilter'| 'recommendationOption';
   message: string | any
   
 }
@@ -25,7 +29,7 @@ interface Message {
 
 
 const ChatBox: React.FC = () => {
-  const {cars, messages, setMessages}=useChats()
+  const {cars, messages, setMessages, filter}=useChats()
   // const [messages, setMessages] = useState<Message[]>([
   //   {
   //     id: '1',
@@ -36,7 +40,20 @@ const ChatBox: React.FC = () => {
   // ]);
   
   const [loading, setLoading] = useState(false);
-
+  const [brands, setBrands] = useState<Brand[]>([]);
+const fetchBrands = async () => {
+    try {
+      const data = await axiosInstance1.get("/api/brands/");
+      
+      
+      setBrands(data?.data);
+    } catch (error) {}
+  };
+  useEffect(() => {
+      fetchBrands();
+  
+  
+    }, []);
   
   useEffect(() => {
     // Simulate bot reply after a delay
@@ -70,6 +87,60 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
+       if (lastMsg.sender === 'user' && lastMsg.message.includes('budget set to')) {
+        setLoading(true);
+        setTimeout(() => {
+          const botMessage: Message = {
+            id: String(Date.now()),
+            message: {},
+            render:"flueOption", // Change this to 'carOptions' if you want to show the carousel
+            sender: 'bot',
+          };
+          setMessages(prev => [...prev, botMessage]);
+          setLoading(false);
+        }, 1000);
+      }
+       if (lastMsg.sender === 'user' && lastMsg.message.includes('fuel type set to')) {
+        setLoading(true);
+        setTimeout(() => {
+          const botMessage: Message = {
+            id: String(Date.now()),
+            message: {},
+            render:"bodyOption", // Change this to 'carOptions' if you want to show the carousel
+            sender: 'bot',
+          };
+          setMessages(prev => [...prev, botMessage]);
+          setLoading(false);
+        }, 1000);
+      }
+       if (lastMsg.sender === 'user' && lastMsg.message.includes('body type set to')) {
+        setLoading(true);
+        setTimeout(() => {
+          const botMessage: Message = {
+            id: String(Date.now()),
+            message: {},
+            render:"transmissionOption", // Change this to 'carOptions' if you want to show the carousel
+            sender: 'bot',
+          };
+          setMessages(prev => [...prev, botMessage]);
+          setLoading(false);
+        }, 1000);
+      }
+        if (lastMsg.sender === 'user' && lastMsg.message.includes('transmission type set to')) {
+          setLoading(true);
+          setTimeout(() => {
+            const botMessage: Message = {
+              id: String(Date.now()),
+              message: {},
+              render:"brandOption", // Change this to 'carOptions' if you want to show the carousel
+              sender: 'bot',
+            };
+            setMessages(prev => [...prev, botMessage]);
+            setLoading(false);
+          }, 1000);
+        }
+
+
     }, 1000);
 
     return () => clearTimeout(timer);
@@ -93,17 +164,41 @@ const ChatBox: React.FC = () => {
     setMessages(prev=> [...prev, userMessage]);
 
   }
+  
+  const [remondatedCarModels, setRecommondatedCarModels] = useState<CarDetails[]>([]);
+
+
+  const handleCarRecommendation = async () => {
+
+    const data = await axiosInstance1.post("/api/car-for-para-advisor/", {...filter})
+        if(data.data.length===0) return false 
+          setRecommondatedCarModels(data.data);
+  }
 
   const renderMessage = (message:Message) => {
     switch (message.render) {
       case 'brandModelSelect':
-        return <BrandModelSelectCard  handleUserMessage={handleUserMessage}/>;
+        return <BrandModelSelectCard  handleUserMessage={handleUserMessage} brands={brands}/>;
       case 'carOptions':
         return <ModelCarousel onClick={handleIknowWhatEaxactlyWhatIWant} selectedItem={message.message} handleNeedAdviceSupport={handleNeedAdviceSupport} />;
       case 'text':
         return <div>{message.message}</div>; // Default text rendering
       case 'selectOption':
-        return <AdviceSelectionCard />  
+        return <AdviceSelectionCard options={BUDGET} label='budget' h1={"Hi! :👋 I can help you choose the right car based on your preferences. Let's get started! First, what's your budget range in INR?"}/>  
+      case 'flueOption':
+        return <AdviceSelectionCard options={["Petrol", "Diesel", "CNG", "Electric"]} label='fuel type' h1='⛽: Got it! What’s your preferred fuel type?
+'/>  
+      case 'bodyOption':
+        return <AdviceSelectionCard options={["Hatchback", "Sedan", "SUV", "MPV"]} label='body type' h1="🏎️: Great. What type of car body are you looking for?"/>
+      case 'transmissionOption':
+        return <AdviceSelectionCard options={["Automatic", "Manual"]} label='transmission type' h1="⚙️ Cool! What kind of transmission do you prefer?
+"/>   
+      case "brandOption":
+        return <CarModel options={brands.map((brand)=>brand.BrandName)} label='brand' h1="🚗: Awesome! Which car brand do you prefer?" onclick={handleCarRecommendation}/>
+      case "selectedFilter":
+        return <CarRecommendationTable  recommendations={filter} /> 
+
+    
       default:
         return null;
     }

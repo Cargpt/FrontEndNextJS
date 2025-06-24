@@ -34,3 +34,37 @@ type CarFilter = {
   seat_capacity: number;
   body_type: string // example
 };
+
+
+
+interface CarRecommendation {
+  budget: number;
+  fuel: string;
+  body: string;
+  transmission: string;
+  brand: string;
+  models: string[];
+
+
+}
+
+
+ interface CarImageDetail {
+  CarImageURL: string;
+  color: string;
+  Description: string;
+}
+
+interface CarDetails {
+  CarID: number;
+  FuelType: string;
+  BrandName: string;
+  TransmissionType: string;
+  ModelName: string;
+  VariantName: string;
+  Price: number;
+  Mileage: number;
+  Seats: number;
+  EngineCapacity: string;
+  CarImageDetails: CarImageDetail[];
+}
