@@ -1,6 +1,6 @@
 "use client";
 
-import React, { FC, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Card, CardContent, Typography, Stack } from "@mui/material";
 import {
   bodyOptions,
@@ -14,88 +14,57 @@ import AdviceSelectionFuel from "./AdviceSelectionFuel";
 import AdviceSelectionBrand from "./AdviceSelectionBrand";
 import AdviceSelectionTransmission from "./AdviceSelectionTransmission";
 import { useChats } from "@/Context/ChatContext";
-import { getUpperLimitInRupees } from "@/utils/services";
 
-
-
-interface AdviceSelectionCardProps {
-  options: string[];
-  label: string;
-  h1: string;
-}
-const AdviceSelectionCard:FC<AdviceSelectionCardProps> = ({options, label, h1}) => {
+const AdviceSelectionCard = () => {
   const [selections, setSelections] = useState<{
-
-    [key:string]: string | null;
-    
+    budget: string | null;
+    fuel: string | null;
+    body: string | null;
+    transmission: string | null;
+    brand: string | null;
   }>({
-   
-    value: null,
-    
+    budget: null,
+    fuel: null,
+    body: null,
+    transmission: null,
+    brand: null,
   });
-  const [isDisable, setIsDisable] = useState<boolean>(false);
 
-  
+  useEffect(() => {
+    const savedSelections = localStorage.getItem("carAdviceSelections");
+    if (savedSelections) {
+      setSelections(JSON.parse(savedSelections));
+    }
+  }, []);
   const {updateFilter, filter, setMessages}=useChats()
 
-  const handleSelect = (type:string, value: string) => {
-    const updated = { [type]: value };
-
-
+  const handleSelect = (type: keyof typeof selections, value: string) => {
+    const updated = { ...selections, [type]: value };
     setSelections(updated);
-
-
-    if(label==="budget"){
-  const upperLimit = getUpperLimitInRupees(value.toString());
-  console.log("upperLimit", upperLimit)
-  if(upperLimit){
-updateFilter(label, upperLimit)
-  }
-
-}else{
-  updateFilter(label.toLowerCase().replace(/\s+/g, "_"), value)
-}
-  
-  
-  };
-
-
-useEffect(() => {
-
-  
-setSelections({[label]:options[0]})
-if(options[0]){
-
-}
-if(label==="budget"){
-  const upperLimit = getUpperLimitInRupees(options[0].toString());
-  if(upperLimit){
-updateFilter(label, upperLimit)
-  }
-
-}else{
-  updateFilter(label.toLowerCase().replace(/\s+/g, "_"), options[0])
-}
-
-}, []);
-
-const handleNext  = () => {
-      setMessages(prev => [
+   if(updated.budget) {
+    updateFilter("budget", updated.budget)
+    setMessages(prev => [
       ...prev,
       {
         id: String(Date.now()),
-        message: `${label} set to ${selections[label]}`,
+        message: `Budget set to ${updated.budget}`,
         render: "text",
         sender: "user",
       },
       
     ])
-    setIsDisable(true);
 
-}
+  };
+    console.log("Updated Selections:", updated);
+  };
 
 
-  console.log("Current11 Selections:", filter);
+
+
+
+
+
+  console.log("Current Selections:", filter);
   return (
     <Card style={{ display: "flex", flexDirection: "column", gap: "5px", border: "none", borderBottom:"none", boxShadow:"none" }}>
       <CardContent
@@ -106,7 +75,7 @@ const handleNext  = () => {
           component="p"
           sx={{ cursor: "pointer", mb: 2 }}
         >
-          {h1}
+          Hi! :👋 I can help you choose the right car based on your preferences. Let's get started!
         </Typography>
 
         <Typography
@@ -114,25 +83,25 @@ const handleNext  = () => {
           component="p"
           sx={{ fontWeight: 700, mb: 1 }}
         >
-          {label.toUpperCase()}
+          Budget
         </Typography>
 
         <Stack direction="row" flexWrap="wrap" gap={1}>
-          {options.map((option, index) => (
+          {budgetOptions.map((budget) => (
             <Button
-              key={index}
-              variant={option === selections[label] ? "contained" : "outlined"}
-              onClick={() => handleSelect(label, option)}
+              key={budget}
+              variant={selections.budget === budget ? "contained" : "outlined"}
+              onClick={() => handleSelect("budget", budget)}
               sx={{
                 backgroundColor:
-                  selections[label] === option ? "#d3e3ff" : "inherit",
-                color: selections[label] === option ? "#000" : "inherit",
+                  selections.budget === budget ? "#d3e3ff" : "inherit",
+                color: selections.budget === budget ? "#000" : "inherit",
                 borderRadius: "5px",
                 textTransform: "none",
                 border: "none",
               }}
             >
-              {option}
+              {budget}
             </Button>
           ))}
         </Stack>
@@ -143,7 +112,7 @@ const handleNext  = () => {
             justifyItems: "center",
           }}
         >
-          <Button disabled={isDisable} onClick={handleNext} variant="contained" color="primary" type="button">
+          <Button variant="contained" color="primary" type="button">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

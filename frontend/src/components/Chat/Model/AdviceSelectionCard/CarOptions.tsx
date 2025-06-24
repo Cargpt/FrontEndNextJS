@@ -1,7 +1,7 @@
 "use client";
 
 import React, { FC, useEffect, useState } from "react";
-import { Button, Card, CardContent, Typography, Stack } from "@mui/material";
+import { Button, Card, CardContent, Typography, Stack, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import {
   bodyOptions,
   brandOptions,
@@ -22,8 +22,9 @@ interface AdviceSelectionCardProps {
   options: string[];
   label: string;
   h1: string;
+  onclick: ()=> void;
 }
-const AdviceSelectionCard:FC<AdviceSelectionCardProps> = ({options, label, h1}) => {
+const CarModel:FC<AdviceSelectionCardProps> = ({options, label, h1, onclick}) => {
   const [selections, setSelections] = useState<{
 
     [key:string]: string | null;
@@ -33,30 +34,23 @@ const AdviceSelectionCard:FC<AdviceSelectionCardProps> = ({options, label, h1}) 
     value: null,
     
   });
-  const [isDisable, setIsDisable] = useState<boolean>(false);
 
   
   const {updateFilter, filter, setMessages}=useChats()
-
+ const [isDisable, setIsDisable] = useState<boolean>(false);
   const handleSelect = (type:string, value: string) => {
     const updated = { [type]: value };
-
-
     setSelections(updated);
+   if(updated[type]) {
+   if(label==="brand"){
+    updateFilter("brand_name", value)
+  }else{
+  updateFilter(label,value)
 
-
-    if(label==="budget"){
-  const upperLimit = getUpperLimitInRupees(value.toString());
-  console.log("upperLimit", upperLimit)
-  if(upperLimit){
-updateFilter(label, upperLimit)
   }
 
-}else{
-  updateFilter(label.toLowerCase().replace(/\s+/g, "_"), value)
-}
-  
-  
+
+  };
   };
 
 
@@ -74,18 +68,25 @@ updateFilter(label, upperLimit)
   }
 
 }else{
-  updateFilter(label.toLowerCase().replace(/\s+/g, "_"), options[0])
+  if(label==="brand"){
+    updateFilter("brand_name", options[0])
+  }else{
+  updateFilter(label,options[0])
+
+  }
 }
 
 }, []);
 
 const handleNext  = () => {
-      setMessages(prev => [
+      
+    onclick()
+    setMessages(prev => [
       ...prev,
       {
         id: String(Date.now()),
-        message: `${label} set to ${selections[label]}`,
-        render: "text",
+        message: filter,
+        render: "selectedFilter",
         sender: "user",
       },
       
@@ -117,25 +118,22 @@ const handleNext  = () => {
           {label.toUpperCase()}
         </Typography>
 
-        <Stack direction="row" flexWrap="wrap" gap={1}>
-          {options.map((option, index) => (
-            <Button
-              key={index}
-              variant={option === selections[label] ? "contained" : "outlined"}
-              onClick={() => handleSelect(label, option)}
-              sx={{
-                backgroundColor:
-                  selections[label] === option ? "#d3e3ff" : "inherit",
-                color: selections[label] === option ? "#000" : "inherit",
-                borderRadius: "5px",
-                textTransform: "none",
-                border: "none",
-              }}
-            >
-              {option}
-            </Button>
-          ))}
-        </Stack>
+  <FormControl  sx={{ m: 1, minWidth: 120 }} size="small">
+    <InputLabel id="brand-label">{label}</InputLabel>
+    <Select
+      labelId="brand-label"
+      value={selections[label] ?? ""}
+      label="Brand"
+      onChange={(e) => handleSelect(label, e.target.value)}
+    >
+      {options.map((option:string, idx:number) => (
+        <MenuItem key={idx} value={option}>
+          {option}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+
         <div
           style={{
             display: "flex",
@@ -181,4 +179,4 @@ const handleNext  = () => {
   );
 };
 
-export default AdviceSelectionCard;
+export default CarModel;

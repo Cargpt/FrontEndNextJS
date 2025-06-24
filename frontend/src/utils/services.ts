@@ -1,3 +1,5 @@
+import { Value } from "sass";
+
 export const fuelOptions = [
   { id: 1, label: 'Petrol' },
   { id: 2, label: 'Diesel' },
@@ -46,8 +48,19 @@ export function getUpperLimitInRupees(budgetRange:string) {
 
   if (upper.endsWith('L')) {
     const number = parseFloat(upper.replace('L', ''));
+
+    console.log("number111", number)
     return number * 100000; // 1 Lakh = 100,000
   }
 
   return null;
 }
+
+
+
+
+export const BUDGET=['0-5L', '5-10L', '10-15L', '15-20L', '20-25L', '25-30L'];
+export const BODYTYPES = ['suv', 'sedan', 'hatchback', 'coupe', 'convertible'];
+export const SEATCAPACITY = [2, 4, 5, 7];
+export const FUELTYPES = ['petrol', 'diesel', 'cng', 'electric'];
+export const TRANSMISSIONTYPES = ['manual', 'automatic'];
