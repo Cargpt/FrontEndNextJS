@@ -2,7 +2,7 @@
 const nextConfig = {
   images: {
     domains: [
-      "ec2-3-110-170-230.ap-south-1.compute.amazonaws.com",
+      "dn7zir4iruiy1.cloudfront.net",
     ],
   },
 };

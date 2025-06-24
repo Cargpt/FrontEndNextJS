@@ -46,7 +46,7 @@ export function getUpperLimitInRupees(budgetRange:string) {
   const parts = budgetRange.split('-');
   const upper = parts[1]?.toUpperCase().trim();
 
-  if (upper.endsWith('L')) {
+  if (upper) {
     const number = parseFloat(upper.replace('L', ''));
 
     console.log("number111", number)
