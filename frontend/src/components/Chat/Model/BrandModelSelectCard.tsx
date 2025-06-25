@@ -26,6 +26,7 @@ type BrandModelSelectCardProps = {
 };
 import Snackbar from "@mui/material/Snackbar";
 import DialogSelect from "./DialogSelect";
+import { useSnackbar } from "@/Context/SnackbarContext";
 
 const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   handleUserMessage,
@@ -103,8 +104,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     return () => {};
   }, [model]);
 
-  const [error, setError] = useState<string>("");
-
+  const { showSnackbar } = useSnackbar();
   const fetchDataBasedOnParameters = async () => {
     setDisableBtn(true);
     try {
@@ -115,8 +115,11 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       );
       if (data?.data.length === 0) {
         setDisableBtn(false);
-        setError("No cars found for the selected parameters.");
-        setOpenDialouge(true);
+        showSnackbar("No cars found for the selected parameters.", {
+          horizontal: "center",
+          vertical: "bottom",
+        });
+
         return false;
       }
 
@@ -301,14 +304,6 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
           </div>
         </div>
       </CardContent>
-      {error && (
-        <DialogSelect
-          onClose={handleClose}
-          message={error}
-          header=""
-          open={openDialouge}
-        />
-      )}
     </Card>
   );
 };

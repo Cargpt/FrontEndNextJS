@@ -1,7 +1,7 @@
 'use client'
 
 import React from "react";
-import ChatBox from "../../components/Chat/ChatBox";
+import ChatBox from "../../components/Chat/OptionsCard";
 import Support from "../../components/Chat/Support";
 import { useBotType } from "../../Context/BotTypeContext";
 import AdvisorIntro from "../../components/AdvisorIntro/AdvisorIntro";

@@ -18,6 +18,8 @@ import { BUDGET } from '@/utils/services';
 import CarModel from './Model/AdviceSelectionCard/CarOptions';
 import { axiosInstance1 } from '@/utils/axiosInstance';
 import CarRecommendationTable from './Model/AdviceSelectionCard/Recommondation';
+import OptionsCard from './Model/AdviceSelectionCard/OptionCard';
+import { useSnackbar } from '@/Context/SnackbarContext';
 interface Message {
   id: string;
   sender: 'user' | 'bot';
@@ -60,7 +62,7 @@ const fetchBrands = async () => {
     const timer = setTimeout(() => {
       const lastMsg = messages[messages.length - 1];
 
-      if (lastMsg.sender === 'user' && lastMsg.message === 'I know exactly what I want') {
+      if (lastMsg.sender === 'user' &&  lastMsg.message === 'I know exactly what I want') {
         setLoading(true);
         setTimeout(() => {
           const botMessage: Message = {
@@ -87,7 +89,7 @@ const fetchBrands = async () => {
           setLoading(false);
         }, 1000);
       }
-       if (lastMsg.sender === 'user' && lastMsg.message.includes('budget set to')) {
+       if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('budget set to')) {
         setLoading(true);
         setTimeout(() => {
           const botMessage: Message = {
@@ -100,7 +102,7 @@ const fetchBrands = async () => {
           setLoading(false);
         }, 1000);
       }
-       if (lastMsg.sender === 'user' && lastMsg.message.includes('fuel type set to')) {
+       if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('fuel type set to')) {
         setLoading(true);
         setTimeout(() => {
           const botMessage: Message = {
@@ -113,7 +115,7 @@ const fetchBrands = async () => {
           setLoading(false);
         }, 1000);
       }
-       if (lastMsg.sender === 'user' && lastMsg.message.includes('body type set to')) {
+       if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('body type set to')) {
         setLoading(true);
         setTimeout(() => {
           const botMessage: Message = {
@@ -126,7 +128,7 @@ const fetchBrands = async () => {
           setLoading(false);
         }, 1000);
       }
-        if (lastMsg.sender === 'user' && lastMsg.message.includes('transmission type set to')) {
+        if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('transmission type set to')) {
           setLoading(true);
           setTimeout(() => {
             const botMessage: Message = {
@@ -139,6 +141,21 @@ const fetchBrands = async () => {
             setLoading(false);
           }, 1000);
         }
+
+         if (lastMsg.sender === 'user' && lastMsg.message?.brand_name) {
+          setLoading(true);
+          setTimeout(() => {
+            const botMessage: Message = {
+              id: String(Date.now()),
+              message: {},
+              render:"recommendationOption", // Change this to 'carOptions' if you want to show the carousel
+              sender: 'bot',
+            };
+            setMessages(prev => [...prev, botMessage]);
+            setLoading(false);
+          }, 1000);
+        }
+
 
 
     }, 1000);
@@ -175,6 +192,38 @@ const fetchBrands = async () => {
           setRecommondatedCarModels(data.data);
   }
 
+const {showSnackbar} =useSnackbar()
+  const onShowCar = () => {
+    if(remondatedCarModels.length === 0) {
+      showSnackbar("No car models found for the selected parameters.",{'horizontal': 'center', 'vertical': 'bottom'});
+      
+
+      return;
+    }
+    const userMessage: Message = {
+      id: String(Date.now()),
+      message:{[filter.brand_name]:remondatedCarModels},
+      render: 'carOptions',
+      sender: 'bot',
+
+  }
+  setMessages(prev => [...prev, userMessage]);
+  setRecommondatedCarModels([]);
+}
+
+const onBack = () => {
+  const userMessage: Message = {
+    id: String(Date.now()),
+    message: "I need advisor support",
+    render: 'text',
+    sender: 'user',
+  }
+  setMessages(prev => [...prev, userMessage]);
+
+
+
+
+}
   const renderMessage = (message:Message) => {
     switch (message.render) {
       case 'brandModelSelect':
@@ -197,6 +246,8 @@ const fetchBrands = async () => {
         return <CarModel options={brands.map((brand)=>brand.BrandName)} label='brand' h1="🚗: Awesome! Which car brand do you prefer?" onclick={handleCarRecommendation}/>
       case "selectedFilter":
         return <CarRecommendationTable  recommendations={filter} /> 
+      case  'recommendationOption':
+        return <OptionsCard onBack={onBack} onShowCars={onShowCar} />
 
     
       default:
@@ -307,8 +358,8 @@ console.log("messages", messages)
     sx={{
       p: 1.5,
       maxWidth: '75%',
-      bgcolor: msg.sender === 'user' ? 'primary.main' : 'gray.100',
-      color: msg.sender === 'user' ? 'white' : 'black',
+      bgcolor: msg.sender === 'user' ? "rgb(211, 227, 255)" : 'gray.100',
+      color: msg.sender === 'user' ? 'black' : 'black',
     }}
   >
     <div key={index}>{renderMessage(msg)}</div>
