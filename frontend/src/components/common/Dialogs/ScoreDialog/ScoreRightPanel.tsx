@@ -2,7 +2,12 @@ import React from "react";
 import { Card, CardContent, Typography, Box } from "@mui/material";
 import { Close } from "@mui/icons-material";
 
-const ScoreRightPanel = () => {
+type Props = {
+  carDetails: any;
+  loading: any
+};
+
+const ScoreRightPanel = ({carDetails, loading}: Props) => {
   const cardData = [
     { id: 1, title: "Score Card 1" },
     { id: 2, title: "Score Card 2" },

@@ -1,7 +1,13 @@
 import { Box, Typography } from "@mui/material";
 import React, { useState } from "react";
 
-const ScoreLeftPanel = () => {
+// In ScoreLeftPanel.tsx or ScoreRightPanel.tsx
+type Props = {
+  carDetails: any;
+  loading: any
+};
+
+const ScoreLeftPanel = ({carDetails, loading}: Props) => {
   const items = [
     "Engine",
     "Interior",
