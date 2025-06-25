@@ -34,7 +34,7 @@ const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({ recomme
   return (
     <Box mt={3} sx={{ overflowX: 'auto' }}>
       <Typography variant="h6" gutterBottom>
-        Based on your preferences, here are our recommendations:
+        ✅ Based on your preferences, here are our recommendations:
       </Typography>
 
       <TableContainer component={Paper} sx={{ minWidth: isMobile ? '700px' : '100%' }}>
