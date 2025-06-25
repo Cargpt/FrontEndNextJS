@@ -180,7 +180,7 @@ const fetchBrands = async () => {
       case 'brandModelSelect':
         return <BrandModelSelectCard  handleUserMessage={handleUserMessage} brands={brands}/>;
       case 'carOptions':
-        return <ModelCarousel onClick={handleIknowWhatEaxactlyWhatIWant} selectedItem={message.message} handleNeedAdviceSupport={handleNeedAdviceSupport} />;
+        return <ModelCarousel onClick={handleIknowWhatEaxactlyWhatIWant} selectedItem={message.message} handleNeedAdviceSupport={handleNeedAdviceSupport}  />;
       case 'text':
         return <div>{message.message}</div>; // Default text rendering
       case 'selectOption':
@@ -263,6 +263,8 @@ useEffect(() => {
 }, [messages]);
 
   
+
+console.log("messages", messages)
   return (
     <>
     <Paper
@@ -289,7 +291,7 @@ useEffect(() => {
           pr: 1,
         }}
       >
-        {messages.map((msg) => (
+        {messages.map((msg, index) => (
          <Stack
   key={msg.id}
   direction="row"
@@ -309,7 +311,7 @@ useEffect(() => {
       color: msg.sender === 'user' ? 'white' : 'black',
     }}
   >
-    {renderMessage(msg)}
+    <div key={index}>{renderMessage(msg)}</div>
   </Paper>
   {msg.sender === 'user' && (
     <Avatar sx={{ bgcolor: 'secondary.main' }}>U</Avatar>

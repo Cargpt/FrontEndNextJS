@@ -28,9 +28,7 @@ const ModelCarousel: React.FC<Props> = ({
   selectedItem,
   handleNeedAdviceSupport,
 }) => {
-  const { cars } = useChats();
-  const modelKey = Object.keys(cars[0])[0];
-  const modelCars = cars[0][modelKey];
+  const modelCars:any = Object.values(selectedItem)[0];
   const [dialog, setDialog] = React.useState<{
     open: boolean;
     type: "score" | "emi" | "sentiment" | null;
@@ -75,7 +73,7 @@ const ModelCarousel: React.FC<Props> = ({
     ],
   };
 
-  console.log("cars", cars);
+  console.log("cars", modelCars);
   return (
     <>
       <div
