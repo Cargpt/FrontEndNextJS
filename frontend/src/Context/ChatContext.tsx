@@ -1,6 +1,7 @@
 // context/ChatsContext.tsx
 import { DEFAULTSEARCHPARAMS } from '@/utils/services';
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { useCookies } from 'react-cookie';
 
 export type ChatMessage = {
   id: string;
@@ -35,14 +36,10 @@ const ChatsContext = createContext<ChatsContextType | undefined>(undefined);
 
 export const ChatsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [chats, setChats] = useState<ChatMessage[]>([]);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-       id: '1',
-       message: 'I know exactly what I want',
-       render: 'text',
-       sender: 'user',
-     }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+const [cookies]=useCookies(['selectedOption'])
+  
+  
     const [filter, setFilter] = useState<CarFilter>(DEFAULTSEARCHPARAMS);
   
    const [cars, setCars] = useState<any[]>([])
@@ -56,6 +53,24 @@ export const ChatsProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       [name]: name === 'budget' || name === 'seat_capacity' ? Number(value) : value,
     }));
   }
+
+  
+  useEffect(() => {
+    console.log('Selected option from cookies:', cookies.selectedOption);
+
+if (cookies.selectedOption) {
+      const initialChat: Message = {
+        id: Date.now().toString(),
+        message: cookies.selectedOption,
+        sender: 'user',
+        render: 'text',
+      };
+      setMessages([initialChat]);
+  
+}
+    
+  }, [cookies.selectedOption])
+
 
   return (
     <ChatsContext.Provider value={{ chats, addChat, cars, setCars, messages, setMessages, filter, updateFilter }}>

@@ -20,6 +20,7 @@ import { axiosInstance1 } from '@/utils/axiosInstance';
 import CarRecommendationTable from './Model/AdviceSelectionCard/Recommondation';
 import OptionsCard from './Model/AdviceSelectionCard/OptionCard';
 import { useSnackbar } from '@/Context/SnackbarContext';
+import { useCookies } from 'react-cookie';
 interface Message {
   id: string;
   sender: 'user' | 'bot';
@@ -43,6 +44,8 @@ const ChatBox: React.FC = () => {
   
   const [loading, setLoading] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
+
+  const [cookies, setCookie]=useCookies(['selectedOPtion']);
 const fetchBrands = async () => {
     try {
       const data = await axiosInstance1.get("/api/brands/");
@@ -58,6 +61,7 @@ const fetchBrands = async () => {
     }, []);
   
   useEffect(() => {
+    if(messages.length === 0) return;
     // Simulate bot reply after a delay
     const timer = setTimeout(() => {
       const lastMsg = messages[messages.length - 1];
@@ -274,6 +278,8 @@ const onBack = () => {
    
   }
 useEffect(() => {
+      if(messages.length === 0) return;
+
    const lastItem = messages[messages.length - 1]
    if(lastItem.message=="I am looking for cars based on the selected parameters."){
       const botMessage: Message = {
@@ -308,6 +314,8 @@ const handleNeedAdviceSupport = () => {
 }
 
 useEffect(() => {
+      if(messages.length === 0) return;
+
   if (bottomRef.current) {
     bottomRef.current.scrollIntoView({ behavior: 'smooth' });
   }
