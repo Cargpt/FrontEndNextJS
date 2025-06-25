@@ -19,9 +19,9 @@ import SentimentDialog from "../common/Dialogs/SentimentDialog/SentimentDialog";
 import ScoreDialog from "../common/Dialogs/ScoreDialog/ScoreDialog";
 import petrol from "../../../public/assets/vector26786425-bw2d.svg";
 import price from "../../../public/assets/subtract6425-nvra.svg";
-import seat from "../../../public/assets/babycarseat6425-n4nh.svg"
-import trans from "../../../public/assets/vector26796425-xttl.svg"
-import speed from "../../../public/assets/hugeiconinterfacesolidspeedtest6425-amlw.svg"
+import seat from "../../../public/assets/babycarseat6425-n4nh.svg";
+import trans from "../../../public/assets/vector26796425-xttl.svg";
+import speed from "../../../public/assets/hugeiconinterfacesolidspeedtest6425-amlw.svg";
 
 type Props = {
   onClick?: () => void;
@@ -108,7 +108,7 @@ const ModelCarousel: React.FC<Props> = ({
                 }}
               >
                 <CardContent
-                  sx={{ display: "flex", flexDirection: "column", gap: "10px" }}
+                  sx={{ display: "flex", flexDirection: "column", gap: "13px" }}
                 >
                   <Stack alignItems="center" mb={2}>
                     <Image
@@ -138,6 +138,7 @@ const ModelCarousel: React.FC<Props> = ({
                     gap="5px"
                     justifyContent="center"
                     flexWrap="wrap"
+                    mb={1}
                   >
                     {[
                       { label: "AI Car Advisor Score:", type: "score" },
@@ -151,19 +152,14 @@ const ModelCarousel: React.FC<Props> = ({
                         sx={{
                           textTransform: "capitalize",
                           fontSize: "12px",
-                          fontweight: "bold",
-                          color: "rgb(255, 255, 255)",
-                          padding: "5px 5px 5px 0px",
+                          fontWeight: "bold",
+                          color: "#fff",
+                          padding: "5px 5px",
                           borderRadius: "1.1rem 6px",
                           boxShadow: "rgba(0, 0, 0, 0.1) 2px 2px 10px",
-                          transform: "scale(1)",
-                          transition: "transform 0.3s ease-in-out",
-                          width: "100%",
-                          textAlign: "center",
                           background:
                             "linear-gradient(150deg, rgb(24, 118, 210), rgb(4, 190, 198))",
-                          display: "inline-block",
-                          cursor: "pointer",
+                          width: "calc(50% - 5px)",
                         }}
                         onClick={() => openDialog(type as any)}
                       >
@@ -181,14 +177,25 @@ const ModelCarousel: React.FC<Props> = ({
                       { label: `${car.FuelType}`, icon: petrol },
                       { label: `${car.TransmissionType}`, icon: trans },
                       { label: ` ${car.Seats} Seater`, icon: seat },
-                      { label: `₹ ${(car.Price / 100000).toFixed(1)} L`, icon: price },
+                      {
+                        label: `₹ ${(car.Price / 100000).toFixed(1)} L`,
+                        icon: price,
+                      },
                       { label: ` ${car.Mileage} kmpl`, icon: speed },
                     ].map(({ label, icon }) => (
                       <Button
                         variant="outlined"
                         size="small"
                         key={label}
-                        sx={{ textTransform: "capitalize" }}
+                        sx={{
+                          textTransform: "capitalize",
+                          color: "grey",
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "5px",
+                          fontSize: "10px",
+                          border: "1px solid grey",
+                        }}
                       >
                         <Image
                           src={icon}
@@ -197,7 +204,7 @@ const ModelCarousel: React.FC<Props> = ({
                           height={14}
                           style={{ objectFit: "contain" }}
                         />
-                        {label}
+                        <span>{label}</span>
                       </Button>
                     ))}
                   </Stack>
@@ -207,16 +214,16 @@ const ModelCarousel: React.FC<Props> = ({
           ))}
         </Slider>
 
-        <Stack direction="row" spacing={2} mt={3} justifyContent="center">
+        <Stack direction="row" spacing={2} mt={3}>
           <Button
-            variant="contained"
+            variant="outlined"
             onClick={onClick}
             sx={{ textTransform: "capitalize", fontSize: 13 }}
           >
             I know exactly I want
           </Button>
           <Button
-            variant="contained"
+            variant="outlined"
             onClick={handleNeedAdviceSupport}
             sx={{ textTransform: "capitalize", fontSize: 13 }}
           >
