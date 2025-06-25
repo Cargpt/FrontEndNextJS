@@ -358,8 +358,8 @@ console.log("messages", messages)
     sx={{
       p: 1.5,
       maxWidth: '75%',
-      bgcolor: msg.sender === 'user' ? 'primary.main' : 'gray.100',
-      color: msg.sender === 'user' ? 'white' : 'black',
+      bgcolor: msg.sender === 'user' ? "rgb(211, 227, 255)" : 'gray.100',
+      color: msg.sender === 'user' ? 'black' : 'black',
     }}
   >
     <div key={index}>{renderMessage(msg)}</div>
