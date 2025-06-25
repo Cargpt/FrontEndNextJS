@@ -29,6 +29,12 @@ type Props = {
   handleNeedAdviceSupport: () => void;
 };
 
+
+interface typeProps{
+    open: boolean;
+    type: "score" | "emi" | "sentiment" | null;
+  }
+
 const ModelCarousel: React.FC<Props> = ({
   onClick,
   selectedItem,
@@ -38,14 +44,20 @@ const ModelCarousel: React.FC<Props> = ({
   const modelCars: any[] = Array.isArray(rawValues[0]) ? rawValues[0] : [];
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [carInfo, setCarInfo] = useState<any>(null);
+  const [dialog, setDialog] = useState<typeProps>({ open: false, type: null });
 
-  const [dialog, setDialog] = useState<{
-    open: boolean;
-    type: "score" | "emi" | "sentiment" | null;
-  }>({ open: false, type: null });
+  const openDialog = (type:"score" | "emi" | "sentiment" | null, data:any) =>{
 
-  const openDialog = (type: "score" | "emi" | "sentiment") =>
     setDialog({ open: true, type });
+    if(type === "score") {
+      setCarInfo(data);
+
+      // Assuming you want to set the car ID for the score dialog
+    }
+
+  }
+  
 
   const settings: Settings = {
     infinite: false,
@@ -161,7 +173,7 @@ const ModelCarousel: React.FC<Props> = ({
                             "linear-gradient(150deg, rgb(24, 118, 210), rgb(4, 190, 198))",
                           width: "calc(50% - 5px)",
                         }}
-                        onClick={() => openDialog(type as any)}
+                        onClick={() => openDialog(type as any, car)}
                       >
                         <span>{label}</span>
                       </Button>
@@ -237,7 +249,7 @@ const ModelCarousel: React.FC<Props> = ({
         <ScoreDialog
           open={dialog.open}
           onClose={() => setDialog({ open: false, type: null })}
-          carId={selectedItem}
+          carId={carInfo?.CarID}
         />
       )}
       {dialog.type === "emi" && (
