@@ -214,7 +214,7 @@ const ModelCarousel: React.FC<Props> = ({
           ))}
         </Slider>
 
-        <Stack direction="row" spacing={2} mt={3}>
+        <Stack direction="row" gap={2} mt={3} flexWrap="wrap" justifyContent={{ xs: "center", sm: "flex-start" }}>
           <Button
             variant="outlined"
             onClick={onClick}
