@@ -16,71 +16,57 @@ import AdviceSelectionTransmission from "./AdviceSelectionTransmission";
 import { useChats } from "@/Context/ChatContext";
 import { getUpperLimitInRupees } from "@/utils/services";
 
-
-
 interface AdviceSelectionCardProps {
   options: string[];
   label: string;
   h1: string;
 }
-const AdviceSelectionCard:FC<AdviceSelectionCardProps> = ({options, label, h1}) => {
+const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
+  options,
+  label,
+  h1,
+}) => {
   const [selections, setSelections] = useState<{
-
-    [key:string]: string | null;
-    
+    [key: string]: string | null;
   }>({
-   
     value: null,
-    
   });
   const [isDisable, setIsDisable] = useState<boolean>(false);
 
-  
-  const {updateFilter, filter, setMessages}=useChats()
+  const { updateFilter, filter, setMessages } = useChats();
 
-  const handleSelect = (type:string, value: string) => {
+  const handleSelect = (type: string, value: string) => {
     const updated = { [type]: value };
-
 
     setSelections(updated);
 
-
-    if(label==="budget"){
-  const upperLimit = getUpperLimitInRupees(value.toString());
-  console.log("upperLimit", upperLimit)
-  if(upperLimit){
-updateFilter(label, upperLimit)
-  }
-
-}else{
-  updateFilter(label.toLowerCase().replace(/\s+/g, "_"), value)
-}
-  
-  
+    if (label === "budget") {
+      const upperLimit = getUpperLimitInRupees(value.toString());
+      console.log("upperLimit", upperLimit);
+      if (upperLimit) {
+        updateFilter(label, upperLimit);
+      }
+    } else {
+      updateFilter(label.toLowerCase().replace(/\s+/g, "_"), value);
+    }
   };
 
+  useEffect(() => {
+    setSelections({ [label]: options[0] });
+    if (options[0]) {
+    }
+    if (label === "budget") {
+      const upperLimit = getUpperLimitInRupees(options[0].toString());
+      if (upperLimit) {
+        updateFilter(label, upperLimit);
+      }
+    } else {
+      updateFilter(label.toLowerCase().replace(/\s+/g, "_"), options[0]);
+    }
+  }, []);
 
-useEffect(() => {
-
-  
-setSelections({[label]:options[0]})
-if(options[0]){
-
-}
-if(label==="budget"){
-  const upperLimit = getUpperLimitInRupees(options[0].toString());
-  if(upperLimit){
-updateFilter(label, upperLimit)
-  }
-
-}else{
-  updateFilter(label.toLowerCase().replace(/\s+/g, "_"), options[0])
-}
-
-}, []);
-
-const handleNext  = () => {
-      setMessages(prev => [
+  const handleNext = () => {
+    setMessages((prev) => [
       ...prev,
       {
         id: String(Date.now()),
@@ -88,18 +74,31 @@ const handleNext  = () => {
         render: "text",
         sender: "user",
       },
-      
-    ])
+    ]);
     setIsDisable(true);
-
-}
-
+  };
 
   console.log("Current11 Selections:", filter);
   return (
-    <Card style={{ display: "flex", flexDirection: "column", gap: "5px", border: "none", borderBottom:"none", boxShadow:"none" }}>
+    <Card
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "5px",
+        border: "none",
+        borderBottom: "none",
+        boxShadow: "none",
+      }}
+    >
       <CardContent
-        style={{ display: "flex", flexDirection: "column", gap: "5px", border: "none", borderBottom:"none", boxShadow:"none" }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "5px",
+          border: "none",
+          borderBottom: "none",
+          boxShadow: "none",
+        }}
       >
         <Typography
           variant="body2"
@@ -143,7 +142,13 @@ const handleNext  = () => {
             justifyItems: "center",
           }}
         >
-          <Button disabled={isDisable} onClick={handleNext} variant="contained" color="primary" type="button">
+          <Button
+            disabled={isDisable}
+            onClick={handleNext}
+            variant="contained"
+            color="primary"
+            type="button"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

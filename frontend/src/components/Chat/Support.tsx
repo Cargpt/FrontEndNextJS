@@ -105,7 +105,7 @@ const Support: React.FC = () => {
                 }}
               >
                 {msg.sender === "bot" ? (
-                  <AdviseSelectionCard />
+                  <AdviseSelectionCard options={[]} label={""} h1={""} />
                 ) : (
                   <Typography variant="body2">{msg.text}</Typography>
                 )}
