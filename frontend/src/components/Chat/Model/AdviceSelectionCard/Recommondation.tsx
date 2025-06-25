@@ -34,13 +34,9 @@ const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   return (
-    <Box mt={3} sx={{ overflowX: "auto" }}>
-      <Typography
-        variant="h6"
-        gutterBottom
-        sx={{ fontSize: "17px", fontWeight: 700 }}
-      >
-        Based on your preferences, here are our recommendations:
+    <Box mt={3} sx={{ overflowX: 'auto' }}>
+      <Typography variant="h6" gutterBottom>
+        ✅ Based on your preferences, here are our recommendations:
       </Typography>
 
       <TableContainer

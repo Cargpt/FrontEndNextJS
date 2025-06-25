@@ -7,6 +7,7 @@ import {
   Paper,
   Stack,
   CircularProgress,
+  Button,
 } from '@mui/material';
 import Image from 'next/image';
 import bot from "../../../public/assets/lisa.svg"
@@ -21,6 +22,9 @@ import CarRecommendationTable from './Model/AdviceSelectionCard/Recommondation';
 import OptionsCard from './Model/AdviceSelectionCard/OptionCard';
 import { useSnackbar } from '@/Context/SnackbarContext';
 import { useCookies } from 'react-cookie';
+import { KeyboardBackspaceSharp } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
+
 interface Message {
   id: string;
   sender: 'user' | 'bot';
@@ -33,19 +37,11 @@ interface Message {
 
 const ChatBox: React.FC = () => {
   const {cars, messages, setMessages, filter}=useChats()
-  // const [messages, setMessages] = useState<Message[]>([
-  //   {
-  //     id: '1',
-  //     message: 'I know exactly what I want',
-  //     render: 'text',
-  //     sender: 'user',
-  //   },
-  // ]);
-  
+
   const [loading, setLoading] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
 
-  const [cookies, setCookie]=useCookies(['selectedOPtion']);
+  const [cookies, setCookie, removeCookie]=useCookies(['selectedOPtion']);
 const fetchBrands = async () => {
     try {
       const data = await axiosInstance1.get("/api/brands/");
@@ -321,8 +317,12 @@ useEffect(() => {
   }
 }, [messages]);
 
-  
-
+  const router =useRouter()
+  const backToPrevious=()=>{
+    removeCookie("selectedOPtion")
+    router.push('/')
+    
+  }
 console.log("messages", messages)
   return (
     <>
@@ -337,9 +337,9 @@ console.log("messages", messages)
         mx: 'auto',
       }}
     >
-      <Typography variant="h6" gutterBottom>
-        Chat
-      </Typography>
+      <Button variant='outlined' sx={{position: "fixed"}} onClick={backToPrevious} >
+        <KeyboardBackspaceSharp />
+      </Button>
 
       {/* Message List */}
       <Box
@@ -381,7 +381,7 @@ console.log("messages", messages)
 
         {loading && (
           <Stack direction="row" spacing={1} alignItems="center">
-            <Avatar sx={{ bgcolor: 'primary.main' }}>B</Avatar>
+             <Image src={bot} alt="bot" width={40} height={40} />
             <CircularProgress size={20} />
           </Stack>
         )}
