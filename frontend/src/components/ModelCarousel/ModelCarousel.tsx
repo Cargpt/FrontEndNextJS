@@ -114,8 +114,8 @@ const ModelCarousel: React.FC<Props> = ({
                     <Image
                       src={car.CarImageDetails?.[0]?.CarImageURL || carimg}
                       alt="car-img"
-                      height={120}
-                      width={180}
+                      height={200}
+                      width={330}
                       style={{ objectFit: "contain", width: "100%" }}
                     />
                   </Stack>
@@ -237,6 +237,7 @@ const ModelCarousel: React.FC<Props> = ({
         <ScoreDialog
           open={dialog.open}
           onClose={() => setDialog({ open: false, type: null })}
+          carId={selectedItem}
         />
       )}
       {dialog.type === "emi" && (
