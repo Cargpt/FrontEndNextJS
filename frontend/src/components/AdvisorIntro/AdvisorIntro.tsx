@@ -13,6 +13,7 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
+import { useCookies } from "react-cookie";
 
 interface AdvisorIntroProps {
   showInitialExample: boolean;
@@ -29,8 +30,8 @@ const AdvisorIntro: React.FC<AdvisorIntroProps> = ({
   if (!showInitialExample) return null;
 
   const handleOptionClick = (type: string) => {
-    onBotClick(type);
-    setBotType(type)
+    setCookie('selectedOption', type, { path: '/' });
+   
     router.push("/home");
   };
 
@@ -61,6 +62,8 @@ const AdvisorIntro: React.FC<AdvisorIntroProps> = ({
       type: "ai",
     },
   ];
+const [cookies, setCookie]=useCookies(['selectedOption'])
+
 
   return (
     <Box>
