@@ -465,7 +465,7 @@ const ScoreRightPanel = ({ activeItem, carDetails, loading }: Props) => {
                     boxShadow: 6,
                     transform: "translateY(-2px)",
                   },
-                  background: "linear-gradient(135deg, #f8f9ff, #fff)",
+                  background: "linear-gradient(135deg, #e6f1fc, #fff)",
                   boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                   border: "1px solid #e0e0e0",
                 }}
@@ -531,7 +531,7 @@ const ScoreRightPanel = ({ activeItem, carDetails, loading }: Props) => {
                     boxShadow: 6,
                     transform: "translateY(-2px)",
                   },
-                  background: "linear-gradient(135deg, #f8f9ff, #fff)",
+                  background: "linear-gradient(135deg, #e6f1fc, #fff)",
                   boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
                   border: "1px solid #e0e0e0",
                 }}
