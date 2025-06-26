@@ -46,7 +46,7 @@ const BestCars: React.FC<BestCarProps> = ({setBrands}) => {
         try {
           const data = await axiosInstance1.get("/api/brands/");
 
-          const brands = data?.data?.filter((brand:Brand)=>brand.BrandName.toLowerCase()===brandModel?.brand?.toLowerCase())
+          const brands = data?.data?.filter((brand:Brand)=>brandModel?.brand?.toLowerCase()?.includes(brand.BrandName.toLowerCase()))
           
           
           setBrands(brands);
@@ -58,7 +58,7 @@ const BestCars: React.FC<BestCarProps> = ({setBrands}) => {
       sender: 'user',
 
   }
-  
+  console.log("brandModel?.brand?.toLowerCase()", brandModel?.brand?.toLowerCase())
   setMessages((prev)=>[...prev, userMessage])
   
           

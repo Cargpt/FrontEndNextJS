@@ -53,6 +53,7 @@ const [cookies]=useCookies(["selectedOption"])
 
     fetchData();
   }, [cookies.selectedOption]);
+
   const handleClick = (label: string) => {
       setMessages((prevMessages) => [
         ...prevMessages,
@@ -64,11 +65,12 @@ const [cookies]=useCookies(["selectedOption"])
           prompt: label.includes("Best")? false : true,
         },
       ]);
+      setdisbleBtn(label)
 
     console.log(`Clicked: ${label}`);
     // Add logic for navigation or state change here
   };
-
+const [disbleBtn, setdisbleBtn] = useState<string>('');
 
   return (
   <Box sx={{marginTop:3}}>
@@ -88,8 +90,9 @@ const [cookies]=useCookies(["selectedOption"])
       >
         {answer?.recommended_prompts?.map((item:any, index:null) => (
           <Button
+           disabled={disbleBtn? true:false}
             key={index}
-            variant="outlined"
+            variant={item.prompt__text?.includes(disbleBtn)? "contained":"outlined"}
             size="small"
             onClick={() => handleClick(item.prompt__text)}
             sx={{ fontSize: '14px', padding: '5px 10px', textTransform: 'none' }}

@@ -69,7 +69,7 @@ const ChatBox: React.FC = () => {
         }, 1000);
       }
 
-      if (
+      else if (
         lastMsg.sender === "user" &&
         lastMsg.message === "I need advisor support"
       ) {
@@ -85,7 +85,7 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
-      if (
+     else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
         lastMsg.message?.includes("budget set to")
@@ -102,7 +102,7 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
-      if (
+     else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
         lastMsg.message?.includes("fuel type set to")
@@ -119,7 +119,7 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
-      if (
+      else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
         lastMsg.message?.includes("body type set to")
@@ -136,7 +136,7 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
-      if (
+      else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
         lastMsg.message?.includes("transmission type set to")
@@ -153,7 +153,7 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
-        if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('transmission type set to')) {
+       else if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('transmission type set to')) {
           setLoading(true);
           setTimeout(() => {
             const botMessage: Message = {
@@ -167,7 +167,7 @@ const ChatBox: React.FC = () => {
           }, 1000);
         }
 
-         if (lastMsg.sender === 'user' && lastMsg.message?.brand_name) {
+        else if (lastMsg.sender === 'user' && lastMsg.message?.brand_name) {
           setLoading(true);
           setTimeout(() => {
             const botMessage: Message = {
@@ -181,7 +181,7 @@ const ChatBox: React.FC = () => {
           }, 1000);
         }
 
-        if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('I want to do more research on car')) {
+        else if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('I want to do more research on car')) {
           setLoading(true);
           setTimeout(() => {
             const botMessage: Message = {
@@ -196,7 +196,7 @@ const ChatBox: React.FC = () => {
         }
 
 
-  if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" &&  lastMsg.prompt) {
+  else if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" &&  lastMsg.prompt) {
           setLoading(true);
           setTimeout(() => {
             const botMessage: Message = {
@@ -210,7 +210,7 @@ const ChatBox: React.FC = () => {
           }, 1000);
         }
 
-      if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('Best')) {
+     else if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('Best')) {
           setLoading(true);
           setTimeout(() => {
             const botMessage: Message = {
@@ -223,7 +223,7 @@ const ChatBox: React.FC = () => {
             setLoading(false);
           }, 1000);
         }
-if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
+else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
         setLoading(true);
         setTimeout(() => {
           const botMessage: Message = {
@@ -238,7 +238,7 @@ if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
       }
 
 
-      if (lastMsg.sender === "user" && lastMsg.message?.brand_name) {
+      else if (lastMsg.sender === "user" && lastMsg.message?.brand_name) {
         setLoading(true);
         setTimeout(() => {
           const botMessage: Message = {
