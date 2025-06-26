@@ -8,39 +8,25 @@ import {
   Stack,
   CircularProgress,
   Button,
-} from "@mui/material";
-import Image from "next/image";
-import bot from "../../../public/assets/lisa.svg";
-import BrandModelSelectCard from "./Model/BrandModelSelectCard";
-import ModelCarousel from "../ModelCarousel/ModelCarousel";
-import { useChats } from "@/Context/ChatContext";
-import AdviceSelectionCard from "./Model/AdviceSelectionCard";
-import { BUDGET } from "@/utils/services";
-import CarModel from "./Model/AdviceSelectionCard/CarOptions";
-import { axiosInstance1 } from "@/utils/axiosInstance";
-import CarRecommendationTable from "./Model/AdviceSelectionCard/Recommondation";
-import OptionsCard from "./Model/AdviceSelectionCard/OptionCard";
-import { useSnackbar } from "@/Context/SnackbarContext";
-import { useCookies } from "react-cookie";
-import { KeyboardBackspaceSharp } from "@mui/icons-material";
-import { useRouter } from "next/navigation";
+} from '@mui/material';
+import Image from 'next/image';
+import bot from "../../../public/assets/lisa.svg"
+import BrandModelSelectCard from './Model/BrandModelSelectCard';
+import ModelCarousel from '../ModelCarousel/ModelCarousel';
+import { useChats } from '@/Context/ChatContext';
+import AdviceSelectionCard from './Model/AdviceSelectionCard';
+import { BUDGET, MORERESEARCHONCAROPTIONS } from '@/utils/services';
+import CarModel from './Model/AdviceSelectionCard/CarOptions';
+import { axiosInstance1 } from '@/utils/axiosInstance';
+import CarRecommendationTable from './Model/AdviceSelectionCard/Recommondation';
+import OptionsCard from './Model/AdviceSelectionCard/OptionCard';
+import { useSnackbar } from '@/Context/SnackbarContext';
+import { useCookies } from 'react-cookie';
+import { KeyboardBackspaceSharp } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
+import CarResearchMenu from '../MoreResearchOnCar/MoreResearchOnCar';
+import BestCars from '../MoreResearchOnCar/carList';
 
-interface Message {
-  id: string;
-  sender: "user" | "bot";
-  render:
-    | "brandModelSelect"
-    | "carOptions"
-    | "text"
-    | "selectOption"
-    | "flueOption"
-    | "bodyOption"
-    | "transmissionOption"
-    | "brandOption"
-    | "selectedFilter"
-    | "recommendationOption";
-  message: string | any;
-}
 
 const ChatBox: React.FC = () => {
   const { cars, messages, setMessages, filter } = useChats();
@@ -83,7 +69,7 @@ const ChatBox: React.FC = () => {
         }, 1000);
       }
 
-      if (
+      else if (
         lastMsg.sender === "user" &&
         lastMsg.message === "I need advisor support"
       ) {
@@ -99,7 +85,7 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
-      if (
+     else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
         lastMsg.message?.includes("budget set to")
@@ -116,7 +102,7 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
-      if (
+     else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
         lastMsg.message?.includes("fuel type set to")
@@ -133,7 +119,7 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
-      if (
+      else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
         lastMsg.message?.includes("body type set to")
@@ -150,7 +136,7 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
-      if (
+      else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
         lastMsg.message?.includes("transmission type set to")
@@ -167,8 +153,92 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
+       else if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('transmission type set to')) {
+          setLoading(true);
+          setTimeout(() => {
+            const botMessage: Message = {
+              id: String(Date.now()),
+              message: {},
+              render:"brandOption", // Change this to 'carOptions' if you want to show the carousel
+              sender: 'bot',
+            };
+            setMessages(prev => [...prev, botMessage]);
+            setLoading(false);
+          }, 1000);
+        }
 
-      if (lastMsg.sender === "user" && lastMsg.message?.brand_name) {
+        else if (lastMsg.sender === 'user' && lastMsg.message?.brand_name) {
+          setLoading(true);
+          setTimeout(() => {
+            const botMessage: Message = {
+              id: String(Date.now()),
+              message: {},
+              render:"recommendationOption", // Change this to 'carOptions' if you want to show the carousel
+              sender: 'bot',
+            };
+            setMessages(prev => [...prev, botMessage]);
+            setLoading(false);
+          }, 1000);
+        }
+
+        else if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('I want to do more research on car')) {
+          setLoading(true);
+          setTimeout(() => {
+            const botMessage: Message = {
+              id: String(Date.now()),
+              message: {},
+              render:"researchOncar", // Change this to 'carOptions' if you want to show the carousel
+              sender: 'bot',
+            };
+            setMessages(prev => [...prev, botMessage]);
+            setLoading(false);
+          }, 1000);
+        }
+
+
+  else if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" &&  lastMsg.prompt) {
+          setLoading(true);
+          setTimeout(() => {
+            const botMessage: Message = {
+              id: String(Date.now()),
+              message: messages[messages.length-1].message,
+              render:"researchOncar", // Change this to 'carOptions' if you want to show the carousel
+              sender: 'bot',
+            };
+            setMessages(prev => [...prev, botMessage]);
+            setLoading(false);
+          }, 1000);
+        }
+
+     else if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('Best')) {
+          setLoading(true);
+          setTimeout(() => {
+            const botMessage: Message = {
+              id: String(Date.now()),
+              message: {},
+              render:"BestCarOption", // Change this to 'carOptions' if you want to show the carousel
+              sender: 'bot',
+            };
+            setMessages(prev => [...prev, botMessage]);
+            setLoading(false);
+          }, 1000);
+        }
+else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
+        setLoading(true);
+        setTimeout(() => {
+          const botMessage: Message = {
+            id: String(Date.now()),
+            message: {},
+            render:"brandModelSelect", // Change this to 'carOptions' if you want to show the carousel
+            sender: 'bot',
+          };
+          setMessages(prev => [...prev, botMessage]);
+          setLoading(false);
+        }, 1000);
+      }
+
+
+      else if (lastMsg.sender === "user" && lastMsg.message?.brand_name) {
         setLoading(true);
         setTimeout(() => {
           const botMessage: Message = {
@@ -309,9 +379,15 @@ const ChatBox: React.FC = () => {
           />
         );
       case "selectedFilter":
-        return <CarRecommendationTable recommendations={filter} />;
-      case "recommendationOption":
-        return <OptionsCard onBack={onBack} onShowCars={onShowCar} />;
+        return <CarRecommendationTable  recommendations={filter} /> 
+      case  'recommendationOption':
+        return <OptionsCard onBack={onBack} onShowCars={onShowCar} />
+      case 'researchOncar':
+        return <CarResearchMenu/> 
+      case 'BestCarOption':
+        return <BestCars setBrands={setBrands} />
+
+
 
       default:
         return null;

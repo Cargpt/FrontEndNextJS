@@ -47,7 +47,7 @@ const AdvisorIntro: React.FC<AdvisorIntroProps> = ({
       type: "support",
     },
     {
-      label: "I want to do more research on car",
+      label: "I want to do more research on cars",
       icon: "/assets/search.svg",
       type: "search",
     },
@@ -77,37 +77,6 @@ const [cookies, setCookie]=useCookies(['selectedOption'])
           gap: "30px",
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "5px",
-          }}
-        >
-          <Avatar
-            src="/assets/avator_main2.png"
-            alt="Profile Picture"
-            sx={{
-              width: 40,
-              height: 40,
-              position: "relative",
-              top: "8px",
-              left: 20,
-            }}
-          />
-          <Typography
-            variant="h5"
-            mt={2}
-            style={{
-              borderRadius: "25px",
-              border: "1px solid grey",
-              width: "120px",
-            }}
-          >
-            I’m Lisa
-          </Typography>
-        </Box>
         <div>
           <Typography
             variant="subtitle1"

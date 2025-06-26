@@ -9,27 +9,17 @@ import React, {
 } from "react";
 import { useCookies } from "react-cookie";
 
-export type ChatMessage = {
-  id: string;
-  message?: string; // optional if using a component
-  sender: "user" | "bot";
-  render?:
-    | "brandModelSelect"
-    | "carOptions"
-    | "text"
-    | "selectOption"
-    | "flueOption"
-    | "bodyOption"
-    | "transmissionOption"
-    | "brandOption"
-    | "selectedFilter"
-    | "recommendationOption";
-  data?: any; // used to pass props to component renders
-};
+// export type ChatMessage = {
+//   id: string;
+//   message?: string; // optional if using a component
+//   sender: 'user' | 'bot';
+//   render?: 'brandModelSelect' | 'carOptions' | 'text' | 'selectOption' | 'flueOption' | 'bodyOption' |'transmissionOption' | 'brandOption'| 'selectedFilter' | 'recommendationOption';
+//   data?: any; // used to pass props to component renders
+// };
 
 type ChatsContextType = {
-  chats: ChatMessage[];
-  addChat: (chat: Omit<ChatMessage, "id">) => void;
+  chats: Message[];
+  addChat: (chat: Omit<Message, 'id'>) => void;
   setCars: React.Dispatch<React.SetStateAction<any[]>>;
   cars: any[];
   messages: Message[];
@@ -38,37 +28,21 @@ type ChatsContextType = {
   filter: CarFilter;
 };
 
-interface Message {
-  id: string;
-  sender: "user" | "bot";
-  render:
-    | "brandModelSelect"
-    | "carOptions"
-    | "text"
-    | "selectOption"
-    | "flueOption"
-    | "bodyOption"
-    | "transmissionOption"
-    | "brandOption"
-    | "selectedFilter"
-    | "recommendationOption";
-  message: string | any;
-}
+
 
 const ChatsContext = createContext<ChatsContextType | undefined>(undefined);
 
-export const ChatsProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
-  const [chats, setChats] = useState<ChatMessage[]>([]);
+export const ChatsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [chats, setChats] = useState<Message[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [cookies] = useCookies(["selectedOption"]);
-
-  const [filter, setFilter] = useState<CarFilter>(DEFAULTSEARCHPARAMS);
-
-  const [cars, setCars] = useState<any[]>([]);
-  const addChat = (chat: Omit<ChatMessage, "id">) => {
-    setChats((prev) => [...prev, { id: Date.now().toString(), ...chat }]);
+const [cookies]=useCookies(['selectedOption'])
+  
+  
+    const [filter, setFilter] = useState<CarFilter>(DEFAULTSEARCHPARAMS);
+  
+   const [cars, setCars] = useState<any[]>([])
+  const addChat = (chat: Omit<Message, 'id'>) => {
+    setChats(prev => [...prev, { id: Date.now().toString(), ...chat }]);
   };
 
   const updateFilter = (name: string, value: number | string) => {

@@ -35,6 +35,8 @@ export function getUpperLimitInRupees(budgetRange: string) {
 
   if (upper) {
     const number = parseFloat(upper.replace("L", ""));
+
+    console.log("number111", number);
     return number * 100000; // 1 Lakh = 100,000
   }
 
@@ -46,3 +48,18 @@ export const BODYTYPES = ["suv", "sedan", "hatchback", "coupe", "convertible"];
 export const SEATCAPACITY = [2, 4, 5, 7];
 export const FUELTYPES = ["petrol", "diesel", "cng", "electric"];
 export const TRANSMISSIONTYPES = ["manual", "automatic"];
+
+export const MORERESEARCHONCAROPTIONS = [
+  "Fuel types",
+  "Transmission types",
+  "Manual and Automation",
+  "Technical Details",
+  "Brand Recommendations",
+  "Brand Opinion",
+  // "I know exactly what I want",
+  // "I need advisor support",
+  // "Back to Car Research",
+];
+export const FuelTypeOptions = [
+  
+]
