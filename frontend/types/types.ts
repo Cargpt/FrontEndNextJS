@@ -37,6 +37,8 @@ type CarFilter = {
 
 
 
+
+
 interface CarRecommendation {
   budget: number;
   fuel: string;
@@ -67,4 +69,25 @@ interface CarDetails {
   Seats: number;
   EngineCapacity: string;
   CarImageDetails: CarImageDetail[];
+}
+
+interface Message {
+  id: string;
+  sender: "user" | "bot";
+  render:
+    | "brandModelSelect"
+    | "carOptions"
+    | "text"
+    | "selectOption"
+    | "flueOption"
+    | "bodyOption"
+    | "transmissionOption"
+    | "brandOption"
+    | "selectedFilter"
+    | "recommendationOption"
+    | "researchOncar"
+    |"BestCarOption";
+  message: string | any;
+  data?: any;
+  prompt?: boolean;
 }
