@@ -13,14 +13,12 @@ import {
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 
-interface CarDetails {
-  Price: number;
-  FuelType: string;
-  TransmissionType: string;
-  BrandName: string;
-  ModelName: string;
-  VariantName: string;
-  BodyType?: string;
+interface CarFilter {
+  budget: number;
+  fuel_type: string;
+  body_type?: string;
+  transmission_type: string;
+  brand_name: string;
 }
 
 interface CarRecommendationTableProps {
@@ -33,48 +31,53 @@ const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const rows = [
+    { label: 'Budget', value: `₹${recommendations.budget.toLocaleString()}` },
+    { label: 'Fuel', value: recommendations.fuel_type || '-' },
+    { label: 'Body', value: recommendations.body_type || '-' },
+    { label: 'Transmission', value: recommendations.transmission_type || '-' },
+    { label: 'Brand', value: recommendations.brand_name || '-' }
+  ];
+
   return (
     <Box mt={3} sx={{ overflowX: 'auto' }}>
       <Typography variant="h6" gutterBottom>
         ✅ Based on your preferences, here are our recommendations:
       </Typography>
 
-      <TableContainer
-        component={Paper}
-        sx={{ minWidth: isMobile ? "700px" : "100%" }}
-      >
-        <Table
-          size={isMobile ? "small" : "medium"}
-          aria-label="car recommendation table"
-        >
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <strong>Budget</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Fuel</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Body</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Transmission</strong>
-              </TableCell>
-              <TableCell>
-                <strong>Brand</strong>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              <TableCell>₹{recommendations.budget}</TableCell>
-              <TableCell>{recommendations.fuel_type}</TableCell>
-              <TableCell>{recommendations.body_type || "-"}</TableCell>
-              <TableCell>{recommendations.transmission_type}</TableCell>
-              <TableCell>{recommendations.brand_name}</TableCell>
-            </TableRow>
-          </TableBody>
+      <TableContainer component={Paper}>
+        <Table size="small" aria-label="recommendation table">
+          {isMobile ? (
+            // 📱 Vertical view for small screens
+            <TableBody>
+              {rows.map((row, idx) => (
+                <TableRow key={idx}>
+                  <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                    {row.label}
+                  </TableCell>
+                  <TableCell>{row.value}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          ) : (
+            // 💻 Horizontal view for medium+ screens
+            <>
+              <TableHead>
+                <TableRow>
+                  {rows.map((row, idx) => (
+                    <TableCell key={idx}><strong>{row.label}</strong></TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                <TableRow>
+                  {rows.map((row, idx) => (
+                    <TableCell key={idx}>{row.value}</TableCell>
+                  ))}
+                </TableRow>
+              </TableBody>
+            </>
+          )}
         </Table>
       </TableContainer>
     </Box>
