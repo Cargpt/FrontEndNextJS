@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Table,
   TableBody,
@@ -9,9 +9,9 @@ import {
   Paper,
   Typography,
   Box,
-  useMediaQuery
-} from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+  useMediaQuery,
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 interface CarFilter {
   budget: number;
@@ -25,9 +25,11 @@ interface CarRecommendationTableProps {
   recommendations: CarFilter;
 }
 
-const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({ recommendations }) => {
+const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({
+  recommendations,
+}) => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const rows = [
     { label: 'Budget', value: `₹${recommendations.budget.toLocaleString()}` },

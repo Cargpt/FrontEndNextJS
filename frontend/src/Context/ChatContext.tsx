@@ -1,7 +1,13 @@
 // context/ChatsContext.tsx
-import { DEFAULTSEARCHPARAMS } from '@/utils/services';
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { useCookies } from 'react-cookie';
+import { DEFAULTSEARCHPARAMS } from "@/utils/services";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  ReactNode,
+  useEffect,
+} from "react";
+import { useCookies } from "react-cookie";
 
 // export type ChatMessage = {
 //   id: string;
@@ -40,32 +46,38 @@ const [cookies]=useCookies(['selectedOption'])
   };
 
   const updateFilter = (name: string, value: number | string) => {
-    setFilter(prev => ({
+    setFilter((prev) => ({
       ...prev,
-      [name]: name === 'budget' || name === 'seat_capacity' ? Number(value) : value,
+      [name]:
+        name === "budget" || name === "seat_capacity" ? Number(value) : value,
     }));
-  }
+  };
 
-  
   useEffect(() => {
-    console.log('Selected option from cookies:', cookies.selectedOption);
-
-if (cookies.selectedOption) {
+    if (cookies.selectedOption) {
       const initialChat: Message = {
         id: Date.now().toString(),
         message: cookies.selectedOption,
-        sender: 'user',
-        render: 'text',
+        sender: "user",
+        render: "text",
       };
       setMessages([initialChat]);
-  
-}
-    
-  }, [cookies.selectedOption])
-
+    }
+  }, [cookies.selectedOption]);
 
   return (
-    <ChatsContext.Provider value={{ chats, addChat, cars, setCars, messages, setMessages, filter, updateFilter }}>
+    <ChatsContext.Provider
+      value={{
+        chats,
+        addChat,
+        cars,
+        setCars,
+        messages,
+        setMessages,
+        filter,
+        updateFilter,
+      }}
+    >
       {children}
     </ChatsContext.Provider>
   );
@@ -74,7 +86,7 @@ if (cookies.selectedOption) {
 export const useChats = (): ChatsContextType => {
   const context = useContext(ChatsContext);
   if (!context) {
-    throw new Error('useChats must be used within a ChatsProvider');
+    throw new Error("useChats must be used within a ChatsProvider");
   }
   return context;
 };

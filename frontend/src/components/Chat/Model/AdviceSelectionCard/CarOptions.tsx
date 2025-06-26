@@ -1,7 +1,17 @@
 "use client";
 
 import React, { FC, useEffect, useState } from "react";
-import { Button, Card, CardContent, Typography, Stack, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
+import {
+  Button,
+  Card,
+  CardContent,
+  Typography,
+  Stack,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import {
   bodyOptions,
   brandOptions,
@@ -16,72 +26,59 @@ import AdviceSelectionTransmission from "./AdviceSelectionTransmission";
 import { useChats } from "@/Context/ChatContext";
 import { getUpperLimitInRupees } from "@/utils/services";
 
-
-
 interface AdviceSelectionCardProps {
   options: string[];
   label: string;
   h1: string;
-  onclick: ()=> void;
+  onclick: () => void;
 }
-const CarModel:FC<AdviceSelectionCardProps> = ({options, label, h1, onclick}) => {
+const CarModel: FC<AdviceSelectionCardProps> = ({
+  options,
+  label,
+  h1,
+  onclick,
+}) => {
   const [selections, setSelections] = useState<{
-
-    [key:string]: string | null;
-    
+    [key: string]: string | null;
   }>({
-   
     value: null,
-    
   });
 
-  
-  const {updateFilter, filter, setMessages}=useChats()
- const [isDisable, setIsDisable] = useState<boolean>(false);
-  const handleSelect = (type:string, value: string) => {
+  const { updateFilter, filter, setMessages } = useChats();
+  const [isDisable, setIsDisable] = useState<boolean>(false);
+  const handleSelect = (type: string, value: string) => {
     const updated = { [type]: value };
     setSelections(updated);
-   if(updated[type]) {
-   if(label==="brand"){
-    updateFilter("brand_name", value)
-  }else{
-  updateFilter(label,value)
-
-  }
-
-
-  };
+    if (updated[type]) {
+      if (label === "brand") {
+        updateFilter("brand_name", value);
+      } else {
+        updateFilter(label, value);
+      }
+    }
   };
 
+  useEffect(() => {
+    setSelections({ [label]: options[0] });
+    if (options[0]) {
+    }
+    if (label === "budget") {
+      const upperLimit = getUpperLimitInRupees(options[0].toString());
+      if (upperLimit) {
+        updateFilter(label, upperLimit);
+      }
+    } else {
+      if (label === "brand") {
+        updateFilter("brand_name", options[0]);
+      } else {
+        updateFilter(label, options[0]);
+      }
+    }
+  }, []);
 
-useEffect(() => {
-
-  
-setSelections({[label]:options[0]})
-if(options[0]){
-
-}
-if(label==="budget"){
-  const upperLimit = getUpperLimitInRupees(options[0].toString());
-  if(upperLimit){
-updateFilter(label, upperLimit)
-  }
-
-}else{
-  if(label==="brand"){
-    updateFilter("brand_name", options[0])
-  }else{
-  updateFilter(label,options[0])
-
-  }
-}
-
-}, []);
-
-const handleNext  = () => {
-      
-    onclick()
-    setMessages(prev => [
+  const handleNext = () => {
+    onclick();
+    setMessages((prev) => [
       ...prev,
       {
         id: String(Date.now()),
@@ -89,18 +86,30 @@ const handleNext  = () => {
         render: "selectedFilter",
         sender: "user",
       },
-      
-    ])
+    ]);
     setIsDisable(true);
+  };
 
-}
-
-
-  console.log("Current11 Selections:", filter);
   return (
-    <Card style={{ display: "flex", flexDirection: "column", gap: "5px", border: "none", borderBottom:"none", boxShadow:"none" }}>
+    <Card
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "5px",
+        border: "none",
+        borderBottom: "none",
+        boxShadow: "none",
+      }}
+    >
       <CardContent
-        style={{ display: "flex", flexDirection: "column", gap: "5px", border: "none", borderBottom:"none", boxShadow:"none" }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "5px",
+          border: "none",
+          borderBottom: "none",
+          boxShadow: "none",
+        }}
       >
         <Typography
           variant="body2"
@@ -118,21 +127,21 @@ const handleNext  = () => {
           {label.toUpperCase()}
         </Typography>
 
-  <FormControl  sx={{ m: 1, minWidth: 120 }} size="small">
-    <InputLabel id="brand-label">{label}</InputLabel>
-    <Select
-      labelId="brand-label"
-      value={selections[label] ?? ""}
-      label="Brand"
-      onChange={(e) => handleSelect(label, e.target.value)}
-    >
-      {options.map((option:string, idx:number) => (
-        <MenuItem key={idx} value={option}>
-          {option}
-        </MenuItem>
-      ))}
-    </Select>
-  </FormControl>
+        <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+          <InputLabel id="brand-label">{label}</InputLabel>
+          <Select
+            labelId="brand-label"
+            value={selections[label] ?? ""}
+            label="Brand"
+            onChange={(e) => handleSelect(label, e.target.value)}
+          >
+            {options.map((option: string, idx: number) => (
+              <MenuItem key={idx} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
         <div
           style={{
@@ -141,7 +150,13 @@ const handleNext  = () => {
             justifyItems: "center",
           }}
         >
-          <Button disabled={isDisable} onClick={handleNext} variant="contained" color="primary" type="button">
+          <Button
+            disabled={isDisable}
+            onClick={handleNext}
+            variant="contained"
+            color="primary"
+            type="button"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"

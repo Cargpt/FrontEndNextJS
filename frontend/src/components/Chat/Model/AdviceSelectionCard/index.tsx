@@ -42,7 +42,6 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
 
     if (label === "budget") {
       const upperLimit = getUpperLimitInRupees(value.toString());
-      console.log("upperLimit", upperLimit);
       if (upperLimit) {
         updateFilter(label, upperLimit);
       }
@@ -78,7 +77,6 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
     setIsDisable(true);
   };
 
-  console.log("Current11 Selections:", filter);
   return (
     <Card
       style={{
