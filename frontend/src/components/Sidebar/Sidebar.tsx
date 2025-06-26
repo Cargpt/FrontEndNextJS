@@ -30,7 +30,6 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
   const handleLogout = () => {
     Object.keys(cookies).forEach((cookieName) => {
-      console.log("handle ", cookieName);
       removeCookie(cookieName, { path: "/" });
     });
     setHasToken(false);

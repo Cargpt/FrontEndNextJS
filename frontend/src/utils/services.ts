@@ -1,66 +1,48 @@
 import { Value } from "sass";
 
 export const fuelOptions = [
-  { id: 1, label: 'Petrol' },
-  { id: 2, label: 'Diesel' },
-  { id: 3, label: 'CNG' },
-  {id:4, label:"Electric"}
+  { id: 1, label: "Petrol" },
+  { id: 2, label: "Diesel" },
+  { id: 3, label: "CNG" },
+  { id: 4, label: "Electric" },
 ];
-
 
 export const transmissionOptions = [
-  { id: 1, label: 'Automatic' },
-  { id: 2, label: 'Manual' },
-  
+  { id: 1, label: "Automatic" },
+  { id: 2, label: "Manual" },
 ];
-
-
-
 
 export const seatingCapacityOptions = [
-  { id: 1, label: '5' },
-  { id: 2, label: '7' },
-  
+  { id: 1, label: "5" },
+  { id: 2, label: "7" },
 ];
 
+export const DEFAULTSEARCHPARAMS = {
+  brand_name: "",
+  model_name: "",
+  fuel_type: "",
+  transmission_type: "",
+  budget: 0,
+  seat_capacity: 0,
+  body_type: "",
+};
 
-
-
-
-
-
-export const DEFAULTSEARCHPARAMS={
-    brand_name: '',
-    model_name: '',
-    fuel_type: '',
-    transmission_type: '',
-    budget: 0,
-    seat_capacity: 0,
-    body_type: '',
-  }
-
-
-export function getUpperLimitInRupees(budgetRange:string) {
+export function getUpperLimitInRupees(budgetRange: string) {
   if (!budgetRange) return null;
 
-  const parts = budgetRange.split('-');
+  const parts = budgetRange.split("-");
   const upper = parts[1]?.toUpperCase().trim();
 
   if (upper) {
-    const number = parseFloat(upper.replace('L', ''));
-
-    console.log("number111", number)
+    const number = parseFloat(upper.replace("L", ""));
     return number * 100000; // 1 Lakh = 100,000
   }
 
   return null;
 }
 
-
-
-
-export const BUDGET=['0-5L', '5-10L', '10-15L', '15-20L', '20-25L', '25-30L'];
-export const BODYTYPES = ['suv', 'sedan', 'hatchback', 'coupe', 'convertible'];
+export const BUDGET = ["0-5L", "5-10L", "10-15L", "15-20L", "20-25L", "25-30L"];
+export const BODYTYPES = ["suv", "sedan", "hatchback", "coupe", "convertible"];
 export const SEATCAPACITY = [2, 4, 5, 7];
-export const FUELTYPES = ['petrol', 'diesel', 'cng', 'electric'];
-export const TRANSMISSIONTYPES = ['manual', 'automatic'];
+export const FUELTYPES = ["petrol", "diesel", "cng", "electric"];
+export const TRANSMISSIONTYPES = ["manual", "automatic"];

@@ -59,7 +59,6 @@ const [loading, setLoading] = useState(false);
           const payload = formData
           const  response = await  axiosInstance.post('/api/login/',  payload)
           handleSetCookie(response?.token)
-          console.log(response)
 
     } catch (error:any) {
       if(error?.status===404){
@@ -119,17 +118,12 @@ finally {
                     return;
                   }
 
-                  console.log("googleUser", googleUser);
-
                   const idToken = await googleUser.getIdToken();
 
                   if (!idToken) {
                     // setError("No ID Token returned from Firebase.");
                     return;
                   }
-
-                  // Generate unique user ID using uuid
-                  console.log("googleUser.email", googleUser.email);
 
                   const uniqueUserId = googleUser.displayName || uuidv4();
 
@@ -144,21 +138,6 @@ finally {
                       Authorization: `Bearer ${idToken}`,
                     },
                   });
-
-                  if (response.data.token) {
-                    localStorage.setItem("auth_token", response.data.token);
-                    console.log("Google Sign-In successful!");
-                    //console.log("Username:", googleUser.displayName || googleUser.email);
-                    //console.log("Token:", response.data.token); // Log the token
-
-                    // setToken(response.data.token); // Store the token
-                    localStorage.setItem("auth_token", response.data.token);
-
-
-                    // navigate("/home");
-                  } else {
-                    // setError("No token returned from backend.");
-                  }
                 } catch (err) {
                   console.error("Google Sign-In Error:", err);
                   // setError("Google sign-in failed. Please try again.");
