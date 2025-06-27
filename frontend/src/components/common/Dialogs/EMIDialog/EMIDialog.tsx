@@ -50,7 +50,7 @@ const EMIDialog: React.FC<EMIDialogProps> = ({ open, onClose }) => {
             sm: "100%",
             md: "80%",
           },
-          maxWidth: "1000px",
+          maxWidth: "500px",
           height: "90vh",
           maxHeight: "90vh",
           borderRadius: {
