@@ -60,7 +60,7 @@ const ChatBox: React.FC = () => {
         setTimeout(() => {
           const botMessage: Message = {
             id: String(Date.now()),
-            message: {},
+            message: {brands},
             render: "brandModelSelect", // Change this to 'carOptions' if you want to show the carousel
             sender: "bot",
           };
@@ -223,19 +223,19 @@ const ChatBox: React.FC = () => {
             setLoading(false);
           }, 1000);
         }
-else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
-        setLoading(true);
-        setTimeout(() => {
-          const botMessage: Message = {
-            id: String(Date.now()),
-            message: {},
-            render:"brandModelSelect", // Change this to 'carOptions' if you want to show the carousel
-            sender: 'bot',
-          };
-          setMessages(prev => [...prev, botMessage]);
-          setLoading(false);
-        }, 1000);
-      }
+// else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
+//         setLoading(true);
+//         setTimeout(() => {
+//           const botMessage: Message = {
+//             id: String(Date.now()),
+//             message: ,
+//             render:"brandModelSelect", // Change this to 'carOptions' if you want to show the carousel
+//             sender: 'bot',
+//           };
+//           setMessages(prev => [...prev, botMessage]);
+//           setLoading(false);
+//         }, 1000);
+//       }
 
 
       else if (lastMsg.sender === "user" && lastMsg.message?.brand_name) {
@@ -254,7 +254,7 @@ else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [messages]);
+  }, [messages, brands]);
 
   const handleIknowWhatEaxactlyWhatIWant = () => {
     // const lastItem = messages[messages.length - 1];
@@ -293,9 +293,10 @@ else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
         vertical: "bottom",
       });
 
-      return;
+      return false;
     }
-    const userMessage: Message = {
+    else{
+      const userMessage: Message = {
       id: String(Date.now()),
       message: { [filter.brand_name]: remondatedCarModels },
       render: "carOptions",
@@ -303,6 +304,10 @@ else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
     };
     setMessages((prev) => [...prev, userMessage]);
     setRecommondatedCarModels([]);
+    return true
+
+    }
+    
   };
 
   const onBack = () => {
@@ -320,7 +325,8 @@ else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
         return (
           <BrandModelSelectCard
             handleUserMessage={handleUserMessage}
-            brands={brands}
+            brands={message.message?.brands}
+            selectedModels={message.message?.models}
           />
         );
       case "carOptions":
@@ -411,7 +417,7 @@ else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
       },
     ];
     newsMessages.push(userMessage);
-    setMessages(newsMessages);
+    setMessages((prev)=>[...prev, userMessage]);
   };
   useEffect(() => {
     if (messages.length === 0) return;
@@ -458,6 +464,8 @@ else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
     router.push("/");
   };
 
+
+  console.log("message", messages)
   return (
     <>
       <Paper
