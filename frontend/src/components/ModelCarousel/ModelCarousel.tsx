@@ -29,11 +29,10 @@ type Props = {
   handleNeedAdviceSupport: () => void;
 };
 
-
-interface typeProps{
-    open: boolean;
-    type: "score" | "emi" | "sentiment" | null;
-  }
+interface typeProps {
+  open: boolean;
+  type: "score" | "emi" | "sentiment" | null;
+}
 
 const ModelCarousel: React.FC<Props> = ({
   onClick,
@@ -47,17 +46,15 @@ const ModelCarousel: React.FC<Props> = ({
   const [carInfo, setCarInfo] = useState<any>(null);
   const [dialog, setDialog] = useState<typeProps>({ open: false, type: null });
 
-  const openDialog = (type:"score" | "emi" | "sentiment" | null, data:any) =>{
-
+  const openDialog = (
+    type: "score" | "emi" | "sentiment" | null,
+    data: any
+  ) => {
     setDialog({ open: true, type });
-    if(type === "score") {
+    if (type === "score" || type === "sentiment") {
       setCarInfo(data);
-
-      // Assuming you want to set the car ID for the score dialog
     }
-
-  }
-  
+  };
 
   const settings: Settings = {
     infinite: false,
@@ -226,7 +223,13 @@ const ModelCarousel: React.FC<Props> = ({
           ))}
         </Slider>
 
-        <Stack direction="row" gap={2} mt={3} flexWrap="wrap" justifyContent={{ xs: "center", sm: "flex-start" }}>
+        <Stack
+          direction="row"
+          gap={2}
+          mt={3}
+          flexWrap="wrap"
+          justifyContent={{ xs: "center", sm: "flex-start" }}
+        >
           <Button
             variant="outlined"
             onClick={onClick}
@@ -262,6 +265,7 @@ const ModelCarousel: React.FC<Props> = ({
         <SentimentDialog
           open={dialog.open}
           onClose={() => setDialog({ open: false, type: null })}
+          carId={carInfo?.CarID}
         />
       )}
     </>
