@@ -161,8 +161,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
             flexWrap: "wrap",
             gap: 1,
             flexDirection: {
-              xs: "column", // Stack vertically on extra-small screens
-              sm: "row", // Side-by-side on small screens and up
+              xs: "column",
+              sm: "row",
             },
           }}
         >

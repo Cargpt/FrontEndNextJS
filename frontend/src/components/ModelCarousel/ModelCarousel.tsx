@@ -22,6 +22,7 @@ import price from "../../../public/assets/subtract6425-nvra.svg";
 import seat from "../../../public/assets/babycarseat6425-n4nh.svg";
 import trans from "../../../public/assets/vector26796425-xttl.svg";
 import speed from "../../../public/assets/hugeiconinterfacesolidspeedtest6425-amlw.svg";
+import CarGallery from "../common/Dialogs/CarGallery/CarGallery";
 
 type Props = {
   onClick?: () => void;
@@ -31,7 +32,7 @@ type Props = {
 
 interface typeProps {
   open: boolean;
-  type: "score" | "emi" | "sentiment" | null;
+  type: "score" | "emi" | "sentiment" | "gallery" | null;
 }
 
 const ModelCarousel: React.FC<Props> = ({
@@ -47,11 +48,11 @@ const ModelCarousel: React.FC<Props> = ({
   const [dialog, setDialog] = useState<typeProps>({ open: false, type: null });
 
   const openDialog = (
-    type: "score" | "emi" | "sentiment" | null,
+    type: "score" | "emi" | "sentiment" | "gallery" | null,
     data: any
   ) => {
     setDialog({ open: true, type });
-    if (type === "score" || type === "sentiment") {
+    if (type === "score" || type === "sentiment" || type === "gallery") {
       setCarInfo(data);
     }
   };
@@ -126,6 +127,7 @@ const ModelCarousel: React.FC<Props> = ({
                       height={200}
                       width={330}
                       style={{ objectFit: "contain", width: "100%" }}
+                      onClick={() => openDialog("gallery", car)}
                     />
                   </Stack>
 
@@ -248,6 +250,13 @@ const ModelCarousel: React.FC<Props> = ({
       </Box>
 
       {/* Dialogs */}
+      {dialog.type === "gallery" && (
+        <CarGallery
+          open={dialog.open}
+          onClose={() => setDialog({ open: false, type: null })}
+          carId={carInfo?.CarID}
+        />
+      )}
       {dialog.type === "score" && (
         <ScoreDialog
           open={dialog.open}
