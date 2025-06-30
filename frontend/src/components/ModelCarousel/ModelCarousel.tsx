@@ -23,6 +23,8 @@ import seat from "../../../public/assets/babycarseat6425-n4nh.svg";
 import trans from "../../../public/assets/vector26796425-xttl.svg";
 import speed from "../../../public/assets/hugeiconinterfacesolidspeedtest6425-amlw.svg";
 import CarGallery from "../common/Dialogs/CarGallery/CarGallery";
+import { useCookies } from "react-cookie";
+import { useChats } from "@/Context/ChatContext";
 
 type Props = {
   onClick?: () => void;
@@ -46,7 +48,18 @@ const ModelCarousel: React.FC<Props> = ({
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [carInfo, setCarInfo] = useState<any>(null);
   const [dialog, setDialog] = useState<typeProps>({ open: false, type: null });
+  
+  const{messages, setMessages}=useChats()
 
+
+const [cookies]=useCookies(["selectedOption"])
+
+    const userMessage: Message = {
+            id: String(Date.now() + 1),
+            message: cookies.selectedOption,
+            render: "text", // Change this to 'carOptions' if you want to show the carousel
+            sender: "user",
+          };
   const openDialog = (
     type: "score" | "emi" | "sentiment" | "gallery" | null,
     data: any
@@ -93,6 +106,12 @@ const ModelCarousel: React.FC<Props> = ({
     ],
   };
 
+
+  const backTOIntial = () =>{
+    setMessages((prev)=>[...prev, userMessage])
+  }
+
+  console.log("cookies.selectedOption", cookies.selectedOption)
   return (
     <>
       <Box
@@ -246,6 +265,18 @@ const ModelCarousel: React.FC<Props> = ({
           >
             I need advisor support
           </Button>
+
+          {
+            cookies.selectedOption=='I want to do more research on cars'  &&
+            <Button
+            variant="outlined"
+            onClick={backTOIntial}
+            sx={{ textTransform: "capitalize", fontSize: 13 }}
+          >
+            Back to car research
+          </Button>
+          }
+
         </Stack>
       </Box>
 

@@ -499,11 +499,11 @@ const ChatBox: React.FC = () => {
           {messages.map((msg, index) => (
             <Stack
               key={msg.id}
-              direction="row"
-              spacing={1}
-              alignItems="flex-start"
-              justifyContent={msg.sender === "user" ? "flex-end" : "flex-start"}
-              sx={{ mb: 2 }}
+  direction="row"
+  spacing={1}
+  alignItems="flex-start"
+  justifyContent={msg.sender === "user" ? "flex-end" : "flex-start"}
+  sx={{ mb: 2 }}
             >
               {msg.sender === "bot" && (
                 <Image src={bot} alt="bot" width={40} height={40} />

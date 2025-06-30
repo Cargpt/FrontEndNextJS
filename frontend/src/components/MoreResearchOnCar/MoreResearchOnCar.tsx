@@ -5,6 +5,7 @@ import { useChats } from '@/Context/ChatContext';
 import { useSnackbar } from '@/Context/SnackbarContext';
 import { useCookies } from 'react-cookie';
 import RenderJson from './JsonRender';
+import { BODYTYPES, BUDGET, CustomFilter, FUELTYPES, TRANSMISSIONTYPES } from '@/utils/services';
 
 
 const AdditionalOptions = [
@@ -53,7 +54,36 @@ const [cookies]=useCookies(["selectedOption"])
     fetchData();
   }, [cookies.selectedOption]);
 
-  const handleClick = (item: any) => {
+      const fetchBrands = async (message:string) => {
+        try {
+          const data = await axiosInstance1.get("/api/brands/");
+
+           const userMessage: Message = {
+            id: String(Date.now() + 1),
+            message: {message},
+            render: "text", // Change this to 'carOptions' if you want to show the carousel
+            sender: "user",
+          };
+     
+        const botMessage: Message = {
+            id: String(Date.now()),
+            message: {brand:data?.dada},
+            render: "brandModelSelect", // Change this to 'carOptions' if you want to show the carousel
+            sender: "bot",
+          };
+          
+          
+          setMessages((prev) => [...prev, userMessage, botMessage]);
+    
+        
+        } catch (error) {
+
+
+        }
+      };
+
+  const handleClick = async (item: any) => {
+    console.log("item", item)
     
     if(typeof item==="string" && item?.toLowerCase()?.includes("back") ){
 
@@ -126,18 +156,82 @@ const userMessage: Message = {
    setMessages((prev)=>[...prev, ...newMessages])
         console.log("item", item, userMessage)
 
+    }else if(item && item?.Brand){
+      let fistItem = item?.Brand
+      if(fistItem=="MT") fistItem ="Manual" 
+      if(fistItem=="AT") fistItem ="Automatic" 
+      const searchItem=CustomFilter.find((it)=> fistItem?.toLowerCase().includes(it?.toLowerCase()))
+      if(searchItem){
+        await searchBrands(searchItem)
+
+      }
+
+    
+      
+
+
+
     }
-    console.log("item", item)
+
+
+    
     // Add logic for navigation or state change here
   };
 const [disbleBtn, setdisbleBtn] = useState<string>('');
  
-  return (
+
+
+const  searchBrands = async (search:string)=>{
+  let payload:any = {}
+  if(BODYTYPES.includes(search.toLowerCase())){
+    payload['body_type']=search
+  }else if(FUELTYPES.includes(search.toLowerCase())){
+    payload['fuel_type']=search
+  }
+  else if(TRANSMISSIONTYPES.includes(search.toLowerCase())){
+
+    payload['transmission_type']=search
+  }
+  else if(BUDGET.includes(search.toLowerCase())){
+    payload['budget']=search
+  }
+  console.log("search", search.toString(), TRANSMISSIONTYPES)
+
+  const data = await axiosInstance1.post("/api/search/", payload);
+const brands = data.map((item:any, index:number) => ({BrandName:Object.keys(item)[0], BrandID:index+1}));
+
+// Get first brand and its models
+const firstBrand = brands[0];
+const models = data[0][firstBrand?.BrandName].map((item:any, index:number) => ({ModelName:item, ModelID:index+1}));
+
+
+const userMessage: Message = {
+      id: String(Date.now()),
+      message: `Show me ${search} cars`,
+      render: "text",
+      sender: "user",
+    };
+  const botMessage:Message={
+    id:String(Date.now())+1,
+     message:{brands: brands, models:models},
+      render: "brandModelSelect",
+      sender: "bot",
+  } 
+
+
+   setMessages((prev)=> [...prev, userMessage, botMessage])
+
+
+}
+
+console.log("response", response)
+    return (
     <>
   <Box sx={{marginTop:3}}>
+
     {
-    response?.answers?.map((answer:any, index:number)=>(
-       <Box sx={{ paddingBottom: 2 }} key={index}>
+   response?.answers?.map((answer:any, index:number)=>(
+       <Box sx={{ paddingBottom: 0 }} key={index}>
       <Typography component="p" sx={{ marginBottom: 2, fontSize: '14px',  fontWeight:"" }}>
         <div dangerouslySetInnerHTML={{__html:answer?.text}}/>
       </Typography>
@@ -157,7 +251,7 @@ const [disbleBtn, setdisbleBtn] = useState<string>('');
     {/* JSON block, if present */}
     {answer?.json && (
       <Box sx={{ marginBottom: 2 }}>
-        <RenderJson data={JSON.parse(answer.json)} onCategoryClick={handleClick} />
+        <RenderJson data={JSON.parse(answer.json)} onCategoryClick={handleClick} title={"table"} />
       </Box>
     )}
 
@@ -188,17 +282,33 @@ const [disbleBtn, setdisbleBtn] = useState<string>('');
     )}
 
 
+    
+  </Box>
+))}
+
+
+      </Box>
+    </Box>
+
+    ))
+    }
     <Box
             sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
+        
           gap: 1,
-          marginTop:2
+          marginTop:0
         }}
 
     >
-
       {
+         response?.answers.length < 1 && 
+         <Typography component="p" sx={{ marginBottom: 2, fontSize: '15px',  fontWeight:"" }}>
+        <div dangerouslySetInnerHTML={{__html:"No Data found"}}/>
+      </Typography>
+      }
+ 
+      {
+       
           AdditionalOptions.map((item, idx)=>(
              <Button
             disabled={!!disbleBtn}
@@ -213,16 +323,6 @@ const [disbleBtn, setdisbleBtn] = useState<string>('');
           ))
         }
     </Box>
-  </Box>
-))}
-
-
-      </Box>
-    </Box>
-
-    ))
-    }
-    
         
     </Box>
     </>
