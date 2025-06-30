@@ -7,6 +7,8 @@ import {
   DialogTitle,
   IconButton,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
@@ -29,6 +31,8 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
 }) => {
   const [carDetails, setCarDetails] = useState<CarDetailsType | null>(null);
   const [loading, setLoading] = useState(false);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const fetchCarDetailsWithState = async (carId: number) => {
     setLoading(true);
@@ -96,27 +100,17 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
     <Dialog
       open={open}
       onClose={onClose}
-       PaperProps={{
+      fullScreen={isSmallScreen}
+      PaperProps={{
         sx: {
           width: {
             xs: "100%",
-            sm: "90%",
             md: "60%",
           },
           maxWidth: "700px",
           height: {
             xs: "100vh",
-            sm: "90vh",
             md: "80vh",
-          },
-          maxHeight: "90vh",
-          m: {
-            xs: 0,
-            sm: "auto",
-          },
-          borderRadius: {
-            xs: 0,
-            sm: 2,
           },
         },
       }}
@@ -150,7 +144,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
             {/* Total Reviews */}
             {reviewData.totalReviews && (
               <Typography
-                sx={{ fontWeight: 700, color: "#00bfff", mb: 1 }}
+                sx={{ fontWeight: "bold", color: "#000", mb: 1 }}
                 variant="subtitle1"
               >
                 Total Reviews:
@@ -166,7 +160,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
             {/* Review Summary */}
             {reviewData.summary && (
               <Typography
-                sx={{ fontWeight: 700, color: "#00bfff", mt: 2 }}
+                sx={{ fontWeight: 700, color: "#000", mt: 2 }}
                 variant="subtitle1"
               >
                 Review Summary:
@@ -187,7 +181,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
             {/* Sentiment */}
             {reviewData.sentiment && (
               <Typography
-                sx={{ fontWeight: 700, color: "#00bfff", mt: 2 }}
+                sx={{ fontWeight: 700, color: "#000", mt: 2 }}
                 variant="subtitle1"
               >
                 Sentiment:
@@ -209,7 +203,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
             {reviewData.issues && reviewData.issues.length > 0 && (
               <>
                 <Typography
-                  sx={{ fontWeight: 700, color: "#00bfff", mt: 3 }}
+                  sx={{ fontWeight: 700, color: "#000", mt: 3 }}
                   variant="subtitle1"
                 >
                   Issues:
@@ -232,7 +226,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
                       }}
                     >
                       <CheckCircle
-                        sx={{ color: "#00bfff", fontSize: 16, mr: 1 }}
+                        sx={{ color: "#000", fontSize: 16, mr: 1 }}
                       />
                       <Typography variant="body2" sx={{ fontSize: "14px" }}>
                         {issue}
@@ -247,7 +241,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
             {reviewData.benefits && reviewData.benefits.length > 0 && (
               <>
                 <Typography
-                  sx={{ fontWeight: 700, color: "#00bfff", mt: 3 }}
+                  sx={{ fontWeight: 700, color: "#000", mt: 3 }}
                   variant="subtitle1"
                 >
                   Benefits:
@@ -270,7 +264,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
                       }}
                     >
                       <CheckCircle
-                        sx={{ color: "#00bfff", fontSize: 16, mr: 1 }}
+                        sx={{ color: "#000", fontSize: 16, mr: 1 }}
                       />
                       <Typography variant="body2" sx={{ fontSize: "14px" }}>
                         {benefit}

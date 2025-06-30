@@ -6,6 +6,8 @@ import {
   DialogTitle,
   IconButton,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import ScoreLeftPanel from "./ScoreLeftPanel";
@@ -22,6 +24,8 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
   const [carDetails, setCarDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeItem, setActiveItem] = useState("Engine");
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const fetchCarDetailsWithState = async (carId: number) => {
     setLoading(true);
@@ -50,27 +54,17 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
     <Dialog
       open={open}
       onClose={onClose}
+      fullScreen={isSmallScreen}
       PaperProps={{
         sx: {
           width: {
             xs: "100%",
-            sm: "90%",
             md: "80%",
           },
           maxWidth: "1000px",
           height: {
             xs: "100vh",
-            sm: "90vh",
             md: "80vh",
-          },
-          maxHeight: "90vh",
-          m: {
-            xs: 0,
-            sm: "auto",
-          },
-          borderRadius: {
-            xs: 0,
-            sm: 2,
           },
         },
       }}

@@ -10,6 +10,8 @@ import {
   Slider,
   TextField,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
@@ -24,6 +26,8 @@ const EMIDialog: React.FC<EMIDialogProps> = ({ open, onClose }) => {
   const [interestRate, setInterestRate] = useState(22.8);
   const [loanTerm, setLoanTerm] = useState(5);
   const [emi, setEmi] = useState(0);
+  const theme = useTheme();
+const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const calculateEMI = () => {
     const principal = loanAmount - downPayment;
@@ -43,20 +47,14 @@ const EMIDialog: React.FC<EMIDialogProps> = ({ open, onClose }) => {
     <Dialog
       open={open}
       onClose={onClose}
+      fullScreen={isSmallScreen}
       PaperProps={{
         sx: {
           width: {
             xs: "100%",
-            sm: "100%",
             md: "80%",
           },
           maxWidth: "500px",
-          height: "90vh",
-          maxHeight: "90vh",
-          borderRadius: {
-            xs: 0,
-            sm: 2,
-          },
         },
       }}
     >

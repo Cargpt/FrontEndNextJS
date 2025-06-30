@@ -28,24 +28,25 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
   console.log("CarGallery open state:", open);
 
   const fetchCarDetailsWithState = async (carId: number) => {
-    console.log("Fetching details for carId:", carId);
     setLoading(true);
     try {
-      const response = await axiosInstance1.post("/api/cars-for-prameter/", {
+      const response = await axiosInstance1.post("/api/car-details/", {
         car_id: carId,
       });
-      console.log("API Response:", response?.data);
-      setCarDetails(response?.data[0]);
+      setCarDetails(response?.data);
     } catch (error) {
-      console.error("Error fetching car details:", error);
+      console.error("❌ Error fetching car details:", error);
     } finally {
       setLoading(false);
+      console.log("🏁 Loading finished");
     }
   };
 
   useEffect(() => {
     if (open && carId) {
       fetchCarDetailsWithState(carId);
+    } else {
+      console.log("⏸️ Not fetching - open:", open, "carId:", carId);
     }
   }, [open, carId]);
 
@@ -53,8 +54,8 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
   const [nav2, setNav2] = useState<any>(null);
   const slider1 = useRef<any>(null);
   const slider2 = useRef<any>(null);
-
-  const images = carDetails?.CarImageDetails || [];
+  const images = carDetails?.images || [];
+  console.log("Images array:", images);
 
   return (
     <Dialog
@@ -83,7 +84,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
           sx={{ position: "relative", textAlign: "center", fontWeight: 700 }}
         >
           {carDetails &&
-            `${carDetails.BrandName || ""} ${carDetails.ModelName || ""}`}
+            `${carDetails.Brand || ""} ${carDetails.ModelName || ""}`}
         </Typography>
       </DialogTitle>
       <DialogContent
@@ -128,7 +129,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
                   }}
                 >
                   <Image
-                    src={img.CarImageURL}
+                    src={img.url}
                     alt={`car-image-${index}`}
                     width={600}
                     height={400}
@@ -161,7 +162,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
               {images.map((img: any, index: number) => (
                 <Box key={index} sx={{ p: 1 }}>
                   <Image
-                    src={img.CarImageURL}
+                    src={img.url}
                     alt={`car-thumb-${index}`}
                     width={100}
                     height={100}

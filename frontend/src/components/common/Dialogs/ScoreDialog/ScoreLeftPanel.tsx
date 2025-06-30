@@ -44,7 +44,8 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
     <Box
       sx={{
         width: {
-          xs: "100%",
+          xs: "30%",
+          sm: "40%",
           md: "30%",
         },
         backgroundColor: "#f5f5f5",
@@ -91,7 +92,8 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                 key={index}
                 onClick={() => setActiveItem(item)}
                 style={{
-                  padding: "12px",
+                  // padding: "12px",
+                  padding: window.innerWidth < 600 ? "0px" : "12px",
                   cursor: "pointer",
                   color: isActive ? "#000" : "#555",
                   borderLeft: isActive
@@ -102,7 +104,17 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                   backgroundColor: isActive ? "#e3f2fd" : "transparent",
                 }}
               >
-                <Typography variant="body1">{item}</Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontSize: {
+                      xs: "11.2px",
+                      sm: "0.9rem",
+                    },
+                  }}
+                >
+                  {item}
+                </Typography>
               </li>
             );
           })}

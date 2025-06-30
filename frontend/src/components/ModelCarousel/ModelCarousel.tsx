@@ -182,14 +182,14 @@ const [cookies]=useCookies(["selectedOption"])
                         sx={{
                           textTransform: "capitalize",
                           fontSize: "12px",
-                          fontWeight: "bold",
-                          color: "#fff",
-                          padding: "5px 5px",
-                          borderRadius: "1.1rem 6px",
-                          boxShadow: "rgba(0, 0, 0, 0.1) 2px 2px 10px",
-                          background:
-                            "linear-gradient(150deg, rgb(24, 118, 210), rgb(4, 190, 198))",
-                          width: "calc(50% - 5px)",
+                          // fontWeight: "bold",
+                          // color: "#fff",
+                          // padding: "5px 5px",
+                          // borderRadius: "1.1rem 6px",
+                          // boxShadow: "rgba(0, 0, 0, 0.1) 2px 2px 10px",
+                          // background:
+                          //   "linear-gradient(150deg, rgb(24, 118, 210), rgb(4, 190, 198))",
+                          // width: "calc(50% - 5px)",
                         }}
                         onClick={() => openDialog(type as any, car)}
                       >
