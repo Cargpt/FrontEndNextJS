@@ -19,10 +19,11 @@ import { useChats } from "@/Context/ChatContext";
 import { useBotType } from "@/Context/BotTypeContext";
 
 // Type-safe options
-const brandOptions = ["Toyota", "Honda", "Ford"] as const;
+
 type BrandModelSelectCardProps = {
   handleUserMessage: (message: any) => void;
-  brands: Brand[];
+  brands: Brand[] | any;
+  selectedModels?:ModelProps[]
 };
 import Snackbar from "@mui/material/Snackbar";
 import DialogSelect from "./DialogSelect";
@@ -31,11 +32,12 @@ import { useSnackbar } from "@/Context/SnackbarContext";
 const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   handleUserMessage,
   brands,
+  selectedModels
 }) => {
   const [brand, setBrand] = useState<Brand>(brands[0]);
 
-  const [model, setModel] = useState<ModelProps | null>();
-  const [models, setModels] = useState<ModelProps[]>([]);
+  const [model, setModel] = useState<ModelProps | null>(selectedModels ? selectedModels[0] : null);
+  const [models, setModels] = useState<ModelProps[]>(selectedModels|| []);
   const [carFeatures, setCarFeatures] = useState<CarFeaturesProps>({
     FuelType: ["petrol", "diesel", "electric"],
     TransmissionType: ["manual", "automatic"],
@@ -87,7 +89,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   const { botType } = useBotType();
 
   useEffect(() => {
-    if (brand) {
+    if (brand && !selectedModels){
       setCarFilter({ ...carFilter, brand_name: brand.BrandName });
 
       fetchBrandModes();
@@ -140,6 +142,9 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     setOpenDialouge(false);
   };
 
+
+
+  console.log("brands", brands)
   return (
     <Card
       sx={{
@@ -175,16 +180,18 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
               label="Brand"
               onChange={(e) => {
                 const selectedBrand = brands.find(
-                  (b) => b.BrandID === e.target.value
+                  (b:Brand) => b.BrandID === e.target.value
                 );
                 if (selectedBrand) {
                   setBrand(selectedBrand);
                 }
               }}
             >
-              {brands.map((brand: Brand, index: number) => (
+
+              
+              {Array.isArray(brands) && brands?.map((brand: Brand, index: number) => (
                 <MenuItem key={index} value={brand.BrandID}>
-                  {brand.BrandName}
+                  {brand.BrandName }
                 </MenuItem>
               ))}
             </Select>

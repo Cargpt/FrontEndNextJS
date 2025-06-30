@@ -1,25 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 import { axiosInstance1 } from '@/utils/axiosInstance';
 import { useChats } from '@/Context/ChatContext';
 import { useSnackbar } from '@/Context/SnackbarContext';
 import { useCookies } from 'react-cookie';
+import RenderJson from './JsonRender';
 
-interface MenuItem {
-  label: string;
-}
 
-const menuItems: MenuItem[] = [
-  { label: 'Fuel types' },
-  { label: 'Body types' },
-  { label: 'Manual and Automatic' },
-  { label: 'Technical Details' },
-  { label: 'Brand recommendations' },
-  { label: 'Brand opinion' },
-  { label: 'I know exactly what I want' },
-  { label: 'I need advisor support' },
-  { label: 'Back to Car Research' },
-];
+const AdditionalOptions = [
+
+  "I know exactly what I want",
+  "I need advisor support",
+  "Back to car research"
+
+
+]
+
 
 const CarResearchMenu: React.FC = () => {
 
@@ -27,6 +23,9 @@ const CarResearchMenu: React.FC = () => {
 const {messages, setMessages}=useChats()
 const {showSnackbar}=useSnackbar()
 const [cookies]=useCookies(["selectedOption"])
+
+
+
   const fetchData = async () => {
     const lastMessage = messages[messages.length-1]
     let currentMessage =  typeof lastMessage.message === "string" ? lastMessage.message : cookies.selectedOption
@@ -54,32 +53,94 @@ const [cookies]=useCookies(["selectedOption"])
     fetchData();
   }, [cookies.selectedOption]);
 
-  const handleClick = (label: string) => {
+  const handleClick = (item: any) => {
+    
+    if(typeof item==="string" && item?.toLowerCase()?.includes("back") ){
+
+      const newMessage:Message[]=[
+                {
+          id: Date.now().toString(),
+          render: 'text',
+          sender: 'user',
+          message: item,
+          prompt:true,
+        },
+        {
+          id: Date.now().toString(),
+          render: 'researchOncar',
+          sender: 'bot',
+          message: {},
+          prompt:true,
+        }
+      ]
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        ...newMessage
+        
+      ]);
+      setdisbleBtn(item)
+
+    }
+    else if(typeof item==="string"){
       setMessages((prevMessages) => [
         ...prevMessages,
         {
           id: Date.now().toString(),
           render: 'text',
           sender: 'user',
-          message: label,
-          prompt: label.includes("Best")? false : true,
+          message: item,
+          prompt:false,
         },
       ]);
-      setdisbleBtn(label)
+      setdisbleBtn(item)
+    }
 
-    console.log(`Clicked: ${label}`);
+    else if(item?.prompt__text){
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        {
+          id: Date.now().toString(),
+          render: 'text',
+          sender: 'user',
+          message: item?.prompt__text,
+          prompt:true,
+        },
+      ]);
+      setdisbleBtn(item?.prompt__text)
+    }
+    else if(item?.Brand && item?.Models){
+const userMessage: Message = {
+      id: String(Date.now()),
+      message: `Show me ${item?.Brand} cars`,
+      render: "text",
+      sender: "user",
+    };
+  const botMessage:Message={
+    id:String(),
+     message:{brands: [{BrandID:1, BrandName:item?.Brand}], models:item?.Models?.map((model:string, index:number)=> ({ModelID:index+1, ModelName:model}))},
+      render: "brandModelSelect",
+      sender: "bot",
+  } 
+  
+  const newMessages = [userMessage, botMessage]
+   setMessages((prev)=>[...prev, ...newMessages])
+        console.log("item", item, userMessage)
+
+    }
+    console.log("item", item)
     // Add logic for navigation or state change here
   };
 const [disbleBtn, setdisbleBtn] = useState<string>('');
-
+ 
   return (
+    <>
   <Box sx={{marginTop:3}}>
     {
     response?.answers?.map((answer:any, index:number)=>(
        <Box sx={{ paddingBottom: 2 }} key={index}>
-      <Box component="p" sx={{ marginBottom: 2, fontSize: '14px',  fontWeight:"" }}>
-        {answer?.text}
-      </Box>
+      <Typography component="p" sx={{ marginBottom: 2, fontSize: '14px',  fontWeight:"" }}>
+        <div dangerouslySetInnerHTML={{__html:answer?.text}}/>
+      </Typography>
       <Box
         sx={{
           display: 'flex',
@@ -88,26 +149,83 @@ const [disbleBtn, setdisbleBtn] = useState<string>('');
           
         }}
       >
-        {answer?.recommended_prompts?.map((item:any, index:null) => (
+
+
+      {response?.answers?.map((answer: any, index: number) => (
+  <Box sx={{ paddingBottom: 2 }} key={index}>
+    
+    {/* JSON block, if present */}
+    {answer?.json && (
+      <Box sx={{ marginBottom: 2 }}>
+        <RenderJson data={JSON.parse(answer.json)} onCategoryClick={handleClick} />
+      </Box>
+    )}
+
+    {/* Prompt buttons block, if present */}
+    {answer?.recommended_prompts?.length > 0 && (
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 1,
+        }}
+      >
+        {answer.recommended_prompts.map((item: any, idx: number) => (
           <Button
-           disabled={disbleBtn? true:false}
-            key={index}
-            variant={item.prompt__text?.includes(disbleBtn)? "contained":"outlined"}
+            disabled={!!disbleBtn}
+            key={idx}
+            variant={item.prompt__text === disbleBtn ? 'contained' : 'outlined'}
             size="small"
-            onClick={() => handleClick(item.prompt__text)}
+            onClick={() => handleClick(item)}
             sx={{ fontSize: '14px', padding: '5px 10px', textTransform: 'none' }}
           >
             {item.prompt__text}
           </Button>
         ))}
+       
+        
+      </Box>
+    )}
+
+
+    <Box
+            sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 1,
+          marginTop:2
+        }}
+
+    >
+
+      {
+          AdditionalOptions.map((item, idx)=>(
+             <Button
+            disabled={!!disbleBtn}
+            key={idx}
+            variant={item === disbleBtn ? 'contained' : 'outlined'}
+            size="small"
+            onClick={() => handleClick(item)}
+            sx={{ fontSize: '14px', padding: '5px 10px', textTransform: 'none' }}
+          >
+            {item}
+          </Button>
+          ))
+        }
+    </Box>
+  </Box>
+))}
+
+
       </Box>
     </Box>
 
     ))
     }
     
-   
+        
     </Box>
+    </>
   );
 };
 

@@ -58,7 +58,6 @@ const BestCars: React.FC<BestCarProps> = ({setBrands}) => {
       sender: 'user',
 
   }
-  console.log("brandModel?.brand?.toLowerCase()", brandModel?.brand?.toLowerCase())
   setMessages((prev)=>[...prev, userMessage])
   
           
@@ -114,11 +113,14 @@ const BestCars: React.FC<BestCarProps> = ({setBrands}) => {
         response?.answers?.map((answer:any, index:number)=>{
           const tableData = JSON.parse(answer?.json)
           const keys = Object.keys(tableData)
+          const values = Object.values(tableData)
+          console.log("value", values)
           return          (
            <TableContainer component={Paper} sx={{ mb: 3 }} key={index}>
         <Table>
           <TableHead>
             <TableRow sx={{ backgroundColor: '#424242' }}>
+              
               
               <TableCell sx={{ color: 'white' }}>Category</TableCell>
               <TableCell sx={{ color: 'white' }}>Models</TableCell>

@@ -87,7 +87,7 @@ interface Message {
     | "recommendationOption"
     | "researchOncar"
     |"BestCarOption";
-  message: string | any;
+  message:  any ;
   data?: any;
   prompt?: boolean;
 }
