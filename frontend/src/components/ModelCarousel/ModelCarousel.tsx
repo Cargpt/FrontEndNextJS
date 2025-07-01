@@ -171,7 +171,7 @@ const ModelCarousel: React.FC<Props> = ({
                       { label: "AI Car Advisor Score:", type: "score" },
                       { label: "EMI", type: "emi" },
                       { label: "User Sentiments:", type: "sentiment" },
-                    ].map(({ label, type }) => (
+                    ].map(({ label, type }, index) => (
                       <Button
                         key={type}
                         variant="contained"
@@ -190,7 +190,7 @@ const ModelCarousel: React.FC<Props> = ({
                         }}
                         onClick={() => openDialog(type as any, car)}
                       >
-                        <span>{label}</span>
+                        <span>{label} {index===0 && car?.AIScore} {index===2 && car?.AISummary}  </span>
                       </Button>
                     ))}
                   </Stack>
