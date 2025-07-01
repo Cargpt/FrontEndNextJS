@@ -8,6 +8,8 @@ import {
   Box,
   CircularProgress,
   CardMedia,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -25,6 +27,8 @@ type CarGalleryProps = {
 const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
   const [loading, setLoading] = useState(false);
   const [carDetails, setCarDetails] = useState<any>(null);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const fetchCarDetailsWithState = async (carId: number) => {
     setLoading(true);
@@ -59,14 +63,18 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
     <Dialog
       open={open}
       onClose={onClose}
+      fullScreen={isSmallScreen}
       PaperProps={{
         sx: {
-          width: { xs: "100%", sm: "90%", md: "60%" },
-          maxWidth: "700px",
-          height: { xs: "100vh", sm: "90vh", md: "80vh" },
-          maxHeight: "90vh",
-          m: { xs: 0, sm: "auto" },
-          borderRadius: { xs: 0, sm: 2 },
+          width: {
+            xs: "100%",
+            md: "80%",
+          },
+          maxWidth: "1000px",
+          height: {
+            xs: "100vh",
+            md: "80vh",
+          },
         },
       }}
     >
@@ -76,7 +84,10 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
           onClick={onClose}
           sx={{ position: "absolute", left: 8, top: 8 }}
         >
-          <KeyboardBackspaceSharp onClick={onClose} sx={{cursor: "pointer"}} />
+          <KeyboardBackspaceSharp
+            onClick={onClose}
+            sx={{ cursor: "pointer" }}
+          />
         </IconButton>
         <Typography
           sx={{ position: "relative", textAlign: "center", fontWeight: 700 }}
@@ -138,15 +149,15 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
                       borderRadius: "10px",
                     }}
                   /> */}
-                   <CardMedia
-                  component="img"
-                  image={img.CarImageURL}
-                  alt="car-img"
-                  height="294"
-                  sx={{
-                    cursor: "pointer",
-                  }}
-                />
+                  <CardMedia
+                    component="img"
+                    image={img.CarImageURL}
+                    alt="car-img"
+                    height="294"
+                    sx={{
+                      cursor: "pointer",
+                    }}
+                  />
                 </Box>
               ))}
             </Slider>
