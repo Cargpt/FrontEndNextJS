@@ -1,4 +1,4 @@
-type Method = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type Method = "GET" | "POST" | "PUT" | "DELETE";
 
 interface RequestConfig {
   headers?: Record<string, string>;
@@ -19,9 +19,9 @@ function serializeParams(params: Record<string, string | number>): string {
 }
 
 function getTokenFromCookies(): string | null {
-  const name = 'token=';
+  const name = "token=";
   const decodedCookie = decodeURIComponent(document.cookie);
-  const cookies = decodedCookie.split(';');
+  const cookies = decodedCookie.split(";");
 
   for (let cookie of cookies) {
     cookie = cookie.trim();
@@ -34,11 +34,11 @@ function getTokenFromCookies(): string | null {
 }
 
 function createAxiosLike(
-  baseURL = '',
+  baseURL = "",
   getHeaders?: () => Record<string, string>
 ) {
   const defaultHeaders = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
 
   async function request<T = any>(
@@ -51,9 +51,9 @@ function createAxiosLike(
     const timeout = config.timeout ?? 10000;
 
     // Handle GET params
-    if (method === 'GET' && config.params) {
+    if (method === "GET" && config.params) {
       const queryString = serializeParams(config.params);
-      url += (url.includes('?') ? '&' : '?') + queryString;
+      url += (url.includes("?") ? "&" : "?") + queryString;
     }
 
     const headers: Record<string, string> = {
@@ -68,7 +68,7 @@ function createAxiosLike(
       signal: controller.signal,
     };
 
-    if (data && method !== 'GET') {
+    if (data && method !== "GET") {
       options.body = JSON.stringify(data);
     }
 
@@ -88,14 +88,14 @@ function createAxiosLike(
         throw error;
       }
 
-      const contentType = response.headers.get('Content-Type') ?? '';
-      if (contentType.includes('application/json')) {
+      const contentType = response.headers.get("Content-Type") ?? "";
+      if (contentType.includes("application/json")) {
         return (await response.json()) as T;
       }
       return (await response.text()) as unknown as T;
     } catch (error: any) {
-      if (error.name === 'AbortError') {
-        throw { message: 'Request timed out', timeout: true };
+      if (error.name === "AbortError") {
+        throw { message: "Request timed out", timeout: true };
       }
       throw error;
     }
@@ -103,18 +103,18 @@ function createAxiosLike(
 
   return {
     get: <T = any>(url: string, config?: RequestConfig) =>
-      request<T>('GET', url, undefined, config),
+      request<T>("GET", url, undefined, config),
     post: <T = any>(url: string, data?: any, config?: RequestConfig) =>
-      request<T>('POST', url, data, config),
+      request<T>("POST", url, data, config),
     put: <T = any>(url: string, data?: any, config?: RequestConfig) =>
-      request<T>('PUT', url, data, config),
+      request<T>("PUT", url, data, config),
     delete: <T = any>(url: string, config?: RequestConfig) =>
-      request<T>('DELETE', url, undefined, config),
+      request<T>("DELETE", url, undefined, config),
   };
 }
 
 // Base URL from environment variable
-const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
+const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
 // Axios-like instance without token
 const axiosInstance = createAxiosLike(baseURL);

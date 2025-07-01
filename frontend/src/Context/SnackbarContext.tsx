@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Snackbar, SnackbarOrigin } from '@mui/material';
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import { Snackbar, SnackbarOrigin } from "@mui/material";
 
 type SnackbarPosition = SnackbarOrigin;
 type SnackbarOptions = SnackbarPosition;
@@ -8,17 +8,24 @@ interface SnackbarContextType {
   showSnackbar: (message: string, options?: SnackbarOptions) => void;
 }
 
-const SnackbarContext = createContext<SnackbarContextType | undefined>(undefined);
+const SnackbarContext = createContext<SnackbarContextType | undefined>(
+  undefined
+);
 
-export const SnackbarProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const SnackbarProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [position, setPosition] = useState<SnackbarPosition>({
-    vertical: 'bottom',
-    horizontal: 'center',
+    vertical: "bottom",
+    horizontal: "center",
   });
 
-  const showSnackbar = (msg: string, options: SnackbarOptions = { vertical: 'bottom', horizontal: 'center' }) => {
+  const showSnackbar = (
+    msg: string,
+    options: SnackbarOptions = { vertical: "bottom", horizontal: "center" }
+  ) => {
     setMessage(msg);
     setPosition(options);
     setOpen(true);
@@ -46,7 +53,7 @@ export const SnackbarProvider: React.FC<{ children: ReactNode }> = ({ children }
 export const useSnackbar = (): SnackbarContextType => {
   const context = useContext(SnackbarContext);
   if (!context) {
-    throw new Error('useSnackbar must be used within a SnackbarProvider');
+    throw new Error("useSnackbar must be used within a SnackbarProvider");
   }
   return context;
 };

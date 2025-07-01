@@ -11,6 +11,7 @@ import {
   Button,
   useMediaQuery,
   useTheme,
+  CardMedia,
 } from "@mui/material";
 import Image from "next/image";
 import carimg from "../../../public/assets/card-img.png";
@@ -48,18 +49,17 @@ const ModelCarousel: React.FC<Props> = ({
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [carInfo, setCarInfo] = useState<any>(null);
   const [dialog, setDialog] = useState<typeProps>({ open: false, type: null });
-  
-  const{messages, setMessages}=useChats()
 
+  const { messages, setMessages } = useChats();
 
-const [cookies]=useCookies(["selectedOption"])
+  const [cookies] = useCookies(["selectedOption"]);
 
-    const userMessage: Message = {
-            id: String(Date.now() + 1),
-            message: cookies.selectedOption,
-            render: "text", // Change this to 'carOptions' if you want to show the carousel
-            sender: "user",
-          };
+  const userMessage: Message = {
+    id: String(Date.now() + 1),
+    message: cookies.selectedOption,
+    render: "text",
+    sender: "user",
+  };
   const openDialog = (
     type: "score" | "emi" | "sentiment" | "gallery" | null,
     data: any
@@ -106,12 +106,11 @@ const [cookies]=useCookies(["selectedOption"])
     ],
   };
 
+  const backTOIntial = () => {
+    setMessages((prev) => [...prev, userMessage]);
+  };
 
-  const backTOIntial = () =>{
-    setMessages((prev)=>[...prev, userMessage])
-  }
-
-  console.log("cookies.selectedOption", cookies.selectedOption)
+  console.log("cookies.selectedOption", cookies.selectedOption);
   return (
     <>
       <Box
@@ -128,32 +127,26 @@ const [cookies]=useCookies(["selectedOption"])
             <Box key={car.CarID} sx={{ px: 1, width: "100%" }}>
               <Card
                 sx={{
-                  width: "100%",
-                  height: "100%",
+                  maxWidth: 345,
                   mx: "auto",
                   boxShadow: "0px 3px 6px rgba(0,0,0,0.1)",
                   display: "flex",
                   flexDirection: "column",
                 }}
               >
+                <CardMedia
+                  component="img"
+                  image={car.CarImageDetails?.[0]?.CarImageURL || carimg.src}
+                  alt="car-img"
+                  height="294"
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                  onClick={() => openDialog("gallery", car)}
+                />
                 <CardContent
                   sx={{ display: "flex", flexDirection: "column", gap: "13px" }}
                 >
-                  <Stack alignItems="center" mb={2}>
-                    <Image
-                      src={car.CarImageDetails?.[0]?.CarImageURL || carimg}
-                      alt="car-img"
-                      height={200}
-                      width={330}
-                      style={{
-                        objectFit: "contain",
-                        width: "100%",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => openDialog("gallery", car)}
-                    />
-                  </Stack>
-
                   <Stack direction="row" justifyContent="space-around" mb={2}>
                     <Typography variant="h6" fontSize={15}>
                       {car.BrandName} {car.ModelName}
@@ -270,17 +263,15 @@ const [cookies]=useCookies(["selectedOption"])
             I need advisor support
           </Button>
 
-          {
-            cookies.selectedOption=='I want to do more research on cars'  &&
+          {cookies.selectedOption == "I want to do more research on cars" && (
             <Button
-            variant="outlined"
-            onClick={backTOIntial}
-            sx={{ textTransform: "capitalize", fontSize: 13 }}
-          >
-            Back to car research
-          </Button>
-          }
-
+              variant="outlined"
+              onClick={backTOIntial}
+              sx={{ textTransform: "capitalize", fontSize: 13 }}
+            >
+              Back to car research
+            </Button>
+          )}
         </Stack>
       </Box>
 

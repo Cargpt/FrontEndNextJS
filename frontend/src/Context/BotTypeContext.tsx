@@ -15,13 +15,10 @@ export const BotTypeProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [botType, setBotType] = useState<BotType>("");
-  const {addChat}=useChats()
-    useEffect(() => {
-       if(botType) 
-      return () => {
-        
-      };
-    }, [botType]);
+  const { addChat } = useChats();
+  useEffect(() => {
+    if (botType) return () => {};
+  }, [botType]);
 
   return (
     <BotTypeContext.Provider value={{ botType, setBotType }}>
