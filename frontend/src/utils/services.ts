@@ -60,14 +60,9 @@ export const MORERESEARCHONCAROPTIONS = [
   // "I need advisor support",
   // "Back to Car Research",
 ];
-export const FuelTypeOptions = [
-  
-]
+export const FuelTypeOptions = [];
 
-
-
-
-export  const CustomFilter = [
+export const CustomFilter = [
   "Hatchback",
   "Sedan",
   "SUV",
@@ -89,13 +84,5 @@ export  const CustomFilter = [
   "20-25L",
   "25-30L",
   "30-35L",
-  "35-40L"
-]
-
-
-
-
-
-
-
- 
+  "35-40L",
+];

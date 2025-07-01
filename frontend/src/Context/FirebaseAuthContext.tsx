@@ -4,8 +4,8 @@ import React, {
   useState,
   useEffect,
   ReactNode,
-} from 'react';
-import { initializeApp } from 'firebase/app';
+} from "react";
+import { initializeApp } from "firebase/app";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -18,25 +18,25 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
   User,
-} from 'firebase/auth';
+} from "firebase/auth";
 import {
   getFirestore,
   doc,
   getDoc,
   setDoc,
   Firestore,
-} from 'firebase/firestore';
-import { useCookies } from 'react-cookie';
+} from "firebase/firestore";
+import { useCookies } from "react-cookie";
 
 // Firebase Config (from .env)
 const firebaseConfig = {
-  apiKey:process.env.NEXT_PUBLIC_apiKey,
-  authDomain:process.env.NEXT_PUBLIC_authDomain,
-  projectId:process.env.NEXT_PUBLIC_projectId,
-  storageBucket:process.env.NEXT_PUBLIC_storageBucket,
-  messagingSenderId:process.env.NEXT_PUBLIC_messagingSenderId,
-  appId:process.env.NEXT_PUBLIC_appId,
-  measurementId:process.env.NEXT_PUBLIC_measurementId,
+  apiKey: process.env.NEXT_PUBLIC_apiKey,
+  authDomain: process.env.NEXT_PUBLIC_authDomain,
+  projectId: process.env.NEXT_PUBLIC_projectId,
+  storageBucket: process.env.NEXT_PUBLIC_storageBucket,
+  messagingSenderId: process.env.NEXT_PUBLIC_messagingSenderId,
+  appId: process.env.NEXT_PUBLIC_appId,
+  measurementId: process.env.NEXT_PUBLIC_measurementId,
 };
 
 // Firebase initialization
@@ -55,7 +55,10 @@ interface FirebaseContextType {
     password: string,
     isAdmin?: boolean
   ) => Promise<any>;
-  signInUserWithEmailAndPassword: (email: string, password: string) => Promise<any>;
+  signInUserWithEmailAndPassword: (
+    email: string,
+    password: string
+  ) => Promise<any>;
   signInWithGoogle: () => Promise<User>;
   signInWithFacebook: () => Promise<any>;
   signInWithGitHub: () => Promise<any>;
@@ -64,10 +67,13 @@ interface FirebaseContextType {
 }
 
 // --- Context + Hook ---
-const FirebaseContext = createContext<FirebaseContextType | undefined>(undefined);
+const FirebaseContext = createContext<FirebaseContextType | undefined>(
+  undefined
+);
 export const useFirebase = () => {
   const context = useContext(FirebaseContext);
-  if (!context) throw new Error('useFirebase must be used within FirebaseProvider');
+  if (!context)
+    throw new Error("useFirebase must be used within FirebaseProvider");
   return context;
 };
 
@@ -76,10 +82,10 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-   const [cookies, setCookie]= useCookies(['token'])
+  const [cookies, setCookie] = useCookies(["token"]);
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedUserRole = localStorage.getItem('userRole');
+    const storedUser = localStorage.getItem("user");
+    const storedUserRole = localStorage.getItem("userRole");
 
     if (storedUser && storedUserRole) {
       setUser(JSON.parse(storedUser));
@@ -90,28 +96,28 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (authUser) => {
       if (authUser) {
         setUser(authUser);
-        const userDoc = doc(firestore, 'users', authUser.uid);
+        const userDoc = doc(firestore, "users", authUser.uid);
         try {
           const docSnap = await getDoc(userDoc);
-          let role = 'user';
+          let role = "user";
           if (docSnap.exists()) {
-            role = docSnap.data()?.role || 'user';
+            role = docSnap.data()?.role || "user";
           } else {
             await setDoc(userDoc, { role });
           }
           setUserRole(role);
-          localStorage.setItem('user', JSON.stringify(authUser));
+          localStorage.setItem("user", JSON.stringify(authUser));
           // setCookie('token', authUser?.accessToken)
-          localStorage.setItem('userRole', role);
+          localStorage.setItem("userRole", role);
         } catch (err) {
           console.error(err);
-          setUserRole('user');
+          setUserRole("user");
         }
       } else {
         setUser(null);
         setUserRole(null);
-        localStorage.removeItem('user');
-        localStorage.removeItem('userRole');
+        localStorage.removeItem("user");
+        localStorage.removeItem("userRole");
       }
       setLoading(false);
     });
@@ -126,9 +132,13 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
     password: string,
     isAdmin = false
   ) => {
-    const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-    await setDoc(doc(firestore, 'users', userCredential.user.uid), {
-      role: isAdmin ? 'admin' : 'user',
+    const userCredential = await createUserWithEmailAndPassword(
+      firebaseAuth,
+      email,
+      password
+    );
+    await setDoc(doc(firestore, "users", userCredential.user.uid), {
+      role: isAdmin ? "admin" : "user",
     });
     return userCredential;
   };
@@ -137,15 +147,18 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
     firebaseSignIn(firebaseAuth, email, password);
 
   const signInWithGoogle = async () => {
-    const result = await signInWithPopup(firebaseAuth, new GoogleAuthProvider());
+    const result = await signInWithPopup(
+      firebaseAuth,
+      new GoogleAuthProvider()
+    );
     const user = result.user;
 
-    const userDocRef = doc(firestore, 'users', user.uid);
+    const userDocRef = doc(firestore, "users", user.uid);
     const userDocSnap = await getDoc(userDocRef);
 
     if (!userDocSnap.exists()) {
       await setDoc(userDocRef, {
-        role: 'user',
+        role: "user",
         displayName: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
@@ -153,18 +166,21 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
       });
     }
 
-    localStorage.setItem('user', JSON.stringify(user));
-    localStorage.setItem('userRole', 'user');
+    localStorage.setItem("user", JSON.stringify(user));
+    localStorage.setItem("userRole", "user");
     return user;
   };
 
-  const signInWithFacebook = () => signInWithPopup(firebaseAuth, new FacebookAuthProvider());
-  const signInWithGitHub = () => signInWithPopup(firebaseAuth, new GithubAuthProvider());
-  const signInWithTwitter = () => signInWithPopup(firebaseAuth, new TwitterAuthProvider());
+  const signInWithFacebook = () =>
+    signInWithPopup(firebaseAuth, new FacebookAuthProvider());
+  const signInWithGitHub = () =>
+    signInWithPopup(firebaseAuth, new GithubAuthProvider());
+  const signInWithTwitter = () =>
+    signInWithPopup(firebaseAuth, new TwitterAuthProvider());
 
   const signOut = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('userRole');
+    localStorage.removeItem("user");
+    localStorage.removeItem("userRole");
     return firebaseSignOut(firebaseAuth);
   };
 

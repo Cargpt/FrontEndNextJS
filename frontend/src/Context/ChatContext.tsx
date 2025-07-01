@@ -19,7 +19,7 @@ import { useCookies } from "react-cookie";
 
 type ChatsContextType = {
   chats: Message[];
-  addChat: (chat: Omit<Message, 'id'>) => void;
+  addChat: (chat: Omit<Message, "id">) => void;
   setCars: React.Dispatch<React.SetStateAction<any[]>>;
   cars: any[];
   messages: Message[];
@@ -28,21 +28,20 @@ type ChatsContextType = {
   filter: CarFilter;
 };
 
-
-
 const ChatsContext = createContext<ChatsContextType | undefined>(undefined);
 
-export const ChatsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const ChatsProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [chats, setChats] = useState<Message[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
-const [cookies]=useCookies(['selectedOption'])
-  
-  
-    const [filter, setFilter] = useState<CarFilter>(DEFAULTSEARCHPARAMS);
-  
-   const [cars, setCars] = useState<any[]>([])
-  const addChat = (chat: Omit<Message, 'id'>) => {
-    setChats(prev => [...prev, { id: Date.now().toString(), ...chat }]);
+  const [cookies] = useCookies(["selectedOption"]);
+
+  const [filter, setFilter] = useState<CarFilter>(DEFAULTSEARCHPARAMS);
+
+  const [cars, setCars] = useState<any[]>([]);
+  const addChat = (chat: Omit<Message, "id">) => {
+    setChats((prev) => [...prev, { id: Date.now().toString(), ...chat }]);
   };
 
   const updateFilter = (name: string, value: number | string) => {

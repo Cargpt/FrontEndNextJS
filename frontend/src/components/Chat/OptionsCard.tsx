@@ -8,29 +8,31 @@ import {
   Stack,
   CircularProgress,
   Button,
-} from '@mui/material';
-import Image from 'next/image';
-import bot from "../../../public/assets/lisa.svg"
-import BrandModelSelectCard from './Model/BrandModelSelectCard';
-import ModelCarousel from '../ModelCarousel/ModelCarousel';
-import { useChats } from '@/Context/ChatContext';
-import AdviceSelectionCard from './Model/AdviceSelectionCard';
-import { BUDGET, MORERESEARCHONCAROPTIONS } from '@/utils/services';
-import CarModel from './Model/AdviceSelectionCard/CarOptions';
-import { axiosInstance1 } from '@/utils/axiosInstance';
-import CarRecommendationTable from './Model/AdviceSelectionCard/Recommondation';
-import OptionsCard from './Model/AdviceSelectionCard/OptionCard';
-import { useSnackbar } from '@/Context/SnackbarContext';
-import { useCookies } from 'react-cookie';
-import { KeyboardBackspaceSharp } from '@mui/icons-material';
-import { useRouter } from 'next/navigation';
-import CarResearchMenu from '../MoreResearchOnCar/MoreResearchOnCar';
-import BestCars from '../MoreResearchOnCar/carList';
-
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import Image from "next/image";
+import bot from "../../../public/assets/lisa.svg";
+import BrandModelSelectCard from "./Model/BrandModelSelectCard";
+import ModelCarousel from "../ModelCarousel/ModelCarousel";
+import { useChats } from "@/Context/ChatContext";
+import AdviceSelectionCard from "./Model/AdviceSelectionCard";
+import { BUDGET, MORERESEARCHONCAROPTIONS } from "@/utils/services";
+import CarModel from "./Model/AdviceSelectionCard/CarOptions";
+import { axiosInstance1 } from "@/utils/axiosInstance";
+import CarRecommendationTable from "./Model/AdviceSelectionCard/Recommondation";
+import OptionsCard from "./Model/AdviceSelectionCard/OptionCard";
+import { useSnackbar } from "@/Context/SnackbarContext";
+import { useCookies } from "react-cookie";
+import { KeyboardBackspaceSharp } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
+import CarResearchMenu from "../MoreResearchOnCar/MoreResearchOnCar";
+import BestCars from "../MoreResearchOnCar/carList";
 
 const ChatBox: React.FC = () => {
   const { cars, messages, setMessages, filter } = useChats();
-
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [loading, setLoading] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
 
@@ -60,16 +62,14 @@ const ChatBox: React.FC = () => {
         setTimeout(() => {
           const botMessage: Message = {
             id: String(Date.now()),
-            message: {brands},
-            render: "brandModelSelect", // Change this to 'carOptions' if you want to show the carousel
+            message: { brands },
+            render: "brandModelSelect",
             sender: "bot",
           };
           setMessages((prev) => [...prev, botMessage]);
           setLoading(false);
         }, 1000);
-      }
-
-      else if (
+      } else if (
         lastMsg.sender === "user" &&
         lastMsg.message === "I need advisor support"
       ) {
@@ -78,14 +78,13 @@ const ChatBox: React.FC = () => {
           const botMessage: Message = {
             id: String(Date.now()),
             message: {},
-            render: "selectOption", // Change this to 'carOptions' if you want to show the carousel
+            render: "selectOption",
             sender: "bot",
           };
           setMessages((prev) => [...prev, botMessage]);
           setLoading(false);
         }, 1000);
-      }
-     else if (
+      } else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
         lastMsg.message?.includes("budget set to")
@@ -95,14 +94,13 @@ const ChatBox: React.FC = () => {
           const botMessage: Message = {
             id: String(Date.now()),
             message: {},
-            render: "flueOption", // Change this to 'carOptions' if you want to show the carousel
+            render: "flueOption",
             sender: "bot",
           };
           setMessages((prev) => [...prev, botMessage]);
           setLoading(false);
         }, 1000);
-      }
-     else if (
+      } else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
         lastMsg.message?.includes("fuel type set to")
@@ -112,14 +110,13 @@ const ChatBox: React.FC = () => {
           const botMessage: Message = {
             id: String(Date.now()),
             message: {},
-            render: "bodyOption", // Change this to 'carOptions' if you want to show the carousel
+            render: "bodyOption",
             sender: "bot",
           };
           setMessages((prev) => [...prev, botMessage]);
           setLoading(false);
         }, 1000);
-      }
-      else if (
+      } else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
         lastMsg.message?.includes("body type set to")
@@ -129,14 +126,29 @@ const ChatBox: React.FC = () => {
           const botMessage: Message = {
             id: String(Date.now()),
             message: {},
-            render: "transmissionOption", // Change this to 'carOptions' if you want to show the carousel
+            render: "transmissionOption",
             sender: "bot",
           };
           setMessages((prev) => [...prev, botMessage]);
           setLoading(false);
         }, 1000);
-      }
-      else if (
+      } else if (
+        lastMsg.sender === "user" &&
+        typeof lastMsg.message == "string" &&
+        lastMsg.message?.includes("transmission type set to")
+      ) {
+        setLoading(true);
+        setTimeout(() => {
+          const botMessage: Message = {
+            id: String(Date.now()),
+            message: {},
+            render: "brandOption",
+            sender: "bot",
+          };
+          setMessages((prev) => [...prev, botMessage]);
+          setLoading(false);
+        }, 1000);
+      } else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
         lastMsg.message?.includes("transmission type set to")
@@ -152,92 +164,80 @@ const ChatBox: React.FC = () => {
           setMessages((prev) => [...prev, botMessage]);
           setLoading(false);
         }, 1000);
+      } else if (lastMsg.sender === "user" && lastMsg.message?.brand_name) {
+        setLoading(true);
+        setTimeout(() => {
+          const botMessage: Message = {
+            id: String(Date.now()),
+            message: {},
+            render: "recommendationOption", // Change this to 'carOptions' if you want to show the carousel
+            sender: "bot",
+          };
+          setMessages((prev) => [...prev, botMessage]);
+          setLoading(false);
+        }, 1000);
+      } else if (
+        lastMsg.sender === "user" &&
+        typeof lastMsg.message == "string" &&
+        lastMsg.message?.includes("I want to do more research on car")
+      ) {
+        setLoading(true);
+        setTimeout(() => {
+          const botMessage: Message = {
+            id: String(Date.now()),
+            message: {},
+            render: "researchOncar", // Change this to 'carOptions' if you want to show the carousel
+            sender: "bot",
+          };
+          setMessages((prev) => [...prev, botMessage]);
+          setLoading(false);
+        }, 1000);
+      } else if (
+        lastMsg.sender === "user" &&
+        typeof lastMsg.message == "string" &&
+        lastMsg.prompt
+      ) {
+        setLoading(true);
+        setTimeout(() => {
+          const botMessage: Message = {
+            id: String(Date.now()),
+            message: messages[messages.length - 1].message,
+            render: "researchOncar", // Change this to 'carOptions' if you want to show the carousel
+            sender: "bot",
+          };
+          setMessages((prev) => [...prev, botMessage]);
+          setLoading(false);
+        }, 1000);
+      } else if (
+        lastMsg.sender === "user" &&
+        typeof lastMsg.message == "string" &&
+        lastMsg.message?.includes("Best")
+      ) {
+        setLoading(true);
+        setTimeout(() => {
+          const botMessage: Message = {
+            id: String(Date.now()),
+            message: {},
+            render: "BestCarOption", // Change this to 'carOptions' if you want to show the carousel
+            sender: "bot",
+          };
+          setMessages((prev) => [...prev, botMessage]);
+          setLoading(false);
+        }, 1000);
       }
-       else if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('transmission type set to')) {
-          setLoading(true);
-          setTimeout(() => {
-            const botMessage: Message = {
-              id: String(Date.now()),
-              message: {},
-              render:"brandOption", // Change this to 'carOptions' if you want to show the carousel
-              sender: 'bot',
-            };
-            setMessages(prev => [...prev, botMessage]);
-            setLoading(false);
-          }, 1000);
-        }
-
-        else if (lastMsg.sender === 'user' && lastMsg.message?.brand_name) {
-          setLoading(true);
-          setTimeout(() => {
-            const botMessage: Message = {
-              id: String(Date.now()),
-              message: {},
-              render:"recommendationOption", // Change this to 'carOptions' if you want to show the carousel
-              sender: 'bot',
-            };
-            setMessages(prev => [...prev, botMessage]);
-            setLoading(false);
-          }, 1000);
-        }
-
-        else if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('I want to do more research on car')) {
-          setLoading(true);
-          setTimeout(() => {
-            const botMessage: Message = {
-              id: String(Date.now()),
-              message: {},
-              render:"researchOncar", // Change this to 'carOptions' if you want to show the carousel
-              sender: 'bot',
-            };
-            setMessages(prev => [...prev, botMessage]);
-            setLoading(false);
-          }, 1000);
-        }
-
-
-  else if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" &&  lastMsg.prompt) {
-          setLoading(true);
-          setTimeout(() => {
-            const botMessage: Message = {
-              id: String(Date.now()),
-              message: messages[messages.length-1].message,
-              render:"researchOncar", // Change this to 'carOptions' if you want to show the carousel
-              sender: 'bot',
-            };
-            setMessages(prev => [...prev, botMessage]);
-            setLoading(false);
-          }, 1000);
-        }
-
-     else if (lastMsg.sender === 'user' && typeof lastMsg.message=="string" && lastMsg.message?.includes('Best')) {
-          setLoading(true);
-          setTimeout(() => {
-            const botMessage: Message = {
-              id: String(Date.now()),
-              message: {},
-              render:"BestCarOption", // Change this to 'carOptions' if you want to show the carousel
-              sender: 'bot',
-            };
-            setMessages(prev => [...prev, botMessage]);
-            setLoading(false);
-          }, 1000);
-        }
-// else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
-//         setLoading(true);
-//         setTimeout(() => {
-//           const botMessage: Message = {
-//             id: String(Date.now()),
-//             message: ,
-//             render:"brandModelSelect", // Change this to 'carOptions' if you want to show the carousel
-//             sender: 'bot',
-//           };
-//           setMessages(prev => [...prev, botMessage]);
-//           setLoading(false);
-//         }, 1000);
-//       }
-
-
+      // else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
+      //         setLoading(true);
+      //         setTimeout(() => {
+      //           const botMessage: Message = {
+      //             id: String(Date.now()),
+      //             message: ,
+      //             render:"brandModelSelect", // Change this to 'carOptions' if you want to show the carousel
+      //             sender: 'bot',
+      //           };
+      //           setMessages(prev => [...prev, botMessage]);
+      //           setLoading(false);
+      //         }, 1000);
+      //       }
       else if (lastMsg.sender === "user" && lastMsg.message?.brand_name) {
         setLoading(true);
         setTimeout(() => {
@@ -278,9 +278,12 @@ const ChatBox: React.FC = () => {
   >([]);
 
   const handleCarRecommendation = async () => {
-    const data = await axiosInstance1.post("/api/cargpt/car-for-para-advisor/", {
-      ...filter,
-    });
+    const data = await axiosInstance1.post(
+      "/api/cargpt/car-for-para-advisor/",
+      {
+        ...filter,
+      }
+    );
     if (data.data.length === 0) return false;
     setRecommondatedCarModels(data.data);
   };
@@ -294,20 +297,17 @@ const ChatBox: React.FC = () => {
       });
 
       return false;
-    }
-    else{
+    } else {
       const userMessage: Message = {
-      id: String(Date.now()),
-      message: { [filter.brand_name]: remondatedCarModels },
-      render: "carOptions",
-      sender: "bot",
-    };
-    setMessages((prev) => [...prev, userMessage]);
-    setRecommondatedCarModels([]);
-    return true
-
+        id: String(Date.now()),
+        message: { [filter.brand_name]: remondatedCarModels },
+        render: "carOptions",
+        sender: "bot",
+      };
+      setMessages((prev) => [...prev, userMessage]);
+      setRecommondatedCarModels([]);
+      return true;
     }
-    
   };
 
   const onBack = () => {
@@ -385,15 +385,13 @@ const ChatBox: React.FC = () => {
           />
         );
       case "selectedFilter":
-        return <CarRecommendationTable  recommendations={filter} /> 
-      case  'recommendationOption':
-        return <OptionsCard onBack={onBack} onShowCars={onShowCar} />
-      case 'researchOncar':
-        return <CarResearchMenu/> 
-      case 'BestCarOption':
-        return <BestCars setBrands={setBrands} />
-
-
+        return <CarRecommendationTable recommendations={filter} />;
+      case "recommendationOption":
+        return <OptionsCard onBack={onBack} onShowCars={onShowCar} />;
+      case "researchOncar":
+        return <CarResearchMenu />;
+      case "BestCarOption":
+        return <BestCars setBrands={setBrands} />;
 
       default:
         return null;
@@ -417,7 +415,7 @@ const ChatBox: React.FC = () => {
       },
     ];
     newsMessages.push(userMessage);
-    setMessages((prev)=>[...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
   };
   useEffect(() => {
     if (messages.length === 0) return;
@@ -464,8 +462,7 @@ const ChatBox: React.FC = () => {
     router.push("/");
   };
 
-
-  console.log("message", messages)
+  console.log("message", messages);
   return (
     <>
       <Paper
@@ -473,10 +470,10 @@ const ChatBox: React.FC = () => {
         sx={{
           p: 2,
           width: "100%",
-
           display: "flex",
           flexDirection: "column",
           mx: "auto",
+          padding: isSmallScreen ? "0px" : "16px",
         }}
       >
         <Button
@@ -499,11 +496,23 @@ const ChatBox: React.FC = () => {
           {messages.map((msg, index) => (
             <Stack
               key={msg.id}
-  direction="row"
-  spacing={1}
-  alignItems="flex-start"
-  justifyContent={msg.sender === "user" ? "flex-end" : "flex-start"}
-  sx={{ mb: 2 }}
+              direction={isSmallScreen ? "column" : "row"}
+              spacing={1}
+              alignItems={
+                isSmallScreen
+                  ? "center"
+                  : msg.sender === "user"
+                  ? "flex-end"
+                  : "flex-start"
+              }
+              justifyContent={
+                isSmallScreen
+                  ? "center"
+                  : msg.sender === "user"
+                  ? "flex-end"
+                  : "flex-start"
+              }
+              sx={{ mb: 2 }}
             >
               {msg.sender === "bot" && (
                 <Image src={bot} alt="bot" width={40} height={40} />
@@ -511,13 +520,13 @@ const ChatBox: React.FC = () => {
               <Paper
                 sx={{
                   p: 1.5,
-                  maxWidth: "75%",
+                  maxWidth: isSmallScreen ? "100%" : "75%",
                   bgcolor:
                     msg.sender === "user" ? "rgb(211, 227, 255)" : "gray.100",
-                  color: msg.sender === "user" ? "black" : "black",
+                  color: "black",
                 }}
               >
-                <div key={index}>{renderMessage(msg)}</div>
+                {renderMessage(msg)}
               </Paper>
               {msg.sender === "user" && (
                 <Avatar sx={{ bgcolor: "secondary.main" }}>U</Avatar>
