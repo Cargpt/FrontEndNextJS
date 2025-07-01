@@ -7,6 +7,7 @@ import {
   Typography,
   Box,
   CircularProgress,
+  CardMedia,
 } from "@mui/material";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -125,7 +126,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
                     mb: 2,
                   }}
                 >
-                  <Image
+                  {/* <Image
                     src={img.CarImageURL}
                     alt={`car-image-${index}`}
                     width={600}
@@ -136,7 +137,16 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
                       maxHeight: "60vh",
                       borderRadius: "10px",
                     }}
-                  />
+                  /> */}
+                   <CardMedia
+                  component="img"
+                  image={img.CarImageURL}
+                  alt="car-img"
+                  height="294"
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                />
                 </Box>
               ))}
             </Slider>

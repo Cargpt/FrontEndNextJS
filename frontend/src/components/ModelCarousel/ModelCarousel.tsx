@@ -149,7 +149,7 @@ const ModelCarousel: React.FC<Props> = ({
                 >
                   <Stack direction="row" justifyContent="space-around" mb={2}>
                     <Typography variant="h6" fontSize={15}>
-                      {car.BrandName} {car.ModelName}
+                      {car.BrandName} {car.ModelName} {car.VariantName}
                     </Typography>
                     <Typography
                       variant="h6"
