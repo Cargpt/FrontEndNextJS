@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import React from "react";
 
 type Props = {
@@ -8,6 +8,10 @@ type Props = {
 };
 
 const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
+    const theme = useTheme();
+  
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
   const sectionKeyMap: Record<string, string> = {
     Engine: "Engine",
     Interior: "Interior",
@@ -89,33 +93,44 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
 
             return (
               <li
-                key={index}
-                onClick={() => setActiveItem(item)}
-                style={{
-                  // padding: "12px",
-                  padding: window.innerWidth < 600 ? "0px" : "12px",
-                  cursor: "pointer",
-                  color: isActive ? "#000" : "#555",
-                  borderLeft: isActive
-                    ? "4px solid #1976d2"
-                    : "4px solid transparent",
-                  transition: "all 0.3s ease",
-                  fontSize: ".9rem",
-                  backgroundColor: isActive ? "#e3f2fd" : "transparent",
-                }}
-              >
-                <Typography
-                  variant="body1"
-                  sx={{
-                    fontSize: {
-                      xs: "11.2px",
-                      sm: "0.9rem",
-                    },
-                  }}
-                >
-                  {item}
-                </Typography>
-              </li>
+  key={item}
+  onClick={() => setActiveItem(item)}
+  style={{
+    cursor: "pointer",
+    color: isActive ? "#000" : "#555",
+    borderLeft: isActive ? "4px solid #1976d2" : "4px solid transparent",
+    transition: "all 0.3s ease",
+    fontSize: ".9rem",
+    backgroundColor: isActive ? "#e3f2fd" : "transparent",
+    display: "flex",
+    alignItems: "center",
+    flexDirection: isSmallScreen ? "column" : "row",
+    padding: isSmallScreen ? "8px 0" : "12px",
+    gap: isSmallScreen ? "4px" : "12px",
+    textAlign: isSmallScreen ? "center" : "left",
+  }}
+>
+  <img
+    src={`/assets/icons/${index}${index === 1 ? ".svg" : ".png"}`}
+    width={20}
+    height={20}
+    style={{
+      marginBottom: isSmallScreen ? "4px" : 0,
+    }}
+  />
+  <Typography
+    variant="body1"
+    sx={{
+      fontSize: {
+        xs: "11.2px",
+        sm: "0.9rem",
+      },
+    }}
+  >
+    {item}
+  </Typography>
+</li>
+
             );
           })}
         </ul>

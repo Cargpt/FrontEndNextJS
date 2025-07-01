@@ -191,7 +191,7 @@ const ScoreRightPanel = ({ activeItem, carDetails, loading }: Props) => {
             sx={{
               display: "grid",
               gridTemplateColumns: {
-                xs: "1fr",
+                xs: "1fr 1fr",
                 sm: "1fr 1fr",
                 md: "1fr 1fr",
                 lg: "1fr 1fr 1fr",
@@ -257,7 +257,7 @@ const ScoreRightPanel = ({ activeItem, carDetails, loading }: Props) => {
             sx={{
               display: "grid",
               gridTemplateColumns: {
-                xs: "1fr",
+                xs: "1fr 1fr",
                 sm: "1fr 1fr",
                 md: "1fr 1fr",
                 lg: "1fr 1fr 1fr",
