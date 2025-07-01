@@ -169,7 +169,7 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                     },
                     display: "flex",
                     alignItems: "center",
-                    gap: 0.5,
+                 
                   }}
                 >
                   {item}
@@ -182,19 +182,24 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                         (v) => v === 1
                       ).length;
                       return (
-                        <Typography
-                          component="span"
-                          variant="body2"
-                          sx={{
-                            fontWeight: 600,
-                            marginLeft: 1,
-                            color: "text.secondary",
-                            fontSize: {
-                              xs: "10px",
-                              sm: "0.75rem",
-                            },
-                          }}
-                        >
+<Typography
+  component="span"
+  variant="body2"
+  sx={{
+    fontWeight: 600,
+    marginLeft: 1,
+    color: "text.secondary",
+    fontSize: {
+      xs: "10px",
+      sm: "0.75rem",
+    },
+    display: {
+      xs: "none",  // 👈 Hides on extra-small screens (xs)
+      sm: "inline", // 👈 Shows from small screens and up
+    },
+  }}
+>
+
                           ({activeFeatures}/{totalFeatures})
                         </Typography>
                       );
