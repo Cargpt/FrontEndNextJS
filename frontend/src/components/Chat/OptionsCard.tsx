@@ -37,7 +37,7 @@ const ChatBox: React.FC = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["selectedOPtion"]);
   const fetchBrands = async () => {
     try {
-      const data = await axiosInstance1.get("/api/brands/");
+      const data = await axiosInstance1.get("/api/cargpt/brands/");
 
       setBrands(data?.data);
     } catch (error) {}
@@ -278,7 +278,7 @@ const ChatBox: React.FC = () => {
   >([]);
 
   const handleCarRecommendation = async () => {
-    const data = await axiosInstance1.post("/api/car-for-para-advisor/", {
+    const data = await axiosInstance1.post("/api/cargpt/car-for-para-advisor/", {
       ...filter,
     });
     if (data.data.length === 0) return false;
@@ -499,11 +499,11 @@ const ChatBox: React.FC = () => {
           {messages.map((msg, index) => (
             <Stack
               key={msg.id}
-              direction="row"
-              spacing={1}
-              alignItems="flex-start"
-              justifyContent={msg.sender === "user" ? "flex-end" : "flex-start"}
-              sx={{ mb: 2 }}
+  direction="row"
+  spacing={1}
+  alignItems="flex-start"
+  justifyContent={msg.sender === "user" ? "flex-end" : "flex-start"}
+  sx={{ mb: 2 }}
             >
               {msg.sender === "bot" && (
                 <Image src={bot} alt="bot" width={40} height={40} />

@@ -30,7 +30,7 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
   const fetchCarDetailsWithState = async (carId: number) => {
     setLoading(true);
     try {
-      const response = await axiosInstance1.post("/api/car-details/", {
+      const response = await axiosInstance1.post("/api/cargpt/car-details/", {
         car_id: carId,
       });
       setCarDetails(response?.data);

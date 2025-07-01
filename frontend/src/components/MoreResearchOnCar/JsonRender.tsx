@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
@@ -20,11 +20,13 @@ interface JsonRow {
 interface Props {
   data: { [category: string]: JsonRow };
   onCategoryClick?: (category: any) => void;
+  title:string
 
 }
 
-const DynamicTable: React.FC<Props> = ({ data, onCategoryClick }) => {
+const DynamicTable: React.FC<Props> = ({ data, onCategoryClick, title }) => {
   const categories = Object.keys(data);
+  const [isDisabled, setisDisabled] = useState<string>("");
 
   // Collect all unique keys from all rows
   const allColumns = Array.from(
@@ -37,8 +39,8 @@ const DynamicTable: React.FC<Props> = ({ data, onCategoryClick }) => {
 
   return (
     <Box sx={{ mt: 4 }}>
-      <Typography variant="h6" gutterBottom>
-        Dynamic SUV Table
+      <Typography variant="h6" gutterBottom sx={{fontWeight:"bold"}}>
+       {title}
       </Typography>
       <TableContainer component={Paper}>
         <Table>
@@ -55,9 +57,13 @@ const DynamicTable: React.FC<Props> = ({ data, onCategoryClick }) => {
               <TableRow key={i}>
                 <TableCell>
                   <Button
-                    variant="outlined"
+                  disabled={allColumns.includes("Price")  || allColumns.includes("Ground Clearance") || allColumns.includes("Power Transmission") || (isDisabled? true:false)}
+                    variant={category===isDisabled? "contained" : "outlined"}
                     size="small"
-                    onClick={() => onCategoryClick?.({...data[category], Brand:category})}
+                    onClick={() => {
+                      onCategoryClick?.({...data[category], Brand:category})
+                      setisDisabled(category)
+                    }}
                     sx={{ textTransform: 'none', fontSize: '14px' }}
                   >
                     {category}

@@ -57,7 +57,7 @@ const [loading, setLoading] = useState(false);
     try {
 
           const payload = formData
-          const  response = await  axiosInstance.post('/api/login/',  payload)
+          const  response = await  axiosInstance.post('/api/cargpt/login/',  payload)
           handleSetCookie(response?.token)
 
     } catch (error:any) {
@@ -133,7 +133,7 @@ finally {
                     // Include unique user ID
                   };
 
-                  const response = await axiosInstance.post(`/api/createUser/`, payload, {
+                  const response = await axiosInstance.post(`/api/cargpt/createUser/`, payload, {
                     headers: {
                       Authorization: `Bearer ${idToken}`,
                     },
@@ -157,7 +157,7 @@ finally {
                   userId: uniqueUserId,  // Include unique user ID
                 };
 
-                const response = await axiosInstance.post(`/api/createUser/`, payload, {
+                const response = await axiosInstance.post(`/api/cargpt/createUser/`, payload, {
 
                 });
 

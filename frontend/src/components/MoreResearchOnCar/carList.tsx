@@ -44,7 +44,7 @@ const BestCars: React.FC<BestCarProps> = ({setBrands}) => {
    const handleMenuClick = async (brandModel:any) => {
 
         try {
-          const data = await axiosInstance1.get("/api/brands/");
+          const data = await axiosInstance1.get("/api/cargpt/brands/");
 
           const brands = data?.data?.filter((brand:Brand)=>brandModel?.brand?.toLowerCase()?.includes(brand.BrandName.toLowerCase()))
           
@@ -74,7 +74,7 @@ const BestCars: React.FC<BestCarProps> = ({setBrands}) => {
      
   
         try {
-          const data = await axiosInstance1.get(`/api/prompt-search/?text=${messages[messages.length-2]?.message}`);
+          const data = await axiosInstance1.get(`/api/cargpt/prompt-search/?text=${messages[messages.length-2]?.message}`);
            if(!data){
             showSnackbar('No data found for the given query', {'vertical': 'bottom', 'horizontal': 'center'});
             return;

@@ -64,7 +64,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       brand_id: brand?.BrandID,
     };
     try {
-      const data = await axiosInstance1.post("/api/models/", payload);
+      const data = await axiosInstance1.post("/api/cargpt/models/", payload);
 
       setModels(data?.models || []);
       setModel(data?.models[0] || null);
@@ -78,7 +78,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     };
     try {
       const data = await axiosInstance1.post(
-        "/api/brand-model-parameters/",
+        "/api/cargpt/brand-model-parameters/",
         payload
       );
 
@@ -112,7 +112,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     try {
       const payload = { ...carFilter };
       const data = await axiosInstance1.post(
-        "/api/cars-for-prameter/",
+        "/api/cargpt/cars-for-prameter/",
         payload
       );
       if (data?.data.length === 0) {

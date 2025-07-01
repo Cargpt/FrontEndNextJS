@@ -63,3 +63,39 @@ export const MORERESEARCHONCAROPTIONS = [
 export const FuelTypeOptions = [
   
 ]
+
+
+
+
+export  const CustomFilter = [
+  "Hatchback",
+  "Sedan",
+  "SUV",
+  "Crossover",
+  "MPV",
+
+  "Manual",
+  "Automatic",
+
+  "Petrol",
+  "Diesel",
+  "CNG",
+  "Hybrid",
+  "Electric",
+
+  "5-10L",
+  "10-15L",
+  "15-20L",
+  "20-25L",
+  "25-30L",
+  "30-35L",
+  "35-40L"
+]
+
+
+
+
+
+
+
+ 
