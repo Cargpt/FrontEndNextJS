@@ -126,7 +126,11 @@ const ModelCarousel: React.FC<Props> = ({
                       alt="car-img"
                       height={200}
                       width={330}
-                      style={{ objectFit: "contain", width: "100%" }}
+                      style={{
+                        objectFit: "contain",
+                        width: "100%",
+                        cursor: "pointer",
+                      }}
                       onClick={() => openDialog("gallery", car)}
                     />
                   </Stack>

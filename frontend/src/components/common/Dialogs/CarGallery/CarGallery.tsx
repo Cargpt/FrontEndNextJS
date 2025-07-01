@@ -24,8 +24,6 @@ type CarGalleryProps = {
 const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
   const [loading, setLoading] = useState(false);
   const [carDetails, setCarDetails] = useState<any>(null);
-  console.log("CarGallery received carId:", carId);
-  console.log("CarGallery open state:", open);
 
   const fetchCarDetailsWithState = async (carId: number) => {
     setLoading(true);
@@ -38,7 +36,6 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
       console.error("❌ Error fetching car details:", error);
     } finally {
       setLoading(false);
-      console.log("🏁 Loading finished");
     }
   };
 
@@ -78,7 +75,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
           onClick={onClose}
           sx={{ position: "absolute", left: 8, top: 8 }}
         >
-          <KeyboardBackspaceSharp />
+          <KeyboardBackspaceSharp onClick={onClose} sx={{cursor: "pointer"}} />
         </IconButton>
         <Typography
           sx={{ position: "relative", textAlign: "center", fontWeight: 700 }}
@@ -129,7 +126,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
                   }}
                 >
                   <Image
-                    src={img.url}
+                    src={img.CarImageURL}
                     alt={`car-image-${index}`}
                     width={600}
                     height={400}
@@ -160,9 +157,9 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
               centerMode={false}
             >
               {images.map((img: any, index: number) => (
-                <Box key={index} sx={{ p: 1 }}>
+                <Box key={index} sx={{ p: 1, cursor: "pointer" }}>
                   <Image
-                    src={img.url}
+                    src={img.CarImageURL}
                     alt={`car-thumb-${index}`}
                     width={100}
                     height={100}
