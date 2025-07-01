@@ -56,12 +56,9 @@ onChange?.(label.toLowerCase().replace(/\s+/g, "_"), isNaN(Number(options[0])) ?
     onChange={handleChange}
     sx={{
       display: "flex",
-      flexDirection: {
-        xs: "column", // stack vertically on extra-small screens
-        sm: "row",    // align horizontally from small screens and up
-      },
+       flexDirection: "row",  // ✅ always row layout
+    flexWrap: "wrap", 
       gap: 1, // space between radio buttons
-      flexWrap: "wrap", // allow wrap if too many options
     }}
   >
     {options.map((option) => (
@@ -70,12 +67,10 @@ onChange?.(label.toLowerCase().replace(/\s+/g, "_"), isNaN(Number(options[0])) ?
         value={option}
         control={<Radio size="small" />}
         label={option}
-        sx={{
-          minWidth: {
-            xs: "100%",  // each radio takes full width on mobile
-            sm: "auto",  // shrink to content on larger screens
-          },
-        }}
+ sx={{
+        flex: "1 1 auto", // ✅ grow/shrink evenly
+        minWidth: "fit-content", // ✅ or set a fixed width if preferred
+      }}
       />
     ))}
   </RadioGroup>
