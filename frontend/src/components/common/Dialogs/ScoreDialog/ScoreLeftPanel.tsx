@@ -92,8 +92,8 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                 key={index}
                 onClick={() => setActiveItem(item)}
                 style={{
-                  // padding: "12px",
-                  padding: window.innerWidth < 600 ? "0px" : "12px",
+                  padding: "12px",
+                  // padding: window.innerWidth < 600 ? "0px" : "12px",
                   cursor: "pointer",
                   color: isActive ? "#000" : "#555",
                   borderLeft: isActive
