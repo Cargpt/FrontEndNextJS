@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   Box,
   Avatar,
@@ -227,19 +227,7 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
-      // else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
-      //         setLoading(true);
-      //         setTimeout(() => {
-      //           const botMessage: Message = {
-      //             id: String(Date.now()),
-      //             message: ,
-      //             render:"brandModelSelect", // Change this to 'carOptions' if you want to show the carousel
-      //             sender: 'bot',
-      //           };
-      //           setMessages(prev => [...prev, botMessage]);
-      //           setLoading(false);
-      //         }, 1000);
-      //       }
+   
       else if (lastMsg.sender === "user" && lastMsg.message?.brand_name) {
         setLoading(true);
         setTimeout(() => {
@@ -386,9 +374,9 @@ const ChatBox: React.FC = () => {
       case "recommendationOption":
         return <OptionsCard onBack={onBack} onShowCars={onShowCar} />;
       case "researchOncar":
-        return <CarResearchMenu />;
-      case "BestCarOption":
-        return <BestCars setBrands={setBrands} />;
+        return <CarResearchMenu/>;
+      // case "BestCarOption":
+      //   return <BestCars setBrands={setBrands} />;
 
       default:
         return null;
@@ -448,9 +436,11 @@ const ChatBox: React.FC = () => {
   useEffect(() => {
     if (messages.length === 0) return;
 
-    if (bottomRef.current) {
+     setTimeout(() => {
+      if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
+     }, 1000);
   }, [messages]);
 
   const router = useRouter();
@@ -463,6 +453,7 @@ const ChatBox: React.FC = () => {
   return (
     <>
       <Paper
+       
         elevation={3}
         sx={{
           p: 2,
@@ -472,6 +463,7 @@ const ChatBox: React.FC = () => {
           mx: "auto",
           padding: isSmallScreen ? "0px" : "16px",
         }}
+      
       >
         <Button
           variant="outlined"
@@ -481,6 +473,15 @@ const ChatBox: React.FC = () => {
           <KeyboardBackspaceSharp />
         </Button>
 
+ <Box
+        // sx={{
+        //   flexGrow: 1, // Allows the message area to fill available space
+        //   overflowY: 'auto', // Enables vertical scrolling
+        //   p: 2,
+        //   // Light blue background
+        // }}
+        ref={bottomRef}/// Attach the ref here
+      >
         {/* Message List */}
        {messages.map((msg) => (
   <Box
@@ -524,6 +525,7 @@ const ChatBox: React.FC = () => {
     </Paper>
   </Box>
 ))}
+</Box>
 
       </Paper>
       <div ref={bottomRef} />
