@@ -515,13 +515,27 @@ const ChatBox: React.FC = () => {
               sx={{ mb: 2 }}
             >
               {msg.sender === "bot" && (
-                <Image src={bot} alt="bot" width={40} height={40} style={{ alignSelf: "flex-start" }} />
+                <Image
+                  src={bot}
+                  alt="bot"
+                  width={40}
+                  height={40}
+                  style={{ alignSelf: "flex-start" }}
+                />
               )}
               <Paper
                 sx={{
                   p: 1.5,
-                  width: isSmallScreen ? "100%" : "auto",
-                  maxWidth: isSmallScreen ? "100%" : "75%",
+                  width: isSmallScreen
+                    ? msg.sender === "bot"
+                      ? "100%"
+                      : "75%"
+                    : "auto",
+                  maxWidth: isSmallScreen
+                    ? msg.sender === "bot"
+                      ? "100%"
+                      : "75%"
+                    : "75%",
                   bgcolor:
                     msg.sender === "user" ? "rgb(211, 227, 255)" : "gray.100",
                   color: "black",
@@ -529,8 +543,13 @@ const ChatBox: React.FC = () => {
               >
                 {renderMessage(msg)}
               </Paper>
+
               {msg.sender === "user" && (
-                <Avatar sx={{ bgcolor: "secondary.main", alignSelf: "flex-end" }}>U</Avatar>
+                <Avatar
+                  sx={{ bgcolor: "secondary.main", alignSelf: "flex-end" }}
+                >
+                  U
+                </Avatar>
               )}
             </Stack>
           ))}
