@@ -125,7 +125,7 @@ const TeslaCard: React.FC = () => {
           ))}
         </Stack>
 
-        {/* Actions */}
+        {/* Actions
         <Grid container spacing={2}>
           <Grid item xs={6}>
             <Button variant="outlined" fullWidth>
@@ -137,7 +137,7 @@ const TeslaCard: React.FC = () => {
               Contact Dealer
             </Button>
           </Grid>
-        </Grid>
+        </Grid> */}
       </CardContent>
     </Card>
   );
