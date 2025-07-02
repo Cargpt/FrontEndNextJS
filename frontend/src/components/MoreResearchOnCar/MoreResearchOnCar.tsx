@@ -310,6 +310,7 @@ const CarResearchMenu: React.FC = () => {
                 fontSize: "14px",
                 padding: "5px 10px",
                 textTransform: "none",
+                marginRight:"8px"
               }}
             >
               {item}
