@@ -153,8 +153,8 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                               sm: "0.75rem",
                             },
                             display: {
-                              xs: "none", // 👈 Hides on extra-small screens (xs)
-                              sm: "inline", // 👈 Shows from small screens and up
+                              xs: "none",
+                              sm: "inline",
                             },
                           }}
                         >
