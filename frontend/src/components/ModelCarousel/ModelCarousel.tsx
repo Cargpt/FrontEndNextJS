@@ -26,6 +26,7 @@ import speed from "../../../public/assets/hugeiconinterfacesolidspeedtest6425-am
 import CarGallery from "../common/Dialogs/CarGallery/CarGallery";
 import { useCookies } from "react-cookie";
 import { useChats } from "@/Context/ChatContext";
+import TeslaCard from "../Chat/Model/Cards/Car";
 
 type Props = {
   onClick?: () => void;
@@ -300,6 +301,7 @@ const ModelCarousel: React.FC<Props> = ({
           )}
         </Stack>
       </Box>
+      {/* <TeslaCard/> */}
 
       {/* Dialogs */}
       {dialog.type === "gallery" && (

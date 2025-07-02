@@ -1,16 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import CookiesClientProvider from "@/providers/CookiesClientProvider";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { Roboto } from 'next/font/google';
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const roboto = Roboto({
+  weight: ['400', '700'], // Specify the weights you need (e.g., normal and bold)
+  style: ['normal', 'italic'], // Specify styles if needed
+  subsets: ['latin'], // Only load the Latin subset to reduce file size
+  display: 'swap', // Helps prevent layout shift by displaying a fallback font while Roboto loads
 });
 
 export const metadata: Metadata = {
@@ -24,8 +22,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html className={roboto.className} lang="en">
+      <body>
         
           <CookiesClientProvider> {/* <-- Wrap your children with the client provider */}
 

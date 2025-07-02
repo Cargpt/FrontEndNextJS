@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   Box,
   Avatar,
@@ -179,7 +179,9 @@ const ChatBox: React.FC = () => {
       } else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
-        lastMsg.message?.includes("I want to do more research on car")
+        (lastMsg.message?.includes("I want to do more research on car") 
+        ||
+         lastMsg.message?.includes("Advanced filters for car searc"))
       ) {
         setLoading(true);
         setTimeout(() => {
@@ -225,19 +227,7 @@ const ChatBox: React.FC = () => {
           setLoading(false);
         }, 1000);
       }
-      // else if (lastMsg.sender === 'user' &&  lastMsg.message.includes("Show me")) {
-      //         setLoading(true);
-      //         setTimeout(() => {
-      //           const botMessage: Message = {
-      //             id: String(Date.now()),
-      //             message: ,
-      //             render:"brandModelSelect", // Change this to 'carOptions' if you want to show the carousel
-      //             sender: 'bot',
-      //           };
-      //           setMessages(prev => [...prev, botMessage]);
-      //           setLoading(false);
-      //         }, 1000);
-      //       }
+   
       else if (lastMsg.sender === "user" && lastMsg.message?.brand_name) {
         setLoading(true);
         setTimeout(() => {
@@ -265,11 +255,6 @@ const ChatBox: React.FC = () => {
       sender: "user",
     };
 
-    // // const newsMessages: Message[] = [...messages.slice(0, messages.length - 1), {
-    // //   ...lastItem,
-    // //   message: "I know exactly what I want"
-    // // }];
-    // newsMessages.push(userMessage);
     setMessages((prev) => [...prev, userMessage]);
   };
 
@@ -389,9 +374,9 @@ const ChatBox: React.FC = () => {
       case "recommendationOption":
         return <OptionsCard onBack={onBack} onShowCars={onShowCar} />;
       case "researchOncar":
-        return <CarResearchMenu />;
-      case "BestCarOption":
-        return <BestCars setBrands={setBrands} />;
+        return <CarResearchMenu/>;
+      // case "BestCarOption":
+      //   return <BestCars setBrands={setBrands} />;
 
       default:
         return null;
@@ -451,9 +436,11 @@ const ChatBox: React.FC = () => {
   useEffect(() => {
     if (messages.length === 0) return;
 
-    if (bottomRef.current) {
+     setTimeout(() => {
+      if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
+     }, 1000);
   }, [messages]);
 
   const router = useRouter();
@@ -466,6 +453,7 @@ const ChatBox: React.FC = () => {
   return (
     <>
       <Paper
+       
         elevation={3}
         sx={{
           p: 2,
@@ -475,6 +463,7 @@ const ChatBox: React.FC = () => {
           mx: "auto",
           padding: isSmallScreen ? "0px" : "16px",
         }}
+      
       >
         <Button
           variant="outlined"
@@ -484,88 +473,60 @@ const ChatBox: React.FC = () => {
           <KeyboardBackspaceSharp />
         </Button>
 
+ <Box
+        // sx={{
+        //   flexGrow: 1, // Allows the message area to fill available space
+        //   overflowY: 'auto', // Enables vertical scrolling
+        //   p: 2,
+        //   // Light blue background
+        // }}
+        ref={bottomRef}/// Attach the ref here
+      >
         {/* Message List */}
-        <Box
-          sx={{
-            flexGrow: 1,
-            overflowY: "auto",
-            mb: 2,
-            pr: 1,
-          }}
-        >
-          {messages.map((msg, index) => (
-            <Stack
-              key={msg.id}
-              direction={isSmallScreen ? "column" : "row"}
-              spacing={1}
-              alignItems={
-                isSmallScreen
-                  ? "center"
-                  : msg.sender === "user"
-                  ? "flex-end"
-                  : "flex-start"
-              }
-              justifyContent={
-                isSmallScreen
-                  ? "center"
-                  : msg.sender === "user"
-                  ? "flex-end"
-                  : "flex-start"
-              }
-              sx={{ mb: 2 }}
-            >
-              {msg.sender === "bot" && (
-                <Image
-                  src={bot}
-                  alt="bot"
-                  width={40}
-                  height={40}
-                  style={{ alignSelf: "flex-start" }}
-                />
-              )}
-              <Paper
-                sx={{
-                  p: 1.5,
-                  width: isSmallScreen
-                    ? msg.sender === "bot"
-                      ? "100%"
-                      : "75%"
-                    : "auto",
-                  maxWidth: isSmallScreen
-                    ? msg.sender === "bot"
-                      ? "100%"
-                      : "75%"
-                    : "75%",
-                  bgcolor:
-                    msg.sender === "user" ? "rgb(211, 227, 255)" : "gray.100",
-                  color: "black",
-                  padding: isSmallScreen
-                    ? msg.sender === "bot"
-                      ? "0px"
-                      : "12px"
-                    : "12px",
-                }}
-              >
-                {renderMessage(msg)}
-              </Paper>
+       {messages.map((msg) => (
+  <Box
+    key={msg.id}
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
+      mb: 2,
+      mt:{xs:4, sm:1},
+      p:{ xs: 2, sm: 0 },
+      textAlign: msg.sender === "user" ? "right" : "left",
+    }}
+  >
+    {/* Avatar/Icons on top */}
+    {msg.sender === "bot" && (
+      <Box sx={{ mb: 0.5 }}>
+        <Image src={bot} alt="bot" width={32} height={32} />
+      </Box>
+    )}
 
-              {msg.sender === "user" && (
-                <Avatar
-                  sx={{ bgcolor: "secondary.main", alignSelf: "flex-end" }}
-                >
-                  U
-                </Avatar>
-              )}
-            </Stack>
-          ))}
+    {msg.sender === "user" && (
+      <Box sx={{ mb: 0.5 }}>
+        <Avatar sx={{ bgcolor: "secondary.main", width: 32, height: 32 }}>
+          U
+        </Avatar>
+      </Box>
+    )}
 
-          {loading && (
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Image src={bot} alt="bot" width={40} height={40} />
-              <CircularProgress size={20} />
-            </Stack>
-          )}
-        </Box>
+    {/* Message Bubble */}
+    <Paper
+      sx={{
+        p: 1.5,
+        maxWidth: isSmallScreen ? "100%" : "75%",
+        bgcolor:
+          msg.sender === "user" ? "rgb(211, 227, 255)" : "grey.100",
+        color: "black",
+      }}
+    >
+      {renderMessage(msg)}
+    </Paper>
+  </Box>
+))}
+</Box>
+
       </Paper>
       <div ref={bottomRef} />
     </>

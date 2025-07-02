@@ -19,9 +19,6 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
@@ -38,5 +35,55 @@ a {
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
+  }
+}
+
+
+
+/* Custom Scrollbar Styles */
+
+/* For WebKit browsers (Chrome, Safari, Edge, Opera, etc.) */
+::-webkit-scrollbar {
+  width: 6px;  /* Smaller width for vertical scrollbar */
+  height: 6px; /* Smaller height for horizontal scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f0f0f0; /* Light gray track */
+  border-radius: 3px; /* Slightly rounded corners for track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cccccc; /* Light gray thumb */
+  border-radius: 3px; /* Rounded corners for thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b0b0b0; /* Slightly darker gray on hover */
+}
+
+/* For Firefox */
+/* Note: Firefox's 'thin' is a predefined width; you can't set exact pixels. */
+/* 'scrollbar-color' sets thumb-color track-color */
+* { /* Apply to all elements, or be more specific if needed */
+  scrollbar-width: thin; /* 'auto' | 'thin' | 'none' */
+  scrollbar-color: #cccccc #f0f0f0; /* light gray thumb, lighter gray track */
+}
+
+/* Optional: For old Edge/IE to hide default scrollbars if you were implementing custom ones */
+/* (Less relevant for modern Edge which supports WebKit pseudo-elements) */
+/*
+html, body, .my-custom-scroll-container {
+  -ms-overflow-style: none;
+}
+*/
+@media (max-width: 768px) {
+  .MuiBox-root {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .MuiBox-root::-webkit-scrollbar {
+    display: none;
   }
 }

@@ -98,16 +98,9 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                 style={{
                   cursor: "pointer",
                   color: isActive ? "#000" : "#555",
-                  borderLeft: !isSmallScreen
-                    ? isActive
-                      ? "4px solid #1976d2"
-                      : "4px solid transparent"
-                    : "none",
-                  borderBottom: isSmallScreen
-                    ? isActive
-                      ? "4px solid #1976d2"
-                      : "4px solid transparent"
-                    : "none",
+                  borderBottom: isActive
+                    ? "1px solid #1976d2"
+                    : "1px solid transparent",
                   transition: "all 0.3s ease",
                   fontSize: ".9rem",
                   backgroundColor: isActive ? "#e3f2fd" : "transparent",

@@ -30,6 +30,7 @@ const AdditionalOptions = [
   "Back to car research",
 ];
 
+
 const CarResearchMenu: React.FC = () => {
   const [response, setResponse] = useState<any>(null);
   const { messages, setMessages } = useChats();
@@ -214,18 +215,15 @@ const CarResearchMenu: React.FC = () => {
     setMessages((prev) => [...prev, userMessage, botMessage]);
   };
 
+  
   console.log("response", response);
   return (
     <>
       <Box sx={{ marginTop: 3 }}>
         {response?.answers?.map((answer: any, index: number) => (
           <Box sx={{ paddingBottom: 0 }} key={index}>
-            <Typography
-              component="p"
-              sx={{ marginBottom: 2, fontSize: "14px", fontWeight: "" }}
-            >
-              <div dangerouslySetInnerHTML={{ __html: answer?.text }} />
-            </Typography>
+              <Box dangerouslySetInnerHTML={{ __html: answer?.text }}  sx={{py:2}}/>
+            {/* </Typography> */}
             <Box
               sx={{
                 display: "flex",
@@ -310,6 +308,7 @@ const CarResearchMenu: React.FC = () => {
                 fontSize: "14px",
                 padding: "5px 10px",
                 textTransform: "none",
+                marginRight:"8px"
               }}
             >
               {item}

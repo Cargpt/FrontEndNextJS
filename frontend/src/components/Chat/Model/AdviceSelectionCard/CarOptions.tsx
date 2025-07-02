@@ -173,22 +173,7 @@ const CarModel: FC<AdviceSelectionCardProps> = ({
             </svg>
           </Button>
         </div>
-        {/* <AdviceSelectionBody
-          selections={selections}
-          handleSelect={handleSelect}
-        />
-        <AdviceSelectionFuel
-          selections={selections}
-          handleSelect={handleSelect}
-        />
-        <AdviceSelectionTransmission
-          selections={selections}
-          handleSelect={handleSelect}
-        />
-        <AdviceSelectionBrand
-          selections={selections}
-          handleSelect={handleSelect}
-        /> */}
+        
       </CardContent>
     </Card>
   );
