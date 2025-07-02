@@ -539,6 +539,11 @@ const ChatBox: React.FC = () => {
                   bgcolor:
                     msg.sender === "user" ? "rgb(211, 227, 255)" : "gray.100",
                   color: "black",
+                  padding: isSmallScreen
+                    ? msg.sender === "bot"
+                      ? "0px"
+                      : "12px"
+                    : "12px",
                 }}
               >
                 {renderMessage(msg)}
