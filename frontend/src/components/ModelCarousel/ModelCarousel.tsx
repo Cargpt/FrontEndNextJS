@@ -19,6 +19,7 @@ import EMIDialog from "../common/Dialogs/EMIDialog/EMIDialog";
 import SentimentDialog from "../common/Dialogs/SentimentDialog/SentimentDialog";
 import ScoreDialog from "../common/Dialogs/ScoreDialog/ScoreDialog";
 import petrol from "../../../public/assets/vector26786425-bw2d.svg";
+import tank from "../../../public/assets/subtract6425-nvra (1).svg";
 import price from "../../../public/assets/subtract6425-nvra.svg";
 import seat from "../../../public/assets/babycarseat6425-n4nh.svg";
 import trans from "../../../public/assets/vector26796425-xttl.svg";
@@ -191,7 +192,10 @@ const ModelCarousel: React.FC<Props> = ({
                         }}
                         onClick={() => openDialog(type as any, car)}
                       >
-                        <span>{label} {index===0 && car?.AIScore} {index===2 && car?.AISummary}  </span>
+                        <span>
+                          {label} {index === 0 && car?.AIScore}{" "}
+                          {index === 2 && car?.AISummary}{" "}
+                        </span>
                       </Button>
                     ))}
                   </Stack>
@@ -201,8 +205,38 @@ const ModelCarousel: React.FC<Props> = ({
                     justifyContent="center"
                     flexWrap="wrap"
                   >
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        textTransform: "capitalize",
+                        color: "grey",
+                        display: "flex",
+                        alignItems: "center",
+                        fontSize: "10px",
+                        gap: "5px",
+                        border: "1px solid grey",
+                      }}
+                    >
+                      <div style={{display: "flex"}}>
+                      <Image
+                        src={tank}
+                        alt="petrol"
+                        width={14}
+                        height={14}
+                        style={{ objectFit: "contain" }}
+                      />
+                      <Image
+                        src={petrol}
+                        alt="tank"
+                        width={14}
+                        height={14}
+                        style={{ objectFit: "contain" }}
+                      />
+                      </div>
+                      <span>{car.FuelType}</span>
+                    </Button>
                     {[
-                      { label: `${car.FuelType}`, icon: petrol },
                       { label: `${car.TransmissionType}`, icon: trans },
                       { label: ` ${car.Seats} Seater`, icon: seat },
                       {
