@@ -1,6 +1,7 @@
 import { KeyboardBackspaceSharp } from "@mui/icons-material";
 import {
   Box,
+  Button,
   Dialog,
   DialogContent,
   DialogTitle,
@@ -70,13 +71,13 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
       }}
     >
       <DialogTitle sx={{ background: "#eeeeef" }}>
-        <IconButton
-          aria-label="close"
+       <Button
+          variant="outlined"
           onClick={onClose}
-          sx={{ position: "absolute", left: 8, top: 8 }}
+          sx={{ position: "absolute", left: 15, top: 17 }}
         >
           <KeyboardBackspaceSharp />
-        </IconButton>
+        </Button>
         <Typography
           sx={{ position: "relative", textAlign: "center", fontWeight: 700 }}
         >

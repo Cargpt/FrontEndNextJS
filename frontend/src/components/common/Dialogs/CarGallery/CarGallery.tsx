@@ -10,6 +10,7 @@ import {
   CardMedia,
   useMediaQuery,
   useTheme,
+  Button,
 } from "@mui/material";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -79,16 +80,13 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
       }}
     >
       <DialogTitle sx={{ background: "#eeeeef" }}>
-        <IconButton
-          aria-label="close"
+        <Button
+          variant="outlined"
           onClick={onClose}
-          sx={{ position: "absolute", left: 8, top: 8 }}
+          sx={{ position: "absolute", left: 15, top: 17 }}
         >
-          <KeyboardBackspaceSharp
-            onClick={onClose}
-            sx={{ cursor: "pointer" }}
-          />
-        </IconButton>
+          <KeyboardBackspaceSharp />
+        </Button>
         <Typography
           sx={{ position: "relative", textAlign: "center", fontWeight: 700 }}
         >

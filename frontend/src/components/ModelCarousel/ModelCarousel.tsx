@@ -20,7 +20,6 @@ import SentimentDialog from "../common/Dialogs/SentimentDialog/SentimentDialog";
 import ScoreDialog from "../common/Dialogs/ScoreDialog/ScoreDialog";
 import petrol from "../../../public/assets/vector26786425-bw2d.svg";
 import tank from "../../../public/assets/subtract6425-nvra (1).svg";
-import price from "../../../public/assets/subtract6425-nvra.svg";
 import seat from "../../../public/assets/babycarseat6425-n4nh.svg";
 import trans from "../../../public/assets/vector26796425-xttl.svg";
 import speed from "../../../public/assets/hugeiconinterfacesolidspeedtest6425-amlw.svg";
@@ -61,6 +60,7 @@ const ModelCarousel: React.FC<Props> = ({
     render: "text",
     sender: "user",
   };
+  
   const openDialog = (
     type: "score" | "emi" | "sentiment" | "gallery" | null,
     data: any
@@ -75,26 +75,27 @@ const ModelCarousel: React.FC<Props> = ({
     infinite: false,
     speed: 500,
     slidesToShow: modelCars.length < 3 ? modelCars.length : 3,
-    slidesToScroll: modelCars.length < 3 ? modelCars.length : 3,
+    slidesToScroll: 1, 
     autoplay: true,
     autoplaySpeed: 1000,
-    centerMode: true,
-    centerPadding: "0px",
+    dots: false,
+    arrows: true,
     responsive: [
       {
         breakpoint: 1024,
         settings: {
           slidesToShow: modelCars.length < 3 ? modelCars.length : 3,
-          slidesToScroll: modelCars.length < 3 ? modelCars.length : 3,
-          dots: true,
+          slidesToScroll: 1,
+          dots: false,
         },
       },
       {
         breakpoint: 600,
         settings: {
           slidesToShow: modelCars.length < 2 ? modelCars.length : 2,
-          slidesToScroll: modelCars.length < 2 ? modelCars.length : 2,
+          slidesToScroll: 1,
           initialSlide: 0,
+          dots: false,
         },
       },
       {
@@ -102,6 +103,7 @@ const ModelCarousel: React.FC<Props> = ({
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
+          dots: false,
         },
       },
     ],
@@ -112,6 +114,7 @@ const ModelCarousel: React.FC<Props> = ({
   };
 
   console.log("cookies.selectedOption", cookies.selectedOption);
+  
   return (
     <>
       <Box
@@ -123,9 +126,10 @@ const ModelCarousel: React.FC<Props> = ({
           background: "#eeeeef",
         }}
       >
+        {modelCars.length > 0 && (
         <Slider {...settings}>
-          {modelCars.map((car: any) => (
-            <Box key={car.CarID} sx={{ px: 1, width: "100%" }}>
+          {modelCars.map((car: any, index: number) => (
+            <Box key={`${car.CarID}-${index}`} sx={{ px: 1, width: "100%" }}>
               <Card
                 sx={{
                   maxWidth: 345,
@@ -150,7 +154,7 @@ const ModelCarousel: React.FC<Props> = ({
                 >
                   <Stack direction="row" justifyContent="space-around" mb={2}>
                     <Typography variant="h6" fontSize={15}>
-                      {car.BrandName} {car.ModelName} {car.VariantName}
+                      {car.ModelName} {car.VariantName}
                     </Typography>
                     <Typography
                       variant="h6"
@@ -180,14 +184,6 @@ const ModelCarousel: React.FC<Props> = ({
                         sx={{
                           textTransform: "capitalize",
                           fontSize: "12px",
-                          // fontWeight: "bold",
-                          // color: "#fff",
-                          // padding: "5px 5px",
-                          // borderRadius: "1.1rem 6px",
-                          // boxShadow: "rgba(0, 0, 0, 0.1) 2px 2px 10px",
-                          // background:
-                          //   "linear-gradient(150deg, rgb(24, 118, 210), rgb(4, 190, 198))",
-                          // width: "calc(50% - 5px)",
                         }}
                         onClick={() => openDialog(type as any, car)}
                       >
@@ -217,31 +213,27 @@ const ModelCarousel: React.FC<Props> = ({
                         border: "1px solid grey",
                       }}
                     >
-                      <div style={{display: "flex"}}>
-                      <Image
-                        src={tank}
-                        alt="petrol"
-                        width={14}
-                        height={14}
-                        style={{ objectFit: "contain" }}
-                      />
-                      <Image
-                        src={petrol}
-                        alt="tank"
-                        width={14}
-                        height={14}
-                        style={{ objectFit: "contain" }}
-                      />
+                      <div style={{ display: "flex" }}>
+                        <Image
+                          src={tank}
+                          alt="petrol"
+                          width={14}
+                          height={14}
+                          style={{ objectFit: "contain" }}
+                        />
+                        <Image
+                          src={petrol}
+                          alt="tank"
+                          width={14}
+                          height={14}
+                          style={{ objectFit: "contain" }}
+                        />
                       </div>
                       <span>{car.FuelType}</span>
                     </Button>
                     {[
                       { label: `${car.TransmissionType}`, icon: trans },
                       { label: ` ${car.Seats} Seater`, icon: seat },
-                      {
-                        label: `₹ ${(car.Price / 100000).toFixed(1)} L`,
-                        icon: price,
-                      },
                       { label: ` ${car.Mileage} kmpl`, icon: speed },
                     ].map(({ label, icon }) => (
                       <Button
@@ -274,7 +266,7 @@ const ModelCarousel: React.FC<Props> = ({
             </Box>
           ))}
         </Slider>
-
+        )}
         <Stack
           direction="row"
           gap={2}
@@ -328,6 +320,7 @@ const ModelCarousel: React.FC<Props> = ({
         <EMIDialog
           open={dialog.open}
           onClose={() => setDialog({ open: false, type: null })}
+          carPrice={carInfo?.Price}
         />
       )}
       {dialog.type === "sentiment" && (
