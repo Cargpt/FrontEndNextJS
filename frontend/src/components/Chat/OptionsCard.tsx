@@ -179,7 +179,9 @@ const ChatBox: React.FC = () => {
       } else if (
         lastMsg.sender === "user" &&
         typeof lastMsg.message == "string" &&
-        lastMsg.message?.includes("I want to do more research on car")
+        (lastMsg.message?.includes("I want to do more research on car") 
+        ||
+         lastMsg.message?.includes("Advanced filters for car searc"))
       ) {
         setLoading(true);
         setTimeout(() => {
@@ -265,11 +267,6 @@ const ChatBox: React.FC = () => {
       sender: "user",
     };
 
-    // // const newsMessages: Message[] = [...messages.slice(0, messages.length - 1), {
-    // //   ...lastItem,
-    // //   message: "I know exactly what I want"
-    // // }];
-    // newsMessages.push(userMessage);
     setMessages((prev) => [...prev, userMessage]);
   };
 
@@ -485,62 +482,49 @@ const ChatBox: React.FC = () => {
         </Button>
 
         {/* Message List */}
-        <Box
-          sx={{
-            flexGrow: 1,
-            overflowY: "auto",
-            mb: 2,
-            pr: 1,
-          }}
-        >
-          {messages.map((msg, index) => (
-            <Stack
-              key={msg.id}
-              direction={isSmallScreen ? "column" : "row"}
-              spacing={1}
-              alignItems={
-                isSmallScreen
-                  ? "center"
-                  : msg.sender === "user"
-                  ? "flex-end"
-                  : "flex-start"
-              }
-              justifyContent={
-                isSmallScreen
-                  ? "center"
-                  : msg.sender === "user"
-                  ? "flex-end"
-                  : "flex-start"
-              }
-              sx={{ mb: 2 }}
-            >
-              {msg.sender === "bot" && (
-                <Image src={bot} alt="bot" width={40} height={40} />
-              )}
-              <Paper
-                sx={{
-                  p: 1.5,
-                  maxWidth: isSmallScreen ? "100%" : "75%",
-                  bgcolor:
-                    msg.sender === "user" ? "rgb(211, 227, 255)" : "gray.100",
-                  color: "black",
-                }}
-              >
-                {renderMessage(msg)}
-              </Paper>
-              {msg.sender === "user" && (
-                <Avatar sx={{ bgcolor: "secondary.main" }}>U</Avatar>
-              )}
-            </Stack>
-          ))}
+       {messages.map((msg) => (
+  <Box
+    key={msg.id}
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
+      mb: 2,
+      mt:{xs:4, sm:1},
+      p:{ xs: 2, sm: 0 },
+      textAlign: msg.sender === "user" ? "right" : "left",
+    }}
+  >
+    {/* Avatar/Icons on top */}
+    {msg.sender === "bot" && (
+      <Box sx={{ mb: 0.5 }}>
+        <Image src={bot} alt="bot" width={32} height={32} />
+      </Box>
+    )}
 
-          {loading && (
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Image src={bot} alt="bot" width={40} height={40} />
-              <CircularProgress size={20} />
-            </Stack>
-          )}
-        </Box>
+    {msg.sender === "user" && (
+      <Box sx={{ mb: 0.5 }}>
+        <Avatar sx={{ bgcolor: "secondary.main", width: 32, height: 32 }}>
+          U
+        </Avatar>
+      </Box>
+    )}
+
+    {/* Message Bubble */}
+    <Paper
+      sx={{
+        p: 1.5,
+        maxWidth: isSmallScreen ? "100%" : "75%",
+        bgcolor:
+          msg.sender === "user" ? "rgb(211, 227, 255)" : "grey.100",
+        color: "black",
+      }}
+    >
+      {renderMessage(msg)}
+    </Paper>
+  </Box>
+))}
+
       </Paper>
       <div ref={bottomRef} />
     </>

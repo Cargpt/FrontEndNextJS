@@ -52,7 +52,7 @@ const AdvisorIntro: React.FC<AdvisorIntroProps> = ({
       type: "search",
     },
     {
-      label: "Advanced filter for car search",
+      label: "Advanced filters for car search",
       icon: "/assets/funnel.svg",
       type: "filter",
     },
