@@ -67,9 +67,11 @@ const ModelCarousel: React.FC<Props> = ({
     data: any
   ) => {
     setDialog({ open: true, type });
-    if (type === "score" || type === "sentiment" || type === "gallery") {
+    if (type === "score" || type === "sentiment" || type === "gallery" || type === "emi") {
       setCarInfo(data);
     }
+
+    console.log("data", data)
   };
 
   const settings: Settings = {
@@ -114,7 +116,7 @@ const ModelCarousel: React.FC<Props> = ({
     setMessages((prev) => [...prev, userMessage]);
   };
 
-  console.log("cookies.selectedOption", cookies.selectedOption);
+  console.log("carInfo", carInfo);
   
   return (
     <>
