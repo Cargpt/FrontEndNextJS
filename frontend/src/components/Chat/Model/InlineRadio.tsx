@@ -6,7 +6,7 @@ import {
   FormControl,
   FormLabel,
 } from '@mui/material';
-import { getUpperLimitInRupees } from '@/utils/services';
+import { getUpperLimitInRupees, Priorities } from '@/utils/services';
 
 const BrandSelector: React.FC<BrandSelectorProps> = ({
   label,
@@ -34,18 +34,28 @@ onChange?.(event.target.name, isNaN(Number(newValue)) ?  newValue : Number(newVa
 
     }
       };
+
+
+
+      
       useEffect(()=>{
-        setSelectedValue(options[0])
 if(label.toLowerCase().replace(/\s+/g, "_")==="budget"){
            onChange?.(label.toLowerCase().replace(/\s+/g, "_"), Number(getUpperLimitInRupees(options[0])));
  
     }else{
-onChange?.(label.toLowerCase().replace(/\s+/g, "_"), isNaN(Number(options[0])) ?  options[0] : Number(options[0]));
+onChange?.(label.toLowerCase().replace(/\s+/g, "_"), isNaN(Number(options[0])) ? MakePriority(options) : Number(MakePriority(options)));
 
     }
+
+            setSelectedValue(MakePriority(options))
+
       }, [options])
 
 
+
+      const MakePriority = (options:any)=>{
+        return Priorities.find((item)=>options.includes(item)) ?? options[0]
+      }
   
   return (
 <FormControl component="fieldset" fullWidth>

@@ -86,3 +86,4 @@ export const CustomFilter = [
   "30-35L",
   "35-40L",
 ];
+export const Priorities = ["Petrol", "Diesel", "Electric", "Hybrid", "CNG", "LPG", "Hydrogen", "Biofuel", "Manual", "Automatic", "Semi-Automatic", "CVT", "Dual-Clutch", 1, 2, 3, 4];
