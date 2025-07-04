@@ -94,6 +94,7 @@ interface Message {
   message:  any ;
   data?: any;
   prompt?: boolean;
+  searchParam?:any;
 }
 
 

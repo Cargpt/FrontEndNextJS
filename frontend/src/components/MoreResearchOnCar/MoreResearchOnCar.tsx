@@ -176,6 +176,8 @@ const CarResearchMenu: React.FC = () => {
 
   const searchBrands = async (search: string) => {
     let payload: any = {};
+
+    
     if (BODYTYPES.includes(search.toLowerCase())) {
       payload["body_type"] = search;
     } else if (FUELTYPES.includes(search.toLowerCase())) {
@@ -185,19 +187,17 @@ const CarResearchMenu: React.FC = () => {
     } else if (BUDGET.includes(search.toLowerCase())) {
       payload["budget"] = search;
     }
-    console.log("search", search.toString(), TRANSMISSIONTYPES);
 
     const data = await axiosInstance1.post("/api/cargpt/search/", payload);
-    const brands = data.map((item: any, index: number) => ({
-      BrandName: Object.keys(item)[0],
-      BrandID: index + 1,
-    }));
+    const brands = data?.brands?.map((item:string, index:number)=> ({BrandName:item, BrandID:index+1}))
 
     // Get first brand and its models
     const firstBrand = brands[0];
-    const models = data[0][firstBrand?.BrandName].map(
-      (item: any, index: number) => ({ ModelName: item, ModelID: index + 1 })
-    );
+    // const data = await axiosInstance1.post("/api/cargpt/search/", payload);
+
+    // const models = data[0][firstBrand?.BrandName].map(
+    //   (item: any, index: number) => ({ ModelName: item, ModelID: index + 1 })
+    // );
 
     const userMessage: Message = {
       id: String(Date.now()),
@@ -207,9 +207,10 @@ const CarResearchMenu: React.FC = () => {
     };
     const botMessage: Message = {
       id: String(Date.now()) + 1,
-      message: { brands: brands, models: models },
+      message: { brands: brands},
       render: "brandModelSelect",
       sender: "bot",
+      searchParam:payload
     };
 
     setMessages((prev) => [...prev, userMessage, botMessage]);
@@ -219,7 +220,7 @@ const CarResearchMenu: React.FC = () => {
   console.log("response", response);
   return (
     <>
-      <Box sx={{ marginTop: 3 }}>
+      <Box sx={{ marginTop: 0 }}>
         {response?.answers?.map((answer: any, index: number) => (
           <Box sx={{ paddingBottom: 0 }} key={index}>
               <Box dangerouslySetInnerHTML={{ __html: answer?.text }}  sx={{py:2}}/>
@@ -285,7 +286,7 @@ const CarResearchMenu: React.FC = () => {
         <Box
           sx={{
             gap: 1,
-            marginTop: 0,
+            marginTop: 2,
           }}
         >
           {response?.answers.length < 1 && (
@@ -296,8 +297,15 @@ const CarResearchMenu: React.FC = () => {
               <div dangerouslySetInnerHTML={{ __html: "No Data found" }} />
             </Typography>
           )}
-
+ <Box sx={{
+    marginTop: 2,
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '8px'  // space between items even when wrapped
+  }}
+>
           {AdditionalOptions.map((item, idx) => (
+            
             <Button
               disabled={!!disbleBtn}
               key={idx}
@@ -314,6 +322,7 @@ const CarResearchMenu: React.FC = () => {
               {item}
             </Button>
           ))}
+          </Box>
         </Box>
       </Box>
     </>

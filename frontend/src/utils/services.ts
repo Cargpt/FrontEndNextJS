@@ -29,8 +29,9 @@ export const DEFAULTSEARCHPARAMS = {
 
 export function getUpperLimitInRupees(budgetRange: string) {
   if (!budgetRange) return null;
+  if(budgetRange.includes("Up to 5L")) return 500000
 
-  if(budgetRange.includes("Above")) return 3000000000
+  if(budgetRange.includes("Above")) return 1000000000
 
   const parts = budgetRange.split("-");
   const upper = parts[1]?.toUpperCase().trim();

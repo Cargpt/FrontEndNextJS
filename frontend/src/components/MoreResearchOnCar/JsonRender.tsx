@@ -33,10 +33,8 @@ const DynamicTable: React.FC<Props> = ({ data, onCategoryClick, title }) => {
   );
 
   return (
-    <Box sx={{ mt: 4 }}>
-      <Typography variant="h6" gutterBottom sx={{ fontWeight: "bold" }}>
-        {title}
-      </Typography>
+    <Box sx={{ mt: 0 }}>
+
      <TableContainer
   component={Paper}
    sx={{

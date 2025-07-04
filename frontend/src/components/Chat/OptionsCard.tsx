@@ -311,7 +311,6 @@ const ChatBox: React.FC = () => {
           <BrandModelSelectCard
             handleUserMessage={handleUserMessage}
             brands={message.message?.brands}
-            selectedModels={message.message?.models}
           />
         );
       case "carOptions":
@@ -474,12 +473,7 @@ const ChatBox: React.FC = () => {
         </Button>
 
  <Box
-        // sx={{
-        //   flexGrow: 1, // Allows the message area to fill available space
-        //   overflowY: 'auto', // Enables vertical scrolling
-        //   p: 2,
-        //   // Light blue background
-        // }}
+
         ref={bottomRef}/// Attach the ref here
       >
         {/* Message List */}

@@ -23,21 +23,20 @@ import { useBotType } from "@/Context/BotTypeContext";
 type BrandModelSelectCardProps = {
   handleUserMessage: (message: any) => void;
   brands: Brand[] | any;
-  selectedModels?:ModelProps[]
 };
-import Snackbar from "@mui/material/Snackbar";
-import DialogSelect from "./DialogSelect";
+
 import { useSnackbar } from "@/Context/SnackbarContext";
 
 const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   handleUserMessage,
   brands,
-  selectedModels
 }) => {
   const [brand, setBrand] = useState<Brand>(brands[0]);
 
-  const [model, setModel] = useState<ModelProps | null>(selectedModels ? selectedModels[0] : null);
-  const [models, setModels] = useState<ModelProps[]>(selectedModels|| []);
+  const [model, setModel] = useState<ModelProps | null>(
+    null
+  );
+  const [models, setModels] = useState<ModelProps[]>([]);
   const [carFeatures, setCarFeatures] = useState<CarFeaturesProps>({
     FuelType: ["petrol", "diesel", "electric"],
     TransmissionType: ["manual", "automatic"],
@@ -57,9 +56,35 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     }));
   };
 
-  const { addChat, chats, setCars } = useChats();
+  const {setCars } = useChats();
 
   const fetchBrandModes = async () => {
+
+    const searchParams:any = messages[messages.length-1]?.searchParam
+    console.log("searchParams", messages, searchParams)
+
+    if(messages[messages.length-1].message?.models?.length> 0){
+      const m = messages[messages.length-1].message?.models
+      setModel(m[0])
+        setModels(m)
+      
+    }
+    else if(searchParams){
+      let payload:any = {}
+      payload['brand_name']=brand.BrandName
+      payload = {...payload, ...searchParams}
+
+      const data = await axiosInstance1.post("/api/cargpt/search/", payload);
+
+  
+      setModels(data?.models || []);
+      setModel(data?.models[0] || null);
+       
+
+    }else{
+
+
+   
     const payload = {
       brand_id: brand?.BrandID,
     };
@@ -69,6 +94,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       setModels(data?.models || []);
       setModel(data?.models[0] || null);
     } catch (error) {}
+  }
   };
 
   const fetchCarFeatures = async () => {
@@ -89,7 +115,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   const { botType } = useBotType();
 
   useEffect(() => {
-    if (brand && !selectedModels){
+    if (brand) {
       setCarFilter({ ...carFilter, brand_name: brand.BrandName });
 
       fetchBrandModes();
@@ -107,7 +133,9 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   }, [model]);
 
   const { showSnackbar } = useSnackbar();
+  const [isDisable, setIsDisable] = useState<boolean>(false);
   const fetchDataBasedOnParameters = async () => {
+
     setDisableBtn(true);
     try {
       const payload = { ...carFilter };
@@ -131,6 +159,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       ]);
 
       handleUserMessage({ ...payload });
+
+      setIsDisable(true)
     } catch (error) {
       setDisableBtn(false);
     }
@@ -138,52 +168,42 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
 
   const [openDialouge, setOpenDialouge] = useState<boolean>(false);
 
-  const handleClose = () => {
-    setOpenDialouge(false);
-  };
+  const onChnageFilter = async (key: string, value: string | number) => {
+    if(isDisable) return
 
-
- 
-   const onChnageFilter = async (key:string, value:string|number) => {
-    console.log("key",key)
-
-    let NewKey = ''
-     if(key==="fuel_type"){
-      NewKey='FuelType'
-     }
-     if(key==="transmission_type"){
-      NewKey='TransmissionType'
-     }
-      if(key==="seat_capacity"){
-      NewKey='Seats'
-      key="seats"
-     }
+    let NewKey = "";
+    if (key === "fuel_type") {
+      NewKey = "FuelType";
+    }
+    if (key === "transmission_type") {
+      NewKey = "TransmissionType";
+    }
+    if (key === "seat_capacity") {
+      NewKey = "Seats";
+      key = "seats";
+    }
     const payload = {
       brand_name: brand?.BrandName,
       modle_name: model?.ModelName,
-      [key]:value
+      [key]: value,
     };
     try {
       const data = await axiosInstance1.post(
         "/api/cargpt/brand-model-parameters/",
         payload
       );
-     
 
-     const prevValues = carFeatures[NewKey]
-     const NewObj = {...data?.data, [NewKey]:prevValues }
+      const prevValues = carFeatures[NewKey];
+      const NewObj = { ...data?.data, [NewKey]: prevValues };
 
-          console.log("prevValues", NewObj)
 
       setCarFeatures(NewObj);
-    } catch (error) {
-
-
-    }
+    } catch (error) {}
   };
 
-
-  console.log("brands", brands)
+  
+const {messages}=useChats()
+  console.log("brands", carFeatures);
   return (
     <Card
       sx={{
@@ -214,25 +234,26 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
           <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
             <InputLabel id="brand-label">Brand</InputLabel>
             <Select
+            disabled={isDisable}
               labelId="brand-label"
               value={brand?.BrandID ?? ""}
               label="Brand"
               onChange={(e) => {
                 const selectedBrand = brands.find(
-                  (b:Brand) => b.BrandID === e.target.value
+                  (b: Brand) => b.BrandID === e.target.value
                 );
                 if (selectedBrand) {
+
                   setBrand(selectedBrand);
                 }
               }}
             >
-
-              
-              {Array.isArray(brands) && brands?.map((brand: Brand, index: number) => (
-                <MenuItem key={index} value={brand.BrandID}>
-                  {brand.BrandName }
-                </MenuItem>
-              ))}
+              {Array.isArray(brands) &&
+                brands?.map((brand: Brand, index: number) => (
+                  <MenuItem key={index} value={brand.BrandID}>
+                    {brand.BrandName}
+                  </MenuItem>
+                ))}
             </Select>
           </FormControl>
 
@@ -244,6 +265,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
           >
             <InputLabel id="model-label">Model</InputLabel>
             <Select
+                        disabled={isDisable}
+
               labelId="model-label"
               value={model?.ModelID ?? ""}
               label="Model"
@@ -266,7 +289,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
         </Box>
 
         <div style={{ marginTop: "1rem" }}>
-          {carFeatures?.FuelType.length > 0 && (
+          {carFeatures?.FuelType?.length > 0 && (
             <BrandSelector
               label="Fuel type"
               options={carFeatures?.FuelType}
@@ -275,7 +298,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
               onChnageFilter={onChnageFilter}
             />
           )}
-          {carFeatures?.TransmissionType.length > 0 && (
+          {carFeatures?.TransmissionType?.length > 0 && (
             <div>
               <BrandSelector
                 label="Transmission type"
@@ -283,12 +306,11 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                 key={1}
                 onChange={handleChange}
                 onChnageFilter={onChnageFilter}
-
               />
             </div>
           )}
 
-          {carFeatures?.Seats.length > 0 && (
+          {carFeatures?.Seats?.length > 0 && (
             <div>
               <BrandSelector
                 label="Seat capacity"
@@ -296,12 +318,11 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                 key={2}
                 onChange={handleChange}
                 onChnageFilter={onChnageFilter}
-
               />
             </div>
           )}
 
-          {carFeatures?.BodyNames.length > 0 && (
+          {carFeatures?.BodyNames?.length > 0 && (
             <div>
               <BrandSelector
                 label="Body type"
@@ -309,12 +330,11 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                 key={3}
                 onChange={handleChange}
                 onChnageFilter={onChnageFilter}
-
               />
             </div>
           )}
 
-          {carFeatures?.bugetTypes.length > 0 && (
+          {carFeatures?.bugetTypes?.length > 0 && (
             <div>
               <BrandSelector
                 label="Budget"
@@ -322,7 +342,6 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                 key={4}
                 onChange={handleChange}
                 onChnageFilter={onChnageFilter}
-
               />
             </div>
           )}
