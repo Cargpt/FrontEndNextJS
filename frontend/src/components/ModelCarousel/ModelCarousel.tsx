@@ -120,7 +120,7 @@ const ModelCarousel: React.FC<Props> = ({
   
   return (
     <>
-      <Box
+      {/* <Box
         className="slider-container"
         sx={{
           px: isSmallScreen ? 0 : 4,
@@ -132,7 +132,7 @@ const ModelCarousel: React.FC<Props> = ({
         {modelCars.length > 0 && (
         <Slider {...settings}>
           {modelCars.map((car: any, index: number) => (
-            <Box key={`${car.CarID}-${index}`} sx={{ px: 1, width: "100%" }}>
+            <Box key={`${car.CarID}-${index}`} sx={{ px: 1, width: "100%", display: "flex", alignItems: "stretch" }}>
               <Card
                 sx={{
                   maxWidth: 345,
@@ -155,16 +155,17 @@ const ModelCarousel: React.FC<Props> = ({
                 <CardContent
                   sx={{ display: "flex", flexDirection: "column", gap: "13px" }}
                 >
-                  <Stack direction="row" justifyContent="space-around" mb={2}>
-                    <Typography variant="h6" fontSize={15}>
+                  <Stack direction="row" justifyContent="space-around" mb={2} gap={2}>
+                    <Typography variant="h6" fontSize={13} fontWeight={500}>
                       {car.ModelName} {car.VariantName}
                     </Typography>
                     <Typography
                       variant="h6"
-                      fontSize={15}
+                      fontSize={13}
+                      fontWeight={700}
                       color="text.secondary"
                     >
-                      ₹ {(car.Price / 100000).toFixed(1)} L
+                      ₹{(car.Price / 100000).toFixed(1)}L
                     </Typography>
                   </Stack>
 
@@ -302,7 +303,7 @@ const ModelCarousel: React.FC<Props> = ({
             </Button>
           )}
         </Stack>
-      </Box>
+      </Box> */}
       {/* <TeslaCard/> */}
 
       {/* Dialogs */}
