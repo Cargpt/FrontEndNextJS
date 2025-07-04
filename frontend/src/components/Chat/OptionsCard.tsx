@@ -28,6 +28,7 @@ import { KeyboardBackspaceSharp } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
 import CarResearchMenu from "../MoreResearchOnCar/MoreResearchOnCar";
 import BestCars from "../MoreResearchOnCar/carList";
+import TeslaCard from "./Model/Cards/Car";
 
 const ChatBox: React.FC = () => {
   const { cars, messages, setMessages, filter } = useChats();
@@ -316,7 +317,7 @@ const ChatBox: React.FC = () => {
         );
       case "carOptions":
         return (
-          <ModelCarousel
+          <TeslaCard
             onClick={handleIknowWhatEaxactlyWhatIWant}
             selectedItem={message.message}
             handleNeedAdviceSupport={handleNeedAdviceSupport}
