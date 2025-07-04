@@ -136,18 +136,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
                     mb: 2,
                   }}
                 >
-                  {/* <Image
-                    src={img.CarImageURL}
-                    alt={`car-image-${index}`}
-                    width={600}
-                    height={400}
-                    style={{
-                      objectFit: "contain",
-                      width: "100%",
-                      maxHeight: "60vh",
-                      borderRadius: "10px",
-                    }}
-                  /> */}
+
                   <CardMedia
                     component="img"
                     image={img.CarImageURL}
@@ -177,7 +166,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
               centerMode={false}
             >
               {images.map((img: any, index: number) => (
-                <Box key={index} sx={{ p: 1, cursor: "pointer" }}>
+                <Box key={index} sx={{ p: 1, cursor: "pointer", display:"flex" }}>
                   <Image
                     src={img.CarImageURL}
                     alt={`car-thumb-${index}`}

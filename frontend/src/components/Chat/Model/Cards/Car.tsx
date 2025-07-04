@@ -284,9 +284,12 @@ const TeslaCard: React.FC<Props> = ({
                         key={type}
                         variant="contained"
                         size="small"
+                        
+
                         sx={{
                           textTransform: "capitalize",
                           fontSize: "12px",
+                          minWidth:{xs:"100%", md:"10%"}
                         }}
                         onClick={() => openDialog(type as any, car)}
                       >
