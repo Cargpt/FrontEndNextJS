@@ -77,7 +77,7 @@ html, body, .my-custom-scroll-container {
   -ms-overflow-style: none;
 }
 */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .MuiBox-root {
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -86,4 +86,4 @@ html, body, .my-custom-scroll-container {
   .MuiBox-root::-webkit-scrollbar {
     display: none;
   }
-}
+} */

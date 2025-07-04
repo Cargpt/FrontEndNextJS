@@ -143,6 +143,45 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   };
 
 
+ 
+   const onChnageFilter = async (key:string, value:string|number) => {
+    console.log("key",key)
+
+    let NewKey = ''
+     if(key==="fuel_type"){
+      NewKey='FuelType'
+     }
+     if(key==="transmission_type"){
+      NewKey='TransmissionType'
+     }
+      if(key==="seat_capacity"){
+      NewKey='Seats'
+      key="seats"
+     }
+    const payload = {
+      brand_name: brand?.BrandName,
+      modle_name: model?.ModelName,
+      [key]:value
+    };
+    try {
+      const data = await axiosInstance1.post(
+        "/api/cargpt/brand-model-parameters/",
+        payload
+      );
+     
+
+     const prevValues = carFeatures[NewKey]
+     const NewObj = {...data?.data, [NewKey]:prevValues }
+
+          console.log("prevValues", NewObj)
+
+      setCarFeatures(NewObj);
+    } catch (error) {
+
+
+    }
+  };
+
 
   console.log("brands", brands)
   return (
@@ -233,6 +272,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
               options={carFeatures?.FuelType}
               key={0}
               onChange={handleChange}
+              onChnageFilter={onChnageFilter}
             />
           )}
           {carFeatures?.TransmissionType.length > 0 && (
@@ -242,6 +282,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                 options={carFeatures?.TransmissionType}
                 key={1}
                 onChange={handleChange}
+                onChnageFilter={onChnageFilter}
+
               />
             </div>
           )}
@@ -253,6 +295,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                 options={carFeatures?.Seats}
                 key={2}
                 onChange={handleChange}
+                onChnageFilter={onChnageFilter}
+
               />
             </div>
           )}
@@ -264,6 +308,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                 options={carFeatures?.BodyNames}
                 key={3}
                 onChange={handleChange}
+                onChnageFilter={onChnageFilter}
+
               />
             </div>
           )}
@@ -275,6 +321,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                 options={carFeatures?.bugetTypes}
                 key={4}
                 onChange={handleChange}
+                onChnageFilter={onChnageFilter}
+
               />
             </div>
           )}

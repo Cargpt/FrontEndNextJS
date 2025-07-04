@@ -6,13 +6,15 @@ import {
   FormControl,
   FormLabel,
 } from '@mui/material';
-import { getUpperLimitInRupees } from '@/utils/services';
+import { getUpperLimitInRupees, Priorities, transmissionTypes } from '@/utils/services';
 
 const BrandSelector: React.FC<BrandSelectorProps> = ({
   label,
   options,
   defaultValue,
   onChange,
+  onChnageFilter
+
 
 }) => {
   const [selectedValue, setSelectedValue] = useState<number | string | null>(defaultValue ?? null);
@@ -34,18 +36,43 @@ onChange?.(event.target.name, isNaN(Number(newValue)) ?  newValue : Number(newVa
 
     }
       };
+
+
+
+      
       useEffect(()=>{
-        setSelectedValue(options[0])
 if(label.toLowerCase().replace(/\s+/g, "_")==="budget"){
            onChange?.(label.toLowerCase().replace(/\s+/g, "_"), Number(getUpperLimitInRupees(options[0])));
  
     }else{
-onChange?.(label.toLowerCase().replace(/\s+/g, "_"), isNaN(Number(options[0])) ?  options[0] : Number(options[0]));
+onChange?.(label.toLowerCase().replace(/\s+/g, "_"), isNaN(Number(options[0])) ? MakePriority(options) : Number(MakePriority(options)));
 
     }
+
+            setSelectedValue(MakePriority(options))
+
       }, [options])
 
 
+
+      const MakePriority = (options:any)=>{
+        return Priorities.find((item)=>options.includes(item)) ?? options[0]
+      }
+
+
+      const onChoose = (event: React.ChangeEvent<HTMLInputElement>)=>{
+        let {name, value}  = event.target
+        console.log("name", name)
+        handleChange(event)
+         if(name==="transmission_type"){
+          value = transmissionTypes[value]
+         }
+         if(name!=="budget"){
+        onChnageFilter(name, value)
+
+         }
+
+      }
   
   return (
 <FormControl component="fieldset" fullWidth>
@@ -53,7 +80,7 @@ onChange?.(label.toLowerCase().replace(/\s+/g, "_"), isNaN(Number(options[0])) ?
   <RadioGroup
     name={label.toLowerCase().replace(/\s+/g, "_")}
     value={selectedValue?.toString() ?? ""}
-    onChange={handleChange}
+    onChange={onChoose}
     sx={{
       display: "flex",
        flexDirection: "row",  // ✅ always row layout

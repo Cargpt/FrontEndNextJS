@@ -13,6 +13,9 @@ type BrandSelectorProps = {
   defaultValue?: number | string;
   onChange?: (name:string,value: number | string) => void;
 
+ 
+  onChnageFilter:(key:string, value:string|number)=>void
+
 };
 
 
@@ -22,6 +25,7 @@ type CarFeaturesProps = {
   Seats: number[];
   bugetTypes: string[];
   BodyNames: string[];
+  [key:string]: number[] | string[]
   
 };
 
@@ -91,3 +95,9 @@ interface Message {
   data?: any;
   prompt?: boolean;
 }
+
+
+interface ObjectProps{
+    key:string
+    value:string|number
+  }
