@@ -30,6 +30,8 @@ export const DEFAULTSEARCHPARAMS = {
 export function getUpperLimitInRupees(budgetRange: string) {
   if (!budgetRange) return null;
 
+  if(budgetRange.includes("Above")) return 3000000000
+
   const parts = budgetRange.split("-");
   const upper = parts[1]?.toUpperCase().trim();
 
@@ -87,3 +89,15 @@ export const CustomFilter = [
   "35-40L",
 ];
 export const Priorities = ["Petrol", "Diesel", "Electric", "Hybrid", "CNG", "LPG", "Hydrogen", "Biofuel", "Manual", "Automatic", "Semi-Automatic", "CVT", "Dual-Clutch", 1, 2, 3, 4];
+
+
+export const transmissionTypes:{[key:string]:string} = {
+  "Manual": "MT",
+  "Automatic": "AT",
+  "Semi-Automatic": "SAT",
+  "Continuously Variable Transmission": "CVT",
+  "Dual-Clutch Transmission": "DCT",
+  "Tiptronic": "TT",
+  "Automated Manual Transmission": "AMT"
+};
+
