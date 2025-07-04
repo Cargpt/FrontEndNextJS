@@ -467,7 +467,7 @@ const ChatBox: React.FC = () => {
       >
         <Button
           variant="outlined"
-          sx={{ position: "fixed" }}
+          sx={{ position: "fixed" , border:"none" }}
           onClick={backToPrevious}
         >
           <KeyboardBackspaceSharp />

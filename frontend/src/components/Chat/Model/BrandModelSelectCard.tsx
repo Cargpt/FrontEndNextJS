@@ -187,6 +187,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       modle_name: model?.ModelName,
       [key]: value,
     };
+
+    console.log("skks", key, value)
     try {
       const data = await axiosInstance1.post(
         "/api/cargpt/brand-model-parameters/",
@@ -334,11 +336,11 @@ const {messages}=useChats()
             </div>
           )}
 
-          {carFeatures?.bugetTypes?.length > 0 && (
+          {carFeatures?.budgetTypes?.length > 0 && (
             <div>
               <BrandSelector
                 label="Budget"
-                options={carFeatures?.bugetTypes}
+                options={carFeatures?.budgetTypes}
                 key={4}
                 onChange={handleChange}
                 onChnageFilter={onChnageFilter}

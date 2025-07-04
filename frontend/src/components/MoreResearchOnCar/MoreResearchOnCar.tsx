@@ -160,8 +160,8 @@ const CarResearchMenu: React.FC = () => {
       console.log("item", item, userMessage);
     } else if (item && item?.Brand) {
       let fistItem = item?.Brand;
-      if (fistItem == "MT") fistItem = "Manual";
-      if (fistItem == "AT") fistItem = "Automatic";
+      if (fistItem == "MT") fistItem = "MT";
+      if (fistItem == "AT") fistItem = "AT";
       const searchItem = CustomFilter.find((it) =>
         fistItem?.toLowerCase().includes(it?.toLowerCase())
       );

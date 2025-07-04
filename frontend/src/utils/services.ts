@@ -72,8 +72,8 @@ export const CustomFilter = [
   "Crossover",
   "MPV",
 
-  "Manual",
-  "Automatic",
+  "MT",
+  "AT",
 
   "Petrol",
   "Diesel",
@@ -93,8 +93,8 @@ export const Priorities = ["Petrol", "Diesel", "Electric", "Hybrid", "CNG", "LPG
 
 
 export const transmissionTypes:{[key:string]:string} = {
-  "Manual": "MT",
-  "Automatic": "AT",
+  "MT": "MT",
+  "AT": "AT",
   "Semi-Automatic": "SAT",
   "Continuously Variable Transmission": "CVT",
   "Dual-Clutch Transmission": "DCT",

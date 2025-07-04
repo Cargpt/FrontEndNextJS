@@ -62,6 +62,10 @@ onChange?.(label.toLowerCase().replace(/\s+/g, "_"), isNaN(Number(options[0])) ?
 
       const onChoose = (event: React.ChangeEvent<HTMLInputElement>)=>{
         let {name, value}  = event.target
+
+
+
+        console.log("name and Valus", name, value)
         handleChange(event)
          if(name==="transmission_type"){
           value = transmissionTypes[value]
