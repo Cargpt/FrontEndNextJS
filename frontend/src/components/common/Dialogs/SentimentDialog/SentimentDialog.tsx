@@ -120,7 +120,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
        <Button
           variant="outlined"
           onClick={onClose}
-          sx={{ position: "absolute", left: 15, top: 17,  zIndex:20 }}
+          sx={{ position: "absolute", left: 1, top: 12,  zIndex:20, border:"none" }}
         >
           <KeyboardBackspaceSharp />
         </Button>

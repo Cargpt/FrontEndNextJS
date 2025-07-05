@@ -27,7 +27,7 @@ const BasicCard:React.FC<BasicCardProps>=({title})=> {
          {title}
         </Typography> */}
         <Typography variant="body2" color="text.secondary">
-          <BrandSelector label={title}  options={["5L-10L", "10L-15L"]}/>
+          <BrandSelector label={title}  options={["5L-10L", "10L-15L"]} onChnageFilter={()=>{}} />
         </Typography>
       </CardContent>
       <CardActions>
