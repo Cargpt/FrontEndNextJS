@@ -123,20 +123,15 @@ const TeslaCard: React.FC<Props> = ({
       {modelCars.length > 0 && (
         <Slider {...settings}>
           {modelCars.map((car: any, index: number) => (
-            
             <Card
               sx={{
                 maxWidth: 380,
                 borderRadius: 4,
                 boxShadow: 4,
                 position: "relative",
-                display:"flex",
-                alignItems:"stretch",
-                
-                
-              
+                display: "flex",
+                alignItems: "stretch",
               }}
-              
             >
               <CardMedia
                 component="img"
@@ -173,10 +168,19 @@ const TeslaCard: React.FC<Props> = ({
 
               {/* Content */}
               <CardContent>
-                <Typography variant="h5" fontWeight="bold" gutterBottom sx={{mb:0}}>
-                 {car.ModelName} {car.VariantName}
+                <Typography
+                  variant="h5"
+                  fontWeight="bold"
+                  gutterBottom
+                  sx={{ mb: 0 }}
+                >
+                  {car.ModelName} {car.VariantName}
                 </Typography>
-                <Typography color="text.secondary" gutterBottom sx={{fontSize:12}}>
+                <Typography
+                  color="text.secondary"
+                  gutterBottom
+                  sx={{ fontSize: 12 }}
+                >
                   {car.BrandName}
                 </Typography>
                 <Box
@@ -187,47 +191,45 @@ const TeslaCard: React.FC<Props> = ({
                     my: 1,
                   }}
                 >
-                  
-                     <Box
-                      
-                      sx={{
-                        width: {
-                          xs: "100%",
-                        },
-                        px: 2,
-                        py: 1,
-                        borderRadius: 2,
-                        backgroundColor: "grey.100",
-                        border: "1px solid",
-                        borderColor: "grey.300",
-                        textAlign: "center",
-                      }}
+                  <Box
+                    sx={{
+                      width: {
+                        xs: "100%",
+                      },
+                      px: 2,
+                      py: 1,
+                      borderRadius: 2,
+                      backgroundColor: "grey.100",
+                      border: "1px solid",
+                      borderColor: "grey.300",
+                      textAlign: "center",
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                      sx={{ lineHeight: 1.2, fontWeight: "bold" }}
                     >
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        display="block"
-                        sx={{ lineHeight: 1.2, fontWeight: "bold" }}
-                      >
-                        {car.FuelType}
-                      </Typography>
-                      <Box display="flex" justifyContent="center" mt={0.5}>
-                         <Image
-                          src={tank}
-                          alt="petrol"
-                          width={14}
-                          height={14}
-                          style={{ objectFit: "contain" }}
-                        />
-                        <Image
-                          src={petrol}
-                          alt="tank"
-                          width={14}
-                          height={14}
-                          style={{ objectFit: "contain" }}
-                        />
-                      </Box>
+                      {car.FuelType}
+                    </Typography>
+                    <Box display="flex" justifyContent="center" mt={0.5}>
+                      <Image
+                        src={tank}
+                        alt="petrol"
+                        width={14}
+                        height={14}
+                        style={{ objectFit: "contain" }}
+                      />
+                      <Image
+                        src={petrol}
+                        alt="tank"
+                        width={14}
+                        height={14}
+                        style={{ objectFit: "contain" }}
+                      />
                     </Box>
+                  </Box>
                   {[
                     { label: `${car.TransmissionType}`, icon: trans },
                     { label: ` ${car.Seats} Seater`, icon: seat },
@@ -267,78 +269,75 @@ const TeslaCard: React.FC<Props> = ({
                     </Box>
                   ))}
                 </Box>
- <Stack
-                    direction="row"
-                    gap="5px"
-                    justifyContent="center"
-                    flexWrap="wrap"
-                    mb={1}
-                    sx={{mt:{xs:2}}}
-                  >
-                    {[
-                      { label: "AI Car Advisor Score:", type: "score" },
-                      { label: "EMI", type: "emi" },
-                      { label: "User Sentiments:", type: "sentiment" },
-                    ].map(({ label, type }, index) => (
-                      <Button
-                        key={type}
-                        variant="contained"
-                        size="small"
-                        
-
-                        sx={{
-                          textTransform: "capitalize",
-                          fontSize: "12px",
-                          minWidth:{xs:"100%", md:"10%"}
-                        }}
-                        onClick={() => openDialog(type as any, car)}
-                      >
-                        <span>
-                          {label} {index === 0 && car?.AIScore}{" "}
-                          {index === 2 && car?.AISummary}{" "}
-                        </span>
-                      </Button>
-                    ))}
-                  </Stack>
-                
+                <Stack
+                  direction="row"
+                  gap="5px"
+                  justifyContent="center"
+                  flexWrap="wrap"
+                  mb={1}
+                  sx={{ mt: { xs: 2 } }}
+                >
+                  {[
+                    { label: "AI Car Advisor Score:", type: "score" },
+                    { label: "EMI", type: "emi" },
+                    { label: "User Sentiments:", type: "sentiment" },
+                  ].map(({ label, type }, index) => (
+                    <Button
+                      key={type}
+                      variant="contained"
+                      size="small"
+                      sx={{
+                        textTransform: "capitalize",
+                        fontSize: "12px",
+                        minWidth: { xs: "100%", md: "10%" },
+                      }}
+                      onClick={() => openDialog(type as any, car)}
+                    >
+                      <span>
+                        {label} {index === 0 && car?.AIScore}{" "}
+                        {index === 2 && car?.AISummary}{" "}
+                      </span>
+                    </Button>
+                  ))}
+                </Stack>
               </CardContent>
             </Card>
           ))}
         </Slider>
       )}
 
-        <Stack
-          direction="row"
-          gap={2}
-          mt={3}
-          flexWrap="wrap"
-          justifyContent={{ xs: "center", sm: "flex-start" }}
+      <Stack
+        direction="row"
+        gap={2}
+        mt={3}
+        flexWrap="wrap"
+        justifyContent={{ xs: "center", sm: "flex-start" }}
+      >
+        <Button
+          variant="outlined"
+          onClick={onClick}
+          sx={{ textTransform: "capitalize", fontSize: 13 }}
         >
-          <Button
-            variant="outlined"
-            onClick={onClick}
-            sx={{ textTransform: "capitalize", fontSize: 13 }}
-          >
-            I know exactly I want
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={handleNeedAdviceSupport}
-            sx={{ textTransform: "capitalize", fontSize: 13 }}
-          >
-            I need advisor support
-          </Button>
+          I know exactly I want
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={handleNeedAdviceSupport}
+          sx={{ textTransform: "capitalize", fontSize: 13 }}
+        >
+          I need advisor support
+        </Button>
 
-          {cookies.selectedOption == "I want to do more research on cars" && (
-            <Button
-              variant="outlined"
-              onClick={backTOIntial}
-              sx={{ textTransform: "capitalize", fontSize: 13 }}
-            >
-              Back to car research
-            </Button>
-          )}
-        </Stack>
+        {cookies.selectedOption == "I want to do more research on cars" && (
+          <Button
+            variant="outlined"
+            onClick={backTOIntial}
+            sx={{ textTransform: "capitalize", fontSize: 13 }}
+          >
+            Back to car research
+          </Button>
+        )}
+      </Stack>
       {dialog.type === "gallery" && (
         <CarGallery
           open={dialog.open}
