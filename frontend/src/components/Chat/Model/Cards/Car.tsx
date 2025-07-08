@@ -139,7 +139,7 @@ const TeslaCard: React.FC<Props> = ({
               />
               <Box sx={{ position: "absolute", top: 16, left: 16 }}>
                 <Chip
-                  label={`${car.ModelName} ${car.BodyNames ?? ""}`}
+                  label={`${car.ModelName} - ${car.BodyName ?? ""}`}
                   color="primary"
                   icon={<ElectricCarIcon />}
                 />
