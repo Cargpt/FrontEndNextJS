@@ -122,9 +122,9 @@ const CarModel: FC<AdviceSelectionCardProps> = ({
         <Typography
           variant="body2"
           component="p"
-          sx={{ fontWeight: 700, mb: 1 }}
+          sx={{ fontWeight: 700, mb: 1, textTransform: "capitalize" }}
         >
-          {label.toUpperCase()}
+          {label}
         </Typography>
 
         <FormControl sx={{ m: 1, minWidth: 120 }} size="small">

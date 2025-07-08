@@ -109,9 +109,9 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
         <Typography
           variant="body2"
           component="p"
-          sx={{ fontWeight: 700, mb: 1 }}
+          sx={{ fontWeight: 700, mb: 1, textTransform: "capitalize" }}
         >
-          {label.toUpperCase()}
+          {label}
         </Typography>
 
         <Stack direction="row" flexWrap="wrap" gap={1}>

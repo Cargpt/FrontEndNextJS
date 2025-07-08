@@ -7,6 +7,7 @@ import {
   Button,
   useMediaQuery,
   useTheme,
+  CircularProgress,
 } from "@mui/material";
 import Image from "next/image";
 import bot from "../../../public/assets/lisa.svg";
@@ -444,155 +445,86 @@ const ChatBox: React.FC = () => {
   console.log("message", messages);
   return (
     <>
-  <Box
-    sx={{
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "flex-start",
-      width: isSmallScreen ? "100%" : "80%",
-      mt: 2,
-      ml: { xs: 0, sm: 19 },
-    }}
-  >
-    <Paper
-      elevation={3}
-      sx={{
-        p: 2,
-        width: isSmallScreen ? "100%" : "70%",
-        display: "flex",
-        flexDirection: "column",
-        padding: isSmallScreen ? "0px" : "16px",
-      }}
-    >
-      <Button
-        variant="outlined"
-        sx={{ position: "fixed", border: "none" }}
-        onClick={backToPrevious}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-start",
+          width: isSmallScreen ? "100%" : "80%",
+          ml: { xs: 0, sm: 19 },
+        }}
       >
-        <KeyboardBackspaceSharp />
-      </Button>
-
-      <Box ref={bottomRef}>
-        {messages.map((msg) => (
-          <Box
-            key={msg.id}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
-              mb: 2,
-              mt: { xs: 4, sm: 1 },
-              p: { xs: 2, sm: 0 },
-              textAlign: msg.sender === "user" ? "right" : "left",
-            }}
+        <Paper
+          elevation={3}
+          sx={{
+            p: 2,
+            width: isSmallScreen ? "100%" : "70%",
+            display: "flex",
+            flexDirection: "column",
+            padding: isSmallScreen ? "0px" : "16px",
+          }}
+        >
+          <Button
+            variant="outlined"
+            sx={{ position: "fixed", border: "none" }}
+            onClick={backToPrevious}
           >
-            {msg.sender === "bot" && (
-              <Box sx={{ mb: 0.5 }}>
-                <Image src={bot} alt="bot" width={32} height={32} />
-              </Box>
-            )}
-            {msg.sender === "user" && (
-              <Box sx={{ mb: 0.5 }}>
-                <Avatar
-                  sx={{ bgcolor: "secondary.main", width: 32, height: 32 }}
-                >
-                  U
-                </Avatar>
-              </Box>
-            )}
-            <Paper
-              sx={{
-                p: 1.5,
-                maxWidth: isSmallScreen ? "100%" : "75%",
-                bgcolor:
-                  msg.sender === "user" ? "rgb(211, 227, 255)" : "grey.100",
-                color: "black",
-              }}
-            >
-              {renderMessage(msg)}
-            </Paper>
-          </Box>
-        ))}
-      </Box>
-    </Paper>
-  </Box>
-  <div ref={bottomRef} />
-</>
+            <KeyboardBackspaceSharp />
+          </Button>
 
+          <Box ref={bottomRef}>
+            {messages.map((msg) => (
+              <Box
+                key={msg.id}
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
+                  mb: 2,
+                  mt: { xs: 4, sm: 1 },
+                  p: { xs: 2, sm: 0 },
+                  textAlign: msg.sender === "user" ? "right" : "left",
+                  fontSize: "14px",
+                }}
+              >
+                {msg.sender === "bot" && (
+                  <Box sx={{ mb: 0.5 }}>
+                    <Image src={bot} alt="bot" width={32} height={32} />
+                  </Box>
+                )}
+                {msg.sender === "user" && (
+                  <Box sx={{ mb: 0.5 }}>
+                    <Avatar
+                      sx={{ bgcolor: "secondary.main", width: 32, height: 32 }}
+                    >
+                      U
+                    </Avatar>
+                  </Box>
+                )}
+                <Paper
+                  sx={{
+                    p: 1.5,
+                    maxWidth: isSmallScreen ? "100%" : "75%",
+                    bgcolor:
+                      msg.sender === "user" ? "rgb(211, 227, 255)" : "grey.100",
+                    color: "black",
+                  }}
+                >
+                  {renderMessage(msg)}
+                </Paper>
+              </Box>
+            ))}
+            {loading && (
+              <Box display="flex" justifyContent="center" mt={2}>
+                <CircularProgress />
+              </Box>
+            )}
+          </Box>
+        </Paper>
+      </Box>
+      <div ref={bottomRef} />
+    </>
   );
 };
 
 export default ChatBox;
-
- // <>
-    //   <Paper
-    //     elevation={3}
-    //     sx={{
-    //       p: 2,
-    //       width: "100%",
-    //       display: "flex",
-    //       flexDirection: "column",
-    //       mx: "auto",
-    //       padding: isSmallScreen ? "0px" : "16px",
-    //     }}
-    //   >
-    //     <Button
-    //       variant="outlined"
-    //       sx={{ position: "fixed", border: "none" }}
-    //       onClick={backToPrevious}
-    //     >
-    //       <KeyboardBackspaceSharp />
-    //     </Button>
-
-    //     <Box
-    //       ref={bottomRef} /// Attach the ref here
-    //     >
-    //       {/* Message List */}
-    //       {messages.map((msg) => (
-    //         <Box
-    //           key={msg.id}
-    //           sx={{
-    //             display: "flex",
-    //             flexDirection: "column",
-    //             alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
-    //             mb: 2,
-    //             mt: { xs: 4, sm: 1 },
-    //             p: { xs: 2, sm: 0 },
-    //             textAlign: msg.sender === "user" ? "right" : "left",
-    //           }}
-    //         >
-    //           {/* Avatar/Icons on top */}
-    //           {msg.sender === "bot" && (
-    //             <Box sx={{ mb: 0.5 }}>
-    //               <Image src={bot} alt="bot" width={32} height={32} />
-    //             </Box>
-    //           )}
-
-    //           {msg.sender === "user" && (
-    //             <Box sx={{ mb: 0.5 }}>
-    //               <Avatar
-    //                 sx={{ bgcolor: "secondary.main", width: 32, height: 32 }}
-    //               >
-    //                 U
-    //               </Avatar>
-    //             </Box>
-    //           )}
-
-    //           {/* Message Bubble */}
-    //           <Paper
-    //             sx={{
-    //               p: 1.5,
-    //               maxWidth: isSmallScreen ? "100%" : "75%",
-    //               bgcolor:
-    //                 msg.sender === "user" ? "rgb(211, 227, 255)" : "grey.100",
-    //               color: "black",
-    //             }}
-    //           >
-    //             {renderMessage(msg)}
-    //           </Paper>
-    //         </Box>
-    //       ))}
-    //     </Box>
-    //   </Paper>
-    //   <div ref={bottomRef} />
-    // </>

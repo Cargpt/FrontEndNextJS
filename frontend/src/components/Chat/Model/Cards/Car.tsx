@@ -4,13 +4,11 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Chip from "@mui/material/Chip";
-import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import ElectricCarIcon from "@mui/icons-material/ElectricCar";
 import { useTheme } from "@emotion/react";
-import { useMediaQuery } from "@mui/material";
 import { useChats } from "@/Context/ChatContext";
 import { useCookies } from "react-cookie";
 import Slider, { Settings } from "react-slick";
@@ -18,11 +16,10 @@ import CarGallery from "@/components/common/Dialogs/CarGallery/CarGallery";
 import ScoreDialog from "@/components/common/Dialogs/ScoreDialog/ScoreDialog";
 import EMIDialog from "@/components/common/Dialogs/EMIDialog/EMIDialog";
 import SentimentDialog from "@/components/common/Dialogs/SentimentDialog/SentimentDialog";
-import petrol from "../../../../../public/assets/vector26786425-bw2d.svg";
-import tank from "../../../../../public/assets/subtract6425-nvra (1).svg";
-import seat from "../../../../../public/assets/babycarseat6425-n4nh.svg";
-import trans from "../../../../../public/assets/vector26796425-xttl.svg";
-import speed from "../../../../../public/assets/hugeiconinterfacesolidspeedtest6425-amlw.svg";
+import tank from "../../../../../public/assets/icons/petrol-tank.png";
+import seat from "../../../../../public/assets/icons/car-seat.jpg";
+import trans from "../../../../../public/assets/icons/automation.png";
+import speed from "../../../../../public/assets/icons/mileage.png";
 import Image from "next/image";
 import carimg from "../../../../../public/assets/card-img.png";
 
@@ -45,7 +42,6 @@ const TeslaCard: React.FC<Props> = ({
   const rawValues = Object.values(selectedItem);
   const modelCars: any[] = Array.isArray(rawValues[0]) ? rawValues[0] : [];
   const theme = useTheme();
-  // const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [carInfo, setCarInfo] = useState<any>(null);
   const [dialog, setDialog] = useState<typeProps>({ open: false, type: null });
   const { messages, setMessages } = useChats();
@@ -71,24 +67,23 @@ const TeslaCard: React.FC<Props> = ({
     ) {
       setCarInfo(data);
     }
-
     console.log("data", data);
   };
 
   const settings: Settings = {
     infinite: false,
     speed: 500,
-    slidesToShow: modelCars.length < 3 ? modelCars.length : 3,
+    slidesToShow: 2,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 1000,
+    autoplaySpeed: 3000,
     dots: false,
     arrows: true,
     responsive: [
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: modelCars.length < 3 ? modelCars.length : 3,
+          slidesToShow: 2,
           slidesToScroll: 1,
           dots: false,
         },
@@ -96,7 +91,7 @@ const TeslaCard: React.FC<Props> = ({
       {
         breakpoint: 600,
         settings: {
-          slidesToShow: modelCars.length < 2 ? modelCars.length : 2,
+          slidesToShow: 1,
           slidesToScroll: 1,
           initialSlide: 0,
           dots: false,
@@ -126,11 +121,10 @@ const TeslaCard: React.FC<Props> = ({
             <Card
               sx={{
                 maxWidth: 380,
-                borderRadius: 4,
+                borderRadius: 2,
                 boxShadow: 4,
                 position: "relative",
                 display: "flex",
-                alignItems: "stretch",
               }}
             >
               <CardMedia
@@ -145,7 +139,7 @@ const TeslaCard: React.FC<Props> = ({
               />
               <Box sx={{ position: "absolute", top: 16, left: 16 }}>
                 <Chip
-                  label="Electric Sedan"
+                  label={`${car.ModelName} ${car.BodyNames ?? ""}`}
                   color="primary"
                   icon={<ElectricCarIcon />}
                 />
@@ -156,12 +150,11 @@ const TeslaCard: React.FC<Props> = ({
                   top: 170,
                   left: 16,
                   backgroundColor: "white",
-                  px: 1.5,
                   py: 0.5,
                   borderRadius: 2,
                 }}
               >
-                <Typography variant="h6" fontWeight="bold" color="primary">
+                <Typography fontWeight="bold" color="primary" fontSize={18}>
                   ₹{(car.Price / 100000).toFixed(1)}L
                 </Typography>
               </Box>
@@ -172,9 +165,9 @@ const TeslaCard: React.FC<Props> = ({
                   variant="h5"
                   fontWeight="bold"
                   gutterBottom
-                  sx={{ mb: 0 }}
+                  sx={{ mb: 0, fontSize: "15px" }}
                 >
-                  {car.ModelName} {car.VariantName}
+                  {car.VariantName}
                 </Typography>
                 <Typography
                   color="text.secondary"
@@ -183,6 +176,31 @@ const TeslaCard: React.FC<Props> = ({
                 >
                   {car.BrandName}
                 </Typography>
+                {/* Static color palette */}
+                <Box sx={{ display: "flex", gap: 1, mt: 1, mb: 1 }}>
+                  {[
+                    "#000000",
+                    "#ffffff",
+                    "#637380",
+                    "#808080",
+                    "#63625c",
+                    "#371c25",
+                    "#a94744",
+                  ].map((color, idx) => (
+                    <Box
+                      key={idx}
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: "50%",
+                        backgroundColor: color,
+                        border: "1px solid #ccc",
+                        cursor: "pointer",
+                      }}
+                    />
+                  ))}
+                </Box>
+
                 <Box
                   sx={{
                     display: "grid",
@@ -191,46 +209,8 @@ const TeslaCard: React.FC<Props> = ({
                     my: 1,
                   }}
                 >
-                  <Box
-                    sx={{
-                      width: {
-                        xs: "100%",
-                      },
-                      px: 2,
-                      py: 1,
-                      borderRadius: 2,
-                      backgroundColor: "grey.100",
-                      border: "1px solid",
-                      borderColor: "grey.300",
-                      textAlign: "center",
-                    }}
-                  >
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      display="block"
-                      sx={{ lineHeight: 1.2, fontWeight: "bold" }}
-                    >
-                      {car.FuelType}
-                    </Typography>
-                    <Box display="flex" justifyContent="center" mt={0.5}>
-                      <Image
-                        src={tank}
-                        alt="petrol"
-                        width={14}
-                        height={14}
-                        style={{ objectFit: "contain" }}
-                      />
-                      <Image
-                        src={petrol}
-                        alt="tank"
-                        width={14}
-                        height={14}
-                        style={{ objectFit: "contain" }}
-                      />
-                    </Box>
-                  </Box>
                   {[
+                    { label: `${car.FuelType}`, icon: tank },
                     { label: `${car.TransmissionType}`, icon: trans },
                     { label: ` ${car.Seats} Seater`, icon: seat },
                     { label: ` ${car.Mileage} kmpl`, icon: speed },
@@ -250,14 +230,6 @@ const TeslaCard: React.FC<Props> = ({
                         textAlign: "center",
                       }}
                     >
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        display="block"
-                        sx={{ lineHeight: 1.2, fontWeight: "bold" }}
-                      >
-                        {item.label}
-                      </Typography>
                       <Box display="flex" justifyContent="center" mt={0.5}>
                         <Image
                           src={item.icon}
@@ -266,6 +238,14 @@ const TeslaCard: React.FC<Props> = ({
                           height={24}
                         />
                       </Box>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        display="block"
+                        sx={{ lineHeight: 1.2, fontWeight: "bold" }}
+                      >
+                        {item.label}
+                      </Typography>
                     </Box>
                   ))}
                 </Box>

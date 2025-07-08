@@ -33,9 +33,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
 }) => {
   const [brand, setBrand] = useState<Brand>(brands[0]);
 
-  const [model, setModel] = useState<ModelProps | null>(
-    null
-  );
+  const [model, setModel] = useState<ModelProps | null>(null);
   const [models, setModels] = useState<ModelProps[]>([]);
   const [carFeatures, setCarFeatures] = useState<CarFeaturesProps>({
     FuelType: ["petrol", "diesel", "electric"],
@@ -56,45 +54,36 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     }));
   };
 
-  const {setCars } = useChats();
+  const { setCars } = useChats();
 
   const fetchBrandModes = async () => {
+    const searchParams: any = messages[messages.length - 1]?.searchParam;
+    console.log("searchParams", messages, searchParams);
 
-    const searchParams:any = messages[messages.length-1]?.searchParam
-    console.log("searchParams", messages, searchParams)
-
-    if(messages[messages.length-1].message?.models?.length> 0){
-      const m = messages[messages.length-1].message?.models
-      setModel(m[0])
-        setModels(m)
-      
-    }
-    else if(searchParams){
-      let payload:any = {}
-      payload['brand_name']=brand.BrandName
-      payload = {...payload, ...searchParams}
+    if (messages[messages.length - 1].message?.models?.length > 0) {
+      const m = messages[messages.length - 1].message?.models;
+      setModel(m[0]);
+      setModels(m);
+    } else if (searchParams) {
+      let payload: any = {};
+      payload["brand_name"] = brand.BrandName;
+      payload = { ...payload, ...searchParams };
 
       const data = await axiosInstance1.post("/api/cargpt/search/", payload);
 
-  
       setModels(data?.models || []);
       setModel(data?.models[0] || null);
-       
+    } else {
+      const payload = {
+        brand_id: brand?.BrandID,
+      };
+      try {
+        const data = await axiosInstance1.post("/api/cargpt/models/", payload);
 
-    }else{
-
-
-   
-    const payload = {
-      brand_id: brand?.BrandID,
-    };
-    try {
-      const data = await axiosInstance1.post("/api/cargpt/models/", payload);
-
-      setModels(data?.models || []);
-      setModel(data?.models[0] || null);
-    } catch (error) {}
-  }
+        setModels(data?.models || []);
+        setModel(data?.models[0] || null);
+      } catch (error) {}
+    }
   };
 
   const fetchCarFeatures = async () => {
@@ -135,7 +124,6 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   const { showSnackbar } = useSnackbar();
   const [isDisable, setIsDisable] = useState<boolean>(false);
   const fetchDataBasedOnParameters = async () => {
-
     setDisableBtn(true);
     try {
       const payload = { ...carFilter };
@@ -160,7 +148,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
 
       handleUserMessage({ ...payload });
 
-      setIsDisable(true)
+      setIsDisable(true);
     } catch (error) {
       setDisableBtn(false);
     }
@@ -169,7 +157,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   const [openDialouge, setOpenDialouge] = useState<boolean>(false);
 
   const onChnageFilter = async (key: string, value: string | number) => {
-    if(isDisable) return
+    if (isDisable) return;
 
     let NewKey = "";
     if (key === "fuel_type") {
@@ -188,7 +176,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       [key]: value,
     };
 
-    console.log("skks", key, value)
+    console.log("skks", key, value);
     try {
       const data = await axiosInstance1.post(
         "/api/cargpt/brand-model-parameters/",
@@ -198,13 +186,11 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       const prevValues = carFeatures[NewKey];
       const NewObj = { ...data?.data, [NewKey]: prevValues };
 
-
       setCarFeatures(NewObj);
     } catch (error) {}
   };
 
-  
-const {messages}=useChats()
+  const { messages } = useChats();
   console.log("brands", carFeatures);
   return (
     <Card
@@ -236,7 +222,7 @@ const {messages}=useChats()
           <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
             <InputLabel id="brand-label">Brand</InputLabel>
             <Select
-            disabled={isDisable}
+              disabled={isDisable}
               labelId="brand-label"
               value={brand?.BrandID ?? ""}
               label="Brand"
@@ -245,9 +231,14 @@ const {messages}=useChats()
                   (b: Brand) => b.BrandID === e.target.value
                 );
                 if (selectedBrand) {
-
                   setBrand(selectedBrand);
                 }
+              }}
+               sx={{
+                fontSize: "15px", 
+                "& .MuiSelect-select": {
+                  fontSize: "15px",
+                },
               }}
             >
               {Array.isArray(brands) &&
@@ -267,8 +258,7 @@ const {messages}=useChats()
           >
             <InputLabel id="model-label">Model</InputLabel>
             <Select
-                        disabled={isDisable}
-
+              disabled={isDisable}
               labelId="model-label"
               value={model?.ModelID ?? ""}
               label="Model"
@@ -279,6 +269,12 @@ const {messages}=useChats()
                 if (selectedModel) {
                   setModel(selectedModel);
                 }
+              }}
+              sx={{
+                fontSize: "15px", 
+                "& .MuiSelect-select": {
+                  fontSize: "15px",
+                },
               }}
             >
               {models.map((model: ModelProps, index: number) => (

@@ -1,5 +1,5 @@
 :root {
-  --background: #ffffff;
+  --background: #ddddd2ad;
   --foreground: #171717;
 }
 
@@ -38,13 +38,11 @@ a {
   }
 }
 
-
-
 /* Custom Scrollbar Styles */
 
 /* For WebKit browsers (Chrome, Safari, Edge, Opera, etc.) */
 ::-webkit-scrollbar {
-  width: 6px;  /* Smaller width for vertical scrollbar */
+  width: 6px; /* Smaller width for vertical scrollbar */
   height: 6px; /* Smaller height for horizontal scrollbar */
 }
 
@@ -65,7 +63,8 @@ a {
 /* For Firefox */
 /* Note: Firefox's 'thin' is a predefined width; you can't set exact pixels. */
 /* 'scrollbar-color' sets thumb-color track-color */
-* { /* Apply to all elements, or be more specific if needed */
+* {
+  /* Apply to all elements, or be more specific if needed */
   scrollbar-width: thin; /* 'auto' | 'thin' | 'none' */
   scrollbar-color: #cccccc #f0f0f0; /* light gray thumb, lighter gray track */
 }
@@ -87,3 +86,23 @@ html, body, .my-custom-scroll-container {
     display: none;
   }
 } */
+
+.slick-slider .slick-track {
+  display: flex !important;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.slick-slide > div {
+  display: flex;
+}
+
+.slick-list {
+  padding-bottom: 10px !important;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  color: grey !important;
+  font-size: 25px !important;
+}

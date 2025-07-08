@@ -32,16 +32,16 @@ const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const rows = [
-    { label: 'Budget', value: `₹${recommendations.budget.toLocaleString()}` },
-    { label: 'Fuel', value: recommendations.fuel_type || '-' },
-    { label: 'Body', value: recommendations.body_type || '-' },
-    { label: 'Transmission', value: recommendations.transmission_type || '-' },
-    { label: 'Brand', value: recommendations.brand_name || '-' }
+    { label: "Budget", value: `₹${recommendations.budget.toLocaleString()}` },
+    { label: "Fuel", value: recommendations.fuel_type || "-" },
+    { label: "Body", value: recommendations.body_type || "-" },
+    { label: "Transmission", value: recommendations.transmission_type || "-" },
+    { label: "Brand", value: recommendations.brand_name || "-" },
   ];
 
   return (
-    <Box mt={3} sx={{ overflowX: 'auto' }}>
-      <Typography variant="h6" gutterBottom>
+    <Box sx={{ overflowX: "auto" }}>
+      <Typography gutterBottom sx={{ fontSize: "15px", textAlign: "left", fontWeight: 600 }}>
         ✅ Based on your preferences, here are our recommendations:
       </Typography>
 
@@ -52,7 +52,11 @@ const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({
             <TableBody>
               {rows.map((row, idx) => (
                 <TableRow key={idx}>
-                  <TableCell component="th" scope="row" sx={{ fontWeight: 'bold' }}>
+                  <TableCell
+                    component="th"
+                    scope="row"
+                    sx={{ fontWeight: "bold" }}
+                  >
                     {row.label}
                   </TableCell>
                   <TableCell>{row.value}</TableCell>
@@ -65,7 +69,9 @@ const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({
               <TableHead>
                 <TableRow>
                   {rows.map((row, idx) => (
-                    <TableCell key={idx}><strong>{row.label}</strong></TableCell>
+                    <TableCell key={idx}>
+                      <strong>{row.label}</strong>
+                    </TableCell>
                   ))}
                 </TableRow>
               </TableHead>
