@@ -22,6 +22,7 @@ import trans from "../../../../../public/assets/icons/automation.png";
 import speed from "../../../../../public/assets/icons/mileage.png";
 import Image from "next/image";
 import carimg from "../../../../../public/assets/card-img.png";
+import { Avatar } from "@mui/material";
 
 type Props = {
   onClick?: () => void;
@@ -140,8 +141,14 @@ const TeslaCard: React.FC<Props> = ({
               <Box sx={{ position: "absolute", top: 16, left: 16 }}>
                 <Chip
                   label={`${car.ModelName} - ${car.BodyName ?? ""}`}
-                  color="primary"
-                  icon={<ElectricCarIcon />}
+                  sx={{ backgroundColor: "#f5f5f5", color: "black" }}
+                  icon={
+                    <Avatar
+                      src={car.logo}
+                      alt={car.BrandName}
+                      sx={{ width: 20, height: 20 }}
+                    />
+                  }
                 />
               </Box>
               <Box
