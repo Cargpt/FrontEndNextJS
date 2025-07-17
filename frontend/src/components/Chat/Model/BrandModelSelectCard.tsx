@@ -138,7 +138,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
           vertical: "bottom",
         });
 
-        return false;
+        return   false;
       }
 
       setCars((prev: any) => [
