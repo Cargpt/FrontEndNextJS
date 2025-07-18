@@ -113,7 +113,7 @@ const TeslaCard: React.FC<Props> = ({
     setMessages((prev) => [...prev, userMessage]);
   };
 
-  console.log("carInfo", carInfo);
+  console.log("carInfo", modelCars);
   return (
     <>
       {modelCars.length > 0 && (
@@ -189,22 +189,14 @@ const TeslaCard: React.FC<Props> = ({
                 </Typography>
                 {/* Static color palette */}
                 <Box sx={{ display: "flex", gap: 1, mt: 1, mb: 1 }}>
-                  {[
-                    "#000000",
-                    "#ffffff",
-                    "#637380",
-                    "#808080",
-                    "#63625c",
-                    "#371c25",
-                    "#a94744",
-                  ].map((color, idx) => (
+                  {car?.Colors?.map((color:VariantColor, idx:number) => (
                     <Box
                       key={idx}
                       sx={{
                         width: 20,
                         height: 20,
                         borderRadius: "50%",
-                        backgroundColor: color,
+                        backgroundColor: color.ColorHex,
                         border: "1px solid #ccc",
                         cursor: "pointer",
                       }}

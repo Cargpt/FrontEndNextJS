@@ -103,3 +103,12 @@ interface ObjectProps{
     key:string
     value:string|number
   }
+
+
+
+
+interface VariantColor {
+  
+ColorHex:string;
+ColorName:string
+}
