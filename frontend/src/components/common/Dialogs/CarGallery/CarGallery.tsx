@@ -165,7 +165,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
               infinite
               centerMode={false}
             >
-              {images.map((img: any, index: number) => (
+              {images[0].map((img: any, index: number) => (
                 <Box key={index} sx={{ p: 1, cursor: "pointer", display:"flex" }}>
                   <Image
                     src={img.CarImageURL}

@@ -22,7 +22,8 @@ import trans from "../../../../../public/assets/icons/automation.png";
 import speed from "../../../../../public/assets/icons/mileage.png";
 import Image from "next/image";
 import carimg from "../../../../../public/assets/card-img.png";
-import { Avatar } from "@mui/material";
+import { Avatar, IconButton } from "@mui/material";
+import CollectionsIcon from '@mui/icons-material/Collections';
 
 type Props = {
   onClick?: () => void;
@@ -138,6 +139,25 @@ const TeslaCard: React.FC<Props> = ({
                 }}
                 onClick={() => openDialog("gallery", car)}
               />
+
+
+              {/* Gallery Icon */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  zIndex: 1,
+                }}
+              >
+                <IconButton
+                  color="primary"
+                  onClick={() => openDialog("gallery", car)}
+                  sx={{ backgroundColor: "#ffffff", borderRadius: "50%" }}
+                >
+                  <CollectionsIcon />
+                </IconButton>
+              </Box>
               <Box sx={{ position: "absolute", top: 16, left: 16 }}>
  <Chip
                   label={`${car.ModelName} - ${car.BodyName ?? ""}`}
