@@ -11,8 +11,8 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import bot from "../../../public/assets/lisa.svg";
-import BrandModelSelectCard from "./Model/BrandModelSelectCard";
 import { useChats } from "@/Context/ChatContext";
+
 import AdviceSelectionCard from "./Model/AdviceSelectionCard";
 import { BUDGET } from "@/utils/services";
 import CarModel from "./Model/AdviceSelectionCard/CarOptions";
@@ -23,6 +23,8 @@ import { useSnackbar } from "@/Context/SnackbarContext";
 import { useCookies } from "react-cookie";
 import { KeyboardBackspaceSharp } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
+
+import BrandModelSelectCard from "./Model/BrandModelSelectCard";
 import CarResearchMenu from "../MoreResearchOnCar/MoreResearchOnCar";
 import TeslaCard from "./Model/Cards/Car";
 
@@ -45,200 +47,120 @@ const ChatBox: React.FC = () => {
     fetchBrands();
   }, []);
 
-  useEffect(() => {
-    if (messages.length === 0) return;
-    // Simulate bot reply after a delay
-    const timer = setTimeout(() => {
-      const lastMsg = messages[messages.length - 1];
+ useEffect(() => {
+  if (messages.length === 0) return;
 
-      if (
-        lastMsg.sender === "user" &&
-        lastMsg.message === "I know exactly what I want"
-      ) {
-        setLoading(true);
-        setTimeout(() => {
-          const botMessage: Message = {
-            id: String(Date.now()),
-            message: { brands },
-            render: "brandModelSelect",
-            sender: "bot",
-          };
-          setMessages((prev) => [...prev, botMessage]);
-          setLoading(false);
-        }, 1000);
-      } else if (
-        lastMsg.sender === "user" &&
-        lastMsg.message === "I need advisor support"
-      ) {
-        setLoading(true);
-        setTimeout(() => {
-          const botMessage: Message = {
-            id: String(Date.now()),
-            message: {},
-            render: "selectOption",
-            sender: "bot",
-          };
-          setMessages((prev) => [...prev, botMessage]);
-          setLoading(false);
-        }, 1000);
-      } else if (
-        lastMsg.sender === "user" &&
-        typeof lastMsg.message == "string" &&
-        lastMsg.message?.includes("budget set to")
-      ) {
-        setLoading(true);
-        setTimeout(() => {
-          const botMessage: Message = {
-            id: String(Date.now()),
-            message: {},
-            render: "flueOption",
-            sender: "bot",
-          };
-          setMessages((prev) => [...prev, botMessage]);
-          setLoading(false);
-        }, 1000);
-      } else if (
-        lastMsg.sender === "user" &&
-        typeof lastMsg.message == "string" &&
-        lastMsg.message?.includes("fuel type set to")
-      ) {
-        setLoading(true);
-        setTimeout(() => {
-          const botMessage: Message = {
-            id: String(Date.now()),
-            message: {},
-            render: "bodyOption",
-            sender: "bot",
-          };
-          setMessages((prev) => [...prev, botMessage]);
-          setLoading(false);
-        }, 1000);
-      } else if (
-        lastMsg.sender === "user" &&
-        typeof lastMsg.message == "string" &&
-        lastMsg.message?.includes("body type set to")
-      ) {
-        setLoading(true);
-        setTimeout(() => {
-          const botMessage: Message = {
-            id: String(Date.now()),
-            message: {},
-            render: "transmissionOption",
-            sender: "bot",
-          };
-          setMessages((prev) => [...prev, botMessage]);
-          setLoading(false);
-        }, 1000);
-      } else if (
-        lastMsg.sender === "user" &&
-        typeof lastMsg.message == "string" &&
-        lastMsg.message?.includes("transmission type set to")
-      ) {
-        setLoading(true);
-        setTimeout(() => {
-          const botMessage: Message = {
-            id: String(Date.now()),
-            message: {},
-            render: "brandOption",
-            sender: "bot",
-          };
-          setMessages((prev) => [...prev, botMessage]);
-          setLoading(false);
-        }, 1000);
-      } else if (
-        lastMsg.sender === "user" &&
-        typeof lastMsg.message == "string" &&
-        lastMsg.message?.includes("transmission type set to")
-      ) {
-        setLoading(true);
-        setTimeout(() => {
-          const botMessage: Message = {
-            id: String(Date.now()),
-            message: {},
-            render: "brandOption", // Change this to 'carOptions' if you want to show the carousel
-            sender: "bot",
-          };
-          setMessages((prev) => [...prev, botMessage]);
-          setLoading(false);
-        }, 1000);
-      } else if (lastMsg.sender === "user" && lastMsg.message?.brand_name) {
-        setLoading(true);
-        setTimeout(() => {
-          const botMessage: Message = {
-            id: String(Date.now()),
-            message: {},
-            render: "recommendationOption", // Change this to 'carOptions' if you want to show the carousel
-            sender: "bot",
-          };
-          setMessages((prev) => [...prev, botMessage]);
-          setLoading(false);
-        }, 1000);
-      } else if (
-        lastMsg.sender === "user" &&
-        typeof lastMsg.message == "string" &&
-        (lastMsg.message?.includes("I want to do more research on car") ||
-          lastMsg.message?.includes("Advanced filters for car searc"))
-      ) {
-        setLoading(true);
-        setTimeout(() => {
-          const botMessage: Message = {
-            id: String(Date.now()),
-            message: {},
-            render: "researchOncar", // Change this to 'carOptions' if you want to show the carousel
-            sender: "bot",
-          };
-          setMessages((prev) => [...prev, botMessage]);
-          setLoading(false);
-        }, 1000);
-      } else if (
-        lastMsg.sender === "user" &&
-        typeof lastMsg.message == "string" &&
-        lastMsg.prompt
-      ) {
-        setLoading(true);
-        setTimeout(() => {
-          const botMessage: Message = {
-            id: String(Date.now()),
-            message: messages[messages.length - 1].message,
-            render: "researchOncar", // Change this to 'carOptions' if you want to show the carousel
-            sender: "bot",
-          };
-          setMessages((prev) => [...prev, botMessage]);
-          setLoading(false);
-        }, 1000);
-      } else if (
-        lastMsg.sender === "user" &&
-        typeof lastMsg.message == "string" &&
-        lastMsg.message?.includes("Best")
-      ) {
-        setLoading(true);
-        setTimeout(() => {
-          const botMessage: Message = {
-            id: String(Date.now()),
-            message: {},
-            render: "BestCarOption", // Change this to 'carOptions' if you want to show the carousel
-            sender: "bot",
-          };
-          setMessages((prev) => [...prev, botMessage]);
-          setLoading(false);
-        }, 1000);
-      } else if (lastMsg.sender === "user" && lastMsg.message?.brand_name) {
-        setLoading(true);
-        setTimeout(() => {
-          const botMessage: Message = {
-            id: String(Date.now()),
-            message: {},
-            render: "recommendationOption", // Change this to 'carOptions' if you want to show the carousel
-            sender: "bot",
-          };
-          setMessages((prev) => [...prev, botMessage]);
-          setLoading(false);
-        }, 1000);
-      }
-    }, 1000);
+  const lastMsg = messages[messages.length - 1];
+  let botMessage: Message | null = null;
 
-    return () => clearTimeout(timer);
-  }, [messages, brands]);
+  if (lastMsg.sender === "user" && lastMsg.message === "I know exactly what I want") {
+    botMessage = {
+      id: String(Date.now()),
+      message: { brands },
+      render: "brandModelSelect",
+      sender: "bot",
+    };
+  } else if (lastMsg.sender === "user" && lastMsg.message === "I need advisor support") {
+    botMessage = {
+      id: String(Date.now()),
+      message: {},
+      render: "selectOption",
+      sender: "bot",
+    };
+  } else if (
+    lastMsg.sender === "user" &&
+    typeof lastMsg.message === "string" &&
+    lastMsg.message.includes("budget set to")
+  ) {
+    botMessage = {
+      id: String(Date.now()),
+      message: {},
+      render: "flueOption",
+      sender: "bot",
+    };
+  } else if (
+    lastMsg.sender === "user" &&
+    typeof lastMsg.message === "string" &&
+    lastMsg.message.includes("fuel type set to")
+  ) {
+    botMessage = {
+      id: String(Date.now()),
+      message: {},
+      render: "bodyOption",
+      sender: "bot",
+    };
+  } else if (
+    lastMsg.sender === "user" &&
+    typeof lastMsg.message === "string" &&
+    lastMsg.message.includes("body type set to")
+  ) {
+    botMessage = {
+      id: String(Date.now()),
+      message: {},
+      render: "transmissionOption",
+      sender: "bot",
+    };
+  } else if (
+    lastMsg.sender === "user" &&
+    typeof lastMsg.message === "string" &&
+    lastMsg.message.includes("transmission type set to")
+  ) {
+    botMessage = {
+      id: String(Date.now()),
+      message: {},
+      render: "brandOption",
+      sender: "bot",
+    };
+  } else if (lastMsg.sender === "user" && lastMsg.message?.brand_name) {
+    botMessage = {
+      id: String(Date.now()),
+      message: {},
+      render: "recommendationOption",
+      sender: "bot",
+    };
+  } else if (
+    lastMsg.sender === "user" &&
+    typeof lastMsg.message === "string" &&
+    (lastMsg.message.includes("I want to do more research on car") ||
+      lastMsg.message.includes("Advanced filters for car searc"))
+  ) {
+    botMessage = {
+      id: String(Date.now()),
+      message: {},
+      render: "researchOncar",
+      sender: "bot",
+    };
+  } else if (lastMsg.sender === "user" && lastMsg.prompt) {
+    botMessage = {
+      id: String(Date.now()),
+      message: lastMsg.message,
+      render: "researchOncar",
+      sender: "bot",
+    };
+  } else if (
+    lastMsg.sender === "user" &&
+    typeof lastMsg.message === "string" &&
+    lastMsg.message.includes("Best")
+  ) {
+    botMessage = {
+      id: String(Date.now()),
+      message: {},
+      render: "BestCarOption",
+      sender: "bot",
+    };
+  }
+
+  if (botMessage) {
+    setMessages((prev) => [...prev, botMessage!]);
+    // setLoading(true);
+    // const timer = setTimeout(() => {
+    //   setLoading(false);
+    // }, 1000);
+
+    // return () => clearTimeout(timer);
+  }
+}, [messages, brands]);
+
 
   const handleIknowWhatEaxactlyWhatIWant = () => {
     // const lastItem = messages[messages.length - 1];
