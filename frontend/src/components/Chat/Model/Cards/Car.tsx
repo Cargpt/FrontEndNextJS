@@ -214,7 +214,7 @@ const TeslaCard: React.FC<Props> = ({
                 >
                   {[
                     { label: `${car.FuelType}`, icon: tank },
-                    { label: `${car.TransmissionType}`, icon: trans },
+                    { label: `${car.Trans_fullform}`, icon: trans },
                     { label: ` ${car.Seats} Seater`, icon: seat },
                     { label: ` ${car.Mileage} kmpl`, icon: speed },
                   ].map((item) => (
