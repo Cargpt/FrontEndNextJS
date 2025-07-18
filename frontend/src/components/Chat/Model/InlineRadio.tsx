@@ -10,6 +10,7 @@ import {
 import {
   getUpperLimitInRupees,
   Priorities,
+  TransmissionFullForm,
   transmissionTypes,
 } from "@/utils/services";
 
@@ -99,7 +100,7 @@ const BrandSelector: React.FC<BrandSelectorProps> = ({
             control={<Radio size="small" />}
             label={
               <Typography fontSize={13} fontWeight={500}>
-                {option}
+                {label.toLowerCase().replace(/\s+/g, "_")==="transmission_type"? TransmissionFullForm[option] : option}
               </Typography>
             }
             sx={{

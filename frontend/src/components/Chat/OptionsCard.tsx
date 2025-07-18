@@ -222,7 +222,22 @@ const ChatBox: React.FC = () => {
     };
     setMessages((prev) => [...prev, userMessage]);
   };
-  const renderMessage = (message: Message) => {
+
+
+
+  const fetchPreference = async()=>{
+     const data = await axiosInstance1.get('/api/cargpt/preferences/')
+  }
+
+  useEffect(() => {
+      if (messages.length === 0) return;
+
+  const lastMsg = messages[messages.length - 1];
+fetchPreference()
+   
+  }, [messages])
+  
+  const renderMessage = (message: Message, index:number) => {
     switch (message.render) {
       case "brandModelSelect":
         return (
@@ -240,7 +255,7 @@ const ChatBox: React.FC = () => {
           />
         );
       case "text":
-        return <div>{message.message}</div>; // Default text rendering
+        return <div id={`user-message-${index}`}>{message.message}</div>; // Default text rendering
       case "selectOption":
         return (
           <AdviceSelectionCard
@@ -338,6 +353,11 @@ const ChatBox: React.FC = () => {
   }, [messages]);
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const chatContainerRef = useRef<HTMLDivElement | null>(null);
+  const draggingRef = useRef<boolean>(false);
+
+
+
 
   const handleNeedAdviceSupport = () => {
     const userMessage: Message = {
@@ -359,6 +379,35 @@ const ChatBox: React.FC = () => {
       }
     }, 1000);
   }, [messages]);
+
+
+
+
+    // Function to handle the drag event
+  const handleDragStart = () => {
+    draggingRef.current = true;
+  };
+
+  const handleDragEnd = () => {
+    draggingRef.current = false;
+    scrollToLastMessage();
+  };
+
+   const scrollToLastMessage = () => {
+    if (chatContainerRef.current) {
+      const lastMessage = chatContainerRef.current.lastElementChild as HTMLElement;
+      if (lastMessage) {
+        lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+    }
+  };
+
+  // Add effect to scroll to the last message on mount or when new messages are added
+  useEffect(() => {
+    scrollToLastMessage();
+  }, [messages]);
+
+
 
   const router = useRouter();
   const backToPrevious = () => {
@@ -396,8 +445,13 @@ const ChatBox: React.FC = () => {
             <KeyboardBackspaceSharp />
           </Button>
 
-          <Box ref={bottomRef}>
-            {messages.map((msg) => (
+          <Box 
+                ref={chatContainerRef}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+
+          >
+            {messages.map((msg, index) => (
               <Box
                 key={msg.id}
                 sx={{
@@ -434,7 +488,7 @@ const ChatBox: React.FC = () => {
                     color: "black",
                   }}
                 >
-                  {renderMessage(msg)}
+                  {renderMessage(msg, index)}
                 </Paper>
               </Box>
             ))}
@@ -446,7 +500,7 @@ const ChatBox: React.FC = () => {
           </Box>
         </Paper>
       </Box>
-      <div ref={bottomRef} />
+      {/* <div ref={bottomRef} /> */}
     </>
   );
 };
