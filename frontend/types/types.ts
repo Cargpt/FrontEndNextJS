@@ -2,6 +2,7 @@
 type Brand = {
   BrandID: number ;
   BrandName: string;
+  logo: string;
 };
 
 type ModelProps = {ModelID: number, ModelName: string}

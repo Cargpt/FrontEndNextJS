@@ -82,7 +82,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
 
         setModels(data?.models || []);
         setModel(data?.models[0] || null);
-      } catch (error) {}
+      } catch (error) { }
     }
   };
 
@@ -98,7 +98,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       );
 
       setCarFeatures(data?.data);
-    } catch (error) {}
+    } catch (error) { }
   };
 
   const { botType } = useBotType();
@@ -109,7 +109,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
 
       fetchBrandModes();
     }
-    return () => {};
+    return () => { };
   }, [brand]);
 
   useEffect(() => {
@@ -118,7 +118,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
 
       fetchCarFeatures();
     }
-    return () => {};
+    return () => { };
   }, [model]);
 
   const { showSnackbar } = useSnackbar();
@@ -159,22 +159,33 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   const onChnageFilter = async (key: string, value: string | number) => {
     if (isDisable) return;
 
-    let NewKey = "";
+    let featuresList = ["fuel_type", "transmission_type", "seat_capacity"];
+
+    // Remove the current key from the list
+    if (featuresList.includes(key)) {
+      featuresList.splice(featuresList.indexOf(key), 1);
+    }
+
+    let payload: any;
     if (key === "fuel_type") {
-      NewKey = "FuelType";
+      payload = {
+        brand_name: brand?.BrandName,
+        modle_name: model?.ModelName,
+        fuel_type: value,
+      };
+    } else {
+      payload = {
+        brand_name: brand?.BrandName,
+        modle_name: model?.ModelName,
+        [key]: value,
+      };
+      // Add the latest values from carFilter for the other features
+      featuresList.forEach((feature) => {
+        if ((carFilter as any)[feature] !== undefined) {
+          payload[feature] = (carFilter as any)[feature];
+        }
+      });
     }
-    if (key === "transmission_type") {
-      NewKey = "TransmissionType";
-    }
-    if (key === "seat_capacity") {
-      NewKey = "Seats";
-      key = "seats";
-    }
-    const payload = {
-      brand_name: brand?.BrandName,
-      modle_name: model?.ModelName,
-      [key]: value,
-    };
 
     console.log("skks", key, value);
     try {
@@ -183,15 +194,41 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
         payload
       );
 
-      const prevValues = carFeatures[NewKey];
-      const NewObj = { ...data?.data, [NewKey]: prevValues };
-
-      setCarFeatures(NewObj);
-    } catch (error) {}
+      if (key === "fuel_type") {
+        setCarFeatures(prev => ({
+          ...prev,
+          TransmissionType: data?.data?.TransmissionType,
+          Seats: data?.data?.Seats,
+          BodyNames: data?.data?.BodyNames,
+          budgetTypes: data?.data?.budgetTypes,
+          ...(data?.data?.Hatchback && { Hatchback: data?.data?.Hatchback }),
+        }));
+      } else if (key === "transmission_type") {
+        setCarFeatures(prev => ({
+          ...prev,
+          Seats: data?.data?.Seats,
+          BodyNames: data?.data?.BodyNames,
+          budgetTypes: data?.data?.budgetTypes,
+          ...(data?.data?.Hatchback && { Hatchback: data?.data?.Hatchback }),
+        }));
+      } else {
+        // For other keys, keep the previous logic
+        const prevValues = carFeatures[key];
+        const NewObj = { ...carFeatures, [key]: prevValues };
+        setCarFeatures(NewObj);
+      }
+    } catch (error) { }
   };
 
   const { messages } = useChats();
   console.log("brands", carFeatures);
+  console.log('Latest values:', {
+    brand,
+    model,
+    fuel_type: carFilter.fuel_type,
+    transmission_type: carFilter.transmission_type,
+    seat_capacity: carFilter.seat_capacity
+  });
   return (
     <Card
       sx={{
@@ -234,8 +271,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                   setBrand(selectedBrand);
                 }
               }}
-               sx={{
-                fontSize: "15px", 
+              sx={{
+                fontSize: "15px",
                 "& .MuiSelect-select": {
                   fontSize: "15px",
                 },
@@ -244,6 +281,20 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
               {Array.isArray(brands) &&
                 brands?.map((brand: Brand, index: number) => (
                   <MenuItem key={index} value={brand.BrandID}>
+                    {/* Show logo before brand name */}
+                    {brand.logo && (
+                      <img
+                        src={brand.logo}
+                        alt={brand.BrandName}
+                        style={{
+                          width: 24,
+                          height: 24,
+                          objectFit: "contain",
+                          marginRight: 8,
+                          verticalAlign: "middle",
+                        }}
+                      />
+                    )}
                     {brand.BrandName}
                   </MenuItem>
                 ))}
@@ -271,7 +322,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                 }
               }}
               sx={{
-                fontSize: "15px", 
+                fontSize: "15px",
                 "& .MuiSelect-select": {
                   fontSize: "15px",
                 },
