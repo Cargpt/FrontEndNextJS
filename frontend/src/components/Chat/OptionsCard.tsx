@@ -151,13 +151,15 @@ const ChatBox: React.FC = () => {
   }
 
   if (botMessage) {
-    setMessages((prev) => [...prev, botMessage!]);
-    // setLoading(true);
-    // const timer = setTimeout(() => {
-    //   setLoading(false);
-    // }, 1000);
+    setLoading(true);
 
-    // return () => clearTimeout(timer);
+    const timer = setTimeout(() => {
+          setMessages((prev) => [...prev, botMessage!]);
+
+      setLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
   }
 }, [messages, brands]);
 
