@@ -18,6 +18,7 @@ import "slick-carousel/slick/slick-theme.css";
 import Image from "next/image";
 import React, { useState, useRef, useEffect } from "react";
 import { axiosInstance1 } from "@/utils/axiosInstance";
+import useApi from "@/hooks/useApi";
 
 type CarGalleryProps = {
   open: boolean;
@@ -28,6 +29,7 @@ type CarGalleryProps = {
 const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
   const [loading, setLoading] = useState(false);
   const [carDetails, setCarDetails] = useState<any>(null);
+  const {data, loader , error} = useApi('/api/cargpt/car-images-by-variant-model/', 'post', {car_id:carId})
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -57,7 +59,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
   const [nav2, setNav2] = useState<any>(null);
   const slider1 = useRef<any>(null);
   const slider2 = useRef<any>(null);
-  const images = carDetails?.images || [];
+  const images = data || [];
 
 
   useEffect(() => {
@@ -77,6 +79,12 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
       document.body.style.width = "";
     };
   }, [open]);
+
+
+
+
+
+  
   return (
     <Dialog
       open={open}
@@ -126,7 +134,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
           <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
             <CircularProgress />
           </Box>
-        ) : images.length > 0 ? (
+        ) : images.length > 0  ? (
           <>
             {/* main image slider */}
             <Slider
@@ -156,7 +164,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
 
                   <CardMedia
                     component="img"
-                    image={img.CarImageURL}
+                    image={img}
                     alt="car-img"
                     height="294"
                     sx={{
@@ -185,7 +193,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
               {images.map((img: any, index: number) => (
                 <Box key={index} sx={{ p: 1, cursor: "pointer", display:"flex" }}>
                   <Image
-                    src={img.CarImageURL}
+                    src={img}
                     alt={`car-thumb-${index}`}
                     width={100}
                     height={100}
