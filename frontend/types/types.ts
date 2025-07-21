@@ -37,7 +37,8 @@ type CarFilter = {
   transmission_type:string;
   budget: number;
   seat_capacity: number;
-  body_type: string // example
+  body_type: string // example,
+  brands:string[]
 };
 
 

@@ -247,6 +247,9 @@ const [preferences, setPreferences] = useState<any[]>([]);
 if(lastMsg.render==="selectOption") fetchPreference()
    
   }, [messages])
+
+
+ 
   
   const preferenceList =preferences?.find((preference:any)=>preference?.price_range?.toString()===BudgetToRange[filter.budget])
   const renderMessage = (message: Message, index:number) => {
@@ -298,16 +301,17 @@ if(lastMsg.render==="selectOption") fetchPreference()
       case "transmissionOption":
         return (
           <AdviceSelectionCard
-            options={preferenceList?.transmission_types?.split(",")}
+            options={preferenceList?.transmission_types?.split(",")?.map((fuel:string) => fuel.trim())}
             label="transmission type"
-            h1="⚙️ Cool! What kind of transmission do you prefer?
-"
+            h1="⚙️ Cool! What kind of transmission do you prefer?"
+             onBack={onBack}
+            
           />
         );
       case "brandOption":
         return (
           <CarModel
-            options={brands.map((brand) => brand.BrandName)}
+            options={filter.brands}
             label="brand"
             h1="🚗: Awesome! Which car brand do you prefer?"
             onclick={handleCarRecommendation}
@@ -417,7 +421,8 @@ if(lastMsg.render==="selectOption") fetchPreference()
     router.push("/");
   };
 
-  console.log("kkkk0", filter)
+
+  console.log("message",messages)
   return (
     <>
       <Box

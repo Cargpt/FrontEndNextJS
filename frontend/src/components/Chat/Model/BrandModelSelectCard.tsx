@@ -221,7 +221,6 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   };
 
   const { messages } = useChats();
-  console.log("brands", carFeatures);
   console.log('Latest values:', {
     brand,
     model,

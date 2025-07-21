@@ -15,16 +15,20 @@ import AdviceSelectionBrand from "./AdviceSelectionBrand";
 import AdviceSelectionTransmission from "./AdviceSelectionTransmission";
 import { useChats } from "@/Context/ChatContext";
 import { getUpperLimitInRupees } from "@/utils/services";
+import { axiosInstance1 } from "@/utils/axiosInstance";
+import { useSnackbar } from "@/Context/SnackbarContext";
 
 interface AdviceSelectionCardProps {
   options: string[];
   label: string;
   h1: string;
+  onBack?:()=>void;
 }
 const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
   options,
   label,
   h1,
+  onBack
 }) => {
   const [selections, setSelections] = useState<{
     [key: string]: string | null;
@@ -33,7 +37,7 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
   });
   const [isDisable, setIsDisable] = useState<boolean>(false);
 
-  const { updateFilter, filter, setMessages } = useChats();
+  const { updateFilter, filter, setMessages, } = useChats();
 
   const handleSelect = (type: string, value: string) => {
     const updated = { [type]: value };
@@ -64,18 +68,73 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
     }
   }, []);
 
-  const handleNext = () => {
-    setMessages((prev) => [
+  const handleNext = async() => {
+    if(label=="transmission type") {
+      const fx= await fetchBrandsBasedOnQuery()
+
+      console.log("fx", fx)
+
+
+
+      
+      if(!fx) return false;
+
+      setMessages((prev) => [
       ...prev,
       {
         id: String(Date.now()),
         message: `${label} set to ${selections[label]}`,
         render: "text",
         sender: "user",
+        data:fx
+      
       },
     ]);
+    }else{
+      setMessages((prev) => [
+      ...prev,
+      {
+        id: String(Date.now()),
+        message: `${label} set to ${selections[label]}`,
+        render: "text",
+        sender: "user",
+      
+      },
+    ]);
+
+    }
+
+    
     setIsDisable(true);
   };
+
+  const {showSnackbar}=useSnackbar()
+    const [showOnBack, setshowOnBack] = useState<boolean>(false);
+    
+   const fetchBrandsBasedOnQuery = async()=>{
+    let payload = {
+      ...filter,
+      brand_name:"",
+      brands:[]
+    
+      }
+    
+    const data = await axiosInstance1.post('/api/cargpt/brand-models-detailed/', payload)
+    const  brands=Object.keys(data) || []
+    if(brands.length < 1 ){
+
+      showSnackbar("No brand found based on selected parameters")
+          setIsDisable(true);
+
+      setshowOnBack(true)
+      return false
+    }
+    updateFilter('brands', brands)
+    
+    return brands
+     
+    
+  }
 
   return (
     <Card
@@ -162,6 +221,23 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
               <polyline points="12 5 19 12 12 19" />
             </svg>
           </Button>
+              {
+                showOnBack &&
+                 <Button
+            onClick={onBack}
+            variant="contained"
+            color="primary"
+            type="button"
+            sx={{marginX:"1rem"}}
+          >
+           Go Back
+          </Button>
+
+
+              }
+          
+
+
         </div>
         {/* <AdviceSelectionBody
           selections={selections}

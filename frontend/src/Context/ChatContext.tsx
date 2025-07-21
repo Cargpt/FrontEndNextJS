@@ -24,7 +24,7 @@ type ChatsContextType = {
   cars: any[];
   messages: Message[];
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-  updateFilter: (name: string, value: number | string) => void;
+  updateFilter: (name: string, value: number | string | string[]) => void;
   filter: CarFilter;
 };
 
@@ -44,7 +44,7 @@ export const ChatsProvider: React.FC<{ children: ReactNode }> = ({
     setChats((prev) => [...prev, { id: Date.now().toString(), ...chat }]);
   };
 
-  const updateFilter = (name: string, value: number | string) => {
+  const updateFilter = (name: string, value: number | string | string[]) => {
     setFilter((prev) => ({
       ...prev,
       [name]:
@@ -75,6 +75,7 @@ export const ChatsProvider: React.FC<{ children: ReactNode }> = ({
         setMessages,
         filter,
         updateFilter,
+      
       }}
     >
       {children}

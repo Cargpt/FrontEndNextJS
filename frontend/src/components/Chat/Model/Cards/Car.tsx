@@ -133,7 +133,7 @@ const TeslaCard: React.FC<Props> = ({
                 component="img"
                 height="200"
                 image={car.CarImageDetails?.[0]?.CarImageURL || carimg.src}
-                alt="Tesla Model S"
+                alt="Car card"
                 sx={{
                   cursor: "pointer",
                 

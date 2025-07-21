@@ -25,6 +25,7 @@ export const DEFAULTSEARCHPARAMS = {
   budget: 0,
   seat_capacity: 0,
   body_type: "",
+  brands:[]
 };
 
 export function getUpperLimitInRupees(budgetRange: string) {
