@@ -22,6 +22,7 @@ import trans from "../../../../../public/assets/icons/automation.png";
 import speed from "../../../../../public/assets/icons/mileage.png";
 import Image from "next/image";
 import carimg from "../../../../../public/assets/card-img.png";
+import { Avatar } from "@mui/material";
 
 type Props = {
   onClick?: () => void;
@@ -112,7 +113,7 @@ const TeslaCard: React.FC<Props> = ({
     setMessages((prev) => [...prev, userMessage]);
   };
 
-  console.log("carInfo", carInfo);
+  console.log("carInfo", modelCars);
   return (
     <>
       {modelCars.length > 0 && (
@@ -138,10 +139,20 @@ const TeslaCard: React.FC<Props> = ({
                 onClick={() => openDialog("gallery", car)}
               />
               <Box sx={{ position: "absolute", top: 16, left: 16 }}>
-                <Chip
+ <Chip
                   label={`${car.ModelName} - ${car.BodyName ?? ""}`}
                   color="primary"
-                  icon={<ElectricCarIcon />}
+
+
+              sx={{ backgroundColor: "#f5f5f5", color: "black" }}
+                  icon={
+                    <Avatar
+                      src={car.logo}
+                      alt={car.BrandName}
+                      sx={{ width: 20, height: 20 }}
+                    />
+                  }
+
                 />
               </Box>
               <Box
@@ -178,22 +189,14 @@ const TeslaCard: React.FC<Props> = ({
                 </Typography>
                 {/* Static color palette */}
                 <Box sx={{ display: "flex", gap: 1, mt: 1, mb: 1 }}>
-                  {[
-                    "#000000",
-                    "#ffffff",
-                    "#637380",
-                    "#808080",
-                    "#63625c",
-                    "#371c25",
-                    "#a94744",
-                  ].map((color, idx) => (
+                  {car?.Colors?.map((color:VariantColor, idx:number) => (
                     <Box
                       key={idx}
                       sx={{
                         width: 20,
                         height: 20,
                         borderRadius: "50%",
-                        backgroundColor: color,
+                        backgroundColor: color.ColorHex,
                         border: "1px solid #ccc",
                         cursor: "pointer",
                       }}
@@ -211,7 +214,7 @@ const TeslaCard: React.FC<Props> = ({
                 >
                   {[
                     { label: `${car.FuelType}`, icon: tank },
-                    { label: `${car.TransmissionType}`, icon: trans },
+                    { label: `${car.Trans_fullform}`, icon: trans },
                     { label: ` ${car.Seats} Seater`, icon: seat },
                     { label: ` ${car.Mileage} kmpl`, icon: speed },
                   ].map((item) => (
