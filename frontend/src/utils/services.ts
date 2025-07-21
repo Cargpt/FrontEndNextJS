@@ -22,7 +22,7 @@ export const DEFAULTSEARCHPARAMS = {
   model_name: "",
   fuel_type: "",
   transmission_type: "",
-  budget: 0,
+  budget:0,
   seat_capacity: 0,
   body_type: "",
   brands:[]

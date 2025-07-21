@@ -55,11 +55,11 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
   };
 
   useEffect(() => {
-    setSelections({ [label]: options[0] });
-    if (options[0]) {
-    }
+    setSelections({ [label]: label==="budget"? '0-5L': options[0] });
+   
     if (label === "budget") {
-      const upperLimit = getUpperLimitInRupees(options[0]?.toString());
+      const upperLimit = getUpperLimitInRupees(options[0]?.toString()) ||  500000;
+       console.log("bud", upperLimit)
       if (upperLimit) {
         updateFilter(label, upperLimit);
       }

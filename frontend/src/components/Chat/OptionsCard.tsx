@@ -16,7 +16,7 @@ import { useChats } from "@/Context/ChatContext";
 import PersonIcon from '@mui/icons-material/Person';
 
 import AdviceSelectionCard from "./Model/AdviceSelectionCard";
-import { BUDGET, BudgetToRange, capitalizeFirst } from "@/utils/services";
+import {  BudgetToRange, capitalizeFirst } from "@/utils/services";
 import CarModel from "./Model/AdviceSelectionCard/CarOptions";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import CarRecommendationTable from "./Model/AdviceSelectionCard/Recommondation";
@@ -29,6 +29,7 @@ import { useRouter } from "next/navigation";
 import BrandModelSelectCard from "./Model/BrandModelSelectCard";
 import CarResearchMenu from "../MoreResearchOnCar/MoreResearchOnCar";
 import TeslaCard from "./Model/Cards/Car";
+import FixedHeaderWithBack from "../Navbar/Navbar";
 
 const ChatBox: React.FC = () => {
   const { cars, messages, setMessages, filter } = useChats();
@@ -270,7 +271,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
           />
         );
       case "text":
-        return <Typography  id={`user-message-${index}`}>{capitalizeFirst(message.message)}</Typography>; // Default text rendering
+        return <Typography sx={{fontSize:"14px"}}  id={`user-message-${index}`}>{capitalizeFirst(message.message)}</Typography>; // Default text rendering
       case "selectOption":
         return (
           <AdviceSelectionCard
@@ -422,7 +423,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
   };
 
 
-  console.log("message",messages)
+  console.log("message",filter)
   return (
     <>
       <Box
@@ -444,13 +445,8 @@ if(lastMsg.render==="selectOption") fetchPreference()
             padding: isSmallScreen ? "0px" : "16px",
           }}
         >
-          <Button
-            variant="outlined"
-            sx={{ position: "fixed", border: "none" }}
-            onClick={backToPrevious}
-          >
-            <KeyboardBackspaceSharp />
-          </Button>
+         
+          <FixedHeaderWithBack backToPrevious={backToPrevious}/>
 
           <Box 
           sx={{minHeight:"100vh"}}
