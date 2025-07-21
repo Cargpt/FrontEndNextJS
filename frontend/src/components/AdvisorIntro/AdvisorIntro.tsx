@@ -1,6 +1,8 @@
 'use client'
 
 import { useBotType } from "@/Context/BotTypeContext";
+import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique ID generation
+
 import {
   Box,
   Typography,
@@ -12,8 +14,9 @@ import {
 } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 import { useCookies } from "react-cookie";
+import { axiosInstance } from "@/utils/axiosInstance";
 
 interface AdvisorIntroProps {
   showInitialExample: boolean;
@@ -27,7 +30,6 @@ const AdvisorIntro: React.FC<AdvisorIntroProps> = ({
   const router = useRouter();
   const { setBotType } = useBotType();
 
-  if (!showInitialExample) return null;
 
   const handleOptionClick = (type: string) => {
     setCookie('selectedOption', type, { path: '/' });
@@ -62,7 +64,39 @@ const AdvisorIntro: React.FC<AdvisorIntroProps> = ({
       type: "ai",
     },
   ];
-const [cookies, setCookie]=useCookies(['selectedOption'])
+const [cookies, setCookie]=useCookies(['selectedOption', 'token'])
+
+
+             const handleGuestLogin= async () => {
+
+                const uniqueUserId = uuidv4();
+
+                const payload = {
+                  userId: uniqueUserId,  // Include unique user ID
+                };
+
+                const response = await axiosInstance.post(`/api/cargpt/createUser/`, payload, {
+
+                });
+
+                if (response.token) {
+                  localStorage.setItem("auth_token", response.token);
+                 
+                  setCookie("token", response.token, {path: "/", maxAge: 365 * 60 * 60}); // Store the token
+                  localStorage.setItem("auth_token", response.token);
+
+                } else {
+                 
+                }
+              }
+
+
+
+    useEffect(() => {
+      if(!cookies.token) handleGuestLogin()
+      
+     
+    }, []);
 
 
   return (

@@ -27,6 +27,7 @@ import {
   Firestore,
 } from "firebase/firestore";
 import { useCookies } from "react-cookie";
+import { usePathname } from "next/navigation";
 
 // Firebase Config (from .env)
 const firebaseConfig = {
@@ -71,6 +72,7 @@ const FirebaseContext = createContext<FirebaseContextType | undefined>(
   undefined
 );
 export const useFirebase = () => {
+
   const context = useContext(FirebaseContext);
   if (!context)
     throw new Error("useFirebase must be used within FirebaseProvider");
@@ -83,6 +85,8 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [cookies, setCookie] = useCookies(["token"]);
+
+   const pathname=usePathname()
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedUserRole = localStorage.getItem("userRole");

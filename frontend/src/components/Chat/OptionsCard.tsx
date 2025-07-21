@@ -8,13 +8,15 @@ import {
   useMediaQuery,
   useTheme,
   CircularProgress,
+  Typography,
 } from "@mui/material";
 import Image from "next/image";
 import bot from "../../../public/assets/lisa.svg";
 import { useChats } from "@/Context/ChatContext";
+import PersonIcon from '@mui/icons-material/Person';
 
 import AdviceSelectionCard from "./Model/AdviceSelectionCard";
-import { BUDGET } from "@/utils/services";
+import { BUDGET, BudgetToRange, capitalizeFirst } from "@/utils/services";
 import CarModel from "./Model/AdviceSelectionCard/CarOptions";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import CarRecommendationTable from "./Model/AdviceSelectionCard/Recommondation";
@@ -35,11 +37,11 @@ const ChatBox: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
 
-  const [cookies, setCookie, removeCookie] = useCookies(["selectedOPtion"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["selectedOption"]);
   const fetchBrands = async () => {
     try {
       const data = await axiosInstance1.get("/api/cargpt/brands/");
-
+     
       setBrands(data?.data);
     } catch (error) {}
   };
@@ -150,16 +152,17 @@ const ChatBox: React.FC = () => {
     };
   }
 
-  if (botMessage) {
-    setLoading(true);
+  if (botMessage && brands.length>0) {
+       setMessages((prev) => [...prev, botMessage!]);
 
-    const timer = setTimeout(() => {
-          setMessages((prev) => [...prev, botMessage!]);
+    // setLoading(true);
 
-      setLoading(false);
-    }, 1000);
+    // const timer = setTimeout(() => {
 
-    return () => clearTimeout(timer);
+    //   setLoading(false);
+    // }, 1000);
+
+    // return () => clearTimeout(timer);
   }
 }, [messages, brands]);
 
@@ -224,19 +227,28 @@ const ChatBox: React.FC = () => {
   };
 
 
-
+const [preferences, setPreferences] = useState<any[]>([]);
   const fetchPreference = async()=>{
-     const data = await axiosInstance1.get('/api/cargpt/preferences/')
+    try {
+           const data = await axiosInstance1.get('/api/cargpt/preferences/')
+
+      setPreferences(data)
+    } catch (error) {
+      console.log("error", error)
+
+      
+    }
   }
 
   useEffect(() => {
       if (messages.length === 0) return;
 
   const lastMsg = messages[messages.length - 1];
-fetchPreference()
+if(lastMsg.render==="selectOption") fetchPreference()
    
   }, [messages])
   
+  const preferenceList =preferences?.find((preference:any)=>preference?.price_range?.toString()===BudgetToRange[filter.budget])
   const renderMessage = (message: Message, index:number) => {
     switch (message.render) {
       case "brandModelSelect":
@@ -255,11 +267,11 @@ fetchPreference()
           />
         );
       case "text":
-        return <div id={`user-message-${index}`}>{message.message}</div>; // Default text rendering
+        return <Typography  id={`user-message-${index}`}>{capitalizeFirst(message.message)}</Typography>; // Default text rendering
       case "selectOption":
         return (
           <AdviceSelectionCard
-            options={BUDGET}
+            options={preferences?.map((preference:any)=>preference?.price_range?.toString())}
             label="budget"
             h1={
               "Hi! :👋 I can help you choose the right car based on your preferences. Let's get started! First, what's your budget range in INR?"
@@ -269,7 +281,7 @@ fetchPreference()
       case "flueOption":
         return (
           <AdviceSelectionCard
-            options={["Petrol", "Diesel", "CNG", "Electric"]}
+            options={preferenceList?.fuel_types?.split(",")}
             label="fuel type"
             h1="⛽: Got it! What’s your preferred fuel type?
 "
@@ -278,7 +290,7 @@ fetchPreference()
       case "bodyOption":
         return (
           <AdviceSelectionCard
-            options={["Hatchback", "Sedan", "SUV", "MPV"]}
+            options={preferenceList?.body_types?.split(",")?.map((fuel:string) => fuel.trim())}
             label="body type"
             h1="🏎️: Great. What type of car body are you looking for?"
           />
@@ -286,7 +298,7 @@ fetchPreference()
       case "transmissionOption":
         return (
           <AdviceSelectionCard
-            options={["Automatic", "Manual"]}
+            options={preferenceList?.transmission_types?.split(",")}
             label="transmission type"
             h1="⚙️ Cool! What kind of transmission do you prefer?
 "
@@ -352,7 +364,6 @@ fetchPreference()
     }
   }, [messages]);
 
-  const bottomRef = useRef<HTMLDivElement | null>(null);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef<boolean>(false);
 
@@ -370,16 +381,7 @@ fetchPreference()
     setMessages((prev) => [...prev, userMessage]);
   };
 
-  useEffect(() => {
-    if (messages.length === 0) return;
-
-    setTimeout(() => {
-      if (bottomRef.current) {
-        bottomRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 1000);
-  }, [messages]);
-
+  
 
 
 
@@ -411,11 +413,11 @@ fetchPreference()
 
   const router = useRouter();
   const backToPrevious = () => {
-    removeCookie("selectedOPtion");
+    removeCookie("selectedOption");
     router.push("/");
   };
 
-  console.log("message", messages);
+  console.log("kkkk0", filter)
   return (
     <>
       <Box
@@ -446,6 +448,7 @@ fetchPreference()
           </Button>
 
           <Box 
+          sx={{minHeight:"100vh"}}
                 ref={chatContainerRef}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
@@ -473,9 +476,10 @@ fetchPreference()
                 {msg.sender === "user" && (
                   <Box sx={{ mb: 0.5 }}>
                     <Avatar
-                      sx={{ bgcolor: "secondary.main", width: 32, height: 32 }}
+                      sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}
                     >
-                      U
+                        <PersonIcon />
+
                     </Avatar>
                   </Box>
                 )}

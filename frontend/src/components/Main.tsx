@@ -32,14 +32,10 @@ const Main: React.FC = () => {
           minHeight: "80vh",
         }}
       >
-        {!cookies.token ? (
-          <LoginForm />
-        ) : (
-          <AdvisorIntro
+         <AdvisorIntro 
             onBotClick={onClick}
             showInitialExample={cookies.token}
           />
-        )}
       </Container>
     </ThemeProvider>
   );

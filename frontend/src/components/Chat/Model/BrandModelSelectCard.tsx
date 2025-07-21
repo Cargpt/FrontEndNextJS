@@ -39,7 +39,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     FuelType: ["petrol", "diesel", "electric"],
     TransmissionType: ["manual", "automatic"],
     Seats: [2, 4, 5, 7],
-    bugetTypes: ["0-5L", "5-10L", "10-15L", "15-20L", "20-25L", "25-30L"],
+    budgetTypes: ["0-5L", "5-10L", "10-15L", "15-20L", "20-25L", "25-30L"],
     BodyNames: ["suv", "sedan", "hatchback", "coupe", "convertible"],
   });
 

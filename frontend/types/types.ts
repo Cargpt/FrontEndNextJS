@@ -24,7 +24,7 @@ type CarFeaturesProps = {
   FuelType: string[];
   TransmissionType: string[];
   Seats: number[];
-  bugetTypes: string[];
+  budgetTypes: string[];
   BodyNames: string[];
   [key:string]: number[] | string[]
   

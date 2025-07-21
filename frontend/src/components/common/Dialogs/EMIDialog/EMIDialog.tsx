@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogTitle,
   Slider,
@@ -126,36 +127,77 @@ const EMIDialog: React.FC<EMIDialogProps> = ({ open, onClose, carPrice }) => {
     setInterestRate("22.8");
     setLoanTerm("5");
   };
+useEffect(() => {
+  if (open) {
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed"; // prevent bounce scroll on mobile
+    document.body.style.width = "100%"; // fix layout shift
+  } else {
+    document.body.style.overflow = "";
+    document.body.style.position = "";
+    document.body.style.width = "";
+  }
+
+  return () => {
+    document.body.style.overflow = "";
+    document.body.style.position = "";
+    document.body.style.width = "";
+  };
+}, [open]);
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
       fullScreen={isSmallScreen}
+      scroll="paper"
       PaperProps={{
         sx: {
           width: { xs: "100%", md: "80%" },
           maxWidth: "500px",
+          height: isSmallScreen ? "100dvh" : "auto",
+          maxHeight: isSmallScreen ? "100dvh" : "90vh",
+          display: "flex",
+          flexDirection: "column",
+          boxShadow: 6,
         },
       }}
     >
-      <DialogTitle sx={{ background: "#eeeeef" }}>
+      {/* Fixed Header */}
+      <DialogTitle
+        sx={{
+          background: "#eeeeef",
+          position: "sticky",
+          top: 0,
+          zIndex: 2,
+          textAlign: "center",
+          fontWeight: 700,
+        }}
+      >
         <Button
           variant="outlined"
           onClick={onClose}
-          sx={{ position: "absolute", left: 15, top: 12,  zIndex:20, border:"none" }}
+          sx={{
+            position: "absolute",
+            left: 15,
+            top: 12,
+            zIndex: 3,
+            border: "none",
+          }}
         >
           <KeyboardBackspaceSharp />
         </Button>
-        <Typography
-          sx={{ position: "relative", textAlign: "center", fontWeight: 700 }}
-        >
-          EMI Calculator
-        </Typography>
+        EMI Calculator
       </DialogTitle>
+
+      {/* Scrollable Body */}
       <DialogContent
         dividers
-        sx={{ overflowY: "auto", height: "100%", padding: "15px 40px" }}
+        sx={{
+          overflowY: "auto",
+          flexGrow: 1,
+          padding: "15px 40px",
+        }}
       >
         <Box display="flex" flexDirection="column" gap={2}>
           {/* Down Payment */}
@@ -268,6 +310,7 @@ const EMIDialog: React.FC<EMIDialogProps> = ({ open, onClose, carPrice }) => {
               background: "#f5f5f5",
               p: 2,
               borderRadius: 2,
+              boxShadow: 3,
               border: "2px solid #1976d2",
             }}
           >
@@ -299,20 +342,29 @@ const EMIDialog: React.FC<EMIDialogProps> = ({ open, onClose, carPrice }) => {
               )}
             </Typography>
           </Box>
-
-          {/* Buttons */}
-          <Box display="flex" justifyContent="center" gap={2}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={resetValues}
-              sx={{ borderRadius: "20px", px: 4, textTransform: "capitalize" }}
-            >
-              Recalculate
-            </Button>
-          </Box>
         </Box>
       </DialogContent>
+
+      {/* Optional Sticky Footer */}
+      <DialogActions
+        sx={{
+          position: "sticky",
+          bottom: 0,
+          background: "#fff",
+          zIndex: 1,
+          py: 2,
+          justifyContent: "center",
+        }}
+      >
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={resetValues}
+          sx={{ borderRadius: "20px", px: 4, textTransform: "capitalize" }}
+        >
+          Recalculate
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };

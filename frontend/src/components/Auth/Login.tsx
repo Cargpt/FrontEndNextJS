@@ -71,34 +71,7 @@ finally {
 
       }
 
-    // setLoading(true);
-    // setError("");
 
-
-    
-
-    // try {
-    //   const response = await TokenApi.post('/api/login', {
-    //     email,
-    //     password,
-    //     // device_id: deviceId  // optional if your backend expects it
-    //   });
-
-    //   if (response.data.token) {
-    //     const token = response.data.token;
-    //     localStorage.setItem("auth_token", token);
-    //     setToken(token);
-    //     navigate("/home");
-    //   } else {
-    //     throw new Error("Token not returned from API");
-    //   }
-
-    // } catch (error) {
-    //   console.error("Login error:", error);
-    //   setError(error?.response?.data?.detail || "Login failed");
-    // } finally {
-    //   setLoading(false);
-    // }
   };
 
 
@@ -148,7 +121,7 @@ finally {
  
       
               
-
+            // Guest Login
              const handleGuestLogin= async () => {
 
                 const uniqueUserId = uuidv4();
@@ -168,9 +141,12 @@ finally {
                   localStorage.setItem("auth_token", response.token);
 
                 } else {
-                  // setError("No token returned from backend.");
+                 
                 }
               }
+
+
+
   return (
     <Box display="flex" justifyContent="center"  >
       <Paper elevation={3} sx={{ p: 4, width: 400 }}>

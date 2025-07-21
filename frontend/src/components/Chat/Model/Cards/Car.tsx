@@ -75,7 +75,7 @@ const TeslaCard: React.FC<Props> = ({
   const settings: Settings = {
     infinite: false,
     speed: 500,
-    slidesToShow: 2,
+    slidesToShow: modelCars.length > 1 ? 2 : 1,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
@@ -85,7 +85,7 @@ const TeslaCard: React.FC<Props> = ({
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: 2,
+          slidesToShow:modelCars.length > 1 ? 2 : 1,
           slidesToScroll: 1,
           dots: false,
         },
@@ -124,7 +124,7 @@ const TeslaCard: React.FC<Props> = ({
               sx={{
                 maxWidth: 380,
                 borderRadius: 2,
-                boxShadow: 4,
+                boxShadow: 1,
                 position: "relative",
                 display: "flex",
               }}
@@ -136,6 +136,7 @@ const TeslaCard: React.FC<Props> = ({
                 alt="Tesla Model S"
                 sx={{
                   cursor: "pointer",
+                
                 }}
                 onClick={() => openDialog("gallery", car)}
               />
@@ -153,18 +154,21 @@ const TeslaCard: React.FC<Props> = ({
                 <IconButton
                   color="primary"
                   onClick={() => openDialog("gallery", car)}
-                  sx={{ backgroundColor: "#ffffff", borderRadius: "50%" }}
+                  
+                  sx={{ backgroundColor: "#ffffff", borderRadius: "50%"}}
+                  
                 >
                   <CollectionsIcon />
                 </IconButton>
               </Box>
-              <Box sx={{ position: "absolute", top: 16, left: 16 }}>
+              <Box sx={{ position: "absolute", top: 16, left: 16 }} >
  <Chip
                   label={`${car.ModelName} - ${car.BodyName ?? ""}`}
                   color="primary"
+                
 
 
-              sx={{ backgroundColor: "#f5f5f5", color: "black" }}
+              sx={{ backgroundColor: "#f5f5f5", color: "black", paddingX:"5px" }}
                   icon={
                     <Avatar
                       src={car.logo}
@@ -185,7 +189,10 @@ const TeslaCard: React.FC<Props> = ({
                   borderRadius: 2,
                 }}
               >
-                <Typography fontWeight="bold" color="primary" fontSize={18}>
+                <Typography fontWeight="bold" color="primary" fontSize={18} px={2}  sx={{
+                  backgroundColor: "#f5f5f5",
+                  borderRadius:"5px"
+                }}>
                   ₹{(car.Price / 100000).toFixed(1)}L
                 </Typography>
               </Box>
@@ -292,7 +299,7 @@ const TeslaCard: React.FC<Props> = ({
                       sx={{
                         textTransform: "capitalize",
                         fontSize: "12px",
-                        minWidth: { xs: "100%", md: "10%" },
+                        minWidth: { xs: "100%", md: modelCars.length < 2 && index===2 ? "68%" : "10%", },
                       }}
                       onClick={() => openDialog(type as any, car)}
                     >

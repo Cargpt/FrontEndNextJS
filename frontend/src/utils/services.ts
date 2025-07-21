@@ -113,6 +113,27 @@ export const TransmissionFullForm:{[key:string]:string}={
 
 
 
+export const BudgetToRange: Record<number, string> = {
+  500000: "0-5L",
+  1000000: "5-10L",
+  1500000: "10-15L",
+  2000000: "15-20L",
+  2500000: "20-25L",
+  3000000: "25-30L",
+  3500000: "30-35L",
+  4000000: "35-40L",
+  1000000000: "Above 40L",
+};
 
 
 
+
+
+
+
+
+
+export const capitalizeFirst = (str:string) => {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};

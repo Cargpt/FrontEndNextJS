@@ -58,8 +58,25 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
   const slider1 = useRef<any>(null);
   const slider2 = useRef<any>(null);
   const images = carDetails?.images || [];
-  console.log("Images array:", images);
 
+
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+      document.body.style.position = "fixed"; // prevent bounce scroll on mobile
+      document.body.style.width = "100%"; // fix layout shift
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+    }
+  
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.position = "";
+      document.body.style.width = "";
+    };
+  }, [open]);
   return (
     <Dialog
       open={open}
