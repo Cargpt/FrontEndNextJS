@@ -1,10 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Box, Typography, Link as MuiLink } from "@mui/material";
 import Link from "next/link";
+import ContactModal from "../common/Dialogs/ContactModal/ContactModal";
 
 const Footer: React.FC = () => {
+  const [contactModalOpen, setContactModalOpen] = useState(false);
+
+  const handleContactModalOpen = () => {
+    setContactModalOpen(true);
+  };
+
+  const handleContactModalClose = () => {
+    setContactModalOpen(false);
+  };
   return (
     <footer>
       <Box
@@ -29,7 +39,11 @@ const Footer: React.FC = () => {
           <MuiLink component={Link} href="/about" sx={{ mx: 2 }}>
             About Us
           </MuiLink>
-          <MuiLink component={Link} href="/contact" sx={{ mx: 2 }}>
+          <MuiLink
+            component="button"
+            onClick={handleContactModalOpen}
+            sx={{ mx: 2, cursor: "pointer", textDecoration: "underline" }}
+          >
             Contact
           </MuiLink>
           <MuiLink component={Link} href="/privacy" sx={{ mx: 2 }}>
@@ -37,6 +51,10 @@ const Footer: React.FC = () => {
           </MuiLink>
         </Box>
       </Box>
+      <ContactModal
+        open={contactModalOpen}
+        onClose={handleContactModalClose}
+      />
     </footer>
   );
 };
