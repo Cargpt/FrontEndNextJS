@@ -30,6 +30,7 @@ import BrandModelSelectCard from "./Model/BrandModelSelectCard";
 import CarResearchMenu from "../MoreResearchOnCar/MoreResearchOnCar";
 import TeslaCard from "./Model/Cards/Car";
 import FixedHeaderWithBack from "../Navbar/Navbar";
+import AskAIChat from "./AskAi";
 
 const ChatBox: React.FC = () => {
   const { cars, messages, setMessages, filter } = useChats();
@@ -447,6 +448,12 @@ if(lastMsg.render==="selectOption") fetchPreference()
         >
          
           <FixedHeaderWithBack backToPrevious={backToPrevious}/>
+          {
+           messages&& messages?.[messages.length-1]?.message==="Ask AI" &&
+            <AskAIChat/>
+          }
+          {
+            messages?.[messages?.length-1]?.message!=="Ask AI" &&
 
           <Box 
           sx={{minHeight:"100vh"}}
@@ -503,6 +510,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
               </Box>
             )}
           </Box>
+}
         </Paper>
       </Box>
       {/* <div ref={bottomRef} /> */}
