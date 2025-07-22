@@ -33,7 +33,7 @@ type Props = {
 
 interface typeProps {
   open: boolean;
-  type: "score" | "emi" | "sentiment" | "gallery" | null;
+  type: string | null;
 }
 
 const TeslaCard: React.FC<Props> = ({
@@ -57,7 +57,7 @@ const TeslaCard: React.FC<Props> = ({
   };
 
   const openDialog = (
-    type: "score" | "emi" | "sentiment" | "gallery" | null,
+    type: string,
     data: any
   ) => {
     setDialog({ open: true, type });
