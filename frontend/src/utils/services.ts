@@ -106,7 +106,7 @@ export const transmissionTypes:{[key:string]:string} = {
 
 export const TransmissionFullForm:{[key:string]:string}={
   "MT": "Manual",
-  "AT": "Automate",
+  "AT": "Automatic",
   "CVT":"CVT",
   "AMT":"AMT",
   'e-drive':"E-drive"

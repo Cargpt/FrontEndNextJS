@@ -114,7 +114,6 @@ const TeslaCard: React.FC<Props> = ({
     setMessages((prev) => [...prev, userMessage]);
   };
 
-  console.log("carInfo", modelCars);
   return (
     <>
       {modelCars.length > 0 && (
@@ -131,7 +130,7 @@ const TeslaCard: React.FC<Props> = ({
             >
               <CardMedia
                 component="img"
-                height="200"
+                height="150"
                 image={car.CarImageDetails?.[0]?.CarImageURL || carimg.src}
                 alt="Car card"
                 sx={{
@@ -146,12 +145,13 @@ const TeslaCard: React.FC<Props> = ({
               <Box
                 sx={{
                   position: "absolute",
-                  top: 8,
+                  top: 1,
                   right: 8,
                   zIndex: 1,
                 }}
               >
                 <IconButton
+                disabled={!car.CarImageDetails?.[0]?.CarImageURL}
                   color="primary"
                   onClick={() => openDialog("gallery", car)}
                   
@@ -161,19 +161,19 @@ const TeslaCard: React.FC<Props> = ({
                   <CollectionsIcon />
                 </IconButton>
               </Box>
-              <Box sx={{ position: "absolute", top: 16, left: 16 }} >
+              <Box sx={{ position: "absolute", top: 3, left: 8 }} >
  <Chip
                   label={`${car.ModelName} - ${car.BodyName ?? ""}`}
                   color="primary"
                 
 
 
-              sx={{ backgroundColor: "#f5f5f5", color: "black", paddingX:"5px" }}
+              sx={{ backgroundColor: "#f5f5f5", color: "black", paddingX:"2px", fontSize:"10px", paddingY:'1px' }}
                   icon={
                     <Avatar
                       src={car.logo}
                       alt={car.BrandName}
-                      sx={{ width: 20, height: 20 }}
+                      sx={{ width: 15, height: 15 }}
                     />
                   }
 
@@ -182,7 +182,7 @@ const TeslaCard: React.FC<Props> = ({
               <Box
                 sx={{
                   position: "absolute",
-                  top: 170,
+                  top: 130,
                   left: 16,
                   backgroundColor: "white",
                   py: 0.5,
@@ -198,7 +198,7 @@ const TeslaCard: React.FC<Props> = ({
               </Box>
 
               {/* Content */}
-              <CardContent>
+              <CardContent style={{"paddingBottom":"15px"}}>
                 <Typography
                   variant="h5"
                   fontWeight="bold"
@@ -220,8 +220,8 @@ const TeslaCard: React.FC<Props> = ({
                     <Box
                       key={idx}
                       sx={{
-                        width: 20,
-                        height: 20,
+                        width: 16,
+                        height: 16,
                         borderRadius: "50%",
                         backgroundColor: color.ColorHex,
                         border: "1px solid #ccc",
@@ -231,85 +231,92 @@ const TeslaCard: React.FC<Props> = ({
                   ))}
                 </Box>
 
-                <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: 2,
-                    my: 1,
-                  }}
-                >
-                  {[
-                    { label: `${car.FuelType}`, icon: tank },
-                    { label: `${car.Trans_fullform}`, icon: trans },
-                    { label: ` ${car.Seats} Seater`, icon: seat },
-                    { label: ` ${car.Mileage} kmpl`, icon: speed },
-                  ].map((item) => (
-                    <Box
-                      key={item.label}
-                      sx={{
-                        width: {
-                          xs: "100%",
-                        },
-                        px: 2,
-                        py: 1,
-                        borderRadius: 2,
-                        backgroundColor: "grey.100",
-                        border: "1px solid",
-                        borderColor: "grey.300",
-                        textAlign: "center",
-                      }}
-                    >
-                      <Box display="flex" justifyContent="center" mt={0.5}>
-                        <Image
-                          src={item.icon}
-                          alt={item.label}
-                          width={24}
-                          height={24}
-                        />
-                      </Box>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        display="block"
-                        sx={{ lineHeight: 1.2, fontWeight: "bold" }}
-                      >
-                        {item.label}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
-                <Stack
-                  direction="row"
-                  gap="5px"
-                  justifyContent="center"
-                  flexWrap="wrap"
-                  mb={1}
-                  sx={{ mt: { xs: 2 } }}
-                >
-                  {[
-                    { label: "AI Car Advisor Score:", type: "score" },
-                    { label: "EMI", type: "emi" },
-                    { label: "User Sentiments:", type: "sentiment" },
-                  ].map(({ label, type }, index) => (
-                    <Button
-                      key={type}
-                      variant="contained"
-                      size="small"
-                      sx={{
-                        textTransform: "capitalize",
-                        fontSize: "12px",
-                        minWidth: { xs: "100%", md: modelCars.length < 2 && index===2 ? "68%" : "10%", },
-                      }}
-                      onClick={() => openDialog(type as any, car)}
-                    >
-                      <span>
-                        {label} {index === 0 && car?.AIScore}{" "}
-                        {index === 2 && car?.AISummary}{" "}
-                      </span>
-                    </Button>
-                  ))}
-                </Stack>
+<Box
+  sx={{
+    display: "grid",
+    gridTemplateColumns: { xs: "1fr 1fr" }, // 1 column on small screens, 2 columns on larger screens
+    gap: 1, // Reduced gap between boxes
+    my: 1,
+  }}
+>
+  {[
+    { label: `${car.FuelType}`, icon: tank },
+    { label: `${car.Trans_fullform}`, icon: trans },
+    { label: ` ${car.Seats} Seater`, icon: seat },
+    { label: ` ${car.Mileage} kmpl`, icon: speed },
+  ].map((item) => (
+    <Box
+      key={item.label}
+      sx={{
+        width: "100%", // Takes up 100% of its grid space
+        maxWidth: "120px", // Restricting box width to a smaller size
+        px: 1, // Reduced horizontal padding
+        py: 0.75, // Reduced vertical padding
+        borderRadius: 1, // Slightly smaller border radius
+        backgroundColor: "grey.100",
+        border: "1px solid",
+        borderColor: "grey.300",
+        textAlign: "center",
+        margin: "auto", // Center the items within their grid space
+      }}
+    >
+      <Box display="flex" justifyContent="center" mt={0.5}>
+        <Image
+          src={item.icon}
+          alt={item.label}
+          width={20} // Reduced icon size
+          height={20}
+        />
+      </Box>
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        display="block"
+        sx={{ lineHeight: 1.2, fontWeight: "bold", fontSize: "12px" }} // Reduced font size
+      >
+        {item.label}
+      </Typography>
+    </Box>
+  ))}
+</Box>
+
+<Stack
+  direction="row"
+  gap="5px"
+  justifyContent="center"
+  flexWrap="wrap"
+  
+  
+>
+  {[
+    { label: "AI Car Advisor Score:", type: "score" },
+    { label: "User Sentiments:", type: "sentiment" },
+
+    { label: "EMI", type: "emi" },
+  ].map(({ label, type}, index) => (
+    <Button
+      key={type}
+      variant="contained"
+      size="small"
+      sx={{
+        textTransform: "capitalize",
+        fontSize: "12px",
+        minWidth: {
+          xs: "100%", // On smaller screens, each takes full width
+          md: index < 2 ? "48%" : "100%", // First two buttons on same line, last one on next line
+        },
+        flex: index < 2 ? "1 0 48%" : "1 0 100%", // Ensure the first two share the same space, last takes full width
+      }}
+      onClick={() => openDialog(type, car)}
+    >
+      <span>
+        {label} {index === 0 && car?.AIScore}{" "}
+        {index === 1 && car?.AISummary}{" "}
+      </span>
+    </Button>
+  ))}
+</Stack>
+
               </CardContent>
             </Card>
           ))}
@@ -353,6 +360,7 @@ const TeslaCard: React.FC<Props> = ({
           open={dialog.open}
           onClose={() => setDialog({ open: false, type: null })}
           carId={carInfo?.CarID}
+          
         />
       )}
       {dialog.type === "score" && (
