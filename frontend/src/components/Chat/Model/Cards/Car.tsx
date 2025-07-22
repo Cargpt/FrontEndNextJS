@@ -163,7 +163,7 @@ const TeslaCard: React.FC<Props> = ({
               </Box>
               <Box sx={{ position: "absolute", top: 3, left: 8 }} >
  <Chip
-                  label={`${car.ModelName} - ${car.BodyName ?? ""}`}
+                  label={`${car.ModelName} ${car.BodyName ? `-${car.BodyName}`: ""}`}
                   color="primary"
                 
 
@@ -182,7 +182,7 @@ const TeslaCard: React.FC<Props> = ({
               <Box
                 sx={{
                   position: "absolute",
-                  top: 130,
+                  top: 110,
                   left: 16,
                   backgroundColor: "white",
                   py: 0.5,
@@ -198,7 +198,7 @@ const TeslaCard: React.FC<Props> = ({
               </Box>
 
               {/* Content */}
-              <CardContent style={{"paddingBottom":"15px"}}>
+              <CardContent style={{"paddingBottom":"15px", "paddingTop":"2px"}}>
                 <Typography
                   variant="h5"
                   fontWeight="bold"
@@ -215,7 +215,7 @@ const TeslaCard: React.FC<Props> = ({
                   {car.BrandName}
                 </Typography>
                 {/* Static color palette */}
-                <Box sx={{ display: "flex", gap: 1, mt: 1, mb: 1 }}>
+                <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
                   {car?.Colors?.map((color:VariantColor, idx:number) => (
                     <Box
                       key={idx}
