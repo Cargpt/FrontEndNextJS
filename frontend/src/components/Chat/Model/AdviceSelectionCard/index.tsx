@@ -174,7 +174,7 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
         </Typography>
 
         <Stack direction="row" flexWrap="wrap" gap={1}>
-          {options.map((option, index) => (
+          {options?.map((option, index) => (
             <Button
               key={index}
               variant={option === selections[label] ? "contained" : "outlined"}
