@@ -133,10 +133,12 @@ const TeslaCard: React.FC<Props> = ({
                 height="150"
                 image={car.CarImageDetails?.[0]?.CarImageURL || carimg.src}
                 alt="Car card"
-                sx={{
-                  cursor: "pointer",
+  sx={{
+    cursor: 'pointer',
+    pointerEvents:`${!car.CarImageDetails?.[0]?.CarImageURL && "none"}`
+  }}
+ 
                 
-                }}
                 onClick={() => openDialog("gallery", car)}
               />
 

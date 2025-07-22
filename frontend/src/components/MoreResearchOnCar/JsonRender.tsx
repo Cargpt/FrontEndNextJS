@@ -50,7 +50,7 @@ const DynamicTable: React.FC<Props> = ({ data, onCategoryClick, title }) => {
       >
         <Box sx={{                   
           
-          maxWidth: isSmallScreen ? "300px" : "600px", overflow: "auto" }}>
+          maxWidth: isSmallScreen ? "347px" : "600px", overflow: "auto" }}>
           <Table>
             <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
               <TableRow>

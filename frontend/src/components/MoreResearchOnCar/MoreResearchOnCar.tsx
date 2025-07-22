@@ -215,7 +215,21 @@ const CarResearchMenu: React.FC = () => {
 
     setMessages((prev) => [...prev, userMessage, botMessage]);
   };
+// Utility: Convert plain text (or HTML) into bullet points
+const convertTextToBulletPoints = (text?: string) => {
+  if (!text) return [];
 
+  // Strip HTML tags if necessary
+  const plainText = text.replace(/<\/?[^>]+(>|$)/g, ""); 
+
+  // Split into sentences using `.`, filter empty ones
+  const sentences = plainText
+    .split(".")
+    .map(s => s.trim())
+    .filter(Boolean);
+
+  return sentences;
+};
   
   console.log("response", response);
   return (
@@ -223,15 +237,16 @@ const CarResearchMenu: React.FC = () => {
       <Box sx={{ marginTop: 0 }}>
         {response?.answers?.map((answer: any, index: number) => (
           <Box sx={{ paddingBottom: 0 }} key={index}>
-              <Box dangerouslySetInnerHTML={{ __html: answer?.text }}  sx={{py:2}}/>
+
+            
             {/* </Typography> */}
-            <Box
+            {/* <Box
               sx={{
                 display: "flex",
                 flexWrap: "wrap",
                 gap: 1,
               }}
-            >
+            > */}
               {response?.answers?.map((answer: any, index: number) => (
                 <Box sx={{ paddingBottom: 2 }} key={index}>
                   {/* JSON block, if present */}
@@ -280,7 +295,7 @@ const CarResearchMenu: React.FC = () => {
                   )}
                 </Box>
               ))}
-            </Box>
+            {/* </Box> */}
           </Box>
         ))}
         <Box
