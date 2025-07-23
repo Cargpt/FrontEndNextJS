@@ -12,6 +12,9 @@ type BrandSelectorProps = {
   label: string;
   options: any[] ;
   defaultValue?: number | string;
+  modelDataIntialFetched?:boolean
+  setModelDataIntialFetched?: React.Dispatch<React.SetStateAction<boolean>>;
+
   onChange?: (name:string,value: number | string) => void;
 
  

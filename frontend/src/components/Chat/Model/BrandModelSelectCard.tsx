@@ -86,6 +86,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     }
   };
 
+  const [modelDataIntialFetched, setmodelDataIntialFetched] = useState<boolean>(Boolean)
   const fetchCarFeatures = async () => {
     const payload = {
       brand_name: brand?.BrandName,
@@ -98,6 +99,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       );
 
       setCarFeatures(data?.data);
+      setmodelDataIntialFetched(true)
     } catch (error) { }
   };
 
@@ -154,7 +156,25 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     }
   };
 
-  const [openDialouge, setOpenDialouge] = useState<boolean>(false);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   const onChnageFilter = async (key: string, value: string | number) => {
     if (isDisable) return;
@@ -221,13 +241,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   };
 
   const { messages } = useChats();
-  console.log('Latest values:', {
-    brand,
-    model,
-    fuel_type: carFilter.fuel_type,
-    transmission_type: carFilter.transmission_type,
-    seat_capacity: carFilter.seat_capacity
-  });
+  
   return (
     <Card
       sx={{
@@ -354,6 +368,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                 key={1}
                 onChange={handleChange}
                 onChnageFilter={onChnageFilter}
+                modelDataIntialFetched={modelDataIntialFetched}
+                setModelDataIntialFetched={setmodelDataIntialFetched}
               />
             </div>
           )}

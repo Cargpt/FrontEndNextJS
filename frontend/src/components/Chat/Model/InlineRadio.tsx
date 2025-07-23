@@ -18,8 +18,12 @@ const BrandSelector: React.FC<BrandSelectorProps> = ({
   label,
   options,
   defaultValue,
+
   onChange,
   onChnageFilter,
+  modelDataIntialFetched,
+  setModelDataIntialFetched
+  
 }) => {
   const [selectedValue, setSelectedValue] = useState<number | string | null>(
     defaultValue ?? null
@@ -79,6 +83,21 @@ const BrandSelector: React.FC<BrandSelectorProps> = ({
     }
   };
 
+
+  useEffect(() => {
+    if(modelDataIntialFetched && setModelDataIntialFetched){
+      const priorityTransmissions:string[] = ["AT", "MT", "AMT", "CVT", "DCT"];
+
+      const selectedTransmission:string = priorityTransmissions.find(t => options.includes(t)) || "AT";
+      console.log("kkdkkd", selectedTransmission)
+
+      onChnageFilter("transmission_type", selectedTransmission)
+      setModelDataIntialFetched(false)
+    }
+
+  }, [modelDataIntialFetched])
+  console.log("modelDataIntialFetched", modelDataIntialFetched)
+  
   return (
     <FormControl component="fieldset" fullWidth>
       <FormLabel component="legend" sx={{fontSize: "14px", fontWeight: 600}}>{label}</FormLabel>
