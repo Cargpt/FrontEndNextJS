@@ -20,11 +20,11 @@ export const seatingCapacityOptions = [
 export const DEFAULTSEARCHPARAMS = {
   brand_name: "",
   model_name: "",
-  fuel_type: "",
-  transmission_type: "",
-  budget:0,
-  seat_capacity: 0,
-  body_type: "",
+  fuel_type: "Petrol",
+  transmission_type: "MT",
+  budget:1500000,
+  seat_capacity: 5,
+  body_type: "suv",
   brands:[]
 };
 
