@@ -133,11 +133,15 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       }
 
       if (data.FuelType && !data.FuelType.includes(currentFuelType)) {
-        setCurrentFuelType(data.FuelType[0]);
+        console.log("fuel type1", prioritizeFuels(data.FuelType))
+        setCurrentFuelType(prioritizeFuels(data.FuelType)[0]);
         setCarFilter((prev) => ({ ...prev, fuel_type: data.FuelType[0] }));
 
-        fetchBrandModelWithFuel(data.FuelType[0]);
+        fetchBrandModelWithFuel(prioritizeFuels(data.FuelType)[0]);
       } else {
+          console.log("fuel type2", prioritizeFuels(data.FuelType))
+        setCurrentFuelType(prioritizeFuels(data.FuelType)[0]);
+
         setCarFilter((prev) => ({
           ...prev,
           fuel_type: prioritizeFuels(data.FuelType)[0],
@@ -312,8 +316,10 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
 
         fetchParametersWithSeat(data.Seats[0], transmission_type, fuel_type);
       } else {
-        setCurrentSeatCap(currentSeatCap);
-        fetchParametersWithSeat(currentSeatCap, transmission_type, fuel_type);
+        setCurrentSeatCap(data.Seats[0]);
+        setCarFilter((prev) => ({ ...prev, seat_capacity: data.Seats[0] }));
+
+        fetchParametersWithSeat(data.Seats[0], transmission_type, fuel_type);
       }
     } catch (error) {
       console.error("Error:", error);
