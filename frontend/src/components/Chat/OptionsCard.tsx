@@ -81,6 +81,8 @@ const ChatBox: React.FC = () => {
       message: {},
       render: "flueOption",
       sender: "bot",
+      data:messages[messages.length-1].data
+
     };
   } else if (
     lastMsg.sender === "user" &&
@@ -90,8 +92,9 @@ const ChatBox: React.FC = () => {
     botMessage = {
       id: String(Date.now()),
       message: {},
-      render: "bodyOption",
+      render: "transmissionOption",
       sender: "bot",
+      data:messages[messages.length-1].data
     };
   } else if (
     lastMsg.sender === "user" &&
@@ -101,8 +104,10 @@ const ChatBox: React.FC = () => {
     botMessage = {
       id: String(Date.now()),
       message: {},
-      render: "transmissionOption",
+      render: "brandOption",
       sender: "bot",
+      data:messages[messages.length-1].data
+
     };
   } else if (
     lastMsg.sender === "user" &&
@@ -112,8 +117,10 @@ const ChatBox: React.FC = () => {
     botMessage = {
       id: String(Date.now()),
       message: {},
-      render: "brandOption",
+      render: "bodyOption",
       sender: "bot",
+      data:messages[messages.length-1].data
+
     };
   } else if (lastMsg.sender === "user" && lastMsg.message?.brand_name) {
     botMessage = {
@@ -286,34 +293,35 @@ if(lastMsg.render==="selectOption") fetchPreference()
       case "flueOption":
         return (
           <AdviceSelectionCard
-            options={preferenceList?.fuel_types?.split(",")}
+            options={message?.data?.fuel_types}
             label="fuel type"
             h1="⛽: Got it! What’s your preferred fuel type?
 "
           />
         );
-      case "bodyOption":
+        case "transmissionOption":
         return (
           <AdviceSelectionCard
-            options={preferenceList?.body_types?.split(",")?.map((fuel:string) => fuel.trim())}
-            label="body type"
-            h1="🏎️: Great. What type of car body are you looking for?"
-          />
-        );
-      case "transmissionOption":
-        return (
-          <AdviceSelectionCard
-            options={preferenceList?.transmission_types?.split(",")?.map((fuel:string) => fuel.trim())}
+            options={message?.data?.transmission_types}
             label="transmission type"
             h1="⚙️ Cool! What kind of transmission do you prefer?"
              onBack={onBack}
             
           />
         );
+      case "bodyOption":
+        return (
+          <AdviceSelectionCard
+            options={message?.data?.body_types}
+            label="body type"
+            h1="🏎️: Great. What type of car body are you looking for?"
+          />
+        );
+      
       case "brandOption":
         return (
           <CarModel
-            options={filter.brands}
+            options={message?.data?.brands}
             label="brand"
             h1="🚗: Awesome! Which car brand do you prefer?"
             onclick={handleCarRecommendation}
@@ -424,7 +432,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
   };
 
 
-  console.log("message",filter)
+  console.log("message",messages)
   return (
     <>
       <Box

@@ -37,7 +37,7 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
   });
   const [isDisable, setIsDisable] = useState<boolean>(false);
 
-  const { updateFilter, filter, setMessages, } = useChats();
+  const { updateFilter, filter, setMessages, setFilter } = useChats();
 
   const handleSelect = (type: string, value: string) => {
     const updated = { [type]: value };
@@ -54,6 +54,8 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
     }
   };
 
+
+  
   useEffect(() => {
     setSelections({ [label]: label==="budget"? '0-5L': options[0] });
    
@@ -69,7 +71,7 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
   }, []);
 
   const handleNext = async() => {
-    if(label=="transmission type") {
+    // if(label=="transmission type") {
       const fx= await fetchBrandsBasedOnQuery()
 
       console.log("fx", fx)
@@ -90,19 +92,19 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
       
       },
     ]);
-    }else{
-      setMessages((prev) => [
-      ...prev,
-      {
-        id: String(Date.now()),
-        message: `${label} set to ${selections[label]}`,
-        render: "text",
-        sender: "user",
+    // }else{
+    //   setMessages((prev) => [
+    //   ...prev,
+    //   {
+    //     id: String(Date.now()),
+    //     message: `${label} set to ${selections[label]}`,
+    //     render: "text",
+    //     sender: "user",
       
-      },
-    ]);
+    //   },
+    // ]);
 
-    }
+    
 
     
     setIsDisable(true);
@@ -120,7 +122,7 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
       }
     
     const data = await axiosInstance1.post('/api/cargpt/brand-models-detailed/', payload)
-    const  brands=Object.keys(data) || []
+    const  brands=data || []
     if(brands.length < 1 ){
 
       showSnackbar("No brand found based on selected parameters")
@@ -129,12 +131,25 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
       setshowOnBack(true)
       return false
     }
+    if(label==="transmission type"){
     updateFilter('brands', brands)
+
+    }
     
     return brands
      
     
   }
+
+
+  useEffect(() => {
+    if(label==='budget'){
+      setFilter({...filter, body_type:"", transmission_type:"", fuel_type:""})
+
+    }
+    
+    
+  }, [label]);
 
   return (
     <Card

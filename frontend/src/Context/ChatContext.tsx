@@ -26,6 +26,7 @@ type ChatsContextType = {
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   updateFilter: (name: string, value: number | string | string[]) => void;
   filter: CarFilter;
+setFilter: React.Dispatch<React.SetStateAction<CarFilter>>
 };
 
 const ChatsContext = createContext<ChatsContextType | undefined>(undefined);
@@ -75,6 +76,7 @@ export const ChatsProvider: React.FC<{ children: ReactNode }> = ({
         setMessages,
         filter,
         updateFilter,
+        setFilter
       
       }}
     >
