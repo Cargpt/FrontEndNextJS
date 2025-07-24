@@ -393,13 +393,18 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   };
 
   const handleSeatCapChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setCurrentSeatCap(Number(e.target.value));
+    const newSeatCapacity = Number(e.target.value);
+    setCurrentSeatCap(newSeatCapacity);
     setCarFilter((prev) => ({
       ...prev,
-      seat_capacity: Number(e.target.value),
+      seat_capacity: newSeatCapacity,
     }));
 
-    fetchParametersWithSeat(Number(e.target.value));
+    fetchParametersWithSeat(
+      newSeatCapacity,
+      currentTransmissionType,
+      currentFuelType
+    );
   };
 
   const handleBodyTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
