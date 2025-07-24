@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { axiosInstance1 } from '@/utils/axiosInstance'; // Assuming this is correctly configured
-import axios from 'axios';
 import {
   Dialog,
   DialogTitle,
