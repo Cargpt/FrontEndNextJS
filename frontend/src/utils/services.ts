@@ -138,3 +138,39 @@ export const capitalizeFirst = (str:string) => {
   if (!str) return '';
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
+
+
+
+export const  SEATCAPACITIES =["5", "6", "7"]
+export const BODYNAMES=[
+    "Hatchback",
+    "Sedan",
+    "SUV",
+    "Coupe",
+    "Convertible",
+    "MPV",
+    "MUV"
+  ]
+  export const FUELTYPE  = [
+    "Petrol",
+    "Diesel",
+    "CNG",
+    "Electric",
+  ]
+  export const TRANSMISSION=[
+    "AT",
+    "MT",
+  ]
+
+
+  export const BUDGETS=[
+    "Up to 5L",
+    "5-10L",
+    "10-15L",
+    "15-20L",
+    "20-25L",
+    "25-30L",
+    "30-35L",
+    "35-40L",
+    "Above 40L"
+  ]
