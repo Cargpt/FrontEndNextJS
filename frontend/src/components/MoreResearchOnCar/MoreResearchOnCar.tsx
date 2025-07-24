@@ -239,17 +239,12 @@ const convertTextToBulletPoints = (text?: string) => {
           <Box sx={{ paddingBottom: 0 }} key={index}>
 
             
-            {/* </Typography> */}
-            {/* <Box
-              sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 1,
-              }}
-            > */}
+
               {response?.answers?.map((answer: any, index: number) => (
                 <Box sx={{ paddingBottom: 2 }} key={index}>
                   {/* JSON block, if present */}
+
+                  <div className="prompt" dangerouslySetInnerHTML={{__html:answer?.text}}/>
                   {answer?.json && (
                     <Box sx={{ marginBottom: 2 }}>
                       <RenderJson
@@ -322,9 +317,11 @@ const convertTextToBulletPoints = (text?: string) => {
           {AdditionalOptions.map((item, idx) => (
             
             <Button
+            
               disabled={!!disbleBtn}
               key={idx}
-              variant={item === disbleBtn ? "contained" : "outlined"}
+              
+              variant={item === disbleBtn ? "outlined" : "contained"}
               size="small"
               onClick={() => handleClick(item)}
               sx={{
