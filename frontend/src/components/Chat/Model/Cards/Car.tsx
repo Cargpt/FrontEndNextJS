@@ -325,55 +325,44 @@ const TeslaCard: React.FC<Props> = ({
                   ))}
                 </Box>
 
-                <Stack
-                  direction="row"
-                  gap="5px"
-                  justifyContent="center"
-                  flexWrap="wrap"
-                  sx={{ marginTop: "10px" }} // Added margin-top for spacing
-                >
-                  {[
-                    { label: "AI Car Advisor Score:", type: "score" },
-                    { label: "User Sentiments:", type: "sentiment" },
-                    { label: "EMI", type: "emi" },
-                  ].map(({ label, type}, idx) => (
-                    <Button
-                      key={type}
-                      variant="contained"
-                      size="small"
-                      sx={{
-                        textTransform: "capitalize",
-                        fontSize: "12px",
-                        minWidth: {
-                          xs: "100%",
-                          md: idx < 2 ? "48%" : "100%",
-                        },
-                        flex: idx < 2 ? "1 0 48%" : "1 0 100%",
-                      }}
-                      onClick={() => openDialog(type, car)}
-                    >
-                      <span>
-                        {label} {idx === 0 && car?.AIScore}{" "}
-                        {idx === 1 && car?.AISummary}{" "}
-                      </span>
-                    </Button>
-                  ))}
-                  {/* Book Test Drive Button */}
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    sx={{
-                      textTransform: "capitalize",
-                      fontSize: "12px",
-                      minWidth: { xs: "100%", md: "100%" },
-                      marginTop: "0px",
-                    }}
-                    onClick={() => handleOpenTestDriveModal(car)}
-                  >
-                    Book Test Drive
-                  </Button>
-                </Stack>
+<Stack
+  direction="row"
+  gap="5px"
+  justifyContent="center"
+  flexWrap="wrap"
+  sx={{ marginTop: "10px" }}
+>
+  {[
+    { label: "AI Car Advisor Score:", type: "score", content: car?.AIScore },
+    { label: "User Sentiments:", type: "sentiment", content: car?.AISummary },
+    { label: "EMI", type: "emi" },
+    { label: "Book Test Drive", type: "testDrive" },
+  ].map(({ label, type, content }, idx) => (
+    <Button
+      key={type}
+      variant="contained"
+      size="small"
+      sx={{
+        textTransform: "capitalize",
+        fontSize: "12px",
+        width: {
+          xs: "100%",
+          md: "48%",
+        },
+      }}
+      onClick={() =>
+        type === "testDrive"
+          ? handleOpenTestDriveModal(car)
+          : openDialog(type, car)
+      }
+    >
+      <span>
+        {label} {content || ""}
+      </span>
+    </Button>
+  ))}
+</Stack>
+
               </CardContent>
             </Card>
           ))}
