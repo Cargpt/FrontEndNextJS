@@ -111,7 +111,8 @@ const CarResearchMenu: React.FC = () => {
       ];
       setMessages((prevMessages) => [...prevMessages, ...newMessage]);
       setdisbleBtn(item);
-    } else if (typeof item === "string") {
+    }
+     else if (typeof item === "string") {
       setMessages((prevMessages) => [
         ...prevMessages,
         {
@@ -142,14 +143,30 @@ const CarResearchMenu: React.FC = () => {
         render: "text",
         sender: "user",
       };
+
+      let brandId = 0;
+      let models = [];
+       setLoading(item?.Brand);
+      for (let index = 0; index < item?.Models.length; index++) {
+        const element = item?.Models[index];
+        const response = await fetchBrandModelId(item?.Brand, element)
+        models.push({
+          ModelID:response?.ModelID,
+          ModelName: element,
+        })
+        if (index === 0) {
+          brandId = response?.BrandID;
+        }
+        
+      }
+      setLoading('');
+
+
       const botMessage: Message = {
         id: String(),
         message: {
-          brands: [{ BrandID: 1, BrandName: item?.Brand }],
-          models: item?.Models?.map((model: string, index: number) => ({
-            ModelID: index + 1,
-            ModelName: model,
-          })),
+          brands: [{ BrandID: brandId, BrandName: item?.Brand }],
+          models: models,
         },
         render: "brandModelSelect",
         sender: "bot",
@@ -157,7 +174,6 @@ const CarResearchMenu: React.FC = () => {
 
       const newMessages = [userMessage, botMessage];
       setMessages((prev) => [...prev, ...newMessages]);
-      console.log("item", item, userMessage);
     } else if (item && item?.Brand) {
       let fistItem = item?.Brand;
       if (fistItem == "MT") fistItem = "MT";
@@ -172,13 +188,32 @@ const CarResearchMenu: React.FC = () => {
 
     // Add logic for navigation or state change here
   };
-  const [disbleBtn, setdisbleBtn] = useState<string>("");
 
+  const fetchBrandModelId = async (brand_name: string, model_name: string) => {
+    try {
+      let payload:any ={}
+      if(brand_name){
+        payload["brand_name"] = brand_name;
+      }
+      if(model_name){
+        payload["model_name"] = model_name;
+      }
+      const response =  await axiosInstance1.post('/api/cargpt/get-brand-model-id/', payload)
+       return response;
+      
+    } catch (error) {
+      
+    }
+  }
+
+
+  const [disbleBtn, setdisbleBtn] = useState<string>("");
+  const [loading, setLoading] = useState<string>('');
   const searchBrands = async (search: string) => {
     let payload: any = {};
-
+    console.log("search123", search);
     
-    if (BODYTYPES.includes(search.toLowerCase())) {
+    if (BODYTYPES.includes(search)) {
       payload["body_type"] = search;
     } else if (FUELTYPES.includes(search.toLowerCase())) {
       payload["fuel_type"] = search;
@@ -189,15 +224,17 @@ const CarResearchMenu: React.FC = () => {
     }
 
     const data = await axiosInstance1.post("/api/cargpt/search/", payload);
-    const brands = data?.brands?.map((item:string, index:number)=> ({BrandName:item, BrandID:index+1}))
+        
+          let brands = [];
+          setLoading(search);
+         for (let index = 0; index < data?.brands.length; index++) {
+          const element = data?.brands[index];
+            const fbmid = await fetchBrandModelId(element, '');
+            brands.push(fbmid)
 
-    // Get first brand and its models
-    const firstBrand = brands[0];
-    // const data = await axiosInstance1.post("/api/cargpt/search/", payload);
-
-    // const models = data[0][firstBrand?.BrandName].map(
-    //   (item: any, index: number) => ({ ModelName: item, ModelID: index + 1 })
-    // );
+          
+         }
+    setLoading('');
 
     const userMessage: Message = {
       id: String(Date.now()),
@@ -215,23 +252,6 @@ const CarResearchMenu: React.FC = () => {
 
     setMessages((prev) => [...prev, userMessage, botMessage]);
   };
-// Utility: Convert plain text (or HTML) into bullet points
-const convertTextToBulletPoints = (text?: string) => {
-  if (!text) return [];
-
-  // Strip HTML tags if necessary
-  const plainText = text.replace(/<\/?[^>]+(>|$)/g, ""); 
-
-  // Split into sentences using `.`, filter empty ones
-  const sentences = plainText
-    .split(".")
-    .map(s => s.trim())
-    .filter(Boolean);
-
-  return sentences;
-};
-  
-  console.log("response", response);
   return (
     <>
       <Box sx={{ marginTop: 0 }}>
@@ -251,6 +271,7 @@ const convertTextToBulletPoints = (text?: string) => {
                         data={JSON.parse(answer.json)}
                         onCategoryClick={handleClick}
                         title={"table"}
+                        isLoading={loading}
                       />
                     </Box>
                   )}

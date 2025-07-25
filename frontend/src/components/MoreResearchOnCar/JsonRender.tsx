@@ -13,6 +13,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import ThreeDotSpinner from "../Loaders/ThreeDotSpinner";
 
 type JsonValue = string | number | boolean | null | string[];
 interface JsonRow {
@@ -23,9 +24,10 @@ interface Props {
   data: { [category: string]: JsonRow };
   onCategoryClick?: (category: any) => void;
   title: string;
+  isLoading: string; // Optional prop to indicate loading state
 }
 
-const DynamicTable: React.FC<Props> = ({ data, onCategoryClick, title }) => {
+const DynamicTable: React.FC<Props> = ({ data, onCategoryClick, title, isLoading }) => {
   const categories = Object.keys(data);
   const [isDisabled, setisDisabled] = useState<string>("");
 
@@ -102,7 +104,7 @@ allColumns.includes("Price") ||
                       }}
                       sx={{ textTransform: "none", fontSize: "14px" }}
                     >
-                      {category}
+                      {category} {isLoading===category && <ThreeDotSpinner />}
                     </Button>
                   </TableCell>
                   {allColumns.map((col, j) => {

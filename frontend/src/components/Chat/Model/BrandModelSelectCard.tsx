@@ -103,7 +103,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     useState<boolean>(Boolean);
   const fetchCarFeatures = async () => {
     const payload = {
-      brand_name: brand?.BrandID,
+      brand_name: brand?.BrandID ,
       modle_name: model?.ModelID,
     };
     try {
