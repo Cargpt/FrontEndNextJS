@@ -103,8 +103,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     useState<boolean>(Boolean);
   const fetchCarFeatures = async () => {
     const payload = {
-      brand_name: brand?.BrandName,
-      modle_name: model?.ModelName,
+      brand_name: brand?.BrandID,
+      modle_name: model?.ModelID,
     };
     try {
       const response = await axiosInstance1.post(
@@ -215,8 +215,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   ) => {
     try {
       const payload = {
-        brand_name: brand?.BrandName,
-        modle_name: model?.ModelName,
+        brand_name: brand?.BrandID,
+        modle_name: model?.ModelID,
         fuel_type: fuel_type,
         transmission_type: transmission_type,
         seats: seat,
@@ -282,8 +282,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   ) => {
     try {
       const payload = {
-        brand_name: brand?.BrandName,
-        modle_name: model?.ModelName,
+        brand_name: brand?.BrandID,
+        modle_name: model?.ModelID,
         fuel_type: fuel_type,
         transmission_type: transmission_type,
       };
@@ -329,8 +329,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   const fetchBrandModelWithFuel = async (fuel_type: string) => {
     try {
       const payload = {
-        brand_name: brand?.BrandName,
-        modle_name: model?.ModelName,
+        brand_name: brand?.BrandID,
+        modle_name: model?.ModelID,
         fuel_type,
       };
       const response = await axiosInstance1.post(
@@ -378,15 +378,13 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   const handleFuelChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCurrentFuelType(e.target.value);
     setCarFilter((prev) => ({ ...prev, fuel_type: e.target.value }));
-
     fetchBrandModelWithFuel(e.target.value);
   };
 
   const handleTransmissionChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCurrentTransmissionType(e.target.value);
     setCarFilter((prev) => ({ ...prev, transmission_type: e.target.value }));
-
-    fetchParametersWithBrandModelFuelTransmission(e.target.value);
+    fetchParametersWithBrandModelFuelTransmission(e.target.value, currentFuelType);
   };
 
   const handleBudgetChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -394,8 +392,9 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     if (bgt) {
       setCarFilter((prev) => ({ ...prev, budget: bgt }));
     }
-
     setCurrentBudget(e.target.value);
+    // If you want to trigger an API here, add the call below
+    // fetchDataBasedOnParameters();
   };
 
   const handleSeatCapChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -405,17 +404,14 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       ...prev,
       seat_capacity: newSeatCapacity,
     }));
-
-    fetchParametersWithSeat(
-      newSeatCapacity,
-      currentTransmissionType,
-      currentFuelType
-    );
+    fetchParametersWithSeat(newSeatCapacity, currentTransmissionType, currentFuelType);
   };
 
   const handleBodyTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCarFilter((prev) => ({ ...prev, body_type: e.target.value }));
     setCurrentBodyType(e.target.value);
+    // If you want to trigger an API here, add the call below
+    // fetchDataBasedOnParameters();
   };
 
   return (
