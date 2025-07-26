@@ -48,10 +48,10 @@ export function getUpperLimitInRupees(budgetRange: string) {
 }
 
 export const BUDGET = ["0-5L", "5-10L", "10-15L", "15-20L", "20-25L", "25-30L"];
-export const BODYTYPES = ["Suv", "Sedan", "Hatchback", "Coupe", "Convertible","Sedan"];
 export const SEATCAPACITY = [2, 4, 5, 7];
+export const BODYTYPES = ["Suv", "Sedan", "Hatchback", "Coupe", "Convertible","Sedan"];
 export const FUELTYPES = ["Petrol", "Diesel", "CNG", "Electric"];
-export const TRANSMISSIONTYPES = ["Manual", "Automatic"];
+export const TRANSMISSIONTYPES = ["MT", "AT"];
 
 export const MORERESEARCHONCAROPTIONS = [
   "Fuel types",
@@ -174,3 +174,14 @@ export const BODYNAMES=[
     "35-40L",
     "Above 40L"
   ]
+
+
+
+
+
+
+  export  const COMBINEOPTIONS = [
+  "Suv", "Sedan", "Hatchback", "Coupe", "Convertible",
+  "Petrol", "Diesel", "CNG", "Electric",
+  "MT", "AT"
+]

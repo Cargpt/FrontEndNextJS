@@ -16,6 +16,7 @@ import { axiosInstance1 } from "@/utils/axiosInstance";
 import {
   BODYNAMES,
   BUDGETS,
+  COMBINEOPTIONS,
   DEFAULTSEARCHPARAMS,
   FUELTYPE,
   getUpperLimitInRupees,
@@ -68,39 +69,47 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   const [disableBtn, setDisableBtn] = useState<boolean>(false);
   const [carFilter, setCarFilter] = useState<CarFilter>(DEFAULTSEARCHPARAMS);
 
-  const { setCars } = useChats();
+  const [isBrandChange, setisBrandChange] = useState<boolean>(false);
 
-  const fetchBrandModes = async () => {
+  const { setCars } = useChats();
+    const { messages } = useChats();
+
     const searchParams: any = messages[messages.length - 1]?.searchParam;
 
-    if (messages[messages.length - 1].message?.models?.length > 0) {
+  const fetchBrandModes = async () => {
+
+    if (messages[messages.length - 1].message?.models?.length > 0 && !isBrandChange) {
       const m = messages[messages.length - 1].message?.models;
       setModel(m[0]);
       setModels(m);
-    } else if (searchParams) {
-      let payload: any = {};
-      payload["brand_name"] = brand.BrandName;
-      payload = { ...payload, ...searchParams };
+    } 
+    // else if (searchParams) {
+    //   let payload: any = {};
+    //   payload["brand_name"] = brand.BrandName;
+    //   payload = { ...payload, ...searchParams };
 
-      const data = await axiosInstance1.post("/api/cargpt/search/", payload);
+    //   const data = await axiosInstance1.post("/api/cargpt/search/", payload);
 
-      setModels(data?.models || []);
-      setModel(data?.models[0] || null);
-    } else {
+    //   setModels(data?.models || []);
+    //   setModel(data?.models[0] || null);
+    // } 
+    
+    else {
       const payload = {
         brand_id: brand?.BrandID,
+        
+
       };
       try {
         const data = await axiosInstance1.post("/api/cargpt/models/", payload);
 
         setModels(data?.models || []);
         setModel(data?.models[0] || null);
+        setisBrandChange(false);
       } catch (error) {}
     }
   };
 
-  const [modelDataIntialFetched, setmodelDataIntialFetched] =
-    useState<boolean>(Boolean);
   const fetchCarFeatures = async () => {
     const payload = {
       brand_name: brand?.BrandID ,
@@ -132,25 +141,24 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
           .sort((a: any, b: any) => priority[a] - priority[b]);
       }
 
-      if (data.FuelType && !data.FuelType.includes(currentFuelType)) {
-        console.log("fuel type1", prioritizeFuels(data.FuelType))
+      //  When user choose best  car under the fuel type
+      const defaultFuel = COMBINEOPTIONS.includes(searchParams) ? searchParams: currentFuelType
+      if (data.FuelType && !data.FuelType.includes(defaultFuel)) {
         setCurrentFuelType(prioritizeFuels(data.FuelType)[0]);
-        setCarFilter((prev) => ({ ...prev, fuel_type: data.FuelType[0] }));
+        setCarFilter((prev) => ({ ...prev, fuel_type: prioritizeFuels(data.FuelType)[0]}));
 
         fetchBrandModelWithFuel(prioritizeFuels(data.FuelType)[0]);
       } else {
-          console.log("fuel type2", prioritizeFuels(data.FuelType))
-        setCurrentFuelType(prioritizeFuels(data.FuelType)[0]);
+        setCurrentFuelType(defaultFuel);
 
         setCarFilter((prev) => ({
           ...prev,
-          fuel_type: prioritizeFuels(data.FuelType)[0],
+          fuel_type: defaultFuel,
         }));
 
-        fetchBrandModelWithFuel(prioritizeFuels(data.FuelType)[0]);
+        fetchBrandModelWithFuel(defaultFuel);
       }
 
-      setmodelDataIntialFetched(true);
     } catch (error) {}
   };
 
@@ -162,7 +170,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
 
       fetchBrandModes();
     }
-    return () => {};
+  
   }, [brand]);
 
   useEffect(() => {
@@ -229,13 +237,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       // DECRYPT the encrypted data
       const data = response?.data;
 
-      console.log("FuelType :" + data["FuelType"]);
-      console.log("TransmissionType :" + data["TransmissionType"]);
-      console.log("Seats :" + data["Seats"]);
-      console.log("BodyNames :" + data["BodyNames"]);
-      console.log("FuelTypes length :" + FuelTypes.length);
-      console.log("data budget", data["budgetTypes"]);
-
+     
       const bugetTypes_length = bugetTypes.length;
       for (let i = 0; i < bugetTypes_length; i++) {
         bugetTypes.pop();
@@ -267,9 +269,16 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       }
       setBodyTypes([...bodyTypes]);
 
-      if (data.BodyNames && !data.BodyNames.includes(currentBodyType)) {
+
+      const defaultFuel = COMBINEOPTIONS.includes(searchParams) ? searchParams: currentBodyType
+
+      if (data.BodyNames && !data.BodyNames.includes(defaultFuel)) {
         setCurrentBodyType(data.BodyNames[0]);
         setCarFilter((prev) => ({ ...prev, body_type: data.BodyNames[0] }));
+      }
+      else {
+        setCurrentBodyType(defaultFuel);
+        setCarFilter((prev) => ({ ...prev, body_type: defaultFuel }));
       }
     } catch (error) {
       console.error("Error:", error);
@@ -349,9 +358,12 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
       }
       setTransmissionType([...TransmissionTypes]);
 
+      const defaultTransmisssionType = COMBINEOPTIONS.includes(searchParams) ? searchParams: currentTransmissionType
+
+
       if (
         data.TransmissionType &&
-        !data.TransmissionType.includes(currentTransmissionType)
+        !data.TransmissionType.includes(defaultTransmisssionType)
       ) {
         setCurrentTransmissionType(data.TransmissionType[0]);
         setCarFilter((prev) => ({
@@ -364,16 +376,19 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
           fuel_type
         );
       } else {
-        setCurrentTransmissionType(currentTransmissionType);
+        setCurrentTransmissionType(defaultTransmisssionType);
+        setCarFilter((prev) => ({
+          ...prev,
+          transmission_type: defaultTransmisssionType,
+        }));
         fetchParametersWithBrandModelFuelTransmission(
-          currentTransmissionType,
+          defaultTransmisssionType,
           fuel_type
         );
       }
     } catch (error) {}
   };
 
-  const { messages } = useChats();
 
   const handleFuelChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCurrentFuelType(e.target.value);
@@ -413,6 +428,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     // If you want to trigger an API here, add the call below
     // fetchDataBasedOnParameters();
   };
+
+
 
   return (
     <Card
@@ -454,6 +471,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                 );
                 if (selectedBrand) {
                   setBrand(selectedBrand);
+                  setisBrandChange(true);
                 }
               }}
               sx={{

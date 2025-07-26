@@ -14,6 +14,7 @@ import {
   useTheme,
 } from "@mui/material";
 import ThreeDotSpinner from "../Loaders/ThreeDotSpinner";
+import { COMBINEOPTIONS } from "@/utils/services";
 
 type JsonValue = string | number | boolean | null | string[];
 interface JsonRow {
@@ -24,10 +25,11 @@ interface Props {
   data: { [category: string]: JsonRow };
   onCategoryClick?: (category: any) => void;
   title: string;
-  isLoading: string; // Optional prop to indicate loading state
+  isLoading: string; // Optional prop to indicate loading state,
+  heading:string
 }
 
-const DynamicTable: React.FC<Props> = ({ data, onCategoryClick, title, isLoading }) => {
+const DynamicTable: React.FC<Props> = ({ data, onCategoryClick, title, isLoading, heading }) => {
   const categories = Object.keys(data);
   const [isDisabled, setisDisabled] = useState<string>("");
 
@@ -99,7 +101,7 @@ allColumns.includes("Price") ||
                       variant={category === isDisabled ? "contained" : "outlined"}
                       size="small"
                       onClick={() => {
-                        onCategoryClick?.({ ...data[category], Brand: category });
+                        onCategoryClick?.({ ...data[category], Brand: category, heading: COMBINEOPTIONS.includes(category)? category : heading });
                         setisDisabled(category);
                       }}
                       sx={{ textTransform: "none", fontSize: "14px" }}

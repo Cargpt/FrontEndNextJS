@@ -19,6 +19,7 @@ import RenderJson from "./JsonRender";
 import {
   BODYTYPES,
   BUDGET,
+  COMBINEOPTIONS,
   CustomFilter,
   FUELTYPES,
   TRANSMISSIONTYPES,
@@ -36,6 +37,7 @@ const CarResearchMenu: React.FC = () => {
   const { messages, setMessages } = useChats();
   const { showSnackbar } = useSnackbar();
   const [cookies] = useCookies(["selectedOption"]);
+  const [prompt, setprompt] = useState<string>('')
 
   const fetchData = async () => {
     const lastMessage = messages[messages.length - 1];
@@ -163,24 +165,24 @@ const CarResearchMenu: React.FC = () => {
 
 
       const botMessage: Message = {
-        id: String(),
+        id: String(Date.now()) + 1,
         message: {
           brands: [{ BrandID: brandId, BrandName: item?.Brand }],
           models: models,
         },
         render: "brandModelSelect",
         sender: "bot",
+        searchParam:COMBINEOPTIONS.find((option:string)=>item?.heading?.includes(option)),
       };
 
       const newMessages = [userMessage, botMessage];
       setMessages((prev) => [...prev, ...newMessages]);
     } else if (item && item?.Brand) {
       let fistItem = item?.Brand;
-      if (fistItem == "MT") fistItem = "MT";
-      if (fistItem == "AT") fistItem = "AT";
       const searchItem = CustomFilter.find((it) =>
-        fistItem?.toLowerCase().includes(it?.toLowerCase())
+        fistItem?.includes(it)
       );
+
       if (searchItem) {
         await searchBrands(searchItem);
       }
@@ -217,7 +219,7 @@ const CarResearchMenu: React.FC = () => {
       payload["body_type"] = search;
     } else if (FUELTYPES.includes(search.toLowerCase())) {
       payload["fuel_type"] = search;
-    } else if (TRANSMISSIONTYPES.includes(search.toLowerCase())) {
+    } else if (TRANSMISSIONTYPES.includes(search)) {
       payload["transmission_type"] = search;
     } else if (BUDGET.includes(search.toLowerCase())) {
       payload["budget"] = search;
@@ -234,7 +236,18 @@ const CarResearchMenu: React.FC = () => {
 
           
          }
-    setLoading('');
+
+         const response = await axiosInstance1.post("/api/cargpt/models/", {
+          brand_id:brands?.[0]?.BrandID,
+          ...payload,
+        
+        });
+
+         const models = response?.models;
+          console.log("models11", models);
+       
+       
+         setLoading('');
 
     const userMessage: Message = {
       id: String(Date.now()),
@@ -244,10 +257,10 @@ const CarResearchMenu: React.FC = () => {
     };
     const botMessage: Message = {
       id: String(Date.now()) + 1,
-      message: { brands: brands},
+      message: { brands: brands, models: models},
       render: "brandModelSelect",
       sender: "bot",
-      searchParam:payload
+      searchParam:search
     };
 
     setMessages((prev) => [...prev, userMessage, botMessage]);
@@ -272,6 +285,7 @@ const CarResearchMenu: React.FC = () => {
                         onCategoryClick={handleClick}
                         title={"table"}
                         isLoading={loading}
+                        heading={answer?.text}
                       />
                     </Box>
                   )}
