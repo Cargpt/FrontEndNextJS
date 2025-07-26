@@ -487,6 +487,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
           >
             {messages.map((msg, index) => {
               const isLastUserMsg = msg.sender === "user" && index === lastUserMsgIndex;
+              const isLastMessage = index === messages.length - 1;
               return (
                 <Box
                   key={msg.id}
@@ -494,7 +495,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
                     display: "flex",
                     flexDirection: "column",
                     alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
-                    mb: 2,
+                    mb: isLastMessage ? 4:2,
                     mt: { xs: 4, sm: 1 },
                     p: { xs: 2, sm: 0 },
                     textAlign: msg.sender === "user" ? "right" : "left",
@@ -540,24 +541,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
         </Paper>
       </Box>
       {/* <div ref={bottomRef} /> */}
-      {/* Fixed bottom message for all screens */}
-      <Box
-        sx={{
-          position: 'fixed',
-          left: 0,
-          bottom: 0,
-          width: '100%',
-          bgcolor: 'background.paper',
-          color: 'text.secondary',
-          textAlign: 'center',
-          py: 1,
-          boxShadow: 3,
-          zIndex: 1300,
-          fontSize: { xs: '12px', sm: '14px' },
-        }}
-      >
-        ChatGPT can make mistakes. Check important info. See Cookie Preferences.
-      </Box>
+      
     </>
   );
 };
