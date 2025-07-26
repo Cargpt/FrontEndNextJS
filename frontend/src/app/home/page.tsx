@@ -1,13 +1,19 @@
+// ...existing code...
 
 import React from "react";
 import ChatBox from "../../components/Chat/OptionsCard";
-const Page = () => {
+import FixedBottomMessage from "../../components/common/FixedBottomMessage";
+
+// ...existing code...
+
+const HomePage = () => {
   return (
     <>
       {/* <AdvisorIntro showInitialExample={true} onBotClick={() => {}} /> */}
-<ChatBox />
+      <ChatBox />
+      <FixedBottomMessage message="CarGPT can make mistakes. Check important info. See Cookie Preferences."/>
     </>
   );
 };
 
-export default Page;
+export default HomePage;

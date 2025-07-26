@@ -210,16 +210,22 @@ const ChatBox: React.FC = () => {
         horizontal: "center",
         vertical: "bottom",
       });
-
       return false;
     } else {
+      // Add user message before bot message
       const userMessage: Message = {
         id: String(Date.now()),
+        message: "Show me car models for the selected parameters.",
+        render: "text",
+        sender: "user",
+      };
+      const botMessage: Message = {
+        id: String(Date.now() + 1),
         message: { [filter.brand_name]: remondatedCarModels },
         render: "carOptions",
         sender: "bot",
       };
-      setMessages((prev) => [...prev, userMessage]);
+      setMessages((prev) => [...prev, userMessage, botMessage]);
       setRecommondatedCarModels([]);
       return true;
     }
@@ -380,6 +386,15 @@ if(lastMsg.render==="selectOption") fetchPreference()
 
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef<boolean>(false);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const userAvatarRef = useRef<HTMLDivElement | null>(null);
+  // Find the last user message index
+  const lastUserMsgIndex = (() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].sender === "user") return i;
+    }
+    return -1;
+  })();
 
 
 
@@ -410,11 +425,12 @@ if(lastMsg.render==="selectOption") fetchPreference()
   };
 
    const scrollToLastMessage = () => {
-    if (chatContainerRef.current) {
-      const lastMessage = chatContainerRef.current.lastElementChild as HTMLElement;
-      if (lastMessage) {
-        lastMessage.scrollIntoView({ behavior: 'smooth', block: 'end' });
-      }
+    if (userAvatarRef.current) {
+      const rect = userAvatarRef.current.getBoundingClientRect();
+      const scrollY = window.scrollY + rect.top - 80;
+      window.scrollTo({ top: scrollY, behavior: 'smooth' });
+    } else if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }
   };
 
@@ -464,64 +480,84 @@ if(lastMsg.render==="selectOption") fetchPreference()
             messages?.[messages?.length-1]?.message!=="Ask AI" &&
 
           <Box 
-          sx={{minHeight:"100vh"}}
-                ref={chatContainerRef}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-
+            sx={{minHeight:"100vh"}}
+            ref={chatContainerRef}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
           >
-            {messages.map((msg, index) => (
-              <Box
-                key={msg.id}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
-                  mb: 2,
-                  mt: { xs: 4, sm: 1 },
-                  p: { xs: 2, sm: 0 },
-                  textAlign: msg.sender === "user" ? "right" : "left",
-                  fontSize: "14px",
-                }}
-              >
-                {msg.sender === "bot" && (
-                  <Box sx={{ mb: 0.5 }}>
-                    <Image src={bot} alt="bot" width={32} height={32} />
-                  </Box>
-                )}
-                {msg.sender === "user" && (
-                  <Box sx={{ mb: 0.5 }}>
-                    <Avatar
-                      sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}
-                    >
-                        <PersonIcon />
-
-                    </Avatar>
-                  </Box>
-                )}
-                <Paper
+            {messages.map((msg, index) => {
+              const isLastUserMsg = msg.sender === "user" && index === lastUserMsgIndex;
+              return (
+                <Box
+                  key={msg.id}
                   sx={{
-                    p: 1.5,
-                    maxWidth: isSmallScreen ? "100%" : "75%",
-                    bgcolor:
-                      msg.sender === "user" ? "rgb(211, 227, 255)" : "grey.100",
-                    color: "black",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
+                    mb: 2,
+                    mt: { xs: 4, sm: 1 },
+                    p: { xs: 2, sm: 0 },
+                    textAlign: msg.sender === "user" ? "right" : "left",
+                    fontSize: "14px",
                   }}
                 >
-                  {renderMessage(msg, index)}
-                </Paper>
-              </Box>
-            ))}
+                  {msg.sender === "bot" && (
+                    <Box sx={{ mb: 0.5 }}>
+                      <Image src={bot} alt="bot" width={32} height={32} />
+                    </Box>
+                  )}
+                  {msg.sender === "user" && (
+                    <Box sx={{ mb: 0.5 }} ref={isLastUserMsg ? userAvatarRef : undefined}>
+                      <Avatar
+                        sx={{ bgcolor: 'primary.main', width: 32, height: 32 }}
+                      >
+                          <PersonIcon />
+                      </Avatar>
+                    </Box>
+                  )}
+                  <Paper
+                    sx={{
+                      p: 1.5,
+                      maxWidth: isSmallScreen ? "100%" : "75%",
+                      bgcolor:
+                        msg.sender === "user" ? "rgb(211, 227, 255)" : "grey.100",
+                      color: "black",
+                    }}
+                  >
+                    {renderMessage(msg, index)}
+                  </Paper>
+                </Box>
+              );
+            })}
             {loading && (
               <Box display="flex" justifyContent="center" mt={2}>
                 <CircularProgress />
               </Box>
             )}
+            <div ref={bottomRef} />
           </Box>
 }
         </Paper>
       </Box>
       {/* <div ref={bottomRef} /> */}
+      {/* Fixed bottom message for all screens */}
+      <Box
+        sx={{
+          position: 'fixed',
+          left: 0,
+          bottom: 0,
+          width: '100%',
+          bgcolor: 'background.paper',
+          color: 'text.secondary',
+          textAlign: 'center',
+          py: 1,
+          boxShadow: 3,
+          zIndex: 1300,
+          fontSize: { xs: '12px', sm: '14px' },
+        }}
+      >
+        ChatGPT can make mistakes. Check important info. See Cookie Preferences.
+      </Box>
     </>
   );
 };

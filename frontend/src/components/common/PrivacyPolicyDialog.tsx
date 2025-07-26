@@ -1,0 +1,66 @@
+import React from "react";
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+
+interface PrivacyPolicyDialogProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({ open, onClose }) => {
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="sm"
+      fullWidth
+      fullScreen={fullScreen}
+      PaperProps={fullScreen ? {
+        sx: {
+          width: '100vw',
+          m: 0,
+          borderRadius: 0,
+          display: 'flex',
+          flexDirection: 'column',
+        }
+      } : {}}
+    >
+      <DialogTitle>Privacy Policy</DialogTitle>
+      <DialogContent
+        sx={fullScreen ? {
+          flex: 1,
+          overflowY: 'auto',
+          pb: 2,
+          minHeight: 0,
+        } : {}}
+      >
+        <Typography gutterBottom>
+          This is the Privacy Policy for CarGPT. We value your privacy and are committed to protecting your personal information. This dialog summarizes our practices regarding data collection, usage, and protection.
+        </Typography>
+        <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 'bold' }}>What We Collect:</Typography>
+        <ul>
+          <li>Personal information you provide (e.g., name, email, mobile number, preferences).</li>
+          <li>Your location information (for personalized recommendations and services).</li>
+          <li>Usage data and analytics to improve our services.</li>
+          <li>Cookies and similar technologies for personalization and security.</li>
+        </ul>
+        <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 'bold' }}>How We Use Your Data:</Typography>
+        <ul>
+          <li>To provide and improve CarGPT services.</li>
+          <li>To personalize your experience and recommendations.</li>
+          <li>To communicate important updates and offers.</li>
+        </ul>
+        <Typography sx={{ mt: 2 }}>
+          For full details, please read our complete Privacy Policy on our website. You can contact us for any privacy-related questions.
+        </Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="primary" variant="contained">Close</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default PrivacyPolicyDialog;
