@@ -120,19 +120,18 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
       open={open}
       onClose={onClose}
       fullScreen={isSmallScreen}
-      PaperProps={{
-        sx: {
-          width: {
-            xs: "100%",
-            md: "60%",
-          },
-          maxWidth: "700px",
-          height: {
-            xs: "100vh",
-            md: "80vh",
-          },
-        },
-      }}
+       scroll="paper"
+  PaperProps={{
+    sx: {
+      width: { xs: "100%", md: "80%" },
+      maxWidth: "1000px",
+      height: isSmallScreen ? "100dvh" : "auto",
+      maxHeight: isSmallScreen ? "100dvh" : "90vh",
+      display: "flex",
+      flexDirection: "column",
+      boxShadow: 6,
+    },
+  }}
     >
       <DialogTitle sx={{ background: "#eeeeef" }}>
        <Button

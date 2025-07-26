@@ -3,7 +3,6 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  IconButton,
   Typography,
   Box,
   CircularProgress,
@@ -29,7 +28,12 @@ type CarGalleryProps = {
 const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
   const [loading, setLoading] = useState(false);
   const [carDetails, setCarDetails] = useState<any>(null);
-  const {data, loader , error} = useApi('/api/cargpt/car-images-by-variant-model/', 'post', {car_id:carId})
+  const { data, loader, error } = useApi(
+    "/api/cargpt/car-images-by-variant-model/",
+    "post",
+    { car_id: carId }
+  );
+
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -50,8 +54,6 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
   useEffect(() => {
     if (open && carId) {
       fetchCarDetailsWithState(carId);
-    } else {
-      console.log("⏸️ Not fetching - open:", open, "carId:", carId);
     }
   }, [open, carId]);
 
@@ -61,18 +63,17 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
   const slider2 = useRef<any>(null);
   const images = data || [];
 
-
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed"; // prevent bounce scroll on mobile
-      document.body.style.width = "100%"; // fix layout shift
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
     } else {
       document.body.style.overflow = "";
       document.body.style.position = "";
       document.body.style.width = "";
     }
-  
+
     return () => {
       document.body.style.overflow = "";
       document.body.style.position = "";
@@ -80,51 +81,61 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
     };
   }, [open]);
 
-
-
-
-
-  
   return (
     <Dialog
       open={open}
       onClose={onClose}
       fullScreen={isSmallScreen}
+      scroll="paper"
       PaperProps={{
         sx: {
-          width: {
-            xs: "100%",
-            md: "80%",
-          },
+          width: { xs: "100%", md: "80%" },
           maxWidth: "1000px",
-          height: {
-            xs: "100vh",
-            md: "80vh",
-          },
+          height: isSmallScreen ? "100dvh" : "auto",
+          maxHeight: isSmallScreen ? "100dvh" : "90vh",
+          display: "flex",
+          flexDirection: "column",
+          boxShadow: 6,
         },
       }}
     >
-      <DialogTitle sx={{ background: "#eeeeef" }}>
+      {/* Sticky Header */}
+      <DialogTitle
+        sx={{
+          background: "#eeeeef",
+          position: "sticky",
+          top: 0,
+          zIndex: 2,
+          textAlign: "center",
+          fontWeight: 700,
+        }}
+      >
         <Button
           variant="outlined"
           onClick={onClose}
-          sx={{ position: "absolute", left: 15, top: 12, zIndex:20, border:"none" }}
-          type="button"
+          sx={{
+            position: "absolute",
+            left: 15,
+            top: 12,
+            zIndex: 3,
+            border: "none",
+            minWidth: "unset",
+            padding: 0,
+          }}
         >
           <KeyboardBackspaceSharp />
         </Button>
-        <Typography
-          sx={{ position: "relative", textAlign: "center", fontWeight: 700 }}
-        >
-          {carDetails &&
-            `${carDetails.Brand || ""} ${carDetails.ModelName || ""}`}
-        </Typography>
+        {carDetails &&
+          `${carDetails.Brand || ""} ${carDetails.ModelName || ""}`}
       </DialogTitle>
+
+      {/* Scrollable Content */}
       <DialogContent
         dividers
         sx={{
-          height: "100%",
-          p: 3,
+          overflowY: "auto",
+          flexGrow: 1,
+          padding: { xs: "15px 20px", sm: "20px 40px" },
           display: "flex",
           flexDirection: "column",
           gap: 2,
@@ -134,9 +145,9 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
           <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
             <CircularProgress />
           </Box>
-        ) : images.length > 0  ? (
+        ) : images.length > 0 ? (
           <>
-            {/* main image slider */}
+            {/* Main Image Slider */}
             <Slider
               asNavFor={nav2}
               ref={(slider) => {
@@ -161,21 +172,18 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
                     mb: 2,
                   }}
                 >
-
                   <CardMedia
                     component="img"
                     image={img}
-                    alt="car-img"
+                    alt={`car-img-${index}`}
                     height="294"
-                    sx={{
-                      cursor: "pointer",
-                    }}
+                    sx={{ cursor: "pointer", borderRadius: 2 }}
                   />
                 </Box>
               ))}
             </Slider>
 
-            {/* thumbnails slider */}
+            {/* Thumbnail Slider */}
             <Slider
               asNavFor={nav1}
               ref={(slider) => {
@@ -191,7 +199,15 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
               centerMode={false}
             >
               {images.map((img: any, index: number) => (
-                <Box key={index} sx={{ p: 1, cursor: "pointer", display:"flex" }}>
+                <Box
+                  key={index}
+                  sx={{
+                    p: 1,
+                    cursor: "pointer",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                >
                   <Image
                     src={img}
                     alt={`car-thumb-${index}`}
