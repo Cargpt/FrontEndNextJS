@@ -379,7 +379,7 @@ const TeslaCard: React.FC<Props> = ({
         <Button
           variant="outlined"
           onClick={onClick}
-          sx={{ textTransform: "capitalize", fontSize: 13 }}
+          sx={{ textTransform: "capitalize", fontSize: 13  }}
         >
           I know exactly I want
         </Button>
