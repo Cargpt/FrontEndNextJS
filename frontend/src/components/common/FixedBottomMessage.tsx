@@ -34,7 +34,7 @@ const FixedBottomMessage: React.FC<Props> = ({ message }) => {
           textAlign: 'center',
           py: 1,
           boxShadow: 3,
-          zIndex: 1300,
+          zIndex: 3,
           fontSize: { xs: '12px', sm: '14px' },
         }}
       >

@@ -17,6 +17,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { axiosInstance } from "@/utils/axiosInstance";
+import { useChats } from "@/Context/ChatContext";
 
 interface AdvisorIntroProps {
   showInitialExample: boolean;
@@ -29,11 +30,11 @@ const AdvisorIntro: React.FC<AdvisorIntroProps> = ({
 }) => {
   const router = useRouter();
   const { setBotType } = useBotType();
-
+const {handleBookmark,bookmark} =useChats()
 
   const handleOptionClick = (type: string) => {
     setCookie('selectedOption', type, { path: '/' });
-   
+     if(bookmark) {handleBookmark(null)}
     router.push("/home");
   };
 

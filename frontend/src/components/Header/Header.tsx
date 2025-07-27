@@ -1,49 +1,72 @@
-import React, { useState, useRef, useEffect } from "react";
-import "bootstrap-icons/font/bootstrap-icons.css";
+"use client";
+
+import React, { useState } from "react";
+import Image from "next/image";
+import { useCookies } from "react-cookie";
+import { useRouter } from "next/navigation";
+import { IconButton } from "@mui/material";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+
 import styles from "./Header.module.scss";
+
 import logo from "../../../public/assets/AICarAdvisor.png";
 import Hamburger from "../../../public/assets/list.svg";
 import Notification from "../../../public/assets/bell.svg";
-import Image from "next/image";
+
 import Sidebar from "../Sidebar/Sidebar";
+import { useLocalizationContext } from "@mui/x-date-pickers/internals";
 
 const Header = () => {
+  const [cookies, setCookie] = useCookies(["token", "user", "selectedOption"]);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const router = useRouter();
 
-  const handleDrawerOpen = () => {
-    setDrawerOpen(true);
-  };
+  const handleDrawerOpen = () => setDrawerOpen(true);
+  const handleDrawerClose = () => setDrawerOpen(false);
+  const handleBookmarkClick = () => {
 
-  const handleDrawerClose = () => {
-    setDrawerOpen(false);
+    if (cookies.user) {
+      setCookie("selectedOption", "I know exactly what I want", { path: "/" }); // Clear selected option cookie
+      router.push("/bookmarks");
+    } else {
+      alert("Please log in to view bookmarks.");
+    }
   };
 
   return (
     <>
       <header className={styles.header}>
         <div className={styles.container}>
+          {/* Left: Hamburger + Logo */}
           <div className={styles.menues}>
-            <div className={styles.menuContainer}>
-              <Image
-                src={Hamburger}
-                alt="list"
-                className={styles.menuIcon}
-                onClick={handleDrawerOpen}
-              />
+            <div className={styles.menuContainer} onClick={handleDrawerOpen}>
+              <Image src={Hamburger} alt="Menu" className={styles.menuIcon} />
             </div>
             <Image src={logo} alt="Logo" className={styles.carLogo} />
           </div>
-          <div className={styles.notificationContainer}>
-            <div className={styles.notificationContainerNew}>
+
+          {/* Right: Bookmark + Notification */}
+          <div className={styles.rightIcons}>
+            {cookies.user && 
+            
+           
+            <div className={styles.iconButton}>
+              <IconButton onClick={handleBookmarkClick}>
+                <FavoriteBorderIcon sx={{ color: "#555" }} />
+              </IconButton>
+            </div>
+             }
+            <div className={styles.iconButton}>
               <Image
                 src={Notification}
-                alt="notify"
+                alt="Notification"
                 className={styles.notificationIcon}
               />
             </div>
           </div>
         </div>
       </header>
+
       <Sidebar open={drawerOpen} onClose={handleDrawerClose} />
     </>
   );

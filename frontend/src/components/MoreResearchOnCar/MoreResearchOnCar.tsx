@@ -47,7 +47,7 @@ const CarResearchMenu: React.FC = () => {
         : cookies.selectedOption;
 
     console.log("Current message:", currentMessage);
-
+     if(!currentMessage) return;
     try {
       const data = await axiosInstance1.get(
         `/api/cargpt/prompt-search/?text=${currentMessage}`

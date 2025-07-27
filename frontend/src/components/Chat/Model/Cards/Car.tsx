@@ -105,6 +105,11 @@ const {showSnackbar}=useSnackbar()
     // Example: send to API or log
     // You can replace this with an API call or any other logic
 
+    if(!cookies.user){
+      show();
+      return false; // Indicate failure to set favorite
+    }
+
     const paload ={
       variant: variantId,
       user: cookies?.user?.id,

@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique ID generation
 import { useFirebase } from '@/Context/FirebaseAuthContext';
 import { Alert } from '@mui/material';
 import { useLoginDialog } from '@/Context/LoginDialogContextType';
+import { useSnackbar } from '@/Context/SnackbarContext';
 
 interface LoginFormData {
   email: string;
@@ -56,7 +57,7 @@ const {hide}=useLoginDialog()
 
 const [error, setError] = useState<string | null>(null);
 const [loading, setLoading] = useState(false);
-
+const {showSnackbar}=useSnackbar()
 
    const handleSubmit = async (e:FormEvent ) => {
     e.preventDefault();
@@ -68,10 +69,15 @@ const [loading, setLoading] = useState(false);
           const payload = formData
           const  response = await  axiosInstance.post('/api/cargpt/login/',  payload)
           handleSetCookie(response)
+          showSnackbar(response?.message, {
+          vertical: "top",
+          horizontal: "center",
+        });
 
     } catch (error:any) {
-      if(error?.status===404){
-        setError("User Not found 404")
+      console.error("Login error:", error?.data?.non_field_errors[0]);
+      if(error?.data?.non_field_errors[0]){
+        setError(error?.data?.non_field_errors[0])
       } 
       
     }
@@ -157,8 +163,23 @@ finally {
 
 
   return (
-    <Box display="flex" justifyContent="center"  >
-      <Paper elevation={3} sx={{ p: 4, width: 400 }}>
+    <Box
+      display="flex"
+      justifyContent="center"
+      border="none"
+      sx={{
+        px: 2, // horizontal padding on small screens
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          width: { xs: "100%", sm: 400 }, // 100% width on xs screens, 400px on sm+
+          boxShadow: "none",
+          maxWidth: 400,
+        }}
+      >
         <Box display="flex" justifyContent="center" mb={2}>
           <Image src={logo} alt="Logo" style={{ height: 60 }} />
         </Box>
@@ -186,40 +207,56 @@ finally {
             onChange={handleChange}
             required
           />
-          <div style={{display:"flex", gap:"10px"}}>
 
-
-
- <Button onClick={handleGoogleLogin} type="button" variant="contained" fullWidth sx={{ mt: 2 }} style={{background:"lightgray"}}>
-              
-             <img src="/assets/google.svg" alt="Google icon" width={20} height={20} />
-              <Typography style={{fontSize:"10px", color:"black"}}>            continue with google</Typography>
-          </Button>
-
-          <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 }}
-            disabled={loading}
-  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
-
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" }, // stack on xs, row on sm+
+              gap: 2,
+              mt: 2,
+            }}
           >
-             {loading ? 'Logging in...' : 'Login'}
+            <Button
+              onClick={handleGoogleLogin}
+              type="button"
+              variant="contained"
+              fullWidth
+              sx={{
+                backgroundColor: "lightgray",
+                color: "black",
+                textTransform: "none",
+                fontSize: 12,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 1,
+                whiteSpace: "nowrap",
+                "&:hover": {
+                  backgroundColor: "#d3d3d3",
+                },
+              }}
+            >
+              <img src="/assets/google.svg" alt="Google icon" width={20} height={20} />
+              Continue with Google
+            </Button>
 
-          </Button>
-
-          </div>
-          <div   style={{display:"flex", justifyContent:"center", alignItems:"center"}} >
-
-            <Typography component="span" sx={{ color: 'primary.main', paddingTop:"10px", cursor:"pointer" }} onClick={handleGuestLogin} >
-  Login as guest
-</Typography>
-
-          </div>
-          {error && (
-  <Alert severity="error" sx={{ mb: 2 }}>
-    {error}
-  </Alert>
-)}
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              disabled={loading}
+              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+          </Box>
 
          
+          {error && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {error}
+            </Alert>
+          )}
         </form>
       </Paper>
     </Box>

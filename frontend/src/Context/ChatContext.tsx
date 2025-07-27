@@ -26,7 +26,10 @@ type ChatsContextType = {
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
   updateFilter: (name: string, value: number | string | string[]) => void;
   filter: CarFilter;
-setFilter: React.Dispatch<React.SetStateAction<CarFilter>>
+setFilter: React.Dispatch<React.SetStateAction<CarFilter>>;
+bookmark: any|null;
+handleBookmark: (car: any) => void;
+
 };
 
 const ChatsContext = createContext<ChatsContextType | undefined>(undefined);
@@ -37,7 +40,7 @@ export const ChatsProvider: React.FC<{ children: ReactNode }> = ({
   const [chats, setChats] = useState<Message[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [cookies] = useCookies(["selectedOption"]);
-
+  const [bookmark, setBookmark] = useState<any>(null);
   const [filter, setFilter] = useState<CarFilter>(DEFAULTSEARCHPARAMS);
 
   const [cars, setCars] = useState<any[]>([]);
@@ -46,7 +49,9 @@ export const ChatsProvider: React.FC<{ children: ReactNode }> = ({
   };
 
  
-
+const handleBookmark = (car: any) => {
+  setBookmark(car)
+}
   useEffect(() => {
     if (cookies.selectedOption) {
       const initialChat: Message = {
@@ -85,7 +90,9 @@ export const ChatsProvider: React.FC<{ children: ReactNode }> = ({
         setMessages,
         filter,
         updateFilter,
-        setFilter
+        setFilter,
+        bookmark,
+        handleBookmark
       
       }}
     >

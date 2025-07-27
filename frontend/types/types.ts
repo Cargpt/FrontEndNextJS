@@ -100,6 +100,7 @@ interface Message {
   data?: any;
   prompt?: boolean;
   searchParam?:any;
+  bookmark?: boolean;
 }
 
 

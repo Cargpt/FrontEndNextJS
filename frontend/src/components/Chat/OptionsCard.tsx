@@ -33,7 +33,7 @@ import FixedHeaderWithBack from "../Navbar/Navbar";
 import AskAIChat from "./AskAi";
 
 const ChatBox: React.FC = () => {
-  const { cars, messages, setMessages, filter } = useChats();
+  const { cars, messages, setMessages, filter, bookmark } = useChats();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [loading, setLoading] = useState(false);
@@ -371,7 +371,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
     const lastItem = messages[messages.length - 1];
     if (
       lastItem.message ==
-      "I am looking for cars based on the selected parameters."
+      "I am looking for cars based on the selected parameters." && !lastItem.bookmark
     ) {
       const botMessage: Message = {
         id: String(Date.now()),
@@ -446,6 +446,28 @@ if(lastMsg.render==="selectOption") fetchPreference()
     router.push("/");
   };
 
+
+  useEffect(() => {
+    if(bookmark){
+      console.log("bookmark",bookmark)
+      setMessages([ {
+        id: String(Date.now()),
+        message: `show me ${bookmark?.BrandName} ${bookmark?.ModelName} ${bookmark?.VariantName}  car.`,
+        render: "text",
+        sender: "user",
+
+    },
+    {
+        id: String(Date.now() +1),
+        message: {data:[bookmark]},
+        render: "carOptions",
+        sender: "bot",
+        bookmark: true,
+
+    }
+    ]);
+    }
+  }, [bookmark]);
 
   console.log("message",messages)
   return (

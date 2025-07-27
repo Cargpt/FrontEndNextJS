@@ -21,18 +21,14 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
-  const [cookies, setCookie, removeCookie] = useCookies();
-  const [hasToken, setHasToken] = useState<boolean>(false);
+  const [cookies, setCookie, removeCookie] = useCookies(["token", "user"]);
 
   useEffect(() => {
-    setHasToken(!!cookies.token);
   }, [cookies.token]);
 
   const handleLogout = () => {
-    Object.keys(cookies).forEach((cookieName) => {
-      removeCookie(cookieName, { path: "/" });
-    });
-    setHasToken(false);
+     removeCookie("user", { path: "/" });
+    
     onClose();
   };
 
@@ -219,7 +215,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                     <span>All Notification</span>
                   </Link>
                 </li>
-                {hasToken && (
+                {cookies.user && (
                   <li
                     onClick={handleLogout}
                     role="button"

@@ -1,0 +1,49 @@
+{
+    "CarID": 2,
+    "FuelType": "Petrol",
+    "BrandName": "Tata Motors",
+    "TransmissionType": "MT",
+    "ModelName": "Altroz",
+    "VariantName": "Pure",
+    "Price": 769000,
+    "Mileage": 19.1,
+    "Seats": 5,
+    "ModelID": 1,
+    "BrandID": 1,
+    "EngineCapacity": "Below 1.5L",
+    "VariantID": 2,
+    "BodyName": "Hatchback",
+    "logo": "https://dn7zir4iruiy1.cloudfront.net/tata_logo.avif",
+    "Colors": [
+        {
+            "ColorName": "Royal Blue",
+            "ColorHex": "#1F1E60"
+        },
+        {
+            "ColorName": "Pristine White",
+            "ColorHex": "#cccccc"
+        },
+        {
+            "ColorName": "Pure Grey",
+            "ColorHex": "#898a8f"
+        },
+        {
+            "ColorName": "Ember Glow",
+            "ColorHex": "#9f3620"
+        },
+        {
+            "ColorName": "Dune GLow",
+            "ColorHex": "#aea498"
+        }
+    ],
+    "CarImageDetails": [
+        {
+            "CarImageURL": "https://dn7zir4iruiy1.cloudfront.net/Altroz%20Frontview%20Glow%202.jpg",
+            "color": "",
+            "Description": ""
+        }
+    ],
+    "AIScore": "81/139",
+    "AISummary": "Positive",
+    "Trans_fullform": "Manual"
+}

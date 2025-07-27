@@ -45,6 +45,7 @@ export const SnackbarProvider: React.FC<{ children: ReactNode }> = ({
         message={message}
         autoHideDuration={3000}
         key={`${position.vertical}-${position.horizontal}`}
+        
       />
     </SnackbarContext.Provider>
   );
