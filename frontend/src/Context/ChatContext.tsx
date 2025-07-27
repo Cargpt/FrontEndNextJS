@@ -45,13 +45,7 @@ export const ChatsProvider: React.FC<{ children: ReactNode }> = ({
     setChats((prev) => [...prev, { id: Date.now().toString(), ...chat }]);
   };
 
-  const updateFilter = (name: string, value: number | string | string[]) => {
-    setFilter((prev) => ({
-      ...prev,
-      [name]:
-        name === "budget" || name === "seat_capacity" ? Number(value) : value,
-    }));
-  };
+ 
 
   useEffect(() => {
     if (cookies.selectedOption) {
@@ -64,6 +58,21 @@ export const ChatsProvider: React.FC<{ children: ReactNode }> = ({
       setMessages([initialChat]);
     }
   }, [cookies.selectedOption]);
+
+
+   const updateFilter = (name: string, value: number | string | string[]) => {
+
+    const newFilter = {
+      ...filter,
+      [name]:
+        name === "budget" || name === "seat_capacity" ? Number(value) : value,
+    }
+
+
+    setFilter(newFilter);
+
+
+  };
 
   return (
     <ChatsContext.Provider

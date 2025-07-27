@@ -266,7 +266,6 @@ if(lastMsg.render==="selectOption") fetchPreference()
 
  
   
-  const preferenceList =preferences?.find((preference:any)=>preference?.price_range?.toString()===BudgetToRange[filter.budget])
   const renderMessage = (message: Message, index:number) => {
     switch (message.render) {
       case "brandModelSelect":

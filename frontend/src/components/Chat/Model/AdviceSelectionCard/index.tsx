@@ -92,18 +92,7 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
       
       },
     ]);
-    // }else{
-    //   setMessages((prev) => [
-    //   ...prev,
-    //   {
-    //     id: String(Date.now()),
-    //     message: `${label} set to ${selections[label]}`,
-    //     render: "text",
-    //     sender: "user",
-      
-    //   },
-    // ]);
-
+  
     
 
     
@@ -144,13 +133,15 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
 
   useEffect(() => {
     if(label==='budget'){
-      setFilter({...filter, body_type:"", transmission_type:"", fuel_type:""})
+      const upperLimit = getUpperLimitInRupees(options[0]?.toString()) ||  500000
+      setFilter({...filter, body_type:"", transmission_type:"", fuel_type:"", budget:upperLimit})
 
     }
     
     
   }, [label]);
 
+  
   return (
     <Card
       style={{
