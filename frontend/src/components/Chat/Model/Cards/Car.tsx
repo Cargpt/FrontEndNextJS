@@ -1,3 +1,7 @@
+  // Function to handle favorite click and send VariantID
+ 
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import React, { useState } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -26,6 +30,10 @@ import Image from "next/image";
 import carimg from "../../../../../public/assets/card-img.png";
 import { Avatar, IconButton } from "@mui/material";
 import CollectionsIcon from '@mui/icons-material/Collections';
+import LoginDialog from '@/components/common/Dialogs/LoginDialog';
+import { useLoginDialog } from '@/Context/LoginDialogContextType';
+import { axiosInstance1 } from '@/utils/axiosInstance';
+import { useSnackbar } from '@/Context/SnackbarContext';
 
 type Props = {
   onClick?: () => void;
@@ -72,21 +80,52 @@ const TeslaCard: React.FC<Props> = ({
   handleNeedAdviceSupport,
 }) => {
   const rawValues = Object.values(selectedItem);
+
+    const { open, hide, show } = useLoginDialog();
+
   const modelCars: any[] = Array.isArray(rawValues[0]) ? rawValues[0] : [];
   const theme = useTheme();
   const [carInfo, setCarInfo] = useState<any>(null);
   const [dialog, setDialog] = useState<typeProps>({ open: false, type: null });
+  // Heart (favorite) state for each car card
+  const [favoriteStates, setFavoriteStates] = useState<{ [key: number]: boolean }>({});
   // Import Message from ChatContext if it's exported there, or ensure its definition matches.
   // Assuming useChats is defined like: export const useChats = () => { ... return { messages, setMessages }; };
   // And Message interface is also exported from ChatContext.
   const { messages, setMessages } = useChats(); 
-  const [cookies] = useCookies(["selectedOption"]);
+  const [cookies] = useCookies(["selectedOption", "user"]);
 
   // State for the Book Test Drive dialog
   const [testDriveModalOpen, setTestDriveModalOpen] = useState(false);
   // Use the specific interface for selectedCarForTestDrive
   const [selectedCarForTestDrive, setSelectedCarForTestDrive] = useState<CarDetailsForBooking | null>(null);
+const {showSnackbar}=useSnackbar()
 
+   const handleFavoriteClick = async(variantId: number) => {
+    // Example: send to API or log
+    // You can replace this with an API call or any other logic
+
+    const paload ={
+      variant: variantId,
+      user: cookies?.user?.id,
+
+
+    }
+    try {
+      const response = await axiosInstance1.post('/api/cargpt/bookmark/', paload);
+      return true; // Indicate success
+      
+    } catch (error:any) {
+      let err= "Variant is discountinued"
+      if(error?.status===500){
+        err="Something went wrong! please try again after sometimes."
+
+      }
+      showSnackbar(err)
+      return false;
+      
+    }
+  };
 
   const userMessage = { // No need to explicitly type userMessage here if ChatContext's Message is used
     id: String(Date.now() + 1),
@@ -180,6 +219,7 @@ const TeslaCard: React.FC<Props> = ({
                 display: "flex",
               }}
             >
+              
               <CardMedia
                 component="img"
                 height="150"
@@ -248,9 +288,32 @@ const TeslaCard: React.FC<Props> = ({
                   variant="h5"
                   fontWeight="bold"
                   gutterBottom
-                  sx={{ mb: 0, fontSize: "15px" }}
+                  sx={{ mb: 0, fontSize: "15px", display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'space-between' }}
                 >
                   {car.VariantName}
+                  <IconButton
+                    size="small"
+                    sx={{ ml: 1, p: 0.5 }}
+                    onClick={() => {
+
+                      if(!cookies.user) { 
+                        
+                       const resp= show()
+                      };
+                      const resp =handleFavoriteClick(car.VariantID);
+                       if(!resp){
+                      setFavoriteStates((prev) => ({ ...prev, [index]: !prev[index] }));
+
+                       }
+
+                    }}
+                  >
+                    {favoriteStates[index] ? (
+                      <FavoriteIcon sx={{ color: "#e53935", fontSize: 18 }} />
+                    ) : (
+                      <FavoriteBorderIcon sx={{ color: "#e53935", fontSize: 18 }} />
+                    )}
+                  </IconButton>
                 </Typography>
                 <Typography
                   color="text.secondary"
@@ -437,6 +500,11 @@ const TeslaCard: React.FC<Props> = ({
           carDetails={selectedCarForTestDrive}
         />
       )}
+      <LoginDialog open={open} onClose={hide} />
+
+
+
+
     </>
   );
 };

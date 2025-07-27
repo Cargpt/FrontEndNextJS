@@ -27,7 +27,10 @@ export default function RootLayout({
         
           <CookiesClientProvider> {/* <-- Wrap your children with the client provider */}
 
+
           {children}
+
+
         </CookiesClientProvider>
 
         

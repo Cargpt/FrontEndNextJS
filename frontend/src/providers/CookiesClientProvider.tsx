@@ -7,6 +7,7 @@ import { FirebaseProvider } from "../Context/FirebaseAuthContext";
 import { BotTypeProvider } from "../Context/BotTypeContext";
 import { ChatsProvider } from "@/Context/ChatContext";
 import SnackbarProvider from "@/Context/SnackbarContext";
+import { LoginDialogProvider } from "@/Context/LoginDialogContextType";
 
 interface CookiesClientProviderProps {
   children: React.ReactNode;
@@ -17,12 +18,15 @@ export default function CookiesClientProvider({
 }: CookiesClientProviderProps) {
   return (
     <CookiesProvider>
+
       <FirebaseProvider>
+        <LoginDialogProvider>
         <ChatsProvider>
           <BotTypeProvider>
             <SnackbarProvider>{children}</SnackbarProvider>
           </BotTypeProvider>
         </ChatsProvider>
+        </LoginDialogProvider>
       </FirebaseProvider>
     </CookiesProvider>
   );

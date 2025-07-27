@@ -14,6 +14,7 @@ import { useCookies } from 'react-cookie';
 import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique ID generation
 import { useFirebase } from '@/Context/FirebaseAuthContext';
 import { Alert } from '@mui/material';
+import { useLoginDialog } from '@/Context/LoginDialogContextType';
 
 interface LoginFormData {
   email: string;
@@ -25,20 +26,28 @@ const LoginForm: React.FC = () => {
     email: '',
     password: '',
   });
-  const [cookies, setCookie] = useCookies(['token']);
+  const [cookies, setCookie] = useCookies(['token', 'user']);
   const firebase = useFirebase();
-
+const {hide}=useLoginDialog()
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
 
-  const handleSetCookie = ( cookieValueInput:string) => {
-    setCookie('token', cookieValueInput, {
+  const handleSetCookie = ( cookieValueInput:any) => {
+    setCookie('token', cookieValueInput?.token, {
       path: '/',
       maxAge: 60 * 60 * 24 * 365, // 365 days
     });
+        setCookie('user', cookieValueInput?.user, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365, // 365 days
+    });
+    hide(); // Close the dialog after setting the cookie
+    
+
+    
   };
 
 
@@ -58,7 +67,7 @@ const [loading, setLoading] = useState(false);
 
           const payload = formData
           const  response = await  axiosInstance.post('/api/cargpt/login/',  payload)
-          handleSetCookie(response?.token)
+          handleSetCookie(response)
 
     } catch (error:any) {
       if(error?.status===404){
