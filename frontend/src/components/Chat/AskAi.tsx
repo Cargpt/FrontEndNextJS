@@ -214,14 +214,14 @@ const AskAIChat: React.FC = () => {
       <Paper
         sx={{
           p: 2,
-          bgcolor: "#f5f5f5",
-          color: "black",
+          bgcolor: message.sender === "user" ? "#e3f2fd" : "#bbdefb", // light blue for user, slightly deeper light blue for bot
+          color: "#1565c0",
           borderRadius:
             message.sender === "user"
               ? "18px 18px 4px 18px"
               : "18px 18px 18px 4px",
           wordBreak: "break-word",
-          boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+          boxShadow: "0 2px 8px rgba(24, 118, 210, 0.10)",
           position: "relative",
         }}
       >
@@ -280,17 +280,31 @@ const AskAIChat: React.FC = () => {
             <Paper
               sx={{
                 p: 2,
-                bgcolor: "#f5f5f5",
+                bgcolor: "#bbdefb",
                 borderRadius: 2,
                 display: "flex",
                 alignItems: "center",
                 gap: 1,
               }}
             >
-              <CircularProgress size={16} />
-              <Typography variant="body2" color="text.secondary">
-                Lisa is typing...
-              </Typography>
+
+              {/* <CircularProgress size={16} /> */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Box sx={{
+                  px: 2,
+                  py: 1,
+                  bgcolor: '#bbdefb',
+                  borderRadius: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                }}>
+                  <Typography variant="body2" sx={{ m: 0, color: '#1565c0', fontWeight: 500 }}>
+                    Lisa is typing
+                  </Typography>
+                  <div className="loader"></div>
+                </Box>
+              </Box>
             </Paper>
           </Box>
         )}
