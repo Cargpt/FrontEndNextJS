@@ -23,6 +23,7 @@
     "react": "^19.0.0",
     "react-cookie": "^8.0.1",
     "react-dom": "^19.0.0",
+    "react-phone-input-2": "^2.15.1",
     "react-slick": "^0.30.3",
     "sass": "^1.89.2",
     "sharp": "^0.34.3",

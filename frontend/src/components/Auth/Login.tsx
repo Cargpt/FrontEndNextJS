@@ -6,196 +6,149 @@ import {
   Typography,
   Paper,
   CircularProgress,
+  Alert,
 } from '@mui/material';
 import Image from 'next/image';
-import {axiosInstance} from '@/utils/axiosInstance';
+import { axiosInstance } from '@/utils/axiosInstance';
 import { useCookies } from 'react-cookie';
-import { v4 as uuidv4 } from 'uuid'; // Import uuid for unique ID generation
+import { v4 as uuidv4 } from 'uuid';
 import { useFirebase } from '@/Context/FirebaseAuthContext';
-import { Alert } from '@mui/material';
 import { useLoginDialog } from '@/Context/LoginDialogContextType';
 import { useSnackbar } from '@/Context/SnackbarContext';
 
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/material.css';
+
 interface LoginFormData {
-  email: string;
+  mobile_no: string;
   password: string;
 }
 
 const LoginForm: React.FC = () => {
   const [formData, setFormData] = useState<LoginFormData>({
-    email: '',
+    mobile_no: '',
     password: '',
   });
+
   const [cookies, setCookie] = useCookies(['token', 'user']);
   const firebase = useFirebase();
-const {hide}=useLoginDialog()
+  const { hide } = useLoginDialog();
+  const { showSnackbar } = useSnackbar();
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-
-  const handleSetCookie = ( cookieValueInput:any) => {
+  const handleSetCookie = (cookieValueInput: any) => {
     setCookie('token', cookieValueInput?.token, {
       path: '/',
-      maxAge: 60 * 60 * 24 * 365, // 365 days
+      maxAge: 60 * 60 * 24 * 365,
     });
-        setCookie('user', cookieValueInput?.user, {
+    setCookie('user', cookieValueInput?.user, {
       path: '/',
-      maxAge: 60 * 60 * 24 * 365, // 365 days
+      maxAge: 60 * 60 * 24 * 365,
     });
-    hide(); // Close the dialog after setting the cookie
-    
-
-    
+    hide();
   };
 
-
-
-
-
-const [error, setError] = useState<string | null>(null);
-const [loading, setLoading] = useState(false);
-const {showSnackbar}=useSnackbar()
-
-   const handleSubmit = async (e:FormEvent ) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError("")
-      setLoading(true); // start spinner
+    setError('');
+    setLoading(true);
 
     try {
+      const payload = {
+        email: "+"+formData.mobile_no,
+        password: formData.password,
+      };
 
-          const payload = formData
-          const  response = await  axiosInstance.post('/api/cargpt/login/',  payload)
-          handleSetCookie(response)
-          showSnackbar(response?.message, {
-          vertical: "top",
-          horizontal: "center",
-        });
-
-    } catch (error:any) {
-      console.error("Login error:", error?.data?.non_field_errors[0]);
-      if(error?.data?.non_field_errors[0]){
-        setError(error?.data?.non_field_errors[0])
-      } 
-      
-    }
-finally {
-          setLoading(false); 
-
+      const response = await axiosInstance.post('/api/cargpt/login/', payload);
+      handleSetCookie(response);
+      showSnackbar(response?.message || 'Login successful!', {
+        vertical: 'top',
+        horizontal: 'center',
+      });
+    } catch (error: any) {
+      console.error('Login error:', error?.data?.non_field_errors?.[0]);
+      if (error?.data?.non_field_errors?.[0]) {
+        setError(error.data.non_field_errors[0]);
+      } else {
+        setError('Login failed. Please try again.');
       }
-
-
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      const googleUser = await firebase.signInWithGoogle();
+      if (!googleUser) return;
 
+      const idToken = await googleUser.getIdToken();
+      const uniqueUserId = googleUser.displayName || uuidv4();
 
+      const payload = {
+        username: uniqueUserId,
+        password: 'test@1234',
+      };
 
+      await axiosInstance.post(`/api/cargpt/createUser/`, payload, {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+    } catch (err) {
+      console.error('Google Sign-In Error:', err);
+    }
+  };
 
-
-   const handleGoogleLogin = async () => {
-                // setError("");
-                // setLoading(true);
-                try {
-                  const googleUser = await firebase.signInWithGoogle();
-                  //googleUser.addScope('email');
-
-                  if (!googleUser) {
-                    // setError("No user returned from Google.");
-                    return;
-                  }
-
-                  const idToken = await googleUser.getIdToken();
-
-                  if (!idToken) {
-                    // setError("No ID Token returned from Firebase.");
-                    return;
-                  }
-
-                  const uniqueUserId = googleUser.displayName || uuidv4();
-
-                  const payload = {
-                    username: googleUser.displayName || uniqueUserId,
-                    password: 'test@1234'
-                    // Include unique user ID
-                  };
-
-                  const response = await axiosInstance.post(`/api/cargpt/createUser/`, payload, {
-                    headers: {
-                      Authorization: `Bearer ${idToken}`,
-                    },
-                  });
-                } catch (err) {
-                  console.error("Google Sign-In Error:", err);
-                  // setError("Google sign-in failed. Please try again.");
-                } finally {
-                  // setLoading(false);
-                }
-              }
- 
-      
-              
-            // Guest Login
-             const handleGuestLogin= async () => {
-
-                const uniqueUserId = uuidv4();
-
-                const payload = {
-                  userId: uniqueUserId,  // Include unique user ID
-                };
-
-                const response = await axiosInstance.post(`/api/cargpt/createUser/`, payload, {
-
-                });
-
-                if (response.token) {
-                  localStorage.setItem("auth_token", response.token);
-                 
-                  setCookie("token", response.token, {path: "/", maxAge: 365 * 60 * 60}); // Store the token
-                  localStorage.setItem("auth_token", response.token);
-
-                } else {
-                 
-                }
-              }
-
-
+  const handleGuestLogin = async () => {
+    const uniqueUserId = uuidv4();
+    const payload = { userId: uniqueUserId };
+    const response = await axiosInstance.post(`/api/cargpt/createUser/`, payload);
+    if (response.token) {
+      localStorage.setItem('auth_token', response.token);
+      setCookie('token', response.token, { path: '/', maxAge: 365 * 60 * 60 });
+    }
+  };
 
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      border="none"
-      sx={{
-        px: 2, // horizontal padding on small screens
-      }}
-    >
+    <Box display="flex" justifyContent="center" sx={{ px: 2 }}>
       <Paper
         elevation={3}
         sx={{
           p: 4,
-          width: { xs: "100%", sm: 400 }, // 100% width on xs screens, 400px on sm+
-          boxShadow: "none",
+          width: { xs: '100%', sm: 400 },
+          boxShadow: 'none',
           maxWidth: 400,
         }}
       >
         <Box display="flex" justifyContent="center" mb={2}>
-          <Image src='/assets/AICarAdvisor.png' alt="Logo" style={{ height: 60 }} width={340} height={60} />
+          <Image src="/assets/AICarAdvisor.png" alt="Logo" style={{ height: 60 }} width={340} height={60} />
         </Box>
         <Typography variant="h5" align="center" gutterBottom>
           Login
         </Typography>
+
         <form onSubmit={handleSubmit}>
-          <TextField
-            label="Email"
-            name="email"
-            type="email"
-            fullWidth
-            margin="normal"
-            value={formData.email}
-            onChange={handleChange}
-            required
+          {/* ✅ Phone Input with Country Code + Flag */}
+          <PhoneInput
+            country={'in'}
+            value={formData.mobile_no}
+            onChange={(phone) => setFormData(prev => ({ ...prev, mobile_no: phone }))}
+            inputProps={{
+              name: 'mobile_no',
+              required: true,
+              autoFocus: true,
+            }}
+            inputStyle={{ width: '100%' }}
+            containerStyle={{ marginBottom: '16px' }}
           />
+
           <TextField
             label="Password"
             name="password"
@@ -209,8 +162,8 @@ finally {
 
           <Box
             sx={{
-              display: "flex",
-              flexDirection: { xs: "column", sm: "row" }, // stack on xs, row on sm+
+              display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
               gap: 2,
               mt: 2,
             }}
@@ -221,17 +174,17 @@ finally {
               variant="contained"
               fullWidth
               sx={{
-                backgroundColor: "lightgray",
-                color: "black",
-                textTransform: "none",
+                backgroundColor: 'lightgray',
+                color: 'black',
+                textTransform: 'none',
                 fontSize: 12,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 gap: 1,
-                whiteSpace: "nowrap",
-                "&:hover": {
-                  backgroundColor: "#d3d3d3",
+                whiteSpace: 'nowrap',
+                '&:hover': {
+                  backgroundColor: '#d3d3d3',
                 },
               }}
             >
@@ -246,11 +199,10 @@ finally {
               disabled={loading}
               startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? 'Logging in...' : 'Login'}
             </Button>
           </Box>
 
-         
           {error && (
             <Alert severity="error" sx={{ mt: 2 }}>
               {error}
