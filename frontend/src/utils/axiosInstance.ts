@@ -79,7 +79,11 @@ function createAxiosLike(
       clearTimeout(timeoutId);
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+        const errorData = await response.json().catch(async (e) => {
+          const text = await response.text();
+          console.error("Error parsing JSON response, raw text:", text, e);
+          return {};
+        });
         const error: ErrorResponse = {
           status: response.status,
           statusText: response.statusText,

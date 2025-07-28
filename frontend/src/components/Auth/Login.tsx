@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import {
   TextField,
@@ -6,7 +8,9 @@ import {
   Typography,
   Paper,
   CircularProgress,
+  useMediaQuery, // Import useMediaQuery
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles'; // Import useTheme
 import logo from '../../../public/assets/AICarAdvisor.png'; // Adjust the path as needed
 import Image from 'next/image';
 import {axiosInstance} from '@/utils/axiosInstance';
@@ -16,6 +20,8 @@ import { useFirebase } from '@/Context/FirebaseAuthContext';
 import { Alert } from '@mui/material';
 import { useLoginDialog } from '@/Context/LoginDialogContextType';
 import { useSnackbar } from '@/Context/SnackbarContext';
+import SignupDialog from './SignupDialog'; // Import SignupDialog
+import { useRouter } from 'next/navigation'; // Import useRouter
 
 interface LoginFormData {
   email: string;
@@ -29,7 +35,10 @@ const LoginForm: React.FC = () => {
   });
   const [cookies, setCookie] = useCookies(['token', 'user']);
   const firebase = useFirebase();
-const {hide}=useLoginDialog()
+  const {hide}=useLoginDialog()
+  const [showSignupDialog, setShowSignupDialog] = useState(false); // State for signup dialog
+  const router = useRouter(); // Initialize useRouter
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -89,9 +98,8 @@ finally {
 
   };
 
-
-
-
+  const theme = useTheme(); // Define theme here
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // Define isMobile here
 
 
    const handleGoogleLogin = async () => {
@@ -178,6 +186,8 @@ finally {
           width: { xs: "100%", sm: 400 }, // 100% width on xs screens, 400px on sm+
           boxShadow: "none",
           maxWidth: 400,
+          // Add fullScreen behavior for mobile
+          ...(isMobile && { width: "100%", height: "100vh", borderRadius: 0, boxShadow: "none" }),
         }}
       >
         <Box display="flex" justifyContent="center" mb={2}>
@@ -251,6 +261,16 @@ finally {
             </Button>
           </Box>
 
+          <Typography
+            variant="body2"
+            align="center"
+            sx={{ mt: 2, cursor: "pointer" }}
+            onClick={() => {
+              setShowSignupDialog(true); // Open the signup dialog
+            }}
+          >
+            Don't have an account? <strong>Sign Up</strong>
+          </Typography>
          
           {error && (
             <Alert severity="error" sx={{ mt: 2 }}>
@@ -259,6 +279,36 @@ finally {
           )}
         </form>
       </Paper>
+      {/* Render the SignupDialog as a popup */}
+      <SignupDialog
+        open={showSignupDialog}
+        onClose={() => setShowSignupDialog(false)}
+        onSuccess={async (password, mobile) => {
+          setShowSignupDialog(false); // Close signup dialog
+          setLoading(true); // Start loading for login
+          try {
+            // Attempt login with mobile_no and password
+            // NOTE: This assumes your login API supports mobile_no as a login identifier.
+            // If it requires email/username, this will fail. You'll need to adjust your backend or login flow.
+            const payload = { mobile_no: mobile, password: password };
+            const response = await axiosInstance.post('/api/cargpt/login/', payload);
+            handleSetCookie(response.data); // Set cookies for the newly logged-in user
+            showSnackbar(response?.data?.message || "Login successful!", {
+              vertical: "top",
+              horizontal: "center",
+            });
+            router.push("/home"); // Redirect to home page
+          } catch (loginError: any) {
+            console.error("Automatic login error after signup:", JSON.stringify(loginError.response?.data, null, 2));
+            showSnackbar(loginError?.response?.data?.non_field_errors?.[0] || "Automatic login failed. Please log in manually.", {
+              vertical: "top",
+              horizontal: "center",
+            });
+          } finally {
+            setLoading(false); // Stop loading
+          }
+        }}
+      />
     </Box>
   );
 };
