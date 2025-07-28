@@ -7,7 +7,6 @@ import {
   Paper,
   CircularProgress,
 } from '@mui/material';
-import logo from '../../../public/assets/AICarAdvisor.png'; // Adjust the path as needed
 import Image from 'next/image';
 import {axiosInstance} from '@/utils/axiosInstance';
 import { useCookies } from 'react-cookie';
@@ -181,7 +180,7 @@ finally {
         }}
       >
         <Box display="flex" justifyContent="center" mb={2}>
-          <Image src={logo} alt="Logo" style={{ height: 60 }} />
+          <Image src='/assets/AICarAdvisor.png' alt="Logo" style={{ height: 60 }} width={340} height={60} />
         </Box>
         <Typography variant="h5" align="center" gutterBottom>
           Login

@@ -22,18 +22,14 @@ import EMIDialog from "@/components/common/Dialogs/EMIDialog/EMIDialog";
 import SentimentDialog from "@/components/common/Dialogs/SentimentDialog/SentimentDialog";
 // Ensure the casing here matches the actual filename on disk (e.g., BookTestDrive.tsx)
 import BookTestDrive from "@/components/common/Dialogs/TestDrivemodel/Booktestdrive"; // Corrected import path for casing
-import tank from "../../../../../public/assets/icons/petrol-tank.png";
-import seat from "../../../../../public/assets/icons/car-seat.jpg";
-import trans from "../../../../../public/assets/icons/automation.png";
-import speed from "../../../../../public/assets/icons/mileage.png";
 import Image from "next/image";
-import carimg from "../../../../../public/assets/card-img.png";
 import { Avatar, IconButton } from "@mui/material";
 import CollectionsIcon from '@mui/icons-material/Collections';
 import LoginDialog from '@/components/common/Dialogs/LoginDialog';
 import { useLoginDialog } from '@/Context/LoginDialogContextType';
 import { axiosInstance1 } from '@/utils/axiosInstance';
 import { useSnackbar } from '@/Context/SnackbarContext';
+import { formatInternational } from '@/utils/services';
 
 type Props = {
   onClick?: () => void;
@@ -228,7 +224,9 @@ const {showSnackbar}=useSnackbar()
               <CardMedia
                 component="img"
                 height="150"
-                image={car.CarImageDetails?.[0]?.CarImageURL || carimg.src}
+                width="150"
+
+                image={car.CarImageDetails?.[0]?.CarImageURL || '/assets/card-img.png'}
                 alt="Car card"
                 sx={{
                   cursor: 'pointer',
@@ -283,7 +281,7 @@ const {showSnackbar}=useSnackbar()
                   backgroundColor: "#f5f5f5",
                   borderRadius:"5px"
                 }}>
-                  ₹{(car.Price / 100000).toFixed(1)}L
+                  ₹{formatInternational(car.Price )}
                 </Typography>
               </Box>
 
@@ -353,10 +351,10 @@ const {showSnackbar}=useSnackbar()
                   }}
                 >
                   {[
-                    { label: `${car.FuelType}`, icon: tank },
-                    { label: `${car.Trans_fullform}`, icon: trans },
-                    { label: ` ${car.Seats} Seater`, icon: seat },
-                    { label: ` ${car.Mileage} kmpl`, icon: speed },
+                    { label: `${car.FuelType}`, icon: "/assets/icons/petrol-tank.png" },
+                    { label: `${car.Trans_fullform}`, icon: '/assets/icons/automation.png' },
+                    { label: ` ${car.Seats} Seater`, icon: "/assets/icons/car-seat.jpg" },
+                    { label: ` ${car.Mileage} kmpl`, icon: "/assets/icons/mileage.png" },
                   ].map((item) => (
                     <Box
                       key={item.label}

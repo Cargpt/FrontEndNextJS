@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { Send, Person, KeyboardBackspaceSharp } from "@mui/icons-material";
 import Image from "next/image";
-import bot from "../../../public/assets/lisa.svg";
+
 import { useChats } from "@/Context/ChatContext";
 import { useSnackbar } from "@/Context/SnackbarContext";
 import { axiosInstance1 } from "@/utils/axiosInstance";
@@ -183,7 +183,7 @@ const AskAIChat: React.FC = () => {
             bgcolor: "transparent",
           }}
         >
-          <Image src={bot} alt="Lisa" width={32} height={32} />
+          <Image src="/assets/lisa.svg" alt="Lisa" width={32} height={32} />
         </Avatar>
       ) : (
         <Avatar
@@ -275,7 +275,7 @@ const AskAIChat: React.FC = () => {
                 bgcolor: "transparent",
               }}
             >
-              <Image src={bot} alt="Lisa" width={32} height={32} />
+              <Image src="/assets/lisa.svg" alt="Lisa" width={32} height={32} />
             </Avatar>
             <Paper
               sx={{

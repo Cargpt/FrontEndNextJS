@@ -1,13 +1,13 @@
 "use client"
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Card, CardMedia, CardContent, Typography, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import KeyboardBackspaceSharpIcon from '@mui/icons-material/KeyboardBackspaceSharp';
-import carimg from "../../../public/assets/card-img.png";
 import { useRouter } from 'next/navigation';
-import dummyData from "../../utils/dummy/Data.json"; // Assuming you have a dummy data file for cars
 import { useChats } from '@/Context/ChatContext';
 import { useCookies } from 'react-cookie';
+import { axiosInstance1 } from '@/utils/axiosInstance';
+import { formatInternational } from '@/utils/services';
 type Car = {
   id: number;
   image: string;
@@ -20,47 +20,16 @@ type Props = {
   cars?: Car[];
 };
 
-const dummyCars: Car[] = [
-  {
-    id: 1,
-    image: carimg.src,
-    name: "Tesla Model S",
-    variant: "Long Range",
-    price: "₹80L"
-  },
-  {
-    id: 2,
-    image: carimg.src,
-    name: "Tata Nexon EV",
-    variant: "XZ+",
-    price: "₹15L"
-  },
-  {
-    id: 3,
-    image: carimg.src,
-    name: "Hyundai Kona",
-    variant: "Premium",
-    price: "₹23L"
-  },
-  {
-    id: 4,
-    image: carimg.src,
-    name: "MG ZS EV",
-    variant: "Excite",
-    price: "₹22L"
-  },
-  {
-    id: 5,
-    image: carimg.src,
-    name: "Mahindra XUV400",
-    variant: "EL Pro",
-    price: "₹19L"
-  }
-];
 
-const Variants: React.FC<Props> = ({ cars = dummyCars}) => {
+
+const Variants: React.FC<Props> = () => {
+
+      const [cars, setCars] = useState<any[]>([]);
       const router = useRouter();
-      const [cookies, setCookie, removeCookie]=useCookies(["selectedOption"])
+      const [cookies, setCookie, removeCookie]=useCookies(["selectedOption", "user"])
+
+
+
   const onBack = () => router.back();
   const {handleBookmark}=useChats()
 
@@ -70,6 +39,24 @@ const Variants: React.FC<Props> = ({ cars = dummyCars}) => {
     handleBookmark(car);
        router.push('/home'); // Navigate to car details page
   };
+
+
+  const fetchBookmarks = async () => {
+    const response = await axiosInstance1.get('/api/cargpt/bookmark/detailed/');
+     // Adjust the API endpoint as needed
+     setCars(response); // Fallback to dummy data if API fails
+  }
+
+  useEffect(() => {
+    if(cookies.user) {
+      fetchBookmarks();
+    }
+  }, [cookies.user]);
+
+
+  console.log("Fetched Bookmarks:", cars);
+
+  
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#f5f7fb" }}>
       {/* Sticky Navbar */}
@@ -101,7 +88,7 @@ const Variants: React.FC<Props> = ({ cars = dummyCars}) => {
             justifyContent: { xs: "center", md: "flex-start" },
           }}
         >
-          {cars.map((car) => (
+          {cars?.map((car) => (
             <Box
               key={car.id}
               sx={{
@@ -115,7 +102,7 @@ const Variants: React.FC<Props> = ({ cars = dummyCars}) => {
                 minWidth: 200,
                 boxSizing: "border-box",
               }}
-                onClick={() => {onclick(dummyData)}} // Handle bookmark click
+                onClick={() => {onclick(car)}} // Handle bookmark click
             >
               <Card
                 sx={{
@@ -132,7 +119,9 @@ const Variants: React.FC<Props> = ({ cars = dummyCars}) => {
                 <CardMedia
                   component="img"
                   height="160"
-                  image={car.image}
+                  width="160"
+
+                  image={car?.CarImageDetails?.[0]?.CarImageURL || '/assets/card-img.png' }
                   alt={car.name}
                   sx={{
                     borderTopLeftRadius: 12,
@@ -142,14 +131,14 @@ const Variants: React.FC<Props> = ({ cars = dummyCars}) => {
                 />
                 <CardContent>
                   <Stack direction="row" alignItems="center" justifyContent="space-between" mb={1}>
-                    <Typography variant="h6" fontWeight="bold">{car.name}</Typography>
+                    <Typography variant="h6" fontWeight="bold">{car?.BrandName} {car?.ModelName}</Typography>
                     <BookmarkBorderIcon sx={{ color: "#1976d2" }} />
                   </Stack>
                   <Typography variant="body2" color="text.secondary" mb={0.5}>
-                    {car.variant}
+                    {car?.VariantName}
                   </Typography>
                   <Typography variant="body2" color="primary" fontWeight="bold">
-                    {car.price}
+                     ₹{formatInternational(car.Price)}
                   </Typography>
                 </CardContent>
               </Card>

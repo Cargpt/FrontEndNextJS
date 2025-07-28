@@ -9,9 +9,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import Image from "next/image";
-import bot from "../../../public/assets/lisa.svg"
 
-import BrandModelSelectCard from "./Model/BrandModelSelectCard";
 import AdviseSelectionCard from "./Model/AdviceSelectionCard";
 interface Message {
   id: string;
@@ -94,7 +92,7 @@ const Support: React.FC = () => {
               sx={{ mb: 1 }}
             >
               {msg.sender === "bot" && (
-                <Image src={bot} alt="bot" width={40} height={40} />
+                <Image src="/assets/lisa.svg" alt="bot" width={40} height={40} />
               )}
               <Paper
                 sx={{

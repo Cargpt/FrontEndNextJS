@@ -185,3 +185,19 @@ export const BODYNAMES=[
   "Petrol", "Diesel", "CNG", "Electric",
   "MT", "AT"
 ]
+
+
+
+
+
+
+export function formatInternational(num:number) {
+  if (num >= 10000000) {
+    return (num / 10000000).toFixed(2) + 'Cr'; // Crore
+  } else if (num >= 100000) {
+    return (num / 100000).toFixed(2) + 'L'; // Lakh
+  } else {
+    return num.toString();
+  }
+}
+

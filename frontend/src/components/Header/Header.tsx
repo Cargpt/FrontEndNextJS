@@ -9,12 +9,8 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 
 import styles from "./Header.module.scss";
 
-import logo from "../../../public/assets/AICarAdvisor.png";
-import Hamburger from "../../../public/assets/list.svg";
-import Notification from "../../../public/assets/bell.svg";
 
 import Sidebar from "../Sidebar/Sidebar";
-import { useLocalizationContext } from "@mui/x-date-pickers/internals";
 
 const Header = () => {
   const [cookies, setCookie] = useCookies(["token", "user", "selectedOption"]);
@@ -40,9 +36,9 @@ const Header = () => {
           {/* Left: Hamburger + Logo */}
           <div className={styles.menues}>
             <div className={styles.menuContainer} onClick={handleDrawerOpen}>
-              <Image src={Hamburger} alt="Menu" className={styles.menuIcon} />
+              <Image src={"/assets/list.svg"} alt="Menu" className={styles.menuIcon} height={32} width={32} />
             </div>
-            <Image src={logo} alt="Logo" className={styles.carLogo} />
+            <Image src={"/assets/AICarAdvisor.png"} alt="Logo" className={styles.carLogo}  width={160} height={160}/>
           </div>
 
           {/* Right: Bookmark + Notification */}
@@ -58,8 +54,10 @@ const Header = () => {
              }
             <div className={styles.iconButton}>
               <Image
-                src={Notification}
+                src={"/assets/bell.svg"}
                 alt="Notification"
+                width={24}
+                height={24}
                 className={styles.notificationIcon}
               />
             </div>
