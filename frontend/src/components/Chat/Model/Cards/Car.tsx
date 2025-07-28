@@ -84,7 +84,13 @@ const TeslaCard: React.FC<Props> = ({
   const [carInfo, setCarInfo] = useState<any>(null);
   const [dialog, setDialog] = useState<typeProps>({ open: false, type: null });
   // Heart (favorite) state for each car card
-  const [favoriteStates, setFavoriteStates] = useState<{ [key: number]: boolean }>({});
+
+
+  const  favouteStates = modelCars.reduce((acc, car, index) => {
+    acc[index] = car?.is_bookmarked; // Initialize all as not favorite
+    return acc;
+  }, {});
+  const [favoriteStates, setFavoriteStates] = useState<{ [key: number]: boolean }>(favouteStates);
   // Import Message from ChatContext if it's exported there, or ensure its definition matches.
   // Assuming useChats is defined like: export const useChats = () => { ... return { messages, setMessages }; };
   // And Message interface is also exported from ChatContext.
@@ -204,6 +210,11 @@ const {showSnackbar}=useSnackbar()
     // The previous fix for Message interface should resolve this.
     setMessages((prev) => [...prev, userMessage]);
   };
+
+
+
+
+  console.log("modelCars", favouteStates);
 
   return (
     <>

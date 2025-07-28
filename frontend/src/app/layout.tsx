@@ -32,9 +32,9 @@ export default function RootLayout({
 }>) {
   return (
     <html className={roboto.className} lang="en">
-      <Head>
+      <head>
         <meta name="fast2sms" content="B5dSIfoanSkm5PWRBeV6YLNLP15Zg5lL"/>
-      </Head>
+      </head>
       <body>
         
           <CookiesClientProvider> {/* <-- Wrap your children with the client provider */}
