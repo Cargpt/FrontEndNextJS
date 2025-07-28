@@ -24,7 +24,11 @@ interface LoginFormData {
   password: string;
 }
 
-const LoginForm: React.FC = () => {
+interface LoginFormProps {
+  showSignUp?: () => void;
+
+}
+const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
   const [formData, setFormData] = useState<LoginFormData>({
     mobile_no: '',
     password: '',
@@ -208,6 +212,9 @@ const LoginForm: React.FC = () => {
               {error}
             </Alert>
           )}
+          <div  role='button'  style={{display:"flex", justifyContent:"center", alignItems:"center", cursor:"pointer"}}>
+          <span  onClick={showSignUp} style={{marginTop:"1rem", fontSize:"14px", color:"blue"}} >Don't have account  SignUp</span>
+          </div>
         </form>
       </Paper>
     </Box>

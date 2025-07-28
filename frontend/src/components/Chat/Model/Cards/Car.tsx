@@ -30,6 +30,8 @@ import { useLoginDialog } from '@/Context/LoginDialogContextType';
 import { axiosInstance1 } from '@/utils/axiosInstance';
 import { useSnackbar } from '@/Context/SnackbarContext';
 import { formatInternational } from '@/utils/services';
+import { Sign } from 'crypto';
+import SignupDialog from '@/components/Auth/SignupDialog';
 
 type Props = {
   onClick?: () => void;
@@ -103,12 +105,25 @@ const TeslaCard: React.FC<Props> = ({
   const [selectedCarForTestDrive, setSelectedCarForTestDrive] = useState<CarDetailsForBooking | null>(null);
 const {showSnackbar}=useSnackbar()
 
+
+const [showSignUpState, setshowSignUpState] = useState<boolean>(false);
+
+const showSignUP = () => {
+
+  setshowSignUpState(true);
+  hide();
+}
+const hideSignUP = () => {
+  setshowSignUpState(false);
+}
    const handleFavoriteClick = async(variantId: number, index:number) => {
     // Example: send to API or log
     // You can replace this with an API call or any other logic
 
     if(!cookies.user){
       show();
+
+
        // Indicate failure to set favorite
     }else{
 
@@ -515,7 +530,9 @@ const {showSnackbar}=useSnackbar()
           carDetails={selectedCarForTestDrive}
         />
       )}
-      <LoginDialog open={open} onClose={hide} />
+
+      <LoginDialog open={open} onClose={hide} showSignUp={showSignUP} />
+      <SignupDialog open={showSignUpState} onClose={hideSignUP} onSuccess={()=>{}}/>
 
 
 

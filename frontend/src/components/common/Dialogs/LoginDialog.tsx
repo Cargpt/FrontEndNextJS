@@ -6,9 +6,10 @@ import { KeyboardBackspaceSharp } from "@mui/icons-material";
 interface LoginDialogProps {
   open: boolean;
   onClose: () => void;
+  showSignUp: () => void;
 }
 
-const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose }) => (
+const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose, showSignUp }) => (
 <Dialog
       open={open}
       onClose={onClose}
@@ -53,7 +54,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose }) => (
           mt: 4, // Add margin-top to avoid overlapping with IconButton
         }}
       >
-        <LoginForm />
+        <LoginForm showSignUp={showSignUp}/>
       </DialogContent>
     </Dialog>
 

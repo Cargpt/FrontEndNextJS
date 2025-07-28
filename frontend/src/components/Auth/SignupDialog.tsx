@@ -1,0 +1,198 @@
+'use client';
+
+import React, { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+  Alert,
+  CircularProgress,
+  useMediaQuery,
+  Box,
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { axiosInstance } from '@/utils/axiosInstance';
+import { useCookies } from 'react-cookie';
+import { useSnackbar } from '@/Context/SnackbarContext';
+import Image from 'next/image';
+import logo from '../../../public/assets/AICarAdvisor.png';
+
+// Phone input
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/material.css';
+
+interface SignupDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSuccess: (password: string, mobile: string) => void;
+}
+
+const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess }) => {
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [mobile, setMobile] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  const [cookies, setCookie] = useCookies(['token', 'user']);
+  const { showSnackbar } = useSnackbar();
+
+  const handleSetCookie = (cookieValueInput: any) => {
+    setCookie('token', cookieValueInput?.token, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+    });
+    setCookie('user', cookieValueInput?.user, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+    });
+    onClose();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+    setLoading(true);
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const payload = { password: password, mobile_no: '+' +mobile };
+      const response = await axiosInstance.post('/api/cargpt/register/', payload);
+      handleSetCookie(response);
+      console.log("Signup successful, backend response:", response.data);
+      setSuccess('Signup successful!');
+      showSnackbar(response?.message || "Signup successful!", {
+        vertical: "top",
+        horizontal: "center",
+      });
+      setTimeout(() => {
+        setSuccess(null);
+        onSuccess(password, mobile);
+      }, 1000);
+    } catch (err: any) {
+      console.error("Signup error:", JSON.stringify(err.response?.data, null, 2));
+      let errorMessage = 'Signup failed.';
+      if (err.response) {
+        if (err.response.data) {
+          if (typeof err.response.data === 'object') {
+            errorMessage = Object.keys(err.response.data)
+              .map(key => `${key}: ${Array.isArray(err.response.data[key]) ? err.response.data[key].join(', ') : err.response.data[key]}`)
+              .join('\n');
+          } else {
+            errorMessage = String(err.response.data);
+          }
+        } else if (err.response.statusText) {
+          errorMessage = err.response.statusText;
+        }
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth={isMobile} fullScreen={isMobile}>
+      <DialogContent>
+        <Box display="flex" justifyContent="center" mb={2} mt={2}>
+          <Image src={logo} alt="Logo" style={{ height: 60 }} />
+        </Box>
+        <Typography variant="h5" align="center" gutterBottom>
+          Sign Up
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          {/* PhoneInput as Mobile Number field */}
+          <Box mt={1}>
+            <PhoneInput
+              country={'in'} // Change default country if needed
+              value={mobile}
+              onChange={phone => setMobile(phone)}
+              inputStyle={{
+                width: '100%',
+                height: '56px',
+                fontSize: '16px',
+              }}
+              disabled={loading}
+              inputProps={{
+                name: 'mobile',
+                required: true,
+              }}
+            />
+          </Box>
+
+          {/* Password field */}
+          <Box mt={2}>
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              disabled={loading}
+              style={{
+                width: '100%',
+                height: '56px',
+                fontSize: '16px',
+                padding: '16.5px 14px',
+                border: '1px solid #c4c4c4',
+                borderRadius: '4px',
+                marginTop: '8px',
+              }}
+            />
+          </Box>
+
+          {/* Confirm Password field */}
+          <Box mt={2}>
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={e => setConfirmPassword(e.target.value)}
+              required
+              disabled={loading}
+              style={{
+                width: '100%',
+                height: '56px',
+                fontSize: '16px',
+                padding: '16.5px 14px',
+                border: '1px solid #c4c4c4',
+                borderRadius: '4px',
+                marginTop: '8px',
+              }}
+            />
+          </Box>
+
+          {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
+          {success && <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>}
+        </form>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} disabled={loading}>Cancel</Button>
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          disabled={loading}
+          startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+        >
+          {loading ? 'Signing up...' : 'Sign Up'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default SignupDialog;

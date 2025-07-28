@@ -5,7 +5,7 @@ import {
   ThemeProvider,
   createTheme,
 } from "@mui/material";
-import LoginForm from "./Auth/Login";
+
 import { useCookies } from "react-cookie";
 
 import { Token } from "@mui/icons-material";
