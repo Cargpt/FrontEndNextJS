@@ -103,23 +103,24 @@ const TeslaCard: React.FC<Props> = ({
   const [selectedCarForTestDrive, setSelectedCarForTestDrive] = useState<CarDetailsForBooking | null>(null);
 const {showSnackbar}=useSnackbar()
 
-   const handleFavoriteClick = async(variantId: number) => {
+   const handleFavoriteClick = async(variantId: number, index:number) => {
     // Example: send to API or log
     // You can replace this with an API call or any other logic
 
     if(!cookies.user){
       show();
-      return false; // Indicate failure to set favorite
-    }
+       // Indicate failure to set favorite
+    }else{
 
-    const paload ={
-      variant: variantId,
-      user: cookies?.user?.id,
-
+      const paload ={
+      variant_id: variantId,
+      
 
     }
     try {
-      const response = await axiosInstance1.post('/api/cargpt/bookmark/', paload);
+      const response = await axiosInstance1.post('/api/cargpt/bookmark/toggle/', paload);
+
+      setFavoriteStates((prev) => ({ ...prev, [index]: !prev[index] }));
       return true; // Indicate success
       
     } catch (error:any) {
@@ -132,7 +133,14 @@ const {showSnackbar}=useSnackbar()
       return false;
       
     }
+
+    }
+
+    
   };
+
+
+
 
   const userMessage = { // No need to explicitly type userMessage here if ChatContext's Message is used
     id: String(Date.now() + 1),
@@ -310,16 +318,9 @@ const {showSnackbar}=useSnackbar()
                     sx={{ ml: 1, p: 0.5 }}
                     onClick={() => {
 
-                      if(!cookies.user) { 
-                        
-                       const resp= show()
-                      };
-                      const resp =handleFavoriteClick(car.VariantID);
-                       if(!resp){
-                      setFavoriteStates((prev) => ({ ...prev, [index]: !prev[index] }));
-
-                       }
-
+                      
+                       handleFavoriteClick(car.VariantID, index);
+                     
                     }}
                   >
                     {favoriteStates[index] ? (
