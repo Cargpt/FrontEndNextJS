@@ -8,6 +8,8 @@ import { useChats } from '@/Context/ChatContext';
 import { useCookies } from 'react-cookie';
 import { axiosInstance1 } from '@/utils/axiosInstance';
 import { formatInternational } from '@/utils/services';
+import CloseIcon from '@mui/icons-material/Close';
+
 type Car = {
   id: number;
   image: string;
@@ -17,34 +19,32 @@ type Car = {
 };
 
 type Props = {
-  cars?: Car[];
+  bookmarks?: Car[];
 };
 
 
 
 const Variants: React.FC<Props> = () => {
 
-      const [cars, setCars] = useState<any[]>([]);
+      const [bookmarks, setBookmarks] = useState<any[]>([]);
       const router = useRouter();
       const [cookies, setCookie, removeCookie]=useCookies(["selectedOption", "user"])
 
 
 
   const onBack = () => router.back();
-  const {handleBookmark}=useChats()
+  const {handleBookmark, setCars, cars}=useChats()
 
-
-  const onclick = (car: any) => {
-    //   removeCookie("selectedOption", { path: "/" });
-    handleBookmark(car);
-       router.push('/home'); // Navigate to car details page
-  };
+const onclick = async (car: Car) => {
+  await handleBookmark(car);
+  router.push('/home');
+};
 
 
   const fetchBookmarks = async () => {
     const response = await axiosInstance1.get('/api/cargpt/bookmark/detailed/');
      // Adjust the API endpoint as needed
-     setCars(response); // Fallback to dummy data if API fails
+     setBookmarks(response); // Fallback to dummy data if API fails
   }
 
   useEffect(() => {
@@ -53,6 +53,40 @@ const Variants: React.FC<Props> = () => {
     }
   }, [cookies.user]);
 
+
+const handleRemove = async (car: any) => {
+  try {
+    const payload = {
+     "variant_id": car?.VariantID
+}
+    await axiosInstance1.post(`/api/cargpt/bookmark/toggle/`, payload); // Adjust endpoint
+    setBookmarks((prev) => prev.filter((bookmark) => bookmark.VariantID !== car?.VariantID));
+
+    const update =updateBookmarkByVariantID(cars, car?.VariantID, false);
+      setCars((prev) => [
+        ...prev,
+        { [`${car?.BrandName}_${car?.ModelName}`]: update }, // Update the specific car's variants
+      ])
+    
+  } catch (error) {
+    console.error("Failed to remove bookmark:", error);
+  }
+};
+
+function updateBookmarkByVariantID(data:any, variantId:number, newState:boolean) {
+  for (const modelGroup of data) {
+    for (const modelName in modelGroup) {
+      const variants = modelGroup[modelName];
+      for (const variant of variants) {
+        if (variant.VariantID === variantId) {
+          variant.is_bookmarked = newState;
+          return variant; // Return updated variant
+        }
+      }
+    }
+  }
+  return null; // VariantID not found
+}
 
   console.log("Fetched Bookmarks:", cars);
 
@@ -88,22 +122,22 @@ const Variants: React.FC<Props> = () => {
             justifyContent: { xs: "center", md: "flex-start" },
           }}
         >
-          {cars?.map((car) => (
+         {bookmarks?.map((car) => (
             <Box
               key={car.id}
               sx={{
                 flex: {
-                  xs: "1 1 48%",    // 2 cards per row on xs
-                  sm: "1 1 48%",    // 2 cards per row on sm/md
+                  xs: "1 1 48%",
+                  sm: "1 1 48%",
                   md: "1 1 48%",
-                  lg: "1 1 31%",    // 3 cards per row on lg+
+                  lg: "1 1 31%",
                 },
                 maxWidth: 380,
                 minWidth: 200,
                 boxSizing: "border-box",
                 cursor: "pointer",
               }}
-                onClick={() => {onclick(car)}} // Handle bookmark click
+              onClick={() => onclick(car)}
             >
               <Card
                 sx={{
@@ -117,12 +151,31 @@ const Variants: React.FC<Props> = () => {
                   bgcolor: "#fff",
                 }}
               >
+                {/* Remove (Cross) Button */}
+                <IconButton
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevents card click
+                    handleRemove(car);
+                  }}
+                  sx={{
+                    position: "absolute",
+                    top: 8,
+                    right: 8,
+                    zIndex: 1,
+                    bgcolor: "rgba(255,255,255,0.7)",
+                    "&:hover": {
+                      bgcolor: "rgba(255,255,255,1)",
+                    },
+                  }}
+                  aria-label="remove bookmark"
+                >
+                  <CloseIcon fontSize="small" />
+                </IconButton>
+
                 <CardMedia
                   component="img"
                   height="160"
-                  width="160"
-
-                  image={car?.CarImageDetails?.[0]?.CarImageURL || '/assets/card-img.png' }
+                  image={car?.CarImageDetails?.[0]?.CarImageURL || '/assets/card-img.png'}
                   alt={car.name}
                   sx={{
                     borderTopLeftRadius: 12,
@@ -132,14 +185,16 @@ const Variants: React.FC<Props> = () => {
                 />
                 <CardContent>
                   <Stack direction="row" alignItems="center" justifyContent="space-between" mb={1}>
-                    <Typography variant="h6" fontWeight="bold">{car?.BrandName} {car?.ModelName}</Typography>
-                    <BookmarkBorderIcon sx={{ color: "#1976d2" }} />
+                    <Typography variant="h6" fontWeight="bold">
+                      {car?.BrandName} {car?.ModelName}
+                    </Typography>
+                
                   </Stack>
                   <Typography variant="body2" color="text.secondary" mb={0.5}>
                     {car?.VariantName}
                   </Typography>
                   <Typography variant="body2" color="primary" fontWeight="bold">
-                     ₹{formatInternational(car.Price)}
+                    ₹{formatInternational(car.Price)}
                   </Typography>
                 </CardContent>
               </Card>
