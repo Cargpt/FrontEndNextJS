@@ -92,6 +92,14 @@ const AskAIChat: React.FC = () => {
           vertical: "bottom",
         });
       }
+      const botMessage: Message = {
+        id: String(Date.now() + 1),
+        message: "Due to too much traffic on site, we are unable to respond to your query. Please try again later.",
+        sender: "bot",
+        timestamp: new Date(),
+      };
+            setMessages((prev) => [...prev, botMessage]);
+
       setLoading(false);
     }
   };
@@ -144,7 +152,6 @@ const AskAIChat: React.FC = () => {
         bgcolor: "white",
         borderRadius: 3,
         overflow: "hidden",
-        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.1)",
         mx: "auto",
         overflowX: "clip",
       }}
@@ -205,7 +212,7 @@ const AskAIChat: React.FC = () => {
     <Box
       sx={{
         maxWidth: {
-          xs: "80%", // 👈 80% width on small screens
+          xs: "90%", // 👈 80% width on small screens
           sm: "60%", // 👈 narrower on medium/large
         },
         alignSelf: message.sender === "user" ? "flex-end" : "flex-start",
@@ -214,8 +221,7 @@ const AskAIChat: React.FC = () => {
       <Paper
         sx={{
           p: 2,
-          bgcolor: message.sender === "user" ? "#e3f2fd" : "#bbdefb", // light blue for user, slightly deeper light blue for bot
-          color: "#1565c0",
+          bgcolor: message.sender === "user" ? "rgb(211, 227, 255)" : "#F5F5F5", // light blue for user, slightly deeper light blue for bot
           borderRadius:
             message.sender === "user"
               ? "18px 18px 4px 18px"
@@ -227,16 +233,47 @@ const AskAIChat: React.FC = () => {
       >
         {message.sender === "bot" ? (
           <Typography
-            variant="body2"
-            sx={{ fontSize: "14px", lineHeight: "1.4", fontWeight: 400 }}
-            component="div"
-            dangerouslySetInnerHTML={{
-              __html: message.message
-                .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
-                .replace(/\* (.*?)\n/g, '<span style="display:flex;align-items:center;margin-bottom:2px;"><span style="color:#1876d2;font-size:16px;margin-right:6px;">&#128073;</span>$1</span>')
-                .replace(/\n/g, "<br/>")
-            }}
-          />
+  variant="body2"
+  component="div"
+  sx={{
+    fontSize: {
+      xs: "13px", // Small screen (phones)
+      sm: "14px", // Default size
+    },
+    lineHeight: "1.4",
+    fontWeight: 400,
+  }}
+  dangerouslySetInnerHTML={{
+  __html: message.message
+    .replace(/\*\*(.*?)\*\*/g, `<b>$1</b>`)
+    .replace(
+      /\* (.*?)\n/g,
+      `<div style="
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        margin-top: 10px;
+        margin-bottom: 5px;
+        flex-wrap: wrap;
+        word-break: break-word;
+      ">
+        <span style="
+          color: #1876d2;
+          font-size: 16px;
+          line-height: 1;
+        ">
+          👉
+        </span>
+        <span style="flex: 1; min-width: 0;">
+          $1
+        </span>
+      </div>`
+    )
+   ,
+}}
+
+/>
+
         ) : (
           <Typography
             variant="body2"
@@ -280,7 +317,7 @@ const AskAIChat: React.FC = () => {
             <Paper
               sx={{
                 p: 2,
-                bgcolor: "#bbdefb",
+                bgcolor: "#F5F5F5",
                 borderRadius: 2,
                 display: "flex",
                 alignItems: "center",
@@ -293,13 +330,14 @@ const AskAIChat: React.FC = () => {
                 <Box sx={{
                   px: 2,
                   py: 1,
-                  bgcolor: '#bbdefb',
+                
                   borderRadius: 2,
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1,
+                  background: "#F5F5F5",
                 }}>
-                  <Typography variant="body2" sx={{ m: 0, color: '#1565c0', fontWeight: 500 }}>
+                  <Typography variant="body2" sx={{ m: 0, fontWeight: 500, background:"#F5F5F5	" }} >
                     Lisa is typing
                   </Typography>
                   <div className="loader"></div>

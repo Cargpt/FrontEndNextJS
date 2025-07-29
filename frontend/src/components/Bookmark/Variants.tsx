@@ -101,6 +101,7 @@ const Variants: React.FC<Props> = () => {
                 maxWidth: 380,
                 minWidth: 200,
                 boxSizing: "border-box",
+                cursor: "pointer",
               }}
                 onClick={() => {onclick(car)}} // Handle bookmark click
             >

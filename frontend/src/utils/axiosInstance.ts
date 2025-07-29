@@ -48,7 +48,7 @@ function createAxiosLike(
     config: RequestConfig = {}
   ): Promise<T> {
     const controller = new AbortController();
-    const timeout = config.timeout ?? 30000;
+    const timeout = config.timeout ?? 5000000;
 
     // Handle GET params
     if (method === "GET" && config.params) {
@@ -94,6 +94,7 @@ function createAxiosLike(
       }
       return (await response.text()) as unknown as T;
     } catch (error: any) {
+      console.error("Request failed:", error);
       if (error.name === "AbortError") {
         throw { message: "Request timed out", timeout: true };
       }
