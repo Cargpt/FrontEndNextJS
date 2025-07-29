@@ -11,7 +11,7 @@ const HomePage = () => {
     <>
       {/* <AdvisorIntro showInitialExample={true} onBotClick={() => {}} /> */}
       <ChatBox />
-      <FixedBottomMessage message="CarGPT can make mistakes. Check important info. See Cookie Preferences."/>
+      <FixedBottomMessage message="AiCarAdvisor can make mistakes. Check important info. See Cookie Preferences."/>
     </>
   );
 };

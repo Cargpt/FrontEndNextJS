@@ -17,7 +17,7 @@ export default function Home() {
     <>
       <Header />
       <Main />
-            <FixedBottomMessage  message="By messaging CarGPT, you agree to our Terms and have read our Privacy Policy. See Cookie Preferences.
+            <FixedBottomMessage  message="By messaging AiCarAdvisor, you agree to our Terms and have read our Privacy Policy. See Cookie Preferences.
             "/>
 
     </>

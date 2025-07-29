@@ -37,7 +37,7 @@ const CookiePolicyDialog: React.FC<CookiePolicyDialogProps> = ({ open, onClose }
         } : {}}
       >
         <Typography gutterBottom>
-          CarGPT uses cookies and similar technologies to enhance your experience, analyze site usage, and deliver personalized content. You can manage your cookie preferences below. For more details, please read our full Cookie Policy.
+          AiCarAdvisor uses cookies and similar technologies to enhance your experience, analyze site usage, and deliver personalized content. You can manage your cookie preferences below. For more details, please read our full Cookie Policy.
         </Typography>
         <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 'bold' }}>Types of Cookies:</Typography>
         <ul>
