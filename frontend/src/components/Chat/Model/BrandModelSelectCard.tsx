@@ -439,6 +439,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
         boxShadow: "none",
         border: "none",
         borderBottom: "none",
+        backgroundColor: "transparent",
       }}
     >
       <CardContent>

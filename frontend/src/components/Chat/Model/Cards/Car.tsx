@@ -211,6 +211,7 @@ const hideSignUP = () => {
   };
 
   const settings: Settings = {
+  
     infinite: false,
     speed: 500,
     slidesToShow: modelCars.length > 1 ? 2 : 1,

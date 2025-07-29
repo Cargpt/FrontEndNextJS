@@ -100,7 +100,10 @@ const CarModel: FC<AdviceSelectionCardProps> = ({
         border: "none",
         borderBottom: "none",
         boxShadow: "none",
+        background:"transparent",
+  
       }}
+      
     >
       <CardContent
         style={{
