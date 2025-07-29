@@ -364,6 +364,8 @@ if(lastMsg.render==="selectOption") fetchPreference()
     newsMessages.push(userMessage);
     setMessages((prev) => [...prev, userMessage]);
   };
+
+  
   useEffect(() => {
     if (messages.length === 0) return;
 

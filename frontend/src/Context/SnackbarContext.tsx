@@ -1,37 +1,45 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { Snackbar, SnackbarOrigin } from "@mui/material";
+import { Snackbar, SnackbarOrigin, Alert, AlertColor } from "@mui/material";
 
-type SnackbarPosition = SnackbarOrigin;
-type SnackbarOptions = SnackbarPosition;
+interface SnackbarOptions extends SnackbarOrigin {
+  autoHideDuration?: number;
+  color?: AlertColor; // 'success' | 'info' | 'warning' | 'error'
+}
 
 interface SnackbarContextType {
   showSnackbar: (message: string, options?: SnackbarOptions) => void;
 }
 
-const SnackbarContext = createContext<SnackbarContextType | undefined>(
-  undefined
-);
+const SnackbarContext = createContext<SnackbarContextType | undefined>(undefined);
 
-export const SnackbarProvider: React.FC<{ children: ReactNode }> = ({
-  children,
-}) => {
+export const SnackbarProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const [position, setPosition] = useState<SnackbarPosition>({
+  const [position, setPosition] = useState<SnackbarOrigin>({
     vertical: "bottom",
     horizontal: "center",
   });
+  const [autoHideDuration, setAutoHideDuration] = useState(3000);
+  const [color, setColor] = useState<AlertColor | undefined>(undefined);
 
   const showSnackbar = (
     msg: string,
     options: SnackbarOptions = { vertical: "bottom", horizontal: "center" }
   ) => {
     setMessage(msg);
-    setPosition(options);
+    setPosition({
+      vertical: options.vertical ?? "bottom",
+      horizontal: options.horizontal ?? "center",
+    });
+    setColor(options.color);
+    setAutoHideDuration(options.autoHideDuration ?? 3000);
     setOpen(true);
   };
 
-  const handleClose = () => {
+  const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
     setOpen(false);
   };
 
@@ -42,11 +50,13 @@ export const SnackbarProvider: React.FC<{ children: ReactNode }> = ({
         anchorOrigin={position}
         open={open}
         onClose={handleClose}
-        message={message}
-        autoHideDuration={3000}
+        autoHideDuration={autoHideDuration}
         key={`${position.vertical}-${position.horizontal}`}
-        
-      />
+      >
+        <Alert onClose={handleClose} severity={color ?? "info"} sx={{ width: "100%" }}>
+          {message}
+        </Alert>
+      </Snackbar>
     </SnackbarContext.Provider>
   );
 };
@@ -58,4 +68,5 @@ export const useSnackbar = (): SnackbarContextType => {
   }
   return context;
 };
+
 export default SnackbarProvider;

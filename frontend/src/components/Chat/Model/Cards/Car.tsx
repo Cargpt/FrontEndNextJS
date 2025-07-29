@@ -96,7 +96,7 @@ const TeslaCard: React.FC<Props> = ({
   // Import Message from ChatContext if it's exported there, or ensure its definition matches.
   // Assuming useChats is defined like: export const useChats = () => { ... return { messages, setMessages }; };
   // And Message interface is also exported from ChatContext.
-  const { messages, setMessages } = useChats(); 
+  const { messages, setMessages, cars, setCars } = useChats(); 
   const [cookies] = useCookies(["selectedOption", "user"]);
 
   // State for the Book Test Drive dialog
@@ -113,10 +113,11 @@ const showSignUP = () => {
   setshowSignUpState(true);
   hide();
 }
+
 const hideSignUP = () => {
   setshowSignUpState(false);
 }
-   const handleFavoriteClick = async(variantId: number, index:number) => {
+   const handleFavoriteClick = async(variant:any, variantId: number, index:number) => {
     // Example: send to API or log
     // You can replace this with an API call or any other logic
 
@@ -136,6 +137,27 @@ const hideSignUP = () => {
       const response = await axiosInstance1.post('/api/cargpt/bookmark/toggle/', paload);
 
       setFavoriteStates((prev) => ({ ...prev, [index]: !prev[index] }));
+      const update =updateBookmarkByVariantID(cars, variantId, !favoriteStates[index]);
+      setCars((prev) => [
+        ...prev,
+        { [`${variant.BrandName}_${variant.ModelName}`]: update }, // Update the specific car's variants
+      ])
+      let msg = "Car added to your bookmarks"
+      let color = "success"
+      if(!favoriteStates[index]===false){
+        msg = "Car removed from your bookmarks"
+
+      }
+      showSnackbar(msg, {
+        vertical: 'top',
+        horizontal: 'center',
+        autoHideDuration: 7000,
+        color: 'success',
+      })
+      
+
+
+      console.log("update", update)
       return true; // Indicate success
       
     } catch (error:any) {
@@ -237,7 +259,21 @@ const hideSignUP = () => {
 
 
 
-  console.log("modelCars", favouteStates);
+  function updateBookmarkByVariantID(data:any, variantId:number, newState:boolean) {
+  for (const modelGroup of data) {
+    for (const modelName in modelGroup) {
+      const variants = modelGroup[modelName];
+      for (const variant of variants) {
+        if (variant.VariantID === variantId) {
+          variant.is_bookmarked = newState;
+          return variant; // Return updated variant
+        }
+      }
+    }
+  }
+  return null; // VariantID not found
+}
+  console.log("cars", cars);
 
   return (
     <>
@@ -334,7 +370,7 @@ const hideSignUP = () => {
                     onClick={() => {
 
                       
-                       handleFavoriteClick(car.VariantID, index);
+                       handleFavoriteClick(car, car.VariantID, index);
                      
                     }}
                   >
