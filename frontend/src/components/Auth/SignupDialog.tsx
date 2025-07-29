@@ -19,7 +19,6 @@ import { useSnackbar } from '@/Context/SnackbarContext';
 import Image from 'next/image';
 import logo from '../../../public/assets/AICarAdvisor.png';
 
-// Phone input
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/material.css';
 
@@ -30,6 +29,7 @@ interface SignupDialogProps {
 }
 
 const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess }) => {
+  const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [mobile, setMobile] = useState('');
@@ -64,8 +64,18 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
       return;
     }
 
+    const nameParts = fullName.trim().split(' ');
+    const first_name = nameParts[0];
+    const last_name = nameParts.slice(1).join(' ') || '';
+
     try {
-      const payload = { password: password, mobile_no: '+' +mobile };
+      const payload = {
+        password: password,
+        mobile_no: '+' + mobile,
+        first_name,
+        last_name,
+      };
+
       const response = await axiosInstance.post('/api/cargpt/register/', payload);
       handleSetCookie(response);
       console.log("Signup successful, backend response:", response.data);
@@ -81,17 +91,13 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
     } catch (err: any) {
       console.error("Signup error:", JSON.stringify(err.response?.data, null, 2));
       let errorMessage = 'Signup failed.';
-      if (err.response) {
-        if (err.response.data) {
-          if (typeof err.response.data === 'object') {
-            errorMessage = Object.keys(err.response.data)
-              .map(key => `${key}: ${Array.isArray(err.response.data[key]) ? err.response.data[key].join(', ') : err.response.data[key]}`)
-              .join('\n');
-          } else {
-            errorMessage = String(err.response.data);
-          }
-        } else if (err.response.statusText) {
-          errorMessage = err.response.statusText;
+      if (err.response?.data) {
+        if (typeof err.response.data === 'object') {
+          errorMessage = Object.keys(err.response.data)
+            .map(key => `${key}: ${Array.isArray(err.response.data[key]) ? err.response.data[key].join(', ') : err.response.data[key]}`)
+            .join('\n');
+        } else {
+          errorMessage = String(err.response.data);
         }
       } else if (err.message) {
         errorMessage = err.message;
@@ -115,10 +121,30 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
           Sign Up
         </Typography>
         <form onSubmit={handleSubmit}>
-          {/* PhoneInput as Mobile Number field */}
+          {/* Full Name Field */}
           <Box mt={1}>
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={fullName}
+              onChange={e => setFullName(e.target.value)}
+              required
+              disabled={loading}
+              style={{
+                width: '100%',
+                height: '56px',
+                fontSize: '16px',
+                padding: '16.5px 14px',
+                border: '1px solid #c4c4c4',
+                borderRadius: '4px',
+              }}
+            />
+          </Box>
+
+          {/* PhoneInput */}
+          <Box mt={2}>
             <PhoneInput
-              country={'in'} // Change default country if needed
+              country={'in'}
               value={mobile}
               onChange={phone => setMobile(phone)}
               inputStyle={{
@@ -150,7 +176,6 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
                 padding: '16.5px 14px',
                 border: '1px solid #c4c4c4',
                 borderRadius: '4px',
-                marginTop: '8px',
               }}
             />
           </Box>
@@ -171,7 +196,6 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
                 padding: '16.5px 14px',
                 border: '1px solid #c4c4c4',
                 borderRadius: '4px',
-                marginTop: '8px',
               }}
             />
           </Box>

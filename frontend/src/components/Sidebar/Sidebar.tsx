@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -21,14 +21,12 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
-  const [cookies, setCookie, removeCookie] = useCookies(["token", "user"]);
+  const [cookies, , removeCookie] = useCookies(["token", "user"]);
 
-  useEffect(() => {
-  }, [cookies.token]);
+  useEffect(() => {}, [cookies.token]);
 
   const handleLogout = () => {
-     removeCookie("user", { path: "/" });
-    
+    removeCookie("user", { path: "/" });
     onClose();
   };
 
@@ -55,11 +53,55 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
               fontWeight: 800,
               color: "#0062ee",
               letterSpacing: 1,
-              mb: 3,
             }}
           >
             AICarAdvisor
           </Typography>
+
+{cookies.user && (
+  <Link
+    href="/profile"
+    style={{
+      display: "flex",
+      alignItems: "center",
+      gap: 10,
+      textDecoration: "none",
+      color: "#222",
+      marginTop: 10,
+      marginBottom: 20,
+      padding: "8px 10px",
+      borderRadius: 8,
+      transition: "background 0.2s",
+    }}
+    onMouseOver={(e) =>
+      (e.currentTarget.style.background = "#e3eaf6")
+    }
+    onMouseOut={(e) =>
+      (e.currentTarget.style.background = "transparent")
+    }
+  >
+    <Image
+      src="/assets/avatar.png"
+      alt="Profile Icon"
+      width={28}
+      height={28}
+    />
+    <Typography
+      component="span"
+      sx={{
+        fontSize: 15,
+        fontWeight: 600,
+        color: "#222",
+      }}
+    >
+      {cookies.user.first_name && cookies.user.last_name
+        ? `${cookies.user.first_name} ${cookies.user.last_name}`
+        : "Your Profile"}
+    </Typography>
+  </Link>
+)}
+
+
           <Button
             variant="contained"
             sx={{
@@ -93,6 +135,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
             <span>New Chat</span>
           </Button>
         </div>
+
         <Box sx={{ width: "100%", mt: "auto" }}>
           <Accordion
             sx={{
@@ -179,6 +222,7 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                     <span>About</span>
                   </Link>
                 </li>
+
                 <li
                   style={{
                     borderRadius: 6,
@@ -215,6 +259,46 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
                     <span>All Notification</span>
                   </Link>
                 </li>
+
+                {cookies.user && (
+                  <li
+                    style={{
+                      borderRadius: 6,
+                      transition: "background 0.2s",
+                    }}
+                    onMouseOver={(e) =>
+                      (e.currentTarget.style.background = "#e3eaf6")
+                    }
+                    onMouseOut={(e) =>
+                      (e.currentTarget.style.background = "transparent")
+                    }
+                  >
+                    <Link
+                      href="/profile"
+                      style={{
+                        display: "flex",
+                        gap: 8,
+                        alignItems: "center",
+                        padding: "8px 10px",
+                        textDecoration: "none",
+                        color: "#222",
+                        fontSize: 14,
+                        fontWeight: 500,
+                      }}
+                    >
+                      <span>
+                        <Image
+                          src="/assets/person-circle.svg"
+                          alt="Profile"
+                          height={15}
+                          width={15}
+                        />
+                      </span>
+                      <span>Profile</span>
+                    </Link>
+                  </li>
+                )}
+
                 {cookies.user && (
                   <li
                     onClick={handleLogout}
