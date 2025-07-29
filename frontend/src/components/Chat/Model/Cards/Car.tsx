@@ -143,7 +143,6 @@ const hideSignUP = () => {
         { [`${variant.BrandName}_${variant.ModelName}`]: update }, // Update the specific car's variants
       ])
       let msg = "Car added to your bookmarks"
-      let color = "success"
       if(!favoriteStates[index]===false){
         msg = "Car removed from your bookmarks"
 
@@ -157,7 +156,6 @@ const hideSignUP = () => {
       
 
 
-      console.log("update", update)
       return true; // Indicate success
       
     } catch (error:any) {
