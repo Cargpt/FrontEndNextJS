@@ -139,7 +139,7 @@ const BookTestDrive: React.FC<BookTestDriveProps> = ({ open, onClose, carDetails
       // The custom fetch wrapper is assumed to return the JSON body directly on success.
       // If it throws an error, the catch block will handle it.
       const responseData = await axiosInstance1.post('/api/core/test-drive-booking/', bookingData);
-      setSuccess(responseData?.message || "Test Drive Booking Successfully");
+      setSuccess("Your test drive has been booked successfully! We'll contact you shortly with the details.");
       console.log('Test drive booking successful:', responseData);
       setTimeout(() => {
         onClose();
