@@ -32,7 +32,7 @@ import FixedHeaderWithBack from "../Navbar/Navbar";
 import AskAIChat from "./AskAi";
 
 const ChatBox: React.FC = () => {
-  const { cars, messages, setMessages, filter, bookmark } = useChats();
+  const { cars, messages, setMessages, filter, bookmark, setCars } = useChats();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [loading, setLoading] = useState(false);
@@ -200,6 +200,11 @@ const ChatBox: React.FC = () => {
     );
     if (data.data.length === 0) return false;
     setRecommondatedCarModels(data.data);
+    console.log("filter", filter)
+    setCars((prev)=>[
+      ...prev, {[`${filter?.brand_name}_${filter.model_name}`]: data?.data}
+
+    ])
   };
 
   const { showSnackbar } = useSnackbar();
@@ -374,6 +379,8 @@ if(lastMsg.render==="selectOption") fetchPreference()
       lastItem.message ==
       "I am looking for cars based on the selected parameters." && !lastItem.bookmark
     ) {
+
+      console.log("hit here")
       const botMessage: Message = {
         id: String(Date.now()),
         message: cars[cars.length - 1],

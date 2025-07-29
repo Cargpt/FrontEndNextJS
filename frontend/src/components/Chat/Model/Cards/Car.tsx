@@ -137,6 +137,7 @@ const hideSignUP = () => {
       const response = await axiosInstance1.post('/api/cargpt/bookmark/toggle/', paload);
 
       setFavoriteStates((prev) => ({ ...prev, [index]: !prev[index] }));
+      
       const update =updateBookmarkByVariantID(cars, variantId, !favoriteStates[index]);
       setCars((prev) => [
         ...prev,
@@ -159,6 +160,7 @@ const hideSignUP = () => {
       return true; // Indicate success
       
     } catch (error:any) {
+      console.error(error)
       let err= "Variant is discountinued"
       if(error?.status===500){
         err="Something went wrong! please try again after sometimes."
