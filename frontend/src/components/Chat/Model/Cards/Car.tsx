@@ -105,7 +105,6 @@ const TeslaCard: React.FC<Props> = ({
   const [selectedCarForTestDrive, setSelectedCarForTestDrive] = useState<CarDetailsForBooking | null>(null);
 const {showSnackbar}=useSnackbar()
 
-
 const [showSignUpState, setshowSignUpState] = useState<boolean>(false);
 
 const showSignUP = () => {
@@ -203,6 +202,12 @@ const hideSignUP = () => {
   };
 
   const handleOpenTestDriveModal = (car: CarDetailsForBooking) => { // Type 'car' here
+
+    if(!cookies.user){
+      show()
+      return false;
+
+    }
     setSelectedCarForTestDrive(car);
     setTestDriveModalOpen(true);
   };
@@ -560,7 +565,7 @@ const hideSignUP = () => {
         />
       )}
       {/* Book Test Drive Modal */}
-      {selectedCarForTestDrive && (
+      {selectedCarForTestDrive &&  cookies.user &&(
         <BookTestDrive
           open={testDriveModalOpen}
           onClose={handleCloseTestDriveModal}

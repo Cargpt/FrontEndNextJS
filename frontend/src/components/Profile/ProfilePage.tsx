@@ -10,14 +10,14 @@ import { grey } from "@mui/material/colors";
 interface ProfileData {
   firstName: string;
   lastName: string;
-  mobile: string;
+  mobile_no: string;
   profilePic?: string;
 }
 
 const defaultProfile: ProfileData = {
   firstName: "",
   lastName: "",
-  mobile: "",
+  mobile_no: "",
   profilePic: "",
 };
 
@@ -31,7 +31,7 @@ const ProfilePage: React.FC = () => {
       const profile = {
         firstName: cookies.user?.first_name,
         lastName: cookies.user?.last_name,
-        mobile: cookies?.user?.mobile_no_read,
+        mobile_no: cookies?.user?.mobile_no_read || cookies?.user?.mobile_no,
         profilePic: "",
       };
       setProfile(profile);
@@ -132,7 +132,7 @@ const ProfilePage: React.FC = () => {
         type="tel"
         name="mobile"
         placeholder="Mobile Number"
-        value={profile.mobile}
+        value={profile.mobile_no}
         onChange={handleInputChange}
         style={styles.input}
         readOnly

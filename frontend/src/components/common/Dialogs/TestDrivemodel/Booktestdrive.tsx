@@ -21,6 +21,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
+import { useCookies } from 'react-cookie';
 // Define a more specific interface for carDetails passed to this component
 interface CarDetailsForBooking {
   BrandID: number;
@@ -51,6 +52,9 @@ const BookTestDrive: React.FC<BookTestDriveProps> = ({ open, onClose, carDetails
   const [statesLoading, setStatesLoading] = useState(false);
   const [citiesLoading, setCitiesLoading] = useState(false);
   // Fetch states when the dialog opens
+const [cookies]=useCookies(['user'])
+
+  
   useEffect(() => {
     const fetchStates = async () => {
       if (open) { // Only fetch when dialog is open
@@ -111,7 +115,7 @@ const BookTestDrive: React.FC<BookTestDriveProps> = ({ open, onClose, carDetails
       setLoading(false);
       return;
     }
-    if (mobile.length !== 10) {
+    if (!mobile.length) {
       setError('Mobile number must be exactly 10 digits.');
       setLoading(false);
       return;
@@ -177,6 +181,18 @@ const BookTestDrive: React.FC<BookTestDriveProps> = ({ open, onClose, carDetails
       resetForm();
     }
   }, [open]);
+
+
+   useEffect(() => {
+    if(cookies.user){
+ setName(`${cookies.user?.first_name} ${cookies.user?.last_name}`)
+   setMobile(`${cookies.user?.mobile_no}`)
+    }
+  
+   
+  }, [cookies?.user])
+ 
+  console.log("user", mobile)
   return (
     <Dialog
       open={open}
@@ -199,7 +215,7 @@ const BookTestDrive: React.FC<BookTestDriveProps> = ({ open, onClose, carDetails
       <DialogContent dividers>
         <Box component="form" noValidate autoComplete="off">
           {/* Row 1: Name and Mobile Number */}
-          <Box
+          {/* <Box
             sx={{
               display: 'flex',
               gap: 2,
@@ -233,7 +249,7 @@ const BookTestDrive: React.FC<BookTestDriveProps> = ({ open, onClose, carDetails
               disabled={loading}
               sx={{ flexGrow: 1 }}
             />
-          </Box>
+          </Box> */}
           {/* Row 2: State and City */}
           <Box
             sx={{
