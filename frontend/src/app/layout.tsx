@@ -16,8 +16,8 @@ const roboto = Roboto({
 
 
 export const metadata: Metadata = {
-  title: "CarAiAdvisor",
-  description: "CarAiAdvisor",
+  title: "AiCarAdvisor",
+  description: "AiCarAdvisor is your intelligent automotive companion, leveraging advanced AI to help you find the perfect car tailored to your needs and budget. From personalized recommendations and detailed comparisons to up-to-date market insights, AiCarAdvisor makes car shopping smarter, faster, and hassle-free.",
 };
 
 
