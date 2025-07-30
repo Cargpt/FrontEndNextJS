@@ -186,7 +186,7 @@ const [cookies]=useCookies(['user'])
    useEffect(() => {
     if(cookies.user){
  setName(`${cookies.user?.first_name} ${cookies.user?.last_name}`)
-   setMobile(`${cookies.user?.mobile_no}`)
+   setMobile(`${cookies.user?.mobile_no !==undefined ? cookies.user?.mobile_no : cookies?.user?.mobile_no_read}`)
     }
   
    
