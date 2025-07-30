@@ -43,7 +43,7 @@ const BookTestDrive: React.FC<BookTestDriveProps> = ({ open, onClose, carDetails
   const [mobile, setMobile] = useState('');
   const [state, setState] = useState('');
   const [city, setCity] = useState('');
-  const [preferredDatetime, setPreferredDatetime] = useState<Dayjs | null>(dayjs());
+  const [preferredDatetime, setPreferredDatetime] = useState<Dayjs | null>(dayjs().add(1, 'day'));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -171,7 +171,7 @@ const [cookies]=useCookies(['user'])
     setMobile('');
     setState('');
     setCity('');
-    setPreferredDatetime(dayjs());
+  setPreferredDatetime(dayjs().add(1, 'day')); // <-- next day here too
     setError(null);
     setSuccess(null);
   };
