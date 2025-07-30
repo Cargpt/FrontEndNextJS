@@ -4,6 +4,7 @@ import CookiesClientProvider from "@/providers/CookiesClientProvider";
 
 import { Roboto } from 'next/font/google';
 import Head from "next/head";
+import Script from "next/script";
 
 const roboto = Roboto({
   weight: ['400', '700'], // Specify the weights you need (e.g., normal and bold)
@@ -34,17 +35,32 @@ export default function RootLayout({
     <html className={roboto.className} lang="en">
       <head>
         <meta name="fast2sms" content="B5dSIfoanSkm5PWRBeV6YLNLP15Zg5lL"/>
+
+
       </head>
       <body>
         
           <CookiesClientProvider> {/* <-- Wrap your children with the client provider */}
-
+         
 
           {children}
 
 
         </CookiesClientProvider>
+   <Script
+        src="https://www.googletagmanager.com/gtag/js?id=G-L3EQVW9TNK"
+        strategy="afterInteractive"
+      />
 
+      {/* Initialize gtag */}
+      <Script id="gtag-init" strategy="afterInteractive">
+        {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-L3EQVW9TNK');
+        `}
+      </Script>
         
       </body>
     </html>
