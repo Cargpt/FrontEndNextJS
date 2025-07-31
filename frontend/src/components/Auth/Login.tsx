@@ -249,6 +249,10 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
             border-radius: 4px;
             padding: 2px 6px;
           }
+            .react-tel-input .country-list .country:hover, .react-tel-input .country-list .country.highlight {
+    background-color:  ${mode === 'dark' ? '#333' : '#f1f1f1'} !important;
+}
+
         `}
       </style>
 
