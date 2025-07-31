@@ -116,6 +116,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
       document.body.style.width = "";
     };
   }, [open]);
+
   const {mode}=useColorMode()
   return (
     <Dialog
