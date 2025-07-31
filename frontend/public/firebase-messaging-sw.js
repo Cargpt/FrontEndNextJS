@@ -22,19 +22,5 @@ messaging.onBackgroundMessage(function (payload) {
     icon: '/firebase-logo.png'
   };
 
-  // Send the notification to all open clients so they can update their UI
-  self.clients.matchAll().then(clients => {
-    clients.forEach(client => {
-      client.postMessage({
-        type: 'BACKGROUND_NOTIFICATION',
-        notification: {
-          title: payload.notification.title,
-          body: payload.notification.body,
-          read: false,
-        },
-      });
-    });
-  });
-
   self.registration.showNotification(notificationTitle, notificationOptions);
 });

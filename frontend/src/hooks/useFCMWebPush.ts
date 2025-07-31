@@ -86,25 +86,8 @@ export const useFCMWebPush = () => {
             const saved = localStorage.getItem('notifications');
             if (saved) setNotifications(JSON.parse(saved));
         };
-
-        // Listen for messages from the service worker (background notifications)
-        const handleServiceWorkerMessage = (event: MessageEvent) => {
-            if (event.data && event.data.type === 'BACKGROUND_NOTIFICATION') {
-                console.log('Received background notification from SW:', event.data.notification);
-                setNotifications((prev) => {
-                    const updated = [event.data.notification, ...prev];
-                    return updated;
-                });
-            }
-        };
-
-        navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
         window.addEventListener('storage', syncNotifications);
-
-        return () => {
-            navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
-            window.removeEventListener('storage', syncNotifications);
-        };
+        return () => window.removeEventListener('storage', syncNotifications);
     }, []);
 
     return { notifications, setNotifications };

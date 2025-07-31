@@ -25,7 +25,7 @@ const NotificationsPage = () => {
   const markAsRead = (index: number) => {
     setNotifications((prev) =>
       prev.map((notification, i) =>
-        i === index ? { ...notification, read: true } : notification
+        i === index ? { ...notification, read: true } : notification 
       )
     );
   };
@@ -33,6 +33,8 @@ const NotificationsPage = () => {
   const clearAllNotifications = () => {
     setNotifications([]);
   };
+  console.log("hello",notifications);
+
 
   return (
     <Box sx={{ backgroundColor: "#f5f5f5", minHeight: "100vh" }}>

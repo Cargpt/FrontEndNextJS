@@ -2,14 +2,14 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/navigation";
 import { IconButton } from "@mui/material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Badge from "@mui/material/Badge";
+import ClickAwayListener from "@mui/material/ClickAwayListener";
 
-import { useNotifications } from "../../Context/NotificationContext";
+import { useFCMWebPush } from "@/hooks/useFCMWebPush";
 
 import styles from "./Header.module.scss";
 
@@ -18,11 +18,11 @@ import Sidebar from "../Sidebar/Sidebar";
 const Header = () => {
   const [cookies, setCookie] = useCookies(["token", "user", "selectedOption"]);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const { notifications, setNotifications } = useNotifications();
-  const router = useRouter();
+  const { notifications, setNotifications } = useFCMWebPush();
+  const [showDropdown, setShowDropdown] = useState(false);
 
-  const unreadCount = notifications.filter((n: { read: boolean }) => !n.read).length;
-  const readCount = notifications.filter((n: { read: boolean }) => n.read).length;
+  const unreadCount = notifications.filter((n) => !n.read).length;
+  const readCount = notifications.filter((n) => n.read).length;
 
   const handleDrawerOpen = () => setDrawerOpen(true);
   const handleDrawerClose = () => setDrawerOpen(false);
@@ -35,6 +35,19 @@ const Header = () => {
     }
   };
 
+  const handleBellClick = () => {
+    setShowDropdown((prev) => !prev);
+    if (!showDropdown) {
+      // Mark all as read
+      const updated = notifications.map((n) => ({ ...n, read: true }));
+      setNotifications(updated);
+    }
+  };
+
+  const handleClickAway = () => {
+    setShowDropdown(false);
+  };
+
   return (
     <>
       <header className={styles.header}>
@@ -44,7 +57,7 @@ const Header = () => {
             <div className={styles.menuContainer} onClick={handleDrawerOpen}>
               <Image src={"/assets/list.svg"} alt="Menu" className={styles.menuIcon} height={32} width={32} />
             </div>
-            <img src="/assets/AICarAdvisor.png" alt="Logo" width={160} height={32} />
+            <img src="/assets/AICarAdvisor2.png" alt="Logo" width={160} height={32} />
           </div>
 
           {/* Right: Bookmark + Notification */}
@@ -56,7 +69,7 @@ const Header = () => {
                 </IconButton>
               </div>
             )}
-            <Link href="/notifications">
+            <ClickAwayListener onClickAway={handleClickAway}>
               <div className={styles.iconButton} style={{ position: "relative" }}>
                 <Badge badgeContent={unreadCount} color="error">
                   <Image
@@ -65,11 +78,32 @@ const Header = () => {
                     width={24}
                     height={24}
                     className={styles.notificationIcon}
+                    onClick={handleBellClick}
                     style={{ cursor: "pointer" }}
                   />
                 </Badge>
+                {showDropdown && (
+                  <div className={styles.notificationDropdown}>
+                    <div style={{ padding: "8px", fontWeight: 500 }}>
+                      Unread: {unreadCount} | Read: {readCount}
+                    </div>
+                    {notifications.length === 0 ? (
+                      <div className={styles.noNotifications}>No notifications</div>
+                    ) : (
+                      notifications.map((n, idx) => (
+                        <div
+                          key={idx}
+                          className={`${styles.notificationItem} ${n.read ? styles.read : styles.unread}`}
+                        >
+                          <div style={{ fontWeight: "bold" }}>{n.title}</div>
+                          <div>{n.body}</div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
               </div>
-            </Link>
+            </ClickAwayListener>
           </div>
         </div>
       </header>
