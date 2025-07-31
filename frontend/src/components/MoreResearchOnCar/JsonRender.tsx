@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import ThreeDotSpinner from "../Loaders/ThreeDotSpinner";
 import { COMBINEOPTIONS } from "@/utils/services";
+import { useColorMode } from "@/Context/ColorModeContext";
 
 type JsonValue = string | number | boolean | null | string[];
 interface JsonRow {
@@ -40,7 +41,7 @@ const DynamicTable: React.FC<Props> = ({ data, onCategoryClick, title, isLoading
     const theme = useTheme();
   
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
-
+const {mode}=useColorMode()
   return (
     <Box sx={{ mt: 0 }}>
       <TableContainer
@@ -56,14 +57,14 @@ const DynamicTable: React.FC<Props> = ({ data, onCategoryClick, title, isLoading
           
           maxWidth: isSmallScreen ? "347px" : "600px", overflow: "auto" }}>
           <Table>
-            <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+            <TableHead sx={{ backgroundColor: mode==="dark"? "transparent": "#f5f5f5" }}>
               <TableRow>
                 {/* Category column with sticky positioning */}
                 <TableCell
                   sx={{
                     position: "sticky",
                     left: 0,
-                    backgroundColor: "#f5f5f5",
+                    backgroundColor: mode==="dark"? "transparent": "#f5f5f5",
                     zIndex: 1, // Ensure it stays above other content
                     boxShadow: "2px 0px 5px rgba(0, 0, 0, 0.1)",
                   }}
@@ -85,7 +86,7 @@ const DynamicTable: React.FC<Props> = ({ data, onCategoryClick, title, isLoading
                     sx={{
                       position: "sticky",
                       left: 0,
-                      backgroundColor: "white", // Ensure background color matches the rest of the table
+                      backgroundColor: mode==="dark"? "transparent": "#f5f5f5", // Ensure background color matches the rest of the table
                       zIndex: 1,
                       boxShadow: "2px 0px 5px rgba(0, 0, 0, 0.1)",
                     }}

@@ -24,6 +24,8 @@ import {
   FUELTYPES,
   TRANSMISSIONTYPES,
 } from "@/utils/services";
+import { Style } from "@mui/icons-material";
+import { useColorMode } from "@/Context/ColorModeContext";
 
 const AdditionalOptions = [
   "I know exactly what I want",
@@ -265,6 +267,7 @@ const CarResearchMenu: React.FC = () => {
 
     setMessages((prev) => [...prev, userMessage, botMessage]);
   };
+ const {mode}= useColorMode()
   return (
     <>
       <Box sx={{ marginTop: 0 }}>
@@ -297,6 +300,7 @@ const CarResearchMenu: React.FC = () => {
                         display: "flex",
                         flexWrap: "wrap",
                         gap: 1,
+
                       }}
                     >
                       {answer.recommended_prompts.map(
@@ -371,6 +375,36 @@ const CarResearchMenu: React.FC = () => {
           ))}
           </Box>
         </Box>
+
+            <style>
+        {`
+          .prompt {
+            color: ${mode === 'dark' ? '#fff' : '#000'} !important;
+           
+          }
+                      .prompt card {
+            color: ${mode === 'dark' ? '#fff' : '#000'} !important;
+            background: ${mode === 'dark' ? 'transparent' : '#fff'} !important;
+
+           
+          }
+            .prompt h2 {
+                        color: ${mode === 'dark' ? '#fff' : '#333'} !important;
+
+
+            }
+                        .prompt h3, .prompt ul{
+                          color: ${mode === 'dark' ? '#fff' : '#333'} !important;
+
+                        }
+                          .prompt li strong{
+                              color: ${mode === 'dark' ? '#fff' : '#000'} !important;
+
+                          }
+           
+
+        `}
+        </style>
       </Box>
     </>
   );

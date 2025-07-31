@@ -27,7 +27,7 @@ const ThemeToggle = () => {
             sx={{
               width: { xs: 32, sm: 36, md: 40 },
               height: { xs: 32, sm: 36, md: 40 },
-              backgroundColor: theme.palette.background.paper,
+              backgroundColor: mode=="dark"? "transparent" : "#eeeeef",
               borderRadius: "50%",
               display: "flex",
               justifyContent: "center",

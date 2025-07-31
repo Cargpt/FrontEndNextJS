@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Paper, Typography, Button, Stack } from '@mui/material';
+import { useColorMode } from '@/Context/ColorModeContext';
 
 interface OptionsCardProps {
   onBack: () => void;
@@ -25,7 +26,7 @@ const OptionsCard: React.FC<OptionsCardProps> = ({ onBack, onShowCars }) => {
   };
 
 
-  
+  const {mode}=useColorMode()
   return (
     <Paper
       elevation={0}
@@ -33,7 +34,7 @@ const OptionsCard: React.FC<OptionsCardProps> = ({ onBack, onShowCars }) => {
         p: 2,
         maxWidth: 550,
         width: '100%',
-        bgcolor: '#f5f5f5',
+        bgcolor: mode==="dark" ? "transparent" :'#f5f5f5',
         borderRadius: 0,
       }}
     >

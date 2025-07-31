@@ -99,9 +99,13 @@ const {mode}=useColorMode()
               sx={{
                 width: { xs: 32, sm: 36, md: 40 },
                 height: { xs: 32, sm: 36, md: 40 },
-                backgroundColor: "#eeeeef",
+                backgroundColor: mode==="dark"? "transparent": "#eeeeef",
                 borderRadius: "50%",
-                display: "flex",
+    display: {
+      xs: 'none',  // hide on extra-small
+      sm: 'none',  // hide on small
+      md: 'flex',  // show on medium and up
+    },
                 justifyContent: "center",
                 alignItems: "center",
                 cursor: "pointer",
@@ -124,7 +128,7 @@ const {mode}=useColorMode()
             sx={{
               width: { xs: 32, sm: 36, md: 40 },
               height: { xs: 32, sm: 36, md: 40 },
-              backgroundColor: theme.palette.background.paper,
+              backgroundColor: mode==="dark"? "transparent": "#eeeeef",
               borderRadius: "50%",
               display: "flex",
               justifyContent: "center",
@@ -148,7 +152,6 @@ const {mode}=useColorMode()
             sx={{
               width: { xs: 32, sm: 36, md: 40 },
               height: { xs: 32, sm: 36, md: 40 },
-              backgroundColor: "#eeeeef",
               borderRadius: "50%",
               display: "flex",
               justifyContent: "center",

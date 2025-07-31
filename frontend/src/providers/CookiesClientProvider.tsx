@@ -12,7 +12,7 @@ import {
   
   createTheme,
 } from "@mui/material";
-import { ColorModeProvider } from "@/Context/ColorModeContext";
+import { ColorModeProvider, useColorMode } from "@/Context/ColorModeContext";
 
 interface CookiesClientProviderProps {
   children: React.ReactNode;
@@ -22,7 +22,6 @@ export default function CookiesClientProvider({
   children,
 }: CookiesClientProviderProps) {
 
- 
   return (
 
 

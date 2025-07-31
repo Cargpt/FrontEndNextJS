@@ -10,6 +10,7 @@ import {
   useTheme,
   CircularProgress,
   Typography,
+  useColorScheme,
 } from "@mui/material";
 import { Send, Person, KeyboardBackspaceSharp } from "@mui/icons-material";
 import Image from "next/image";
@@ -20,6 +21,7 @@ import { axiosInstance1 } from "@/utils/axiosInstance";
 import { useRouter } from "next/navigation";
 import { useCookies } from "react-cookie";
 import { Button } from "@mui/material";
+import { useColorMode } from "@/Context/ColorModeContext";
 
 interface Message {
   id: string;
@@ -141,6 +143,8 @@ const AskAIChat: React.FC = () => {
     return response;
   }
 
+  const {mode}=useColorMode()
+  console.log(mode)
   return (
     <Box
       sx={{
@@ -149,7 +153,6 @@ const AskAIChat: React.FC = () => {
         width: isSmallScreen ? "100vw" : "90%",
         maxWidth: "800px",
         height: "calc(100vh - 100px)",
-        bgcolor: "white",
         borderRadius: 3,
         overflow: "hidden",
         mx: "auto",
@@ -221,7 +224,7 @@ const AskAIChat: React.FC = () => {
       <Paper
         sx={{
           p: 2,
-          bgcolor: message.sender === "user" ? "rgb(211, 227, 255)" : "#F5F5F5", // light blue for user, slightly deeper light blue for bot
+          bgcolor: message.sender === "user" ? mode=="dark"? "rgba(82, 139, 237, 1)":  "rgb(211, 227, 255)" : mode==="dark"? "" : "#F5F5F5", // light blue for user, slightly deeper light blue for bot
           borderRadius:
             message.sender === "user"
               ? "18px 18px 4px 18px"
@@ -317,7 +320,7 @@ const AskAIChat: React.FC = () => {
             <Paper
               sx={{
                 p: 2,
-                bgcolor: "#F5F5F5",
+                bgcolor: mode=="dark"? "transparent": "#F5F5F5",
                 borderRadius: 2,
                 display: "flex",
                 alignItems: "center",
@@ -335,9 +338,9 @@ const AskAIChat: React.FC = () => {
                   display: 'flex',
                   alignItems: 'center',
                   gap: 1,
-                  background: "#F5F5F5",
+                  background: mode=="dark"? "transparent": "#F5F5F5",
                 }}>
-                  <Typography variant="body2" sx={{ m: 0, fontWeight: 500, background:"#F5F5F5	" }} >
+                  <Typography variant="body2" sx={{ m: 0, fontWeight: 500, background:mode=="dark"? "": "#F5F5F5" }} >
                     Lisa is typing
                   </Typography>
                   <div className="loader"></div>
@@ -353,8 +356,8 @@ const AskAIChat: React.FC = () => {
 <Box
   sx={{
     p: 3,
-    borderTop: "1px solid #f0f0f0",
-    bgcolor: "white",
+    borderTop:  mode=="dark" ? "#000" : "1px solid #f0f0f0",
+    bgcolor:  mode=="dark" ? "#000" : "white",
     mb: isSmallScreen ? 5 : 2,
     minWidth: 0,
   }}
@@ -369,91 +372,90 @@ const AskAIChat: React.FC = () => {
     }}
   >
     <TextField
-      fullWidth
-      multiline
-      maxRows={3}
-      value={inputMessage}
-      onChange={(e) => setInputMessage(e.target.value)}
-      onKeyPress={handleKeyPress}
-      placeholder="Type your message..."
-      variant="outlined"
-      size="small"
-      disabled={loading}
-    
-      sx={{
-        pr: 0,
-        minWidth: 0,
-        "& .MuiOutlinedInput-root": {
-          borderRadius: 4,
-          bgcolor: "#f5f5f5",
-          border: "none",
-          transition: "all 0.2s ease",
-          minWidth: 0,
-          maxWidth: "100%",
-          "& fieldset": {
-            border: "none",
-          },
-          "&:hover": {
-            bgcolor: "#eeeeee",
-            // Removed transform to prevent overflow
-          },
-          "&.Mui-focused": {
-            bgcolor: "white",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-            // Removed transform to prevent overflow
-          },
-          "&.Mui-focused fieldset": {
-            border: "2px solid #1876d2",
-          },
-        },
-        "& .MuiInputBase-input": {
-          padding: "10px 14px",
-          fontSize: "16px", // Prevent mobile zoom
-          lineHeight: "1.4",
-          minWidth: 0,
-          "&::placeholder": {
-            color: "#9e9e9e",
-            opacity: 1,
-          },
-        },
-        "& .MuiInputBase-root": {
-          minWidth: 0,
-          "&:has(input:focus)": {
-            bgcolor: "white",
-          },
-        },
-      }}
-      InputProps={{
-        endAdornment: (
-          <Box sx={{ display: "flex", alignItems: "flex-end", minWidth: 0 }}>
-            <IconButton
-              onClick={sendMessage}
-              disabled={!inputMessage.trim() || loading}
-              sx={{
-                bgcolor: "#1876d2",
-                color: "white",
-                width: 38,
-                height: 38,
-                borderRadius: "50%",
-                ml: 1,
-                "&:hover": {
-                  bgcolor: "#1565c0",
-                  transform: "scale(1.05)",
-                },
-                "&:disabled": {
-                  bgcolor: "#e0e0e0",
-                  color: "#9e9e9e",
-                },
-                transition: "all 0.2s ease",
-                boxShadow: "0 2px 8px rgba(24, 118, 210, 0.3)",
-              }}
-            >
-              <Send />
-            </IconButton>
-          </Box>
-        ),
-      }}
-    />
+  fullWidth
+  multiline
+  maxRows={3}
+  value={inputMessage}
+  onChange={(e) => setInputMessage(e.target.value)}
+  onKeyPress={handleKeyPress}
+  placeholder="Type your message..."
+  variant="outlined"
+  size="small"
+  disabled={loading}
+  sx={{
+    pr: 0,
+    minWidth: 0,
+    "& .MuiOutlinedInput-root": {
+      borderRadius: 4,
+      bgcolor: mode === "dark" ? "#2c2c2c" : "#f5f5f5",
+      border: "none",
+      transition: "all 0.2s ease",
+      minWidth: 0,
+      maxWidth: "100%",
+      "& fieldset": {
+        border: "none",
+      },
+      "&:hover": {
+        bgcolor: mode === "dark" ? "#3a3a3a" : "#eeeeee",
+      },
+      "&.Mui-focused": {
+        bgcolor: mode === "dark" ? "#1e1e1e" : "white",
+        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+      },
+      "&.Mui-focused fieldset": {
+        border: `2px solid ${mode === "dark" ? "#90caf9" : "#1876d2"}`,
+      },
+    },
+    "& .MuiInputBase-input": {
+      padding: "10px 14px",
+      fontSize: "16px",
+      lineHeight: "1.4",
+      minWidth: 0,
+      color: mode === "dark" ? "#fff" : "#000",
+      "&::placeholder": {
+        color: mode === "dark" ? "#aaa" : "#9e9e9e",
+        opacity: 1,
+      },
+    },
+    "& .MuiInputBase-root": {
+      minWidth: 0,
+      "&:has(input:focus)": {
+        bgcolor: mode === "dark" ? "#1e1e1e" : "white",
+      },
+    },
+  }}
+  InputProps={{
+    endAdornment: (
+      <Box sx={{ display: "flex", alignItems: "flex-end", minWidth: 0 }}>
+        <IconButton
+          onClick={sendMessage}
+          disabled={!inputMessage.trim() || loading}
+          sx={{
+            bgcolor: "#1876d2",
+            color: "white",
+            width: 38,
+            height: 38,
+            borderRadius: "50%",
+            ml: 1,
+            "&:hover": {
+              bgcolor: "#1565c0",
+              transform: "scale(1.05)",
+            },
+            "&:disabled": {
+              bgcolor: "#e0e0e0",
+              color: "#9e9e9e",
+            },
+            transition: "all 0.2s ease",
+            boxShadow: "0 2px 8px rgba(24, 118, 210, 0.3)",
+          }}
+        >
+          <Send />
+        </IconButton>
+      </Box>
+    ),
+  }}
+/>
+
   </Box>
 </Box>
       
