@@ -1,3 +1,4 @@
+import { useColorMode } from "@/Context/ColorModeContext";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import { CheckCircle, KeyboardBackspaceSharp } from "@mui/icons-material";
 import {
@@ -115,6 +116,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
       document.body.style.width = "";
     };
   }, [open]);
+  const {mode}=useColorMode()
   return (
     <Dialog
       open={open}
@@ -133,7 +135,8 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
     },
   }}
     >
-      <DialogTitle sx={{ background: "#eeeeef" }}>
+    
+      <DialogTitle sx={{ background:  mode=="dark" ? "": "#eeeeef" }}>
        <Button
           variant="outlined"
           onClick={onClose}
@@ -162,13 +165,13 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
             {/* Total Reviews */}
             {reviewData.totalReviews && (
               <Typography
-                sx={{ fontWeight: "bold", color: "#000", mb: 1 }}
+                sx={{ fontWeight: "bold", color: mode=="dark" ? "#fff": "#000", mb: 1 }}
                 variant="subtitle1"
               >
                 Total Reviews:
                 <Typography
                   component="span"
-                  sx={{ color: "black", fontSize: "14px", paddingLeft: "5px" }}
+                  sx={{ color: mode=="dark"? "#fff" : "#000", fontSize: "14px", paddingLeft: "5px" }}
                 >
                   {reviewData.totalReviews}
                 </Typography>
@@ -178,14 +181,14 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
             {/* Review Summary */}
             {reviewData.summary && (
               <Typography
-                sx={{ fontWeight: 700, color: "#000", mt: 2 }}
+                sx={{ fontWeight: 700, color: mode=="dark"? "#fff" : "#000", mt: 2 }}
                 variant="subtitle1"
               >
                 Review Summary:
                 <Typography
                   component="span"
                   sx={{
-                    color: "black",
+                    color: mode=="dark"? "#fff" : "black",
                     fontWeight: 400,
                     fontSize: "14px",
                     paddingLeft: "5px",
@@ -199,14 +202,14 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
             {/* Sentiment */}
             {reviewData.sentiment && (
               <Typography
-                sx={{ fontWeight: 700, color: "#000", mt: 2 }}
+                sx={{ fontWeight: 700, color: mode=="dark"? "#fff" : "#000", mt: 2 }}
                 variant="subtitle1"
               >
                 Sentiment:
                 <Typography
                   component="span"
                   sx={{
-                    color: "black",
+                    color: mode=="dark"? "#fff" : "black",
                     fontWeight: 400,
                     fontSize: "14px",
                     paddingLeft: "5px",
@@ -221,7 +224,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
             {reviewData.issues && reviewData.issues.length > 0 && (
               <>
                 <Typography
-                  sx={{ fontWeight: 700, color: "#000", mt: 3 }}
+                  sx={{ fontWeight: 700, color:mode=="dark"? "#fff" : "#000", mt: 3 }}
                   variant="subtitle1"
                 >
                   Issues:
@@ -244,7 +247,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
                       }}
                     >
                       <CheckCircle
-                        sx={{ color: "#000", fontSize: 16, mr: 1 }}
+                        sx={{ color: mode=="dark"? "#fff" : "#000", fontSize: 16, mr: 1 }}
                       />
                       <Typography variant="body2" sx={{ fontSize: "14px" }}>
                         {issue}
@@ -259,7 +262,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
             {reviewData.benefits && reviewData.benefits.length > 0 && (
               <>
                 <Typography
-                  sx={{ fontWeight: 700, color: "#000", mt: 3 }}
+                  sx={{ fontWeight: 700, color: mode=="dark"? "#fff" : "#000", mt: 3 }}
                   variant="subtitle1"
                 >
                   Benefits:
@@ -282,7 +285,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
                       }}
                     >
                       <CheckCircle
-                        sx={{ color: "#000", fontSize: 16, mr: 1 }}
+                        sx={{ color: mode=="dark"? "#fff" : "#000", fontSize: 16, mr: 1 }}
                       />
                       <Typography variant="body2" sx={{ fontSize: "14px" }}>
                         {benefit}

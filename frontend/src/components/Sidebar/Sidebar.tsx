@@ -9,8 +9,9 @@ import {
   AccordionDetails,
   AccordionSummary,
   Button,
+  useTheme,
 } from "@mui/material";
-import { ArrowForwardIosSharp } from "@mui/icons-material";
+import { ArrowForwardIosSharp, InfoOutline, NotificationAddOutlined } from "@mui/icons-material";
 import Link from "next/link";
 import { useCookies } from "react-cookie";
 import Image from "next/image";
@@ -21,6 +22,9 @@ import { useLoginDialog } from "@/Context/LoginDialogContextType";
 import SignupDialog from "../Auth/SignupDialog";
 import HomeIcon from "@mui/icons-material/Home";
 import { useRouter } from "next/navigation";
+import  { useMemo } from 'react';
+import { ThemeProvider, CssBaseline, createTheme, } from '@mui/material';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 
 interface SidebarProps {
   open: boolean;
@@ -29,6 +33,8 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const [cookies, , removeCookie] = useCookies(["token", "user"]);
+    const [mode, setMode] = useState<'light' | 'dark'>('light');
+
 const router =useRouter()
   useEffect(() => {}, [cookies.token]);
 
@@ -42,7 +48,7 @@ const router =useRouter()
   const { open: openLoginDialoge, hide, show } = useLoginDialog();
 
   const [showSignUpState, setshowSignUpState] = useState<boolean>(false);
-
+const theme=useTheme()
   const showSignUP = () => {
     setshowSignUpState(true);
     hide();
@@ -69,7 +75,6 @@ const router =useRouter()
             justifyContent: "space-between",
             p: 2,
             boxSizing: "border-box",
-            background: "#f7f9fb",
           }}
           role="presentation"
         >
@@ -114,7 +119,6 @@ const router =useRouter()
                     textDecoration: "none",
                     color: "#222",
                     marginTop: 10,
-                    marginBottom: 20,
                     padding: "8px 10px",
                     borderRadius: 8,
                     transition: "background 0.2s",
@@ -126,12 +130,7 @@ const router =useRouter()
                     (e.currentTarget.style.background = "transparent")
                   }
                 >
-                  <Image
-                    src="/assets/avatar.png"
-                    alt="Profile Icon"
-                    width={28}
-                    height={28}
-                  />
+                  <AccountCircleOutlinedIcon color="primary" sx={{fontSize:"2rem"}}/>
                   <Typography
                     component="span"
                     sx={{
@@ -156,7 +155,6 @@ const router =useRouter()
                   textDecoration: "none",
                   color: "#222",
                   marginTop: 10,
-                  marginBottom: 20,
                   padding: "8px 10px",
                   borderRadius: 8,
                   transition: "background 0.2s",
@@ -175,7 +173,7 @@ const router =useRouter()
                   sx={{
                     fontSize: 15,
                     fontWeight: 600,
-                    color: "#222",
+                    color: theme.palette.text.primary ,
                   }}
                 >
                   Sign In
@@ -193,11 +191,12 @@ const router =useRouter()
                     gap: 10,
                     textDecoration: "none",
                     color: "#222",
-                    marginTop: 10,
+                    marginTop: 1,
                     marginBottom: 20,
-                    padding: "8px 10px",
+                    padding: "2px 8px",
                     borderRadius: 8,
                     transition: "background 0.2s",
+                    paddingTop:"0px"
                   }}
                   onMouseOver={(e) =>
                     (e.currentTarget.style.background = "#e3eaf6")
@@ -230,7 +229,7 @@ const router =useRouter()
           <Box sx={{ width: "100%", mt: "auto" }}>
             <Accordion
               sx={{
-                backgroundColor: "#eef0f3",
+                backgroundColor: theme.palette.background.paper,
                 boxShadow: "none",
                 borderRadius: 2,
                 mb: 1,
@@ -255,7 +254,7 @@ const router =useRouter()
                   component="span"
                   sx={{
                     fontWeight: 700,
-                    color: "#222",
+                    
                     fontSize: 15,
                   }}
                 >
@@ -280,12 +279,7 @@ const router =useRouter()
                       borderRadius: 6,
                       transition: "background 0.2s",
                     }}
-                    onMouseOver={(e) =>
-                      (e.currentTarget.style.background = "#e3eaf6")
-                    }
-                    onMouseOut={(e) =>
-                      (e.currentTarget.style.background = "transparent")
-                    }
+                   
                   >
                     <Link href="/about" passHref legacyBehavior>
                       <a
@@ -296,18 +290,13 @@ const router =useRouter()
                           alignItems: "center",
                           padding: "8px 10px",
                           textDecoration: "none",
-                          color: "#222",
                           fontSize: 14,
                           fontWeight: 500,
                         }}
                       >
                         <span>
-                          <Image
-                            src="/assets/info-circle-fill.svg"
-                            alt="info"
-                            height={15}
-                            width={15}
-                          />
+                                                                          <InfoOutline sx={{width:15, height:15}}/>
+
                         </span>
                         <span>About</span>
                       </a>
@@ -319,12 +308,7 @@ const router =useRouter()
                       borderRadius: 6,
                       transition: "background 0.2s",
                     }}
-                    onMouseOver={(e) =>
-                      (e.currentTarget.style.background = "#e3eaf6")
-                    }
-                    onMouseOut={(e) =>
-                      (e.currentTarget.style.background = "transparent")
-                    }
+                  
                   >
                     <Link href="/notificationContainer" passHref legacyBehavior>
                       <a
@@ -335,18 +319,14 @@ const router =useRouter()
                           alignItems: "center",
                           padding: "8px 10px",
                           textDecoration: "none",
-                          color: "#222",
+                          
                           fontSize: 14,
                           fontWeight: 500,
                         }}
                       >
                         <span>
-                          <Image
-                            src="/assets/bell-fill.svg"
-                            alt="bell"
-                            height={15}
-                            width={15}
-                          />
+                                                <NotificationAddOutlined sx={{width:15, height:15}}/>
+
                         </span>
                         <span>All Notification</span>
                       </a>
@@ -364,24 +344,14 @@ const router =useRouter()
                         padding: "8px 10px",
                         borderRadius: 6,
                         cursor: "pointer",
-                        color: "#e53935",
+                       
                         fontWeight: 600,
                         transition: "background 0.2s",
                       }}
-                      onMouseOver={(e) =>
-                        (e.currentTarget.style.background = "#fbe9e7")
-                      }
-                      onMouseOut={(e) =>
-                        (e.currentTarget.style.background = "transparent")
-                      }
+                      
                     >
                       <span role="button">
-                        <Image
-                          src="/assets/box-arrow-right.svg"
-                          alt="arrow"
-                          height={15}
-                          width={15}
-                        />
+                       <LoginOutlinedIcon sx={{width:15, height:15}}/>
                       </span>
                       <span>Logout</span>
                     </li>

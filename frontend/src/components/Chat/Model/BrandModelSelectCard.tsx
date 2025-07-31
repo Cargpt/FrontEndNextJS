@@ -11,6 +11,7 @@ import {
   Box,
   SelectChangeEvent,
   Button,
+  useTheme,
 } from "@mui/material";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import {
@@ -35,6 +36,7 @@ type BrandModelSelectCardProps = {
 
 import { useSnackbar } from "@/Context/SnackbarContext";
 import BudgetSelector from "./InlineRadio";
+import { useColorMode } from "@/Context/ColorModeContext";
 
 const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   handleUserMessage,
@@ -429,8 +431,8 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     // fetchDataBasedOnParameters();
   };
 
-
-
+const theme=useTheme()
+const {mode}=useColorMode()
   return (
     <Card
       sx={{
@@ -439,7 +441,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
         boxShadow: "none",
         border: "none",
         borderBottom: "none",
-        backgroundColor: "transparent",
+        backgroundColor: mode==="dark"? theme.palette.background.paper:"grey.100",
       }}
     >
       <CardContent>

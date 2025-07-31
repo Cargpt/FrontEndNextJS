@@ -14,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import ScoreLeftPanel from "./ScoreLeftPanel";
 import ScoreRightPanel from "./ScoreRightPanel";
 import { axiosInstance1 } from "@/utils/axiosInstance";
+import { useColorMode } from "@/Context/ColorModeContext";
 
 type ScoreDialogProps = {
   open: boolean;
@@ -68,6 +69,7 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
       document.body.style.width = "";
     };
   }, [open]);
+  const {mode}=useColorMode()
   return (
     <Dialog
       open={open}
@@ -86,7 +88,7 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
     },
   }}
     >
-      <DialogTitle sx={{ background: "#eeeeef" }}>
+      <DialogTitle sx={{ background: mode=="dark"? "": "#eeeeef" }}>
        <Button
           variant="outlined"
           onClick={onClose}

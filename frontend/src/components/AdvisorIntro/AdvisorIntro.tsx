@@ -11,6 +11,7 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
+  useTheme,
 } from "@mui/material";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -18,6 +19,8 @@ import React, { useEffect } from "react";
 import { useCookies } from "react-cookie";
 import { axiosInstance } from "@/utils/axiosInstance";
 import { useChats } from "@/Context/ChatContext";
+import { useColorMode } from "@/Context/ColorModeContext";
+import { ChatBubble, ChatBubbleOutline, FilterAltOutlined, FilterCenterFocusOutlined, Lightbulb, LightbulbOutline, SearchOffOutlined, StarOutline } from "@mui/icons-material";
 
 interface AdvisorIntroProps {
   showInitialExample: boolean;
@@ -31,6 +34,8 @@ const AdvisorIntro: React.FC<AdvisorIntroProps> = ({
   const router = useRouter();
   const { setBotType } = useBotType();
 const {handleBookmark,bookmark} =useChats()
+  const { mode, toggleColorMode } = useColorMode();
+  const theme= useTheme()
 
   const handleOptionClick = (type: string) => {
     setCookie('selectedOption', type, { path: '/' });
@@ -41,27 +46,27 @@ const {handleBookmark,bookmark} =useChats()
   const options = [
     {
       label: "I know exactly what I want",
-      icon: "/assets/lightbulb.svg",
+      icon: <LightbulbOutline/>,
       type: "want",
     },
     {
       label: "I need advisor support",
-      icon: "/assets/chat-quote.svg",
+      icon: <ChatBubbleOutline/>,
       type: "support",
     },
     {
       label: "I want to do more research on cars",
-      icon: "/assets/search.svg",
+      icon:<SearchOffOutlined/>,
       type: "search",
     },
     {
       label: "Advanced filters for car search",
-      icon: "/assets/funnel.svg",
+      icon: <FilterAltOutlined/>,
       type: "filter",
     },
     {
       label: "Ask AI",
-      icon: "/assets/stars.svg",
+      icon: <StarOutline/>,
       type: "ai",
     },
   ];
@@ -115,7 +120,7 @@ const [cookies, setCookie]=useCookies(['selectedOption', 'token'])
         <div>
           <Typography
             variant="subtitle1"
-            style={{ fontSize: "28px", fontWeight: 700, color: "#1876d2" }}
+            style={{ fontSize: "28px", fontWeight: 700, color:  "#1876d2" }}
           >
             Your Car Advisor
           </Typography>
@@ -134,15 +139,10 @@ const [cookies, setCookie]=useCookies(['selectedOption', 'token'])
           <ListItemButton
             key={index}
             onClick={() => handleOptionClick(option.label)}
-            style={{ backgroundColor: "#d3e3ff", borderRadius: "25px" }}
+            sx={{ "background": mode==="dark"? "linear-gradient(rgba(255, 255, 255, 0.092), rgba(255, 255, 255, 0.092))": "#d3e3ff", borderRadius: "25px" }}
           >
             <ListItemIcon>
-              <Image
-                src={option.icon}
-                alt={option.label}
-                width={24}
-                height={24}
-              />
+             {option.icon}
             </ListItemIcon>
             <ListItemText primary={option.label} />
           </ListItemButton>

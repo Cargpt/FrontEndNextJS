@@ -30,10 +30,12 @@ import CarResearchMenu from "../MoreResearchOnCar/MoreResearchOnCar";
 import TeslaCard from "./Model/Cards/Car";
 import FixedHeaderWithBack from "../Navbar/Navbar";
 import AskAIChat from "./AskAi";
+import { useColorMode } from "@/Context/ColorModeContext";
 
 const ChatBox: React.FC = () => {
   const { cars, messages, setMessages, filter, bookmark, setCars } = useChats();
   const theme = useTheme();
+  
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [loading, setLoading] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -478,6 +480,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
   }, [bookmark]);
 
   console.log("message",messages)
+  const {mode}=useColorMode()
   return (
     <>
       <Box
@@ -509,10 +512,11 @@ if(lastMsg.render==="selectOption") fetchPreference()
             messages?.[messages?.length-1]?.message!=="Ask AI" &&
 
           <Box 
-            sx={{minHeight:"100vh"}}
+            sx={{minHeight:"100vh", background:"transparent"}}
             ref={chatContainerRef}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
+            
           >
             {messages.map((msg, index) => {
               const isLastUserMsg = msg.sender === "user" && index === lastUserMsgIndex;
@@ -547,10 +551,10 @@ if(lastMsg.render==="selectOption") fetchPreference()
                   )}
                   <Paper
                     sx={{
-                      p: 1.5,
+                      p:  Number(`${msg.sender=="user" ? "1.5" : 0}`),
                       maxWidth: isSmallScreen ? "100%" : "75%",
                       bgcolor:
-                        msg.sender === "user" ? "rgb(211, 227, 255)" : "grey.100",
+                        msg.sender === "user" ? "rgb(211, 227, 255)" : mode==="dark"?"transparent":"grey.100",
                       color: "black",
                     }}
                   >

@@ -8,6 +8,11 @@ import { BotTypeProvider } from "../Context/BotTypeContext";
 import { ChatsProvider } from "@/Context/ChatContext";
 import SnackbarProvider from "@/Context/SnackbarContext";
 import { LoginDialogProvider } from "@/Context/LoginDialogContextType";
+import {
+  
+  createTheme,
+} from "@mui/material";
+import { ColorModeProvider } from "@/Context/ColorModeContext";
 
 interface CookiesClientProviderProps {
   children: React.ReactNode;
@@ -16,9 +21,14 @@ interface CookiesClientProviderProps {
 export default function CookiesClientProvider({
   children,
 }: CookiesClientProviderProps) {
-  return (
-    <CookiesProvider>
 
+ 
+  return (
+
+
+
+    <CookiesProvider>
+      <ColorModeProvider>
       <FirebaseProvider>
         <LoginDialogProvider>
         <ChatsProvider>
@@ -28,6 +38,7 @@ export default function CookiesClientProvider({
         </ChatsProvider>
         </LoginDialogProvider>
       </FirebaseProvider>
+      </ColorModeProvider>
     </CookiesProvider>
   );
 }

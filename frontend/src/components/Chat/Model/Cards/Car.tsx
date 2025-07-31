@@ -12,7 +12,7 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import ElectricCarIcon from "@mui/icons-material/ElectricCar";
-import { useTheme } from "@emotion/react";
+
 import { useChats } from "@/Context/ChatContext"; // This brings in the Message type from ChatContext
 import { useCookies } from "react-cookie";
 import Slider, { Settings } from "react-slick";
@@ -23,7 +23,7 @@ import SentimentDialog from "@/components/common/Dialogs/SentimentDialog/Sentime
 // Ensure the casing here matches the actual filename on disk (e.g., BookTestDrive.tsx)
 import BookTestDrive from "@/components/common/Dialogs/TestDrivemodel/Booktestdrive"; // Corrected import path for casing
 import Image from "next/image";
-import { Avatar, IconButton } from "@mui/material";
+import { Avatar, IconButton, useTheme } from "@mui/material";
 import CollectionsIcon from '@mui/icons-material/Collections';
 import LoginDialog from '@/components/common/Dialogs/LoginDialog';
 import { useLoginDialog } from '@/Context/LoginDialogContextType';
@@ -32,6 +32,7 @@ import { useSnackbar } from '@/Context/SnackbarContext';
 import { formatInternational } from '@/utils/services';
 import { Sign } from 'crypto';
 import SignupDialog from '@/components/Auth/SignupDialog';
+import { useColorMode } from '@/Context/ColorModeContext';
 
 type Props = {
   onClick?: () => void;
@@ -82,7 +83,8 @@ const TeslaCard: React.FC<Props> = ({
     const { open, hide, show } = useLoginDialog();
 
   const modelCars: any[] = Array.isArray(rawValues[0]) ? rawValues[0] : [];
-  const theme = useTheme();
+ 
+   const theme=useTheme()
   const [carInfo, setCarInfo] = useState<any>(null);
   const [dialog, setDialog] = useState<typeProps>({ open: false, type: null });
   // Heart (favorite) state for each car card
@@ -280,7 +282,7 @@ const hideSignUP = () => {
   return null; // VariantID not found
 }
   console.log("cars", cars);
-
+const {mode}=useColorMode()
   return (
     <>
       {modelCars.length > 0 && (
@@ -301,12 +303,14 @@ const hideSignUP = () => {
                 component="img"
                 height="150"
                 width="150"
+                
 
                 image={car.CarImageDetails?.[0]?.CarImageURL || '/assets/card-img.png'}
                 alt="Car card"
                 sx={{
                   cursor: 'pointer',
-                  pointerEvents: `${!car.CarImageDetails?.[0]?.CarImageURL && "none"}`
+                  pointerEvents: `${!car.CarImageDetails?.[0]?.CarImageURL && "none"}`,
+                
                 }}
                 onClick={() => openDialog("gallery", car)}
               />
@@ -333,7 +337,7 @@ const hideSignUP = () => {
                 <Chip
                   label={`${car.ModelName} ${car.BodyName ? `-${car.BodyName}`: ""}`}
                   color="primary"
-                  sx={{ backgroundColor: "#f5f5f5", color: "black", paddingX:"2px", fontSize:"10px", paddingY:'1px' }}
+                  sx={{ backgroundColor:  "#f5f5f5", color: "black", paddingX:"2px", fontSize:"10px", paddingY:'1px' }}
                   icon={
                     <Avatar
                       src={car.logo}
@@ -353,8 +357,10 @@ const hideSignUP = () => {
                   borderRadius: 2,
                 }}
               >
-                <Typography fontWeight="bold" color="primary" fontSize={18} px={2}  sx={{
-                  backgroundColor: "#f5f5f5",
+                <Typography fontWeight="bold"
+                 color="primary"
+                  fontSize={18} px={2}  sx={{
+                  backgroundColor: mode==="dark"?  theme.palette.background.paper : "#f5f5f5",
                   borderRadius:"5px"
                 }}>
                   ₹{formatInternational(car.Price )}
@@ -433,9 +439,9 @@ const hideSignUP = () => {
                         px: 1, // Reduced horizontal padding
                         py: 0.75, // Reduced vertical padding
                         borderRadius: 1, // Slightly smaller border radius
-                        backgroundColor: "grey.100",
+                        backgroundColor: mode==="dark"  ? theme.palette.background.paper: "grey.100",
                         border: "1px solid",
-                        borderColor: "grey.300",
+                        borderColor:  mode==="dark"  ? theme.palette.background.paper: "grey.300",
                         textAlign: "center",
                         margin: "auto", // Center the items within their grid space
                       }}

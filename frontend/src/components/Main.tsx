@@ -11,17 +11,12 @@ import { useCookies } from "react-cookie";
 import { Token } from "@mui/icons-material";
 import AdvisorIntro from "./AdvisorIntro/AdvisorIntro";
 
-const theme = createTheme({
-  palette: {
-    mode: "light", // Change to 'dark' for dark mode
-  },
-});
 
 const Main: React.FC = () => {
   const [cookies] = useCookies(["token"]);
   const onClick = () => {};
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <CssBaseline />
       <Container
         maxWidth="sm"
@@ -37,7 +32,8 @@ const Main: React.FC = () => {
             showInitialExample={cookies.token}
           />
       </Container>
-    </ThemeProvider>
+      </>
+  
   );
 };
 

@@ -18,6 +18,7 @@ import Image from "next/image";
 import React, { useState, useRef, useEffect } from "react";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import useApi from "@/hooks/useApi";
+import { useColorMode } from "@/Context/ColorModeContext";
 
 type CarGalleryProps = {
   open: boolean;
@@ -80,7 +81,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
       document.body.style.width = "";
     };
   }, [open]);
-
+const {mode}=useColorMode()
   return (
     <Dialog
       open={open}
@@ -102,7 +103,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
       {/* Sticky Header */}
       <DialogTitle
         sx={{
-          background: "#eeeeef",
+          bgcolor: mode=="dark"? "dark":"grey.100",
           position: "sticky",
           top: 0,
           zIndex: 2,
@@ -139,6 +140,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
           display: "flex",
           flexDirection: "column",
           gap: 2,
+        
         }}
       >
         {loading ? (
@@ -160,6 +162,8 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
               speed={500}
               slidesToShow={1}
               slidesToScroll={1}
+              
+
             >
               {images.map((img: any, index: number) => (
                 <Box
@@ -170,6 +174,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
                     justifyContent: "center",
                     alignItems: "center",
                     mb: 2,
+          
                   }}
                 >
                   <CardMedia
@@ -184,6 +189,10 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
             </Slider>
 
             {/* Thumbnail Slider */}
+                <div
+      style={{background: mode=="dark" ? "red" : "light"}}
+    >
+
             <Slider
               asNavFor={nav1}
               ref={(slider) => {
@@ -197,6 +206,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
               dots={false}
               infinite
               centerMode={false}
+              
             >
               {images.map((img: any, index: number) => (
                 <Box
@@ -222,6 +232,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
                 </Box>
               ))}
             </Slider>
+            </div>
           </>
         ) : (
           <Typography>No images found.</Typography>

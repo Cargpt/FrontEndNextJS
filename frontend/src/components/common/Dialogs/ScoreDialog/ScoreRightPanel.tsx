@@ -8,6 +8,7 @@ import {
   Chip,
 } from "@mui/material";
 import { CheckCircle, Cancel, Info } from "@mui/icons-material";
+import { useColorMode } from "@/Context/ColorModeContext";
 
 type Props = {
   activeItem: string;
@@ -141,7 +142,7 @@ const ScoreRightPanel = ({ activeItem, carDetails, loading }: Props) => {
       ? !Boolean(value)
       : value === null || value === "" || value === undefined
   );
-
+const {mode}=useColorMode()
   return (
     <Box
       sx={{
@@ -212,9 +213,9 @@ const ScoreRightPanel = ({ activeItem, carDetails, loading }: Props) => {
                     boxShadow: 6,
                     transform: "translateY(-2px)",
                   },
-                  background: "linear-gradient(135deg, #e6f1fc, #fff)",
+                  background: mode=="dark"? "": "linear-gradient(135deg, #e6f1fc, #fff)",
                   boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                  border: "1px solid #e0e0e0",
+                  border: mode=="dark"? "":"1px solid #e0e0e0",
                 }}
               >
                 <CardContent
@@ -278,9 +279,9 @@ const ScoreRightPanel = ({ activeItem, carDetails, loading }: Props) => {
                     boxShadow: 6,
                     transform: "translateY(-2px)",
                   },
-                  background: "linear-gradient(135deg, #e6f1fc, #fff)",
+                  background: mode==="dark" ?"": "linear-gradient(135deg, #e6f1fc, #fff)",
                   boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-                  border: "1px solid #e0e0e0",
+                  border: mode==="dark"? "": "1px solid #e0e0e0",
                 }}
               >
                 <CardContent

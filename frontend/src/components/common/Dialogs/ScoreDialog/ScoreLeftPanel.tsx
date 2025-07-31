@@ -1,3 +1,4 @@
+import { useColorMode } from "@/Context/ColorModeContext";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import React from "react";
 
@@ -44,6 +45,38 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
     return hasData;
   });
 
+  const {mode}=useColorMode()
+
+
+
+
+
+  const activeBgColor = (active:boolean)=>{
+    if(active && mode=="light"){
+      return "#e3f2fd"
+    }else if(active  && mode=="dark"){
+      return ""
+    }else if(!active && mode=="dark" ){
+      return "#000"
+    }else{
+      return "#f5f5f5"
+    }
+
+    }
+
+     const activeColor = (active:boolean)=>{
+    if(active && mode=="light"){
+      return "#555"
+    }else if(active  && mode=="dark"){
+      return "#fff"
+    }else if(!active && mode=="dark" ){
+      return "#555"
+    }else{
+      return "#555"
+    }
+
+    }
+ 
   return (
     <Box
       sx={{
@@ -52,7 +85,7 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
           sm: "40%",
           md: "30%",
         },
-        backgroundColor: "#f5f5f5",
+        backgroundColor: mode==="dark" ? "#000": "#f5f5f5",
         borderRight: {
           xs: "none",
           md: "1px solid #ddd",
@@ -97,13 +130,13 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                 onClick={() => setActiveItem(item)}
                 style={{
                   cursor: "pointer",
-                  color: isActive ? "#000" : "#555",
+                  color: activeColor(isActive) ,
                   borderBottom: isActive
                     ? "1px solid #1976d2"
                     : "1px solid transparent",
                   transition: "all 0.3s ease",
                   fontSize: ".9rem",
-                  backgroundColor: isActive ? "#e3f2fd" : "transparent",
+                  backgroundColor: activeBgColor(isActive) ,
                   display: "flex",
                   alignItems: "center",
                   flexDirection: isSmallScreen ? "column" : "row",

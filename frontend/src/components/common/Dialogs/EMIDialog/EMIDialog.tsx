@@ -1,3 +1,4 @@
+import { useColorMode } from "@/Context/ColorModeContext";
 import { KeyboardBackspaceSharp } from "@mui/icons-material";
 import {
   Box,
@@ -144,7 +145,7 @@ useEffect(() => {
     document.body.style.width = "";
   };
 }, [open]);
-
+const {mode}=useColorMode()
   return (
     <Dialog
       open={open}
@@ -166,7 +167,7 @@ useEffect(() => {
       {/* Fixed Header */}
       <DialogTitle
         sx={{
-          background: "#eeeeef",
+          bgcolor: mode=="dark"? "dark":"grey.100",
           position: "sticky",
           top: 0,
           zIndex: 2,
@@ -307,11 +308,12 @@ useEffect(() => {
           {/* EMI Display */}
           <Box
             sx={{
-              background: "#f5f5f5",
+             bgcolor: mode=="dark"? "dark":"#f5f5f5",
+
               p: 2,
               borderRadius: 2,
               boxShadow: 3,
-              border: "2px solid #1976d2",
+              border:  mode=="dark"? "dark":"2px solid #1976d2" ,
             }}
           >
             <Typography
@@ -350,7 +352,8 @@ useEffect(() => {
         sx={{
           position: "sticky",
           bottom: 0,
-          background: "#fff",
+          
+          
           zIndex: 1,
           py: 2,
           justifyContent: "center",
