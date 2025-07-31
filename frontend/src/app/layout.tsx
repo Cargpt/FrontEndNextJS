@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import CookiesClientProvider from "@/providers/CookiesClientProvider";
+import { NotificationProvider } from "../Context/NotificationContext";
 
 import { Roboto } from 'next/font/google';
 import Head from "next/head";
@@ -41,11 +42,13 @@ export default function RootLayout({
       <body>
         
           <CookiesClientProvider> {/* <-- Wrap your children with the client provider */}
+            <NotificationProvider>
          
 
           {children}
 
 
+            </NotificationProvider>
         </CookiesClientProvider>
    <Script
         src="https://www.googletagmanager.com/gtag/js?id=G-L3EQVW9TNK"
