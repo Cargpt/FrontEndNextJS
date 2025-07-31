@@ -18,6 +18,7 @@ import { useSnackbar } from '@/Context/SnackbarContext';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/material.css';
+import { useColorMode } from '@/Context/ColorModeContext';
 
 interface LoginFormData {
   mobile_no: string;
@@ -120,6 +121,7 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
     }
   };
 
+  const {mode}=useColorMode()
   return (
     <Box display="flex" justifyContent="center" sx={{ px: 2 }}>
       <Paper
@@ -132,7 +134,7 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
         }}
       >
         <Box display="flex" justifyContent="center" mb={2}>
-          <Image src="/assets/AICarAdvisor.png" alt="Logo" style={{ height: 60 }} width={340} height={60} />
+          <Image src={mode==="light" ? "/assets/AICarAdvisor.png":"/assets/AICarAdvisor_transparent.png"} alt="Logo" style={{ height: 60 }} width={340} height={60} />
         </Box>
         <Typography variant="h5" align="center" gutterBottom>
           Login
@@ -149,8 +151,29 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
               required: true,
               autoFocus: true,
             }}
-            inputStyle={{ width: '100%' }}
-            containerStyle={{ marginBottom: '16px' }}
+             containerStyle={{ marginBottom: '16px' }}
+             dropdownStyle={{
+              backgroundColor: mode=="dark" ? '#000' : '#fff',
+        color: mode=="dark" ? 'ccc' : '#00',
+        border: `1px solid ${mode=="dark" ? '#000' : '#ccc'}`,
+             }
+
+
+             }
+          
+                  inputStyle={{
+        width: '100%',
+        backgroundColor: mode=="dark" ? 'inherit' : '#fff',
+        color: mode=="dark" ? 'inherit' : '#000',
+        border: `1px solid ${mode=="dark" ? 'inherit' : '#ccc'}`,
+        borderRadius: 4,
+        height: 40,
+      }}
+      buttonStyle={{
+        backgroundColor: mode=="dark" ? 'inherit' : '#fff',
+        border: `1px solid ${mode=="dark" ? 'inherit' : '#ccc'}`,
+      }}
+
           />
 
           <TextField
@@ -213,10 +236,22 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
             </Alert>
           )}
           <div  role='button'  style={{display:"flex", justifyContent:"center", alignItems:"center", cursor:"pointer"}}>
-          <span  onClick={showSignUp} style={{marginTop:"1rem", fontSize:"14px", color:"blue"}} >Don't have account  SignUp</span>
+          <span  onClick={showSignUp} style={{marginTop:"1rem", fontSize:"14px", color:mode==="dark"? "#fff": "blue"}} >Don't have account  SignUp</span>
           </div>
         </form>
       </Paper>
+
+            <style>
+        {`
+          .react-tel-input .special-label {
+            background-color: ${mode === 'dark' ? '#333' : '#fff'} !important;
+            color: ${mode === 'dark' ? '#fff' : '#000'} !important;
+            border-radius: 4px;
+            padding: 2px 6px;
+          }
+        `}
+      </style>
+
     </Box>
   );
 };
