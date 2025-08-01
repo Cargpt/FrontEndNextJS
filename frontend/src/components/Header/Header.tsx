@@ -3,23 +3,37 @@
 import React, { useState } from "react";
 import { AppBar, Box, Toolbar, IconButton, useTheme } from "@mui/material";
 import Image from "next/image";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone"; // Bell icon
 import ThemeToggle from "../Theme/ThemeToggle";
 import Sidebar from "../Sidebar/Sidebar";
 import { useCookies } from "react-cookie";
-import { useRouter } from "next/navigation";
 import { useColorMode } from "@/Context/ColorModeContext";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import Badge from "@mui/material/Badge";
+
+import { useNotifications } from "../../Context/NotificationContext";
+
+import styles from "./Header.module.scss";
+
 
 const Header: React.FC = () => {
-  const theme = useTheme();
+
+
   const [cookies, setCookie] = useCookies(["token", "user", "selectedOption"]);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { notifications, setNotifications } = useNotifications();
   const router = useRouter();
 const {mode}=useColorMode()
+  const theme = useTheme();
+
+
+  const unreadCount = notifications.filter((n: { read: boolean }) => !n.read).length;
+  const readCount = notifications.filter((n: { read: boolean }) => n.read).length;
+
   const handleDrawerOpen = () => setDrawerOpen(true);
   const handleDrawerClose = () => setDrawerOpen(false);
-
   const handleBookmarkClick = () => {
     if (cookies.user) {
       setCookie("selectedOption", "I know exactly what I want", { path: "/" });
@@ -122,9 +136,11 @@ const {mode}=useColorMode()
               </IconButton>
             </Box>
           )}
+  
 
           {/* Notification Bell Icon */}
           <Box
+          
             sx={{
               width: { xs: 32, sm: 36, md: 40 },
               height: { xs: 32, sm: 36, md: 40 },
@@ -136,15 +152,43 @@ const {mode}=useColorMode()
               cursor: "pointer",
             }}
           >
-            <IconButton size="small">
-              <NotificationsNoneIcon
-                sx={{
-                  width: { xs: 18, sm: 20, md: 24 },
-                  height: { xs: 18, sm: 20, md: 24 },
-                  color: "#555",
-                }}
-              />
-            </IconButton>
+         <Box
+  sx={{
+    width: { xs: 32, sm: 36, md: 40 },
+    height: { xs: 32, sm: 36, md: 40 },
+    backgroundColor: mode === "dark" ? "transparent" : "#eeeeef",
+    borderRadius: "50%",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    cursor: "pointer",
+  }}
+>
+  <IconButton size="medium" onClick={() => router.push("/notifications")}>
+    <Badge
+      badgeContent={unreadCount}
+      max={999}
+      color="error"
+      anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      sx={{
+        "& .MuiBadge-badge": {
+          fontSize: "0.6rem", // make text responsive-ish
+          height: { xs: 16, sm: 18 },
+          minWidth: { xs: 16, sm: 18 },
+        },
+      }}
+    >
+      <NotificationsNoneIcon
+        sx={{
+          width: { xs: 18, sm: 20, md: 24 },
+          height: { xs: 18, sm: 20, md: 24 },
+          color: "#555",
+        }}
+      />
+    </Badge>
+  </IconButton>
+</Box>
+
           </Box>
 
           {/* Theme Toggle */}
@@ -161,6 +205,8 @@ const {mode}=useColorMode()
           >
             <ThemeToggle />
           </Box>
+
+
         </Box>
       </Toolbar>
 
