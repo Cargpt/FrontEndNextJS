@@ -14,6 +14,7 @@ import {
   ListItem,
   Stack,
   useTheme,
+  Tooltip,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
@@ -57,11 +58,13 @@ const NotificationsPage = () => {
             <Typography variant="h6">Notifications</Typography>
           </Box>
 
-          {hasNotifications && (
-            <IconButton color="inherit" onClick={clearAllNotifications}>
-              <DeleteSweepIcon />
-            </IconButton>
-          )}
+{hasNotifications && (
+  <Tooltip title="Clear all notifications" arrow>
+    <IconButton color="inherit" onClick={clearAllNotifications}>
+      <DeleteSweepIcon />
+    </IconButton>
+  </Tooltip>
+)}
         </Toolbar>
       </AppBar>
 
@@ -83,27 +86,26 @@ const NotificationsPage = () => {
         }}
       >
         {!hasNotifications ? (
-        <Box
-  sx={{
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100%", // or use '80vh' or 'calc(100% - 48px)' if needed
-    minHeight: "300px", // optional fallback for small screens
-  }}
->
-  <Typography
-    variant="body1"
-    sx={{
-      textAlign: "center",
-      color: theme.palette.text.secondary,
-      fontStyle: "italic",
-    }}
-  >
-    🎉 No new notifications.
-  </Typography>
-</Box>
-
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+              minHeight: "300px",
+            }}
+          >
+            <Typography
+              variant="body1"
+              sx={{
+                textAlign: "center",
+                color: theme.palette.text.secondary,
+                fontStyle: "italic",
+              }}
+            >
+              🎉 No new notifications.
+            </Typography>
+          </Box>
         ) : (
           <List sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             {notifications.map((notification, index) => (
@@ -113,7 +115,9 @@ const NotificationsPage = () => {
                     width: "100%",
                     backgroundColor: notification.read
                       ? theme.palette.action.hover
-                      : theme.palette.primary.light,
+                      : theme.palette.mode === "dark"
+                      ? "#2a2e35"
+                      : "#f5f7fa",
                     borderLeft: `6px solid ${
                       notification.read ? theme.palette.divider : theme.palette.primary.main
                     }`,
@@ -121,7 +125,9 @@ const NotificationsPage = () => {
                     "&:hover": {
                       backgroundColor: notification.read
                         ? theme.palette.action.selected
-                        : theme.palette.primary.light,
+                        : theme.palette.mode === "dark"
+                        ? "#343a40"
+                        : "#e6edf5",
                     },
                   }}
                 >
