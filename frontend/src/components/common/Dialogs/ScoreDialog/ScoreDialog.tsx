@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
-  IconButton,
   Typography,
   useMediaQuery,
   useTheme,
@@ -26,8 +25,10 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
   const [carDetails, setCarDetails] = useState(null);
   const [loading, setLoading] = useState(false);
   const [activeItem, setActiveItem] = useState("Engine");
+
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const { mode } = useColorMode();
 
   const fetchCarDetailsWithState = async (carId: number) => {
     setLoading(true);
@@ -40,59 +41,61 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
       console.error("❌ Error fetching car details:", error);
     } finally {
       setLoading(false);
-      console.log("🏁 Loading finished");
     }
   };
 
   useEffect(() => {
     if (open && carId) {
       fetchCarDetailsWithState(carId);
-    } else {
-      console.log("⏸️ Not fetching - open:", open, "carId:", carId);
     }
   }, [open, carId]);
 
   useEffect(() => {
     if (open) {
       document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed"; // prevent bounce scroll on mobile
-      document.body.style.width = "100%"; // fix layout shift
+      document.body.style.position = "fixed";
+      document.body.style.width = "100%";
     } else {
       document.body.style.overflow = "";
       document.body.style.position = "";
       document.body.style.width = "";
     }
-  
+
     return () => {
       document.body.style.overflow = "";
       document.body.style.position = "";
       document.body.style.width = "";
     };
   }, [open]);
-  const {mode}=useColorMode()
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
       fullScreen={isSmallScreen}
-       scroll="paper"
-  PaperProps={{
-    sx: {
-      width: { xs: "100%", md: "80%" },
-      maxWidth: "1000px",
-      height: isSmallScreen ? "100dvh" : "auto",
-      maxHeight: isSmallScreen ? "100dvh" : "90vh",
-      display: "flex",
-      flexDirection: "column",
-      boxShadow: 6,
-    },
-  }}
+      scroll="paper"
+      PaperProps={{
+        sx: {
+          width: { xs: "100%", md: "80%" },
+          maxWidth: "1000px",
+          height: isSmallScreen ? "100dvh" : "90vh",
+          display: "flex",
+          flexDirection: "column",
+          boxShadow: 6,
+        },
+      }}
     >
-      <DialogTitle sx={{ background: mode=="dark"? "": "#eeeeef" }}>
-       <Button
+      <DialogTitle sx={{ background: mode === "dark" ? "" : "#eeeeef" }}>
+        <Button
           variant="outlined"
           onClick={onClose}
-          sx={{ position: "absolute", left: 15, top: 12,  zIndex:20, border:"none" }}
+          sx={{
+            position: "absolute",
+            left: 15,
+            top: 12,
+            zIndex: 20,
+            border: "none",
+          }}
         >
           <KeyboardBackspaceSharp />
         </Button>
@@ -102,15 +105,17 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
           AI Car Advisor Store
         </Typography>
       </DialogTitle>
+
       <DialogContent
         dividers
         sx={{
-          overflow: "hidden",
+          flexGrow: 1,
+          display: "flex",
           p: 0,
-          height: "100%",
+          height: "100%", // critical for inner scroll layout
         }}
       >
-        <Box display="flex" height="100%">
+        <Box display="flex" flex={1} height="100%" overflow="hidden">
           <ScoreLeftPanel
             activeItem={activeItem}
             setActiveItem={setActiveItem}
