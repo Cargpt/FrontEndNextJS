@@ -41,7 +41,7 @@ export const useFCMWebPush = () => {
                     .then((currentToken) => {
                         if (currentToken) {
                             console.log('Web FCM Token:', currentToken);
-                            fetch('https://backend.aicaradvisor.com/api/cargpt/store-token/', {
+                            fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cargpt/store-token/`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ token: currentToken }),
@@ -106,7 +106,7 @@ export const useFCMWebPush = () => {
             window.removeEventListener('storage', syncNotifications);
         };
     }, []);
-
+     console.log("notification", notifications)
     return { notifications, setNotifications };
 };
 
