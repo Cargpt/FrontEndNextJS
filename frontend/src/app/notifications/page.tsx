@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { useNotifications } from "../../Context/NotificationContext";
 import {
   AppBar,
   Toolbar,
@@ -14,13 +13,17 @@ import {
   List,
   ListItem,
   Stack,
+  useTheme,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import { useRouter } from "next/navigation";
+import { useNotifications } from "../../Context/NotificationContext";
 
 const NotificationsPage = () => {
   const { notifications, setNotifications } = useNotifications();
   const router = useRouter();
+  const theme = useTheme();
 
   const markAsRead = (index: number) => {
     setNotifications((prev) =>
@@ -34,23 +37,31 @@ const NotificationsPage = () => {
     setNotifications([]);
   };
 
+  const hasNotifications = notifications?.length > 0;
+
   return (
-    <Box sx={{ backgroundColor: "#f5f5f5", minHeight: "100vh" }}>
-      {/* Top Navbar */}
-      <AppBar position="static" sx={{ backgroundColor: "#1976d2" }}>
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="back"
-            onClick={() => router.back()}
-            sx={{ mr: 2 }}
-          >
-            <ArrowBackIcon />
-          </IconButton>
-          <Typography variant="h6" component="div">
-            
-          </Typography>
+    <Box sx={{ backgroundColor: theme.palette.background.default, minHeight: "100vh" }}>
+      {/* App Bar */}
+      <AppBar position="static">
+        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="back"
+              onClick={() => router.back()}
+              sx={{ mr: 2 }}
+            >
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h6">Notifications</Typography>
+          </Box>
+
+          {hasNotifications && (
+            <IconButton color="inherit" onClick={clearAllNotifications}>
+              <DeleteSweepIcon />
+            </IconButton>
+          )}
         </Toolbar>
       </AppBar>
 
@@ -61,36 +72,38 @@ const NotificationsPage = () => {
           maxWidth: "700px",
           margin: "40px auto",
           padding: "24px",
-          backgroundColor: "#ffffff",
+          backgroundColor: theme.palette.background.paper,
           borderRadius: "12px",
-          boxShadow: "0 0 12px rgba(0, 0, 0, 0.1)",
-          border: "1px solid #ddd",
+          boxShadow:
+            theme.palette.mode === "dark"
+              ? "0 0 12px rgba(255, 255, 255, 0.1)"
+              : "0 0 12px rgba(0, 0, 0, 0.1)",
+          border: `1px solid ${theme.palette.divider}`,
           overflowY: "auto",
         }}
       >
-        {notifications?.length > 0 && (
-          <Button
-            variant="contained"
-            color="error"
-            onClick={clearAllNotifications}
-            sx={{ marginBottom: "24px" }}
-          >
-            Clear All
-          </Button>
-        )}
+        {!hasNotifications ? (
+        <Box
+  sx={{
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%", // or use '80vh' or 'calc(100% - 48px)' if needed
+    minHeight: "300px", // optional fallback for small screens
+  }}
+>
+  <Typography
+    variant="body1"
+    sx={{
+      textAlign: "center",
+      color: theme.palette.text.secondary,
+      fontStyle: "italic",
+    }}
+  >
+    🎉 No new notifications.
+  </Typography>
+</Box>
 
-        {(!notifications || notifications.length === 0) ? (
-          <Typography
-            variant="body1"
-            sx={{
-              textAlign: "center",
-              color: "#666",
-              fontStyle: "italic",
-              marginTop: "40px",
-            }}
-          >     Nnotifications.
-            🎉 No new notifications.
-          </Typography>
         ) : (
           <List sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
             {notifications.map((notification, index) => (
@@ -99,16 +112,16 @@ const NotificationsPage = () => {
                   sx={{
                     width: "100%",
                     backgroundColor: notification.read
-                      ? "#f9f9f9"
-                      : "#e8f4fd",
+                      ? theme.palette.action.hover
+                      : theme.palette.primary.light,
                     borderLeft: `6px solid ${
-                      notification.read ? "#b0bec5" : "#2196f3"
+                      notification.read ? theme.palette.divider : theme.palette.primary.main
                     }`,
                     transition: "background-color 0.3s ease",
                     "&:hover": {
                       backgroundColor: notification.read
-                        ? "#f0f0f0"
-                        : "#d2eafc",
+                        ? theme.palette.action.selected
+                        : theme.palette.primary.light,
                     },
                   }}
                 >
@@ -125,17 +138,14 @@ const NotificationsPage = () => {
                           sx={{
                             fontWeight: 600,
                             color: notification.read
-                              ? "#424242"
-                              : "#0d47a1",
+                              ? theme.palette.text.primary
+                              : theme.palette.primary.dark,
                             marginBottom: "4px",
                           }}
                         >
                           {notification.title}
                         </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{ color: "#555", lineHeight: 1.6 }}
-                        >
+                        <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
                           {notification.body}
                         </Typography>
                       </Box>
