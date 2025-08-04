@@ -463,43 +463,99 @@ const {mode}=useColorMode()
                   ))}
                 </Box>
 
-<Stack
-  direction="row"
-  gap="5px"
-  justifyContent="center"
-  flexWrap="wrap"
-  sx={{ marginTop: "10px" }}
+<Box
+  sx={{
+    display: "flex",
+    flexDirection: "column", // Default to column direction
+    gap: "5px", // Gap between button rows
+    marginTop: "10px",
+    alignItems: "center", // Center the rows themselves for both mobile and desktop
+    // Responsive adjustments
+    width: {
+      xs: "100%", // Take full width on extra small screens
+      md: "auto", // Auto width for medium and larger screens
+    },
+  }}
 >
-  {[
-    { label: "AI Car Advisor Score:", type: "score", content: car?.AIScore },
-    { label: "User Sentiments:", type: "sentiment", content: car?.AISummary },
-    { label: "EMI", type: "emi" },
-    { label: "Book Test Drive", type: "testDrive" },
-  ].map(({ label, type, content }, idx) => (
+  {/* AI Car Advisor Score Button */}
+  <Button
+    variant="contained"
+    size="small"
+    sx={{
+      textTransform: "capitalize",
+      fontSize: "12px",
+      width: "100%",
+      minHeight: "60px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+    onClick={() => openDialog("score", car)}
+  >
+    <span style={{ whiteSpace: 'nowrap' }}>AI Car Advisor Score: {car?.AIScore || ""}</span>
+  </Button>
+
+  {/* User Sentiments Button */}
+  <Button
+    variant="contained"
+    size="small"
+    sx={{
+      textTransform: "capitalize",
+      fontSize: "12px",
+      width: "100%",
+      minHeight: "60px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    }}
+    onClick={() => openDialog("sentiment", car)}
+  >
+    <span style={{ whiteSpace: 'nowrap' }}>User Sentiments: {car?.AISummary || ""}</span>
+  </Button>
+
+  {/* EMI and Book Test Drive Buttons in a row */}
+  <Stack
+    direction="row"
+    gap="5px"
+    sx={{
+      width: "100%", // Ensure this stack takes full width within its parent
+      justifyContent: "center",
+    }}
+  >
     <Button
-      key={type}
       variant="contained"
       size="small"
       sx={{
         textTransform: "capitalize",
         fontSize: "12px",
-        width: {
-          xs: "100%",
-          md: "48%",
-        },
+        flexGrow: 1,
+        minHeight: "60px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
-      onClick={() =>
-        type === "testDrive"
-          ? handleOpenTestDriveModal(car)
-          : openDialog(type, car)
-      }
+      onClick={() => openDialog("emi", car)}
     >
-      <span>
-        {label} {content || ""}
-      </span>
+      <span>EMI</span>
     </Button>
-  ))}
-</Stack>
+    <Button
+      variant="contained"
+      size="small"
+      sx={{
+        textTransform: "capitalize",
+        fontSize: "12px",
+        flexGrow: 1,
+        minHeight: "60px",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+      onClick={() => handleOpenTestDriveModal(car)}
+    >
+      <span>Book Test Drive</span>
+    </Button>
+  </Stack>
+</Box>
 
               </CardContent>
             </Card>)

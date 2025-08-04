@@ -437,14 +437,15 @@ const {mode}=useColorMode()
     <Card
       sx={{
         minWidth: "280px", // Reduced minWidth
-        p: 1.5, // Reduced padding
+        px: 0.5,
+        py:0,// Reduced padding
         boxShadow: "none",
         border: "none",
         borderBottom: "none",
         backgroundColor: mode==="dark"? theme.palette.background.paper:"grey.100",
       }}
     >
-      <CardContent sx={{ pb: 0.5 }}> {/* Further reduced padding-bottom */}
+      <CardContent sx={{ pb: 0 }}> {/* Further reduced padding-bottom */}
         <Typography variant="h5" gutterBottom>
           {botType}
         </Typography>
@@ -462,7 +463,7 @@ const {mode}=useColorMode()
           }}
         >
           {/* Brand Selector */}
-          <FormControl sx={{ m: 0.5, minWidth: 120 }} size="small">
+          <FormControl sx={{ mx: 0.5, minWidth: 120 }} size="small">
             <InputLabel id="brand-label">Brand</InputLabel>
             <Select
               disabled={isDisable}

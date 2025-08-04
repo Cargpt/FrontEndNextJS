@@ -495,7 +495,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
         <Paper
           elevation={3}
           sx={{
-            p: 2,
+            px: 0.1,
             width: isSmallScreen ? "100%" : "70%",
             display: "flex",
             flexDirection: "column",
