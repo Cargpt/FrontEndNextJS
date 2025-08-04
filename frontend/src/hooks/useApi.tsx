@@ -1,6 +1,6 @@
 import { axiosInstance1 } from '@/utils/axiosInstance';
 import { useEffect, useState } from 'react';
-
+// comment here
 const useApi = (url:string, method:"post"|"get"|"delete"|"put", options = {}) => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
