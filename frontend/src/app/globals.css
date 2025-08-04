@@ -1,3 +1,6 @@
+@import "../../node_modules/slick-carousel/slick/slick.css";
+@import "../../node_modules/slick-carousel/slick/slick-theme.css";
+
 :root {
   --background: #ddddd2ad;
   --foreground: #171717;
@@ -109,11 +112,224 @@ html, body, .my-custom-scroll-container {
   color: grey !important;
   font-size: 25px !important;
 }
+/* Base styling for both arrows */
+.slick-prev,
+.slick-next {
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 48px;
+  height: 48px;
+  background-color: #000; /* Dark background for contrast */
+  border-radius: 50%;
+  border: none;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* Arrow positioning */
+.slick-prev {
+  left: -24px !important;
+}
+
+.slick-next {
+  right: -24px !important;
+}
+
+/* Arrow icon styling */
+.slick-prev::before,
+.slick-next::before {
+  font-size: 36px !important;  /* Bigger icon */
+  color: #fff !important;      /* White arrows */
+  background: none;
+  content: '\2039';            /* ‹ (left arrow) */
+}
+
+/* Right arrow content */
+.slick-next::before {
+  content: '\203A';            /* › (right arrow) */
+}
+
+/* Mobile responsive tweak */
+@media (max-width: 600px) {
+  .slick-prev {
+    left: -16px !important;
+  }
+
+  .slick-next {
+    right: -16px !important;
+  }
+}
+/* Position arrows cleanly */
+.slick-prev,
+.slick-next {
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  box-shadow: none;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Place arrows slightly outside the card */
+.slick-prev {
+  left: -20px !important;
+}
+
+.slick-next {
+  right: -20px !important;
+}
+
+/* Arrow icons (default Slick icons) */
+.slick-prev::before,
+.slick-next::before {
+  font-size: 28px;     /* Increase icon size */
+  color: #333;         /* Arrow color */
+  content: '\2039';    /* Default: ‹ */
+  background: none;
+  box-shadow: none;
+}
+
+/* Right arrow override */
+.slick-next::before {
+  content: '\203A';    /* › */
+}
+
+/* Optional: tweak for small screens */
+@media (max-width: 600px) {
+  .slick-prev {
+    left: -12px !important;
+  }
+  .slick-next {
+    right: -12px !important;
+  }
+}/* Slick arrow buttons */
+.slick-prev,
+.slick-next {
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 40px;  /* Bigger clickable area */
+  height: 40px;
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* Move arrows outside card */
+.slick-prev {
+  left: -20px !important;
+}
+
+.slick-next {
+  right: -20px !important;
+}
+
+/* Make sure the arrows (‹ and ›) are large and visible */
+.slick-prev::before,
+.slick-next::before {
+  font-size: 32px !important;  /* ← Increase this for bigger icon */
+  color: #000 !important;      /* Solid black for visibility */
+  content: '\2039';            /* ‹ (left) */
+  background: #fff !important;
+  box-shadow: #000 !important;
+}
+
+/* Right arrow */
+.slick-next::before {
+  content: '\203A';            /* › (right) */
+}
+.slick-prev,
+.slick-next {
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 48px;
+  height: 48px;
+  background-color: #fefefe; /* Grey background */
+  border-radius: 50%;
+  border: none;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+/* Left and right positioning */
+.slick-prev {
+  left: -24px !important;
+}
+
+.slick-next {
+  right: -24px !important;
+}
+
+/* Arrow icon styling */
+.slick-prev::before,
+.slick-next::before {
+  font-size: 24px;
+  color: #fff; /* White arrow */
+  font-weight: bold;
+  background: none;
+  content: '\2039'; /* Left arrow ‹ */
+}
+
+.slick-next::before {
+  content: '\203A'; /* Right arrow › */
+}
 
 
+.slick-prev,
+.slick-next {
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+}
 
+/* Move arrows outside the card */
+.slick-prev {
+  left: -20px;
+}
 
+.slick-next {
+  right: -20px;
+}
 
+/* Mobile tweaks */
+@media (max-width: 600px) {
+  .slick-prev {
+    left: -12px;
+  }
+
+  .slick-next {
+    right: -12px;
+  }
+} 
 
 /* Scoped styles under .prompt */
 .prompt {

@@ -436,8 +436,8 @@ const {mode}=useColorMode()
   return (
     <Card
       sx={{
-        minWidth: "100px", // Reduced minWidth
-        p: 1, // Reduced padding
+        minWidth: "280px", // Reduced minWidth
+        p: 1.5, // Reduced padding
         boxShadow: "none",
         border: "none",
         borderBottom: "none",
@@ -561,32 +561,34 @@ const {mode}=useColorMode()
             handleBudgetChange={handleTransmissionChange}
           />
         </div>
-        <div style={{ marginTop: "0.25rem" }}> {/* Reduced margin-top */}
+        <div style={{ marginTop: "0.25rem" }}>
           <BudgetSelector
             budgetTypes={SeatCaps}
-            currentBudget={currentSeatCap.toString()}
+            currentBudget={currentSeatCap?.toString?.() ?? ""}
             label="Seating Capacity"
             handleBudgetChange={handleSeatCapChange}
           />
         </div>
 
-        <div style={{ marginTop: "0.25rem" }}> {/* Reduced margin-top */}
+        <div style={{ marginTop: "0.25rem" }}>
           <BudgetSelector
             budgetTypes={bodyTypes}
-            currentBudget={currentBodyType.toString()}
+            currentBudget={currentBodyType?.toString?.() ?? ""}
             label="Body Type"
             handleBudgetChange={handleBodyTypeChange}
           />
         </div>
 
-        <div style={{ marginTop: "0.25rem" }}> {/* Reduced margin-top */}
+
+        <div style={{ marginTop: "0.25rem" }}>
           <BudgetSelector
             budgetTypes={bugetTypes}
-            currentBudget={currentBudget.toString()}
+            currentBudget={currentBudget?.toString?.() ?? ""}
             label="Budget"
             handleBudgetChange={handleBudgetChange}
           />
         </div>
+
 
         <div
           style={{

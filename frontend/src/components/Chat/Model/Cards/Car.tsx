@@ -233,7 +233,7 @@ const hideSignUP = () => {
       {
         breakpoint: 1024,
         settings: {
-          slidesToShow: modelCars.length > 1 ? 2 : 1,
+          slidesToShow: 1,
           slidesToScroll: 1,
           dots: false,
         },
@@ -291,7 +291,7 @@ const {mode}=useColorMode()
             (<Card
               key={index}
               sx={{
-                maxWidth: 380,
+                
                 borderRadius: 2,
                 boxShadow: 1,
                 position: "relative",
@@ -509,16 +509,16 @@ const {mode}=useColorMode()
       <Stack
         direction="row"
         gap={2}
-        mt={3}
-        flexWrap="wrap"
-        justifyContent={{ xs: "center", sm: "flex-start" }}
+        mt={1}
+        flexWrap="nowrap"
+        justifyContent="center"
       >
         <Button
           variant="outlined"
           onClick={onClick}
           sx={{ textTransform: "capitalize", fontSize: 13  }}
         >
-          I know exactly I want
+          I know exactly what I want
         </Button>
         <Button
           variant="outlined"
