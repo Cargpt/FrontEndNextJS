@@ -43,6 +43,7 @@ const BookTestDrive: React.FC<BookTestDriveProps> = ({ open, onClose, carDetails
   const [mobile, setMobile] = useState('');
   const [state, setState] = useState('');
   const [city, setCity] = useState('');
+  const [pincode, setPincode] = useState(''); // New state for pincode
   const [preferredDatetime, setPreferredDatetime] = useState<Dayjs | null>(dayjs().add(1, 'day'));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,12 +106,21 @@ const [cookies]=useCookies(['user'])
       setMobile(value);
     }
   };
+
+  const handlePincodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Allow only digits and limit to 6 characters for pincode
+    if (/^\d*$/.test(value) && value.length <= 6) {
+      setPincode(value);
+    }
+  };
+
   const handleSubmit = async () => {
     setError(null);
     setSuccess(null);
     setLoading(true);
     // Frontend validation
-    if (!name || !mobile || !state || !city || !preferredDatetime) {
+    if (!name || !mobile || !state || !city || !pincode || !preferredDatetime) {
       setError('Please fill in all required fields.');
       setLoading(false);
       return;
@@ -138,6 +148,7 @@ const [cookies]=useCookies(['user'])
       brand: carDetails.BrandID,
       model: carDetails.ModelID,
       variant: carDetails.VariantID,
+      pincode: pincode, // Add pincode to booking data
     };
     try {
       // The custom fetch wrapper is assumed to return the JSON body directly on success.
@@ -171,6 +182,7 @@ const [cookies]=useCookies(['user'])
     setMobile('');
     setState('');
     setCity('');
+    setPincode(''); // Reset pincode
   setPreferredDatetime(dayjs().add(1, 'day')); // <-- next day here too
     setError(null);
     setSuccess(null);
@@ -185,8 +197,9 @@ const [cookies]=useCookies(['user'])
 
    useEffect(() => {
     if(cookies.user){
- setName(`${cookies.user?.first_name} ${cookies.user?.last_name}`)
-   setMobile(`${cookies.user?.mobile_no ? cookies.user?.mobile_no : cookies?.user?.mobile_no_read}`)
+      setName(`${cookies.user?.first_name} ${cookies.user?.last_name}`)
+      setMobile(`${cookies.user?.mobile_no ? cookies.user?.mobile_no : cookies?.user?.mobile_no_read}`)
+      setPincode(`${cookies.user?.pincode || ''}`); // Populate pincode from cookies
     }
   
    
@@ -294,6 +307,22 @@ const [cookies]=useCookies(['user'])
                 ))}
               </Select>
             </FormControl>
+          </Box>
+          {/* New Row for Pincode */}
+          <Box mb={2}>
+            <TextField
+              margin="none"
+              required
+              fullWidth
+              id="pincode"
+              label="Pincode"
+              name="pincode"
+              type="tel"
+              inputProps={{ maxLength: 6 }}
+              value={pincode}
+              onChange={handlePincodeChange}
+              disabled={loading}
+            />
           </Box>
           {/* Row 3: Preferred Date and Time (full width) */}
           <LocalizationProvider dateAdapter={AdapterDayjs}>

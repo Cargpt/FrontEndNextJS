@@ -159,7 +159,6 @@ const AskAIChat: React.FC = () => {
         overflowX: "clip",
       }}
     >
-      
       {/* Messages Area */}
       <Box
         sx={{
@@ -351,114 +350,112 @@ const AskAIChat: React.FC = () => {
         )}
         <div ref={bottomRef} />
       </Box>
-
       {/* Input Area */}
-<Box
-  sx={{
-    p: 3,
-    borderTop:  mode=="dark" ? "#000" : "1px solid #f0f0f0",
-    bgcolor:  mode=="dark" ? "#000" : "white",
-    mb: isSmallScreen ? 5 : 2,
-    minWidth: 0,
-  }}
->
-  <Box
-    sx={{
-      display: "flex",
-      alignItems: "flex-end",
-      position: "relative",
-      minWidth: 0,
-      overflow: "visible", // ✅ Fix overflow on input focus
-    }}
-  >
-    <TextField
-  fullWidth
-  multiline
-  maxRows={3}
-  value={inputMessage}
-  onChange={(e) => setInputMessage(e.target.value)}
-  onKeyPress={handleKeyPress}
-  placeholder="Type your message..."
-  variant="outlined"
-  size="small"
-  disabled={loading}
-  sx={{
-    pr: 0,
-    minWidth: 0,
-    "& .MuiOutlinedInput-root": {
-      borderRadius: 4,
-      bgcolor: mode === "dark" ? "#2c2c2c" : "#f5f5f5",
-      border: "none",
-      transition: "all 0.2s ease",
-      minWidth: 0,
-      maxWidth: "100%",
-      "& fieldset": {
-        border: "none",
-      },
-      "&:hover": {
-        bgcolor: mode === "dark" ? "#3a3a3a" : "#eeeeee",
-      },
-      "&.Mui-focused": {
-        bgcolor: mode === "dark" ? "#1e1e1e" : "white",
-        boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
-      },
-      "&.Mui-focused fieldset": {
-        border: `2px solid ${mode === "dark" ? "#90caf9" : "#1876d2"}`,
-      },
-    },
-    "& .MuiInputBase-input": {
-      padding: "10px 14px",
-      fontSize: "16px",
-      lineHeight: "1.4",
-      minWidth: 0,
-      color: mode === "dark" ? "#fff" : "#000",
-      "&::placeholder": {
-        color: mode === "dark" ? "#aaa" : "#9e9e9e",
-        opacity: 1,
-      },
-    },
-    "& .MuiInputBase-root": {
-      minWidth: 0,
-      "&:has(input:focus)": {
-        bgcolor: mode === "dark" ? "#1e1e1e" : "white",
-      },
-    },
-  }}
-  InputProps={{
-    endAdornment: (
-      <Box sx={{ display: "flex", alignItems: "flex-end", minWidth: 0 }}>
-        <IconButton
-          onClick={sendMessage}
-          disabled={!inputMessage.trim() || loading}
+      <Box
+        sx={{
+          p: 3,
+          borderTop:  mode=="dark" ? "#000" : "1px solid #f0f0f0",
+          bgcolor:  mode=="dark" ? "#000" : "white",
+          mb: isSmallScreen ? 5 : 2,
+          minWidth: 0,
+        }}
+      >
+        <Box
           sx={{
-            bgcolor: "#1876d2",
-            color: "white",
-            width: 38,
-            height: 38,
-            borderRadius: "50%",
-            ml: 1,
-            "&:hover": {
-              bgcolor: "#1565c0",
-              transform: "scale(1.05)",
-            },
-            "&:disabled": {
-              bgcolor: "#e0e0e0",
-              color: "#9e9e9e",
-            },
-            transition: "all 0.2s ease",
-            boxShadow: "0 2px 8px rgba(24, 118, 210, 0.3)",
+            display: "flex",
+            alignItems: "flex-end",
+            position: "relative",
+            minWidth: 0,
+            overflow: "visible", // ✅ Fix overflow on input focus
           }}
         >
-          <Send />
-        </IconButton>
-      </Box>
-    ),
-  }}
-/>
+          <TextField
+        fullWidth
+        multiline
+        maxRows={3}
+        value={inputMessage}
+        onChange={(e) => setInputMessage(e.target.value)}
+        onKeyPress={handleKeyPress}
+        placeholder="Type your message..."
+        variant="outlined"
+        size="small"
+        disabled={loading}
+        sx={{
+          pr: 0,
+          minWidth: 0,
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 4,
+            bgcolor: mode === "dark" ? "#2c2c2c" : "#f5f5f5",
+            border: "none",
+            transition: "all 0.2s ease",
+            minWidth: 0,
+            maxWidth: "100%",
+            "& fieldset": {
+              border: "none",
+            },
+            "&:hover": {
+              bgcolor: mode === "dark" ? "#3a3a3a" : "#eeeeee",
+            },
+            "&.Mui-focused": {
+              bgcolor: mode === "dark" ? "#1e1e1e" : "white",
+              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.2)",
+            },
+            "&.Mui-focused fieldset": {
+              border: `2px solid ${mode === "dark" ? "#90caf9" : "#1876d2"}`,
+            },
+          },
+          "& .MuiInputBase-input": {
+            padding: "10px 14px",
+            fontSize: "16px",
+            lineHeight: "1.4",
+            minWidth: 0,
+            color: mode === "dark" ? "#fff" : "#000",
+            "&::placeholder": {
+              color: mode === "dark" ? "#aaa" : "#9e9e9e",
+              opacity: 1,
+            },
+          },
+          "& .MuiInputBase-root": {
+            minWidth: 0,
+            "&:has(input:focus)": {
+              bgcolor: mode === "dark" ? "#1e1e1e" : "white",
+            },
+          },
+        }}
+        InputProps={{
+          endAdornment: (
+            <Box sx={{ display: "flex", alignItems: "flex-end", minWidth: 0 }}>
+              <IconButton
+                onClick={sendMessage}
+                disabled={!inputMessage.trim() || loading}
+                sx={{
+                  bgcolor: "#1876d2",
+                  color: "white",
+                  width: 38,
+                  height: 38,
+                  borderRadius: "50%",
+                  ml: 1,
+                  "&:hover": {
+                    bgcolor: "#1565c0",
+                    transform: "scale(1.05)",
+                  },
+                  "&:disabled": {
+                    bgcolor: "#e0e0e0",
+                    color: "#9e9e9e",
+                  },
+                  transition: "all 0.2s ease",
+                  boxShadow: "0 2px 8px rgba(24, 118, 210, 0.3)",
+                }}
+              >
+                <Send />
+              </IconButton>
+            </Box>
+          ),
+        }}
+      />
 
-  </Box>
-</Box>
-      
+        </Box>
+      </Box>
     </Box>
   );
 };

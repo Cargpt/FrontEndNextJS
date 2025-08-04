@@ -27,6 +27,7 @@ interface Booking {
   brand_name: string;
   model_name: string;
   variant_name: string;
+  pincode: string; // Add pincode field
 }
 
 
@@ -103,6 +104,7 @@ const TestDriveDashboard: React.FC = () => {
       },
       { label: "City", value: selectedBooking.city },
       { label: "State", value: selectedBooking.state },
+      { label: "Pincode", value: selectedBooking.pincode }, // Add pincode display
       { label: "Booking Status", value: selectedBooking.status },
     ].map(({ label, value }) => (
       <Box key={label} border={1} borderColor="grey.300" p={2} borderRadius={1}>

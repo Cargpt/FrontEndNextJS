@@ -44,12 +44,11 @@ const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({
       <Typography gutterBottom sx={{ fontSize: "15px", textAlign: "left", fontWeight: 600 }}>
         ✅ Based on your preferences, here are our recommendations:
       </Typography>
-
       <TableContainer component={Paper}>
         <Table size="small" aria-label="recommendation table">
           {isMobile ? (
             // 📱 Vertical view for small screens
-            <TableBody>
+            (<TableBody>
               {rows.map((row, idx) => (
                 <TableRow key={idx}>
                   <TableCell
@@ -62,10 +61,10 @@ const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({
                   <TableCell>{row.value}</TableCell>
                 </TableRow>
               ))}
-            </TableBody>
+            </TableBody>)
           ) : (
             // 💻 Horizontal view for medium+ screens
-            <>
+            (<>
               <TableHead>
                 <TableRow>
                   {rows.map((row, idx) => (
@@ -82,7 +81,7 @@ const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({
                   ))}
                 </TableRow>
               </TableBody>
-            </>
+            </>)
           )}
         </Table>
       </TableContainer>

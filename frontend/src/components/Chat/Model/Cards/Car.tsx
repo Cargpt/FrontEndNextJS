@@ -288,7 +288,7 @@ const {mode}=useColorMode()
       {modelCars.length > 0 && (
         <Slider {...settings}>
           {modelCars.map((car: any, index: number) => ( // Consider more specific type for 'car'
-            <Card
+            (<Card
               key={index}
               sx={{
                 maxWidth: 380,
@@ -298,7 +298,6 @@ const {mode}=useColorMode()
                 display: "flex",
               }}
             >
-              
               <CardMedia
                 component="img"
                 height="150"
@@ -314,7 +313,6 @@ const {mode}=useColorMode()
                 }}
                 onClick={() => openDialog("gallery", car)}
               />
-
               {/* Gallery Icon */}
               <Box
                 sx={{
@@ -366,7 +364,6 @@ const {mode}=useColorMode()
                   ₹{formatInternational(car.Price )}
                 </Typography>
               </Box>
-
               {/* Content */}
               <CardContent style={{"paddingBottom":"15px", "paddingTop":"2px"}}>
                 <Typography
@@ -505,11 +502,10 @@ const {mode}=useColorMode()
 </Stack>
 
               </CardContent>
-            </Card>
+            </Card>)
           ))}
         </Slider>
       )}
-
       <Stack
         direction="row"
         gap={2}
@@ -578,13 +574,8 @@ const {mode}=useColorMode()
           carDetails={selectedCarForTestDrive}
         />
       )}
-
       <LoginDialog open={open} onClose={hide} showSignUp={showSignUP} />
       <SignupDialog open={showSignUpState} onClose={hideSignUP} onSuccess={()=>{}}/>
-
-
-
-
     </>
   );
 };

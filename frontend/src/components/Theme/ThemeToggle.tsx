@@ -21,34 +21,32 @@ const ThemeToggle = () => {
           <Brightness7Icon sx={{ color: "gold" }} />  // Sun yellow
         )}
       </IconButton> */}
+      <Box
+           sx={{
+             width: { xs: 32, sm: 36, md: 40 },
+             height: { xs: 32, sm: 36, md: 40 },
+             backgroundColor: mode=="dark"? "transparent" : "#eeeeef",
+             borderRadius: "50%",
+             display: "flex",
+             justifyContent: "center",
+             alignItems: "center",
+             cursor: "pointer",
+           }}
+         >
+           <IconButton size="small" onClick={toggleColorMode}>
 
-
-       <Box
-            sx={{
-              width: { xs: 32, sm: 36, md: 40 },
-              height: { xs: 32, sm: 36, md: 40 },
-              backgroundColor: mode=="dark"? "transparent" : "#eeeeef",
-              borderRadius: "50%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
-          >
-            <IconButton size="small" onClick={toggleColorMode}>
-
-                        {mode === "light" ? (
-          <Brightness4Icon sx={{ color: "gray",  width: { xs: 18, sm: 20, md: 24 },
-                  height: { xs: 18, sm: 20, md: 24 } }}
-          
-          />  // Moon gray
-        ) : (
-          <Brightness7Icon sx={{ color: "gold",  width: { xs: 18, sm: 20, md: 24 },
-                  height: { xs: 18, sm: 20, md: 24 } }} />  // Sun yellow
-        )}
-              
-            </IconButton>
-          </Box>
+                       {mode === "light" ? (
+         (<Brightness4Icon sx={{ color: "gray",  width: { xs: 18, sm: 20, md: 24 },
+                 height: { xs: 18, sm: 20, md: 24 } }}
+         
+         />)  // Moon gray
+       ) : (
+         (<Brightness7Icon sx={{ color: "gold",  width: { xs: 18, sm: 20, md: 24 },
+                 height: { xs: 18, sm: 20, md: 24 } }} />)  // Sun yellow
+       )}
+             
+           </IconButton>
+         </Box>
     </Tooltip>
   );
 };

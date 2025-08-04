@@ -436,15 +436,15 @@ const {mode}=useColorMode()
   return (
     <Card
       sx={{
-        minWidth: "300px",
-        p: 2,
+        minWidth: "100px", // Reduced minWidth
+        p: 1, // Reduced padding
         boxShadow: "none",
         border: "none",
         borderBottom: "none",
         backgroundColor: mode==="dark"? theme.palette.background.paper:"grey.100",
       }}
     >
-      <CardContent>
+      <CardContent sx={{ pb: 0.5 }}> {/* Further reduced padding-bottom */}
         <Typography variant="h5" gutterBottom>
           {botType}
         </Typography>
@@ -458,10 +458,11 @@ const {mode}=useColorMode()
               xs: "column",
               sm: "row",
             },
+            mb: { xs: 0.5, sm: 1 } // Further reduced margin-bottom for mobile
           }}
         >
           {/* Brand Selector */}
-          <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+          <FormControl sx={{ m: 0.5, minWidth: 120 }} size="small">
             <InputLabel id="brand-label">Brand</InputLabel>
             <Select
               disabled={isDisable}
@@ -509,7 +510,7 @@ const {mode}=useColorMode()
 
           {/* Model Selector */}
           <FormControl
-            sx={{ m: 1, minWidth: 120 }}
+            sx={{ m: 0.5, minWidth: 120 }}
             size="small"
             disabled={!brand}
           >
@@ -543,7 +544,7 @@ const {mode}=useColorMode()
           </FormControl>
         </Box>
 
-        <div style={{ marginTop: "1rem" }}>
+        <div style={{ marginTop: "0.25rem" }}> {/* Reduced margin-top */}
           <BudgetSelector
             budgetTypes={FuelTypes}
             currentBudget={currentFuelType}
@@ -552,7 +553,7 @@ const {mode}=useColorMode()
           />
         </div>
 
-        <div style={{ marginTop: "1rem" }}>
+        <div style={{ marginTop: "0.25rem" }}> {/* Reduced margin-top */}
           <BudgetSelector
             budgetTypes={TransmissionTypes}
             currentBudget={currentTransmissionType}
@@ -560,7 +561,7 @@ const {mode}=useColorMode()
             handleBudgetChange={handleTransmissionChange}
           />
         </div>
-        <div style={{ marginTop: "1rem" }}>
+        <div style={{ marginTop: "0.25rem" }}> {/* Reduced margin-top */}
           <BudgetSelector
             budgetTypes={SeatCaps}
             currentBudget={currentSeatCap.toString()}
@@ -569,7 +570,7 @@ const {mode}=useColorMode()
           />
         </div>
 
-        <div style={{ marginTop: "1rem" }}>
+        <div style={{ marginTop: "0.25rem" }}> {/* Reduced margin-top */}
           <BudgetSelector
             budgetTypes={bodyTypes}
             currentBudget={currentBodyType.toString()}
@@ -578,7 +579,7 @@ const {mode}=useColorMode()
           />
         </div>
 
-        <div style={{ marginTop: "1rem" }}>
+        <div style={{ marginTop: "0.25rem" }}> {/* Reduced margin-top */}
           <BudgetSelector
             budgetTypes={bugetTypes}
             currentBudget={currentBudget.toString()}
@@ -592,6 +593,7 @@ const {mode}=useColorMode()
             display: "flex",
             justifyContent: "end",
             justifyItems: "center",
+            marginTop: "0.25rem", // Further reduced margin-top for the button div
           }}
         >
           <Button
