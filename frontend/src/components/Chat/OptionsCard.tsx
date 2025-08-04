@@ -495,7 +495,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
         <Paper
           elevation={3}
           sx={{
-            px: 0.1,
+            p: 2,
             width: isSmallScreen ? "100%" : "70%",
             display: "flex",
             flexDirection: "column",
@@ -528,9 +528,9 @@ if(lastMsg.render==="selectOption") fetchPreference()
                     display: "flex",
                     flexDirection: "column",
                     alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
-                    mb: { xs: 2.5, sm: 1}, 
-                    mt: { xs: 1, sm: 1},
-                    px: 1,
+                    mb: isLastMessage ? 4:2,
+                    mt: { xs: 0, sm: 1 },
+                    px: { xs: 2, sm: 0 },
                     textAlign: msg.sender === "user" ? "right" : "left",
                     fontSize: "14px",
                   }}
@@ -551,8 +551,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
                   )}
                   <Paper
                     sx={{
-                      px: 1.5,
-                      py: 1, // reduced padding inside messages
+                      p:  Number(`${msg.sender=="user" ? "1.5" : 0}`),
                       maxWidth: isSmallScreen ? "100%" : "75%",
                       bgcolor:
                         msg.sender === "user" ? "rgb(211, 227, 255)" : mode==="dark"?"transparent":"grey.100",

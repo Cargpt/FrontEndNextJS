@@ -12,10 +12,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Badge from "@mui/material/Badge";
+  import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 
 import { useNotifications } from "../../Context/NotificationContext";
 
-import styles from "./Header.module.scss";
 
 
 const Header: React.FC = () => {
@@ -77,7 +77,10 @@ const {mode}=useColorMode()
               cursor: "pointer",
             }}
           >
-            <Image src="/assets/list.svg" alt="Menu" width={24} height={24} />
+<MenuOutlinedIcon sx={{ color: mode=="dark"? 'white' :"black"}} />
+
+            {/* <MenuOutlinedIcon  width={24} height={24}/> */}
+            {/* <Image src="/assets/list.svg" alt="Menu" /> */}
           </Box>
 
           {/* Logo */}

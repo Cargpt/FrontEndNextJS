@@ -293,9 +293,9 @@ const {mode}=useColorMode()
               sx={{
                 
                 borderRadius: 2,
-                boxShadow: 1,
                 position: "relative",
                 display: "flex",
+                
               }}
             >
               <CardMedia
@@ -432,7 +432,6 @@ const {mode}=useColorMode()
                       key={item.label}
                       sx={{
                         width: "100%", // Takes up 100% of its grid space
-                        maxWidth: "120px", // Restricting box width to a smaller size
                         px: 1, // Reduced horizontal padding
                         py: 0.75, // Reduced vertical padding
                         borderRadius: 1, // Slightly smaller border radius
@@ -466,59 +465,58 @@ const {mode}=useColorMode()
 <Box
   sx={{
     display: "flex",
-    flexDirection: "column", // Default to column direction
-    gap: "5px", // Gap between button rows
-    marginTop: "10px",
-    alignItems: "center", // Center the rows themselves for both mobile and desktop
-    // Responsive adjustments
+    flexDirection: "column",
+    gap: 1, // 8px vertical spacing
+    mt: 1,
+    alignItems: "center",
     width: {
-      xs: "100%", // Take full width on extra small screens
-      md: "auto", // Auto width for medium and larger screens
+      xs: "100%",
+      md: "auto",
     },
   }}
 >
   {/* AI Car Advisor Score Button */}
   <Button
-    variant="contained"
+    variant="outlined"
     size="small"
     sx={{
-      textTransform: "capitalize",
+      textTransform: "none",
       fontSize: "12px",
+      height: 36, // Reduced height
+      px: 1.5,
+      borderRadius: "6px",
+      whiteSpace: "nowrap",
       width: "100%",
-      minHeight: "60px",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
     }}
     onClick={() => openDialog("score", car)}
   >
-    <span style={{ whiteSpace: 'nowrap' }}>AI Car Advisor Score: {car?.AIScore || ""}</span>
+    AI Car Advisor Score: {car?.AIScore || "--"}
   </Button>
 
   {/* User Sentiments Button */}
   <Button
-    variant="contained"
+    variant="outlined"
     size="small"
     sx={{
-      textTransform: "capitalize",
+      textTransform: "none",
       fontSize: "12px",
+      height: 36,
+      px: 1.5,
+      borderRadius: "6px",
+      whiteSpace: "nowrap",
       width: "100%",
-      minHeight: "60px",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
     }}
     onClick={() => openDialog("sentiment", car)}
   >
-    <span style={{ whiteSpace: 'nowrap' }}>User Sentiments: {car?.AISummary || ""}</span>
+    User Sentiments: {car?.AISummary || "--"}
   </Button>
 
   {/* EMI and Book Test Drive Buttons in a row */}
   <Stack
     direction="row"
-    gap="5px"
+    spacing={1}
     sx={{
-      width: "100%", // Ensure this stack takes full width within its parent
+      width: "100%",
       justifyContent: "center",
     }}
   >
@@ -526,33 +524,31 @@ const {mode}=useColorMode()
       variant="contained"
       size="small"
       sx={{
-        textTransform: "capitalize",
+        textTransform: "none",
         fontSize: "12px",
-        flexGrow: 1,
-        minHeight: "60px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        height: 36,
+        flex: 1,
+        px: 1.5,
+        borderRadius: "6px",
       }}
       onClick={() => openDialog("emi", car)}
     >
-      <span>EMI</span>
+      EMI
     </Button>
     <Button
       variant="contained"
       size="small"
       sx={{
-        textTransform: "capitalize",
+        textTransform: "none",
         fontSize: "12px",
-        flexGrow: 1,
-        minHeight: "60px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        height: 36,
+        flex: 1,
+        px: 1.5,
+        borderRadius: "6px",
       }}
       onClick={() => handleOpenTestDriveModal(car)}
     >
-      <span>Book Test Drive</span>
+      Book Test Drive
     </Button>
   </Stack>
 </Box>
@@ -568,6 +564,7 @@ const {mode}=useColorMode()
         mt={1}
         flexWrap="nowrap"
         justifyContent="center"
+        sx={{pb:2}}
       >
         <Button
           variant="outlined"
