@@ -14,7 +14,6 @@ import {
 import { ArrowForwardIosSharp, InfoOutline, NotificationAddOutlined } from "@mui/icons-material";
 import Link from "next/link";
 import { useCookies } from "react-cookie";
-import Image from "next/image";
 import LoginOutlinedIcon from "@mui/icons-material/LoginOutlined";
 import LoginDialog from "../common/Dialogs/LoginDialog";
 import { useSnackbar } from "@/Context/SnackbarContext";
@@ -205,7 +204,8 @@ const theme=useTheme()
                     (e.currentTarget.style.background = "transparent")
                   }
                 >
-                  <Image
+                  <img 
+                  loading="lazy"
                     src="/assets/test-drive.png"
                     alt="Profile Icon"
                     width={32}

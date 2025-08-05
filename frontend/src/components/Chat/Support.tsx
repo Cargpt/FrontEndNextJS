@@ -8,7 +8,6 @@ import {
   Stack,
   CircularProgress,
 } from "@mui/material";
-import Image from "next/image";
 
 import AdviseSelectionCard from "./Model/AdviceSelectionCard";
 interface Message {
@@ -92,7 +91,7 @@ const Support: React.FC = () => {
               sx={{ mb: 1 }}
             >
               {msg.sender === "bot" && (
-                <Image src="/assets/lisa.svg" alt="bot" width={40} height={40} />
+                <img loading="lazy" src="/assets/lisa.svg" alt="bot" width={40} height={40} />
               )}
               <Paper
                 sx={{

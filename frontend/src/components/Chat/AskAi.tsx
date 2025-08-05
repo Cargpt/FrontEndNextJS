@@ -13,7 +13,6 @@ import {
   useColorScheme,
 } from "@mui/material";
 import { Send, Person, KeyboardBackspaceSharp } from "@mui/icons-material";
-import Image from "next/image";
 
 import { useChats } from "@/Context/ChatContext";
 import { useSnackbar } from "@/Context/SnackbarContext";
@@ -192,7 +191,7 @@ const AskAIChat: React.FC = () => {
             bgcolor: "transparent",
           }}
         >
-          <Image src="/assets/lisa.svg" alt="Lisa" width={32} height={32} />
+          <img loading="lazy" src="/assets/lisa.svg" alt="Lisa" width={32} height={32} />
         </Avatar>
       ) : (
         <Avatar
@@ -314,7 +313,7 @@ const AskAIChat: React.FC = () => {
                 bgcolor: "transparent",
               }}
             >
-              <Image src="/assets/lisa.svg" alt="Lisa" width={32} height={32} />
+              <img loading="lazy" src="/assets/lisa.svg" alt="Lisa" width={32} height={32} />
             </Avatar>
             <Paper
               sx={{

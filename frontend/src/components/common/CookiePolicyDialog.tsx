@@ -1,6 +1,7 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, useMediaQuery } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, Button, Typography, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { KeyboardBackspaceSharp } from "@mui/icons-material";
 
 interface CookiePolicyDialogProps {
   open: boolean;
@@ -27,7 +28,31 @@ const CookiePolicyDialog: React.FC<CookiePolicyDialogProps> = ({ open, onClose }
         }
       } : {}}
     >
-      <DialogTitle>Cookie Preferences</DialogTitle>
+      <DialogTitle
+        sx={{
+          bgcolor: theme.palette.mode == "dark"? "dark":"grey.100",
+          position: "sticky",
+          top: 0,
+          zIndex: 2,
+          textAlign: "center",
+          fontWeight: 700,
+        }}
+      >
+        <Button
+          variant="outlined"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            left: 15,
+            top: 12,
+            zIndex: 3,
+            border: "none",
+          }}
+        >
+          <KeyboardBackspaceSharp />
+        </Button>
+        Cookie Preferences
+      </DialogTitle>
       <DialogContent
         sx={fullScreen ? {
           flex: 1,
@@ -50,9 +75,6 @@ const CookiePolicyDialog: React.FC<CookiePolicyDialogProps> = ({ open, onClose }
           You can change your preferences at any time. For more information, see our <a href="/privacy-policy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>.
         </Typography>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary" variant="contained">Close</Button>
-      </DialogActions>
     </Dialog>
   );
 };

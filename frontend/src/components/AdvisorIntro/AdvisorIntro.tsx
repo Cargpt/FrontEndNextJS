@@ -13,7 +13,6 @@ import {
   ListItemText,
   useTheme,
 } from "@mui/material";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { useCookies } from "react-cookie";
