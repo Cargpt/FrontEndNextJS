@@ -19,7 +19,7 @@ messaging.onBackgroundMessage(function (payload) {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: '/firebase-logo.png'
+    icon: '/assets/AICarAdvisor.png'
   };
 
   // Send the notification to all open clients so they can update their UI

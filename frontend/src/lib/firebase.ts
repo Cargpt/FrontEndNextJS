@@ -1,17 +1,8 @@
 // lib/firebase.ts
+import { initializeApp } from 'firebase/app';
+import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 
-
-// lib/firebase.ts
-
-import { initializeApp } from "firebase/app";
-import {
-  getMessaging,
-  isSupported,
-  getToken as getFCMToken,
-  onMessage as onFCMMessage,
-} from "firebase/messaging";
-
-// Firebase config from your env
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyBlnXWFFmep3B4B7rpdzSOn_rJumhoMVHI",
   authDomain: "cargpt-4366c.firebaseapp.com",
@@ -22,16 +13,7 @@ const firebaseConfig = {
   measurementId: "G-R21W0MRCMT"
 };
 
+const app = initializeApp(firebaseConfig);
+const messaging = getMessaging(app);
 
-// Initialize Firebase app once
-const firebaseApp = initializeApp(firebaseConfig);
-
-// Safe messaging getter
-export const getMessagingIfSupported = async () => {
-  if (typeof window !== "undefined" && (await isSupported())) {
-    return getMessaging(firebaseApp);
-  }
-  return null;
-};
-
-export { getFCMToken, onFCMMessage };
+export { messaging, getToken, onMessage };
