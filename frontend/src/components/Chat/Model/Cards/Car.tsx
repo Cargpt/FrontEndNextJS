@@ -138,12 +138,21 @@ const hideSignUP = () => {
       const response = await axiosInstance1.post('/api/cargpt/bookmark/toggle/', paload);
 
       setFavoriteStates((prev) => ({ ...prev, [index]: !prev[index] }));
-      
-      const update =updateBookmarkByVariantID(cars, variantId, !favoriteStates[index]);
-      setCars((prev) => [
-        ...prev,
-        { [`${variant.BrandName}_${variant.ModelName}`]: update }, // Update the specific car's variants
-      ])
+
+      setCars((prevCars) => {
+        return prevCars.map((carGroup) => {
+          const newCarGroup = { ...carGroup };
+          for (const modelName in newCarGroup) {
+            if (Array.isArray(newCarGroup[modelName])) {
+              newCarGroup[modelName] = newCarGroup[modelName].map((v: any) =>
+                v.VariantID === variantId ? { ...v, is_bookmarked: !favoriteStates[index] } : v
+              );
+            }
+          }
+          return newCarGroup;
+        });
+      });
+
       let msg = "Car added to your bookmarks"
       if(!favoriteStates[index]===false){
         msg = "Car removed from your bookmarks"
@@ -264,23 +273,7 @@ const hideSignUP = () => {
     setMessages((prev) => [...prev, userMessage]);
   };
 
-
-
-
-  function updateBookmarkByVariantID(data:any, variantId:number, newState:boolean) {
-  for (const modelGroup of data) {
-    for (const modelName in modelGroup) {
-      const variants = modelGroup[modelName];
-      for (const variant of variants) {
-        if (variant.VariantID === variantId) {
-          variant.is_bookmarked = newState;
-          return variant; // Return updated variant
-        }
-      }
-    }
-  }
-  return null; // VariantID not found
-}
+  
   console.log("cars", cars);
 const {mode}=useColorMode()
   return (
@@ -399,19 +392,23 @@ const {mode}=useColorMode()
                 </Typography>
                 {/* Static color palette */}
                 <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
-                  {car?.Colors?.map((color:VariantColor, idx:number) => (
-                    <Box
-                      key={idx}
-                      sx={{
-                        width: 16,
-                        height: 16,
-                        borderRadius: "50%",
-                        backgroundColor: color.ColorHex,
-                        border: "1px solid #ccc",
-                        cursor: "pointer",
-                      }}
-                    />
-                  ))}
+                  {car?.Colors?.map((color:VariantColor, idx:number) => {
+                    return (
+                      <Box
+                        key={idx}
+                        sx={{
+                          width: 16,
+                          height: 16,
+                          borderRadius: "50%",
+                          border: "1px solid #ccc",
+                          cursor: "pointer",
+                          background: color.ColorHex.includes(',')
+                            ? `linear-gradient(to right, ${color.ColorHex.split(',')[0]} 50%, ${color.ColorHex.split(',')[1]} 50%)`
+                            : color.ColorHex,
+                        }}
+                      />
+                    );
+                  })}
                 </Box>
 
                 <Box

@@ -9,6 +9,8 @@ import { useCookies } from 'react-cookie';
 import { axiosInstance1 } from '@/utils/axiosInstance';
 import { formatInternational } from '@/utils/services';
 import CloseIcon from '@mui/icons-material/Close';
+import { useColorMode } from '../../Context/ColorModeContext';
+import { useTheme } from '@mui/material/styles';
 
 type Car = {
   id: number;
@@ -29,6 +31,8 @@ const Variants: React.FC<Props> = () => {
       const [bookmarks, setBookmarks] = useState<any[]>([]);
       const router = useRouter();
       const [cookies, setCookie, removeCookie]=useCookies(["selectedOption", "user"])
+      const { mode } = useColorMode();
+      const theme = useTheme();
 
 
 
@@ -92,9 +96,10 @@ function updateBookmarkByVariantID(data:any, variantId:number, newState:boolean)
 
   
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "#f5f7fb" }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: mode === "dark" ? theme.palette.background.paper : "grey.100" }}>
+
       {/* Sticky Navbar */}
-     <AppBar position="fixed" elevation={0} sx={{ bgcolor: "#1976d2" }}>
+     <AppBar position="fixed" elevation={0} sx={{ bgcolor: mode === 'dark' ? '#555' : '#1976d2' }}>
   <Toolbar>
     <IconButton edge="start" color="inherit" onClick={onBack} aria-label="back">
       <KeyboardBackspaceSharpIcon />
@@ -148,7 +153,7 @@ function updateBookmarkByVariantID(data:any, variantId:number, newState:boolean)
                   "&:hover": {
                     boxShadow: "0 8px 24px rgba(25, 118, 210, 0.18)",
                   },
-                  bgcolor: "#fff",
+                  bgcolor: mode === 'dark' ? '#444' : '#fff',
                 }}
               >
                 {/* Remove (Cross) Button */}
@@ -162,9 +167,9 @@ function updateBookmarkByVariantID(data:any, variantId:number, newState:boolean)
                     top: 8,
                     right: 8,
                     zIndex: 1,
-                    bgcolor: "rgba(255,255,255,0.7)",
+                    bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.7)',
                     "&:hover": {
-                      bgcolor: "rgba(255,255,255,1)",
+                      bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,1)',
                     },
                   }}
                   aria-label="remove bookmark"
@@ -185,12 +190,12 @@ function updateBookmarkByVariantID(data:any, variantId:number, newState:boolean)
                 />
                 <CardContent>
                   <Stack direction="row" alignItems="center" justifyContent="space-between" mb={1}>
-                    <Typography variant="h6" fontWeight="bold">
+                    <Typography variant="h6" fontWeight="bold" sx={{color: mode === 'dark' ? '#fff' : 'inherit'}}>
                       {car?.BrandName} {car?.ModelName}
                     </Typography>
                 
                   </Stack>
-                  <Typography variant="body2" color="text.secondary" mb={0.5}>
+                  <Typography variant="body2" color="text.secondary" mb={0.5} sx={{color: mode === 'dark' ? '#ccc' : 'inherit'}}>
                     {car?.VariantName}
                   </Typography>
                   <Typography variant="body2" color="primary" fontWeight="bold">
