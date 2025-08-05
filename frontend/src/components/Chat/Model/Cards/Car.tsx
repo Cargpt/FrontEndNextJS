@@ -32,6 +32,8 @@ import { formatInternational } from '@/utils/services';
 import { Sign } from 'crypto';
 import SignupDialog from '@/components/Auth/SignupDialog';
 import { useColorMode } from '@/Context/ColorModeContext';
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 
 type Props = {
   onClick?: () => void;
@@ -218,6 +220,57 @@ const hideSignUP = () => {
     setSelectedCarForTestDrive(null);
   };
 
+
+  // Custom Next Arrow Component
+const CustomNextArrow = (props: any) => {
+  const { className, onClick, style } = props;
+  const { mode } = useColorMode();
+
+  return (
+    <ArrowForwardIosIcon
+      className={className}
+      onClick={onClick}
+      sx={{
+        ...style,
+        color: mode === "dark" ? "#fff" : "#ccc",
+        
+        fontSize: 30,
+        cursor: "pointer",
+        right: 10, // Adjust if needed
+        zIndex: 10,
+         "&:hover": {
+          color: mode === "dark" ? "#ddd" : "#222", // Custom hover color
+        },
+      }}
+    />
+  );
+};
+
+// Custom Prev Arrow Component
+const CustomPrevArrow = (props: any) => {
+  const { className, onClick, style } = props;
+  const { mode } = useColorMode();
+
+  return (
+    <ArrowBackIosNewIcon
+      className={className}
+      onClick={onClick}
+      sx={{
+        ...style,
+        color: mode === "dark" ? "#fff" : "#ccc",
+        fontSize: 30,
+        cursor: "pointer",
+        left: 10, // Adjust if needed
+        zIndex: 10,
+         "&:hover": {
+          color: mode === "dark" ? "#ddd" : "#222", // Custom hover color
+        },
+      }}
+    />
+  );
+};
+
+
   const settings: Settings = {
   
     infinite: false,
@@ -228,6 +281,9 @@ const hideSignUP = () => {
     autoplaySpeed: 3000,
     dots: false,
     arrows: true,
+    nextArrow: <CustomNextArrow />,
+    prevArrow: <CustomPrevArrow />,
+
     responsive: [
       {
         breakpoint: 1024,
@@ -284,8 +340,10 @@ const hideSignUP = () => {
 const {mode}=useColorMode()
   return (
     <>
+
       {modelCars.length > 0 && (
         <Slider {...settings}>
+
           {modelCars.map((car: any, index: number) => ( // Consider more specific type for 'car'
             (<Card
               key={index}
@@ -556,6 +614,7 @@ const {mode}=useColorMode()
             </Card>)
           ))}
         </Slider>
+
       )}
       <Stack
         direction="row"
