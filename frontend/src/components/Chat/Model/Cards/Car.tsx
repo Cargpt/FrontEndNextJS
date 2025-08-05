@@ -22,7 +22,6 @@ import EMIDialog from "@/components/common/Dialogs/EMIDialog/EMIDialog";
 import SentimentDialog from "@/components/common/Dialogs/SentimentDialog/SentimentDialog";
 // Ensure the casing here matches the actual filename on disk (e.g., BookTestDrive.tsx)
 import BookTestDrive from "@/components/common/Dialogs/TestDrivemodel/Booktestdrive"; // Corrected import path for casing
-import Image from "next/image";
 import { Avatar, IconButton, useTheme } from "@mui/material";
 import CollectionsIcon from '@mui/icons-material/Collections';
 import LoginDialog from '@/components/common/Dialogs/LoginDialog';
@@ -443,7 +442,7 @@ const {mode}=useColorMode()
                       }}
                     >
                       <Box display="flex" justifyContent="center" mt={0.5}>
-                        <Image
+                        <img loading='lazy'
                           src={item.icon}
                           alt={item.label}
                           width={20} // Reduced icon size

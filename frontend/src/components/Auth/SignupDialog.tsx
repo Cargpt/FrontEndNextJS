@@ -17,7 +17,6 @@ import { useTheme } from '@mui/material/styles';
 import { axiosInstance } from '@/utils/axiosInstance';
 import { useCookies } from 'react-cookie';
 import { useSnackbar } from '@/Context/SnackbarContext';
-import Image from 'next/image';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/material.css';
@@ -121,7 +120,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth={isMobile} fullScreen={isMobile}>
       <DialogContent>
         <Box display="flex" justifyContent="center" mb={2} mt={2}>
-          <Image src={mode==="dark"? "/assets/AICarAdvisor_transparent.png":"/assets/AICarAdvisor.png"}  height= {60} alt="Logo" style={{ height:60  }} width={300} />
+          <img loading='lazy' src={mode==="dark"? "/assets/AICarAdvisor_transparent.png":"/assets/AICarAdvisor.png"}  height= {60} alt="Logo" style={{ height:60  }} width={300} />
         </Box>
         <Typography variant="h5" align="center" gutterBottom>
           Sign Up

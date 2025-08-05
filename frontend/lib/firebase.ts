@@ -1,8 +1,5 @@
 // lib/firebase.ts
 
-
-// lib/firebase.ts
-
 import { initializeApp } from "firebase/app";
 import {
   getMessaging,
@@ -13,15 +10,12 @@ import {
 
 // Firebase config from your env
 const firebaseConfig = {
-  apiKey: "AIzaSyBlnXWFFmep3B4B7rpdzSOn_rJumhoMVHI",
-  authDomain: "cargpt-4366c.firebaseapp.com",
-  projectId: "cargpt-4366c",
-  storageBucket: "cargpt-4366c.firebasestorage.app",
-  messagingSenderId: "431860020742",
-  appId: "1:431860020742:web:676e2461ff4de4d8173587",
-  measurementId: "G-R21W0MRCMT"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!,
 };
-
 
 // Initialize Firebase app once
 const firebaseApp = initializeApp(firebaseConfig);

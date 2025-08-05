@@ -10,7 +10,6 @@ import {
   CircularProgress,
   Typography,
 } from "@mui/material";
-import Image from "next/image";
 import { useChats } from "@/Context/ChatContext";
 import PersonIcon from '@mui/icons-material/Person';
 
@@ -537,7 +536,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
                 >
                   {msg.sender === "bot" && (
                     <Box sx={{ mb: 0.5 }}>
-                      <Image src="/assets/lisa.svg" alt="bot" width={32} height={32} />
+                      <img loading="lazy" src="/assets/lisa.svg" alt="bot" width={32} height={32} />
                     </Box>
                   )}
                   {msg.sender === "user" && (

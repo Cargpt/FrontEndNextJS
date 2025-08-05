@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { AppBar, Box, Toolbar, IconButton, useTheme } from "@mui/material";
-import Image from "next/image";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone"; // Bell icon
 import ThemeToggle from "../Theme/ThemeToggle";
 import Sidebar from "../Sidebar/Sidebar";
@@ -91,7 +90,8 @@ const {mode}=useColorMode()
               height: "auto",
             }}
           >
-            <Image
+            <img 
+            loading="lazy"
               src={mode==="dark"? "/assets/AICarAdvisor_transparent.png": "/assets/AICarAdvisor.png"}
               alt="Logo"
               width={220}

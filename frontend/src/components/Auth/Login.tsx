@@ -8,7 +8,6 @@ import {
   CircularProgress,
   Alert,
 } from '@mui/material';
-import Image from 'next/image';
 import { axiosInstance } from '@/utils/axiosInstance';
 import { useCookies } from 'react-cookie';
 import { v4 as uuidv4 } from 'uuid';
@@ -134,7 +133,7 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
         }}
       >
         <Box display="flex" justifyContent="center" mb={2}>
-          <Image src={mode==="light" ? "/assets/AICarAdvisor.png":"/assets/AICarAdvisor_transparent.png"} alt="Logo" style={{ height: 60 }} width={340} height={60} />
+          <img loading='lazy' src={mode==="light" ? "/assets/AICarAdvisor.png":"/assets/AICarAdvisor_transparent.png"} alt="Logo" style={{ height: 60 }} width={340} height={60} />
         </Box>
         <Typography variant="h5" align="center" gutterBottom>
           Login
