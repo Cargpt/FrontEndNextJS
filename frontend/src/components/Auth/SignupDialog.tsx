@@ -12,6 +12,7 @@ import {
   useMediaQuery,
   Box,
   Input,
+  IconButton,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { axiosInstance } from '@/utils/axiosInstance';
@@ -21,6 +22,7 @@ import { useSnackbar } from '@/Context/SnackbarContext';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/material.css';
 import { useColorMode } from '@/Context/ColorModeContext';
+import { KeyboardBackspaceSharp } from "@mui/icons-material";
 
 interface SignupDialogProps {
   open: boolean;
@@ -118,7 +120,31 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth={isMobile} fullScreen={isMobile}>
-      <DialogContent>
+      {/* Close (Back) button */}
+      <IconButton
+        onClick={onClose}
+        sx={{
+          position: "absolute",
+          top: 8,
+          left: 8,
+          zIndex: 1,
+        }}
+        aria-label="close"
+      >
+        <KeyboardBackspaceSharp />
+      </IconButton>
+
+      <DialogContent
+        sx={{
+          overflowX: "hidden",
+          p: 2,
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          mt: 4, // Add margin-top to avoid overlapping with IconButton
+        }}
+      >
         <Box display="flex" justifyContent="center" mb={2} mt={2}>
           <img loading='lazy' src={mode==="dark"? "/assets/AICarAdvisor_transparent.png":"/assets/AICarAdvisor.png"}  height= {60} alt="Logo" style={{ height:60  }} width={300} />
         </Box>

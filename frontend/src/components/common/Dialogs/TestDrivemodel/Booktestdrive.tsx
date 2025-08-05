@@ -14,14 +14,17 @@ import {
   SelectChangeEvent,
   Box,
   Typography,
-  useMediaQuery, // Import useMediaQuery
-  useTheme,     // Import useTheme
+  useMediaQuery,
+  useTheme,
 } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDateTimePicker } from '@mui/x-date-pickers/MobileDateTimePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import { useCookies } from 'react-cookie';
+import { KeyboardBackspaceSharp } from "@mui/icons-material";
+import { useColorMode } from "@/Context/ColorModeContext";
+
 // Define a more specific interface for carDetails passed to this component
 interface CarDetailsForBooking {
   BrandID: number;
@@ -55,7 +58,7 @@ const BookTestDrive: React.FC<BookTestDriveProps> = ({ open, onClose, carDetails
   // Fetch states when the dialog opens
 const [cookies]=useCookies(['user'])
 
-  
+  const {mode}=useColorMode()
   useEffect(() => {
     const fetchStates = async () => {
       if (open) { // Only fetch when dialog is open
@@ -222,7 +225,30 @@ const [cookies]=useCookies(['user'])
         },
       }}
     >
-      <DialogTitle sx={{ backgroundColor: 'primary.main', color: 'white' }}>
+      <DialogTitle
+        sx={{
+          bgcolor: mode=="dark"? "dark":"grey.100",
+          position: "sticky",
+          top: 0,
+          zIndex: 2,
+          display: 'flex',
+          alignItems: 'center',
+          fontWeight: 700,
+          p: 2, // General padding for the title area
+        }}
+      >
+        <Button
+          variant="outlined"
+          onClick={onClose}
+          sx={{
+            border: "none",
+            minWidth: 0, // Remove minWidth to make it compact
+            p: '8px', // Add padding for click area
+            mr: 1, // Add margin right to separate from text
+          }}
+        >
+          <KeyboardBackspaceSharp />
+        </Button>
         Book Test Drive for {carDetails.BrandName} {carDetails.ModelName}
       </DialogTitle>
       <DialogContent dividers>

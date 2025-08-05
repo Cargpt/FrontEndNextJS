@@ -135,7 +135,7 @@ const theme=useTheme()
                     sx={{
                       fontSize: 15,
                       fontWeight: 600,
-                      color: "#222",
+                      color: theme.palette.text.primary,
                     }}
                   >
                     {cookies.user.first_name && cookies.user.last_name
@@ -216,7 +216,7 @@ const theme=useTheme()
                     sx={{
                       fontSize: 15,
                       fontWeight: 600,
-                      color: "#222",
+                      color: theme.palette.text.primary,
                     }}
                   >
                     Booked test drive
@@ -254,7 +254,7 @@ const theme=useTheme()
                   component="span"
                   sx={{
                     fontWeight: 700,
-                    
+                    color: theme.palette.text.primary,
                     fontSize: 15,
                   }}
                 >
@@ -292,6 +292,7 @@ const theme=useTheme()
                           textDecoration: "none",
                           fontSize: 14,
                           fontWeight: 500,
+                          color: theme.palette.text.primary,
                         }}
                       >
                         <span>
@@ -319,7 +320,7 @@ const theme=useTheme()
                           alignItems: "center",
                           padding: "8px 10px",
                           textDecoration: "none",
-                          
+                          color: theme.palette.text.primary,
                           fontSize: 14,
                           fontWeight: 500,
                         }}
@@ -344,7 +345,7 @@ const theme=useTheme()
                         padding: "8px 10px",
                         borderRadius: 6,
                         cursor: "pointer",
-                       
+                        color: theme.palette.text.primary,
                         fontWeight: 600,
                         transition: "background 0.2s",
                       }}

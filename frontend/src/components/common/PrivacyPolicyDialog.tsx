@@ -1,6 +1,7 @@
 import React from "react";
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, Typography, useMediaQuery } from "@mui/material";
+import { Dialog, DialogTitle, DialogContent, Button, Typography, useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { KeyboardBackspaceSharp } from "@mui/icons-material";
 
 interface PrivacyPolicyDialogProps {
   open: boolean;
@@ -27,7 +28,31 @@ const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({ open, onClose
         }
       } : {}}
     >
-      <DialogTitle>Privacy Policy</DialogTitle>
+      <DialogTitle
+        sx={{
+          bgcolor: theme.palette.mode == "dark"? "dark":"grey.100",
+          position: "sticky",
+          top: 0,
+          zIndex: 2,
+          textAlign: "center",
+          fontWeight: 700,
+        }}
+      >
+        <Button
+          variant="outlined"
+          onClick={onClose}
+          sx={{
+            position: "absolute",
+            left: 15,
+            top: 12,
+            zIndex: 3,
+            border: "none",
+          }}
+        >
+          <KeyboardBackspaceSharp />
+        </Button>
+        Privacy Policy
+      </DialogTitle>
       <DialogContent
         sx={fullScreen ? {
           flex: 1,
@@ -56,9 +81,6 @@ const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({ open, onClose
           For full details, please read our complete Privacy Policy on our website. You can contact us for any privacy-related questions.
         </Typography>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary" variant="contained">Close</Button>
-      </DialogActions>
     </Dialog>
   );
 };
