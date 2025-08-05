@@ -125,11 +125,11 @@ export const NotificationProvider = ({
       }
     };
 
-    navigator.serviceWorker.addEventListener("message", handleSWMessage);
+    navigator.serviceWorker?.addEventListener("message", handleSWMessage);
     window.addEventListener("storage", syncNotifications);
 
     return () => {
-      navigator.serviceWorker.removeEventListener("message", handleSWMessage);
+      navigator.serviceWorker?.removeEventListener("message", handleSWMessage);
       window.removeEventListener("storage", syncNotifications);
     };
   }, []);
