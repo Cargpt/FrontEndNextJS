@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import  { useMemo } from 'react';
 import { ThemeProvider, CssBaseline, createTheme, } from '@mui/material';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 
 interface SidebarProps {
   open: boolean;
@@ -35,6 +36,17 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
     const [mode, setMode] = useState<'light' | 'dark'>('light');
 
 const router =useRouter()
+  const [chats, setChats] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (cookies.user) {
+      const storedChats = JSON.parse(localStorage.getItem('chats') || '[]');
+      setChats(storedChats);
+    } else {
+      setChats([]);
+    }
+  }, [cookies.user]);
+
   useEffect(() => {}, [cookies.token]);
 
   const handleLogout = () => {
@@ -225,6 +237,75 @@ const theme=useTheme()
               </Link>
             )}
           </div>
+           
+          
+            {/* History link styled simply */}
+            {/* Remove the History link section */}
+
+            {/* Profile and other links */}
+            {cookies.user && (
+              <Box sx={{ mt: 2, mb: 2 }}>
+                <Typography variant="subtitle2" sx={{ color: theme.palette.text.secondary, fontWeight: 600, mb: 1, ml: 1 }}>
+                  Chats
+                </Typography>
+                <Box sx={{
+                  display: 'flex', flexDirection: 'column', gap: 1, maxHeight: 200, overflowY: 'auto', mb: 2, px: 1
+                }}>
+                  {chats.length === 0 ? (
+                    <Typography variant="body2" sx={{ color: theme.palette.text.disabled, ml: 1 }}>
+                      No chats yet.
+                    </Typography>
+                  ) : (
+                    chats.map((chat, idx) => {
+                      const filterSummary = chat.filter
+                        ? Object.entries(chat.filter)
+                            .filter(([key]) => key !== 'brands') // Exclude brands array
+                            .map(([key, value]) => `${key.replace(/_/g, ' ')}: ${typeof value === 'object' ? JSON.stringify(value) : value}`)
+                            .join(', ')
+                        : '';
+
+                      return (
+                        <Link key={idx} href={`/chats/${chat.id || idx}`} passHref legacyBehavior>
+                          <a
+                            onClick={onClose}
+                            style={{
+                              display: 'flex',
+                              flexDirection: 'column', // Change to column to stack title and summary
+                              alignItems: 'flex-start',
+                              padding: '8px 10px',
+                              borderRadius: 8,
+                              background: theme.palette.mode === 'dark' ? theme.palette.background.default : '#f5f5f5',
+                              marginBottom: 4,
+                              textDecoration: 'none',
+                              color: theme.palette.text.primary,
+                              fontWeight: 500,
+                              fontSize: 15,
+                              cursor: 'pointer',
+                              transition: 'background 0.2s',
+                            }}
+                            onMouseOver={e => (e.currentTarget.style.background = theme.palette.action.hover)}
+                            onMouseOut={e => (e.currentTarget.style.background = theme.palette.mode === 'dark' ? theme.palette.background.default : '#f5f5f5')}
+                          >
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                              <HistoryOutlinedIcon sx={{ fontSize: 18, marginRight: 1, color: theme.palette.text.secondary }} />
+                              <Typography component="span" sx={{ fontSize: 15, fontWeight: 600 }}>
+                                {chat.title || chat.type || 'Chat'}
+                              </Typography>
+                            </Box>
+                            {filterSummary && (
+                              <Typography variant="caption" sx={{ fontSize: 12, color: theme.palette.text.secondary, ml: '26px' }}> {/* Indent to align with title text */}
+                                {filterSummary}
+                              </Typography>
+                            )}
+                          </a>
+                        </Link>
+                      );
+                    })
+                  )}
+                </Box>
+              </Box>
+            )}
+
 
           <Box sx={{ width: "100%", mt: "auto" }}>
             <Accordion

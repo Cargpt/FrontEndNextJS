@@ -30,7 +30,7 @@ import { useBotType } from "@/Context/BotTypeContext";
 // Type-safe options
 
 type BrandModelSelectCardProps = {
-  handleUserMessage: (message: any) => void;
+  handleUserMessage: (message: any, filterPayload?: CarFilter) => void;
   brands: Brand[] | any;
 };
 
@@ -210,7 +210,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
         { [`${brand?.BrandName}_${model?.ModelName}`]: data?.data },
       ]);
 
-      handleUserMessage({ ...payload });
+      handleUserMessage("I am looking for cars based on the selected parameters.", carFilter);
 
       setIsDisable(true);
     } catch (error) {

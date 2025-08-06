@@ -101,6 +101,7 @@ interface Message {
   prompt?: boolean;
   searchParam?:any;
   bookmark?: boolean;
+  filter?: CarFilter; // Add this line
 }
 
 

@@ -55,6 +55,17 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
       path: '/',
       maxAge: 60 * 60 * 24 * 365,
     });
+    // Save chat history if user is logged in
+    if (cookieValueInput?.user) {
+      const chats = JSON.parse(localStorage.getItem('chats') || '[]');
+      const newChat = {
+        type: 'login',
+        user: cookieValueInput.user,
+        timestamp: new Date().toISOString(),
+      };
+      chats.push(newChat);
+      localStorage.setItem('chats', JSON.stringify(chats));
+    }
     hide();
   };
 

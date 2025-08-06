@@ -289,7 +289,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
           />
         );
       case "text":
-        return <Typography sx={{fontSize:"14px"}}  id={`user-message-${index}`}>{capitalizeFirst(message.message)}</Typography>; // Default text rendering
+        return <Typography sx={{ fontSize: "14px" }} id={`user-message-${index}`}>{capitalizeFirst(message.message)}</Typography>;
       case "selectOption":
         return (
           <AdviceSelectionCard
@@ -351,13 +351,14 @@ if(lastMsg.render==="selectOption") fetchPreference()
     }
   };
 
-  const handleUserMessage = (text: any) => {
+  const handleUserMessage = (text: any, filterPayload?: CarFilter) => {
     const lastItem = messages[messages.length - 1];
     const userMessage: Message = {
       id: String(Date.now()),
-      message: "I am looking for cars based on the selected parameters.",
+      message: text,
       render: "text",
       sender: "user",
+      filter: filterPayload, // Add the filter payload here
     };
 
     const newsMessages: Message[] = [
@@ -451,6 +452,26 @@ if(lastMsg.render==="selectOption") fetchPreference()
 
   const router = useRouter();
   const backToPrevious = () => {
+    if (messages && messages.length > 0) {
+      const lastMessage = messages[messages.length - 1];
+      const chatId = lastMessage.id;
+      let chats = JSON.parse(localStorage.getItem('chats') || '[]');
+      const existingIndex = chats.findIndex((c: any) => c.id === chatId);
+      if (existingIndex !== -1) {
+        // Update existing chat
+        chats[existingIndex].messages = messages;
+        chats[existingIndex].filter = filter;
+      } else {
+        // Add new chat
+        chats.push({
+          id: chatId,
+          title: chatId,
+          messages: messages,
+          filter: filter
+        });
+      }
+      localStorage.setItem('chats', JSON.stringify(chats));
+    }
     removeCookie("selectedOption");
     router.push("/");
   };

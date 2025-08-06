@@ -48,7 +48,7 @@ function createAxiosLike(
     config: RequestConfig = {}
   ): Promise<T> {
     const controller = new AbortController();
-    const timeout = config.timeout ?? 5000000;
+    const timeout = config.timeout ?? 10000;
 
     // Handle GET params
     if (method === "GET" && config.params) {
@@ -89,18 +89,11 @@ function createAxiosLike(
       }
 
       const contentType = response.headers.get("Content-Type") ?? "";
-      // Check if the response body is empty or if content type is not JSON
-      if (response.status === 204 || !response.headers.get('Content-Length')) {
-        return {} as T; // Return an empty object for 204 No Content or empty responses
-      }
       if (contentType.includes("application/json")) {
         return (await response.json()) as T;
       }
-      // If content type is not JSON, try to parse as text, or return an empty object
-      const text = await response.text();
-      return (text ? JSON.parse(text) : {}) as T;
+      return (await response.text()) as unknown as T;
     } catch (error: any) {
-      console.error("Request failed:", error);
       if (error.name === "AbortError") {
         throw { message: "Request timed out", timeout: true };
       }
