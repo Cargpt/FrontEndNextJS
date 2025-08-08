@@ -41,65 +41,118 @@ function createAxiosLike(
     "Content-Type": "application/json",
   };
 
+  // async function request<T = any>(
+  //   method: Method,
+  //   url: string,
+  //   data?: any,
+  //   config: RequestConfig = {}
+  // ): Promise<T> {
+  //   const controller = new AbortController();
+  //   const timeout = config.timeout ?? 10000;
+
+  //   // Handle GET params
+  //   if (method === "GET" && config.params) {
+  //     const queryString = serializeParams(config.params);
+  //     url += (url.includes("?") ? "&" : "?") + queryString;
+  //   }
+
+  //   const headers: Record<string, string> = {
+  //     ...defaultHeaders,
+  //     ...getHeaders?.(),
+  //     ...config.headers,
+  //   };
+
+  //   const options: RequestInit = {
+  //     method,
+  //     headers,
+  //     signal: controller.signal,
+  //   };
+
+  //   if (data && method !== "GET") {
+  //     options.body = JSON.stringify(data);
+  //   }
+
+  //   const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  //   try {
+  //     const response = await fetch(baseURL + url, options);
+  //     clearTimeout(timeoutId);
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json().catch(() => ({}));
+  //       const error: ErrorResponse = {
+  //         status: response.status,
+  //         statusText: response.statusText,
+  //         data: errorData,
+  //       };
+  //       throw error;
+  //     }
+
+  //     const contentType = response.headers.get("Content-Type") ?? "";
+  //     if (contentType.includes("application/json")) {
+  //       return (await response.json()) as T;
+  //     }
+  //     return (await response.text()) as unknown as T;
+  //   } catch (error: any) {
+  //     if (error.name === "AbortError") {
+  //       throw { message: "Request timed out", timeout: true };
+  //     }
+  //     throw error;
+  //   }
+  // }
+
+
   async function request<T = any>(
-    method: Method,
-    url: string,
-    data?: any,
-    config: RequestConfig = {}
-  ): Promise<T> {
-    const controller = new AbortController();
-    const timeout = config.timeout ?? 10000;
+  method: Method,
+  url: string,
+  data?: any,
+  config: RequestConfig = {}
+): Promise<T> {
+  // Handle GET params
+  if (method === "GET" && config.params) {
+    const queryString = serializeParams(config.params);
+    url += (url.includes("?") ? "&" : "?") + queryString;
+  }
 
-    // Handle GET params
-    if (method === "GET" && config.params) {
-      const queryString = serializeParams(config.params);
-      url += (url.includes("?") ? "&" : "?") + queryString;
-    }
+  const headers: Record<string, string> = {
+    ...defaultHeaders,
+    ...getHeaders?.(),
+    ...config.headers,
+  };
 
-    const headers: Record<string, string> = {
-      ...defaultHeaders,
-      ...getHeaders?.(),
-      ...config.headers,
-    };
+  const options: RequestInit = {
+    method,
+    headers,
+  };
 
-    const options: RequestInit = {
-      method,
-      headers,
-      signal: controller.signal,
-    };
+  if (data && method !== "GET") {
+    options.body = JSON.stringify(data);
+  }
 
-    if (data && method !== "GET") {
-      options.body = JSON.stringify(data);
-    }
+  try {
+    const response = await fetch(baseURL + url, options);
 
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-    try {
-      const response = await fetch(baseURL + url, options);
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        const error: ErrorResponse = {
-          status: response.status,
-          statusText: response.statusText,
-          data: errorData,
-        };
-        throw error;
-      }
-
-      const contentType = response.headers.get("Content-Type") ?? "";
-      if (contentType.includes("application/json")) {
-        return (await response.json()) as T;
-      }
-      return (await response.text()) as unknown as T;
-    } catch (error: any) {
-      if (error.name === "AbortError") {
-        throw { message: "Request timed out", timeout: true };
-      }
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const error: ErrorResponse = {
+        status: response.status,
+        statusText: response.statusText,
+        data: errorData,
+      };
       throw error;
     }
+
+    const contentType = response.headers.get("Content-Type") ?? "";
+    if (contentType.includes("application/json")) {
+      return (await response.json()) as T;
+    }
+
+    return (await response.text()) as unknown as T;
+  } catch (error: any) {
+    throw error;
   }
+}
+
 
   return {
     get: <T = any>(url: string, config?: RequestConfig) =>
