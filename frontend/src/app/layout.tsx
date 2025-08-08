@@ -47,7 +47,7 @@ export default function RootLayout({
     <html className={roboto.className} lang="en">
       <head>
 
-        <meta name="fast2sms" content="B5dSIfoanSkm5PWRBeV6YLNLP15Zg5lL"/>
+        <meta name="fast2sms" content="hzsET4kOKaZbXoO5p0AOFYrhXd62r1FI"/>
 
 
       </head>
