@@ -14,6 +14,7 @@ import Badge from "@mui/material/Badge";
   import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
 
 import { useNotifications } from "../../Context/NotificationContext";
+import { Capacitor } from "@capacitor/core";
 
 
 
@@ -27,6 +28,7 @@ const Header: React.FC = () => {
 const {mode}=useColorMode()
   const theme = useTheme();
 
+  const isNative = Capacitor.isNativePlatform()
 
   const unreadCount = notifications.filter((n: { read: boolean }) => !n.read).length;
   const readCount = notifications.filter((n: { read: boolean }) => n.read).length;
@@ -48,7 +50,8 @@ const {mode}=useColorMode()
       sx={{
         backgroundColor: theme.palette.background.paper,
         boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-        py: 1,
+        pb: 1, // This maintains your original bottom padding
+      pt: `calc(${theme.spacing(isNative? 5:0)} + env(safe-area-inset-top, 0px))`, // Adds safe area to original top padding
       }}
     >
       <Toolbar

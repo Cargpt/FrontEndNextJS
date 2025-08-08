@@ -1,11 +1,11 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import CookiesClientProvider from "@/providers/CookiesClientProvider";
 import { NotificationProvider } from "../Context/NotificationContext";
 
 import { Roboto } from 'next/font/google';
-import Head from "next/head";
 import Script from "next/script";
+import SafeAreaInit from "@/components/SafeAreaInit";
 
 const roboto = Roboto({
   weight: ['400', '700'], // Specify the weights you need (e.g., normal and bold)
@@ -23,6 +23,17 @@ export const metadata: Metadata = {
 
 
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+ 
+  viewportFit:"cover",
+  // Also useful for PWA setups
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: 'cyan' },
+    { media: '(prefers-color-scheme: dark)', color: 'black' },
+  ],
+};
 
 
 
@@ -35,14 +46,17 @@ export default function RootLayout({
   return (
     <html className={roboto.className} lang="en">
       <head>
+
         <meta name="fast2sms" content="B5dSIfoanSkm5PWRBeV6YLNLP15Zg5lL"/>
 
 
       </head>
       <body>
-        
+         
           <CookiesClientProvider> {/* <-- Wrap your children with the client provider */}
             <NotificationProvider>
+                      <SafeAreaInit />
+
          
 
           {children}

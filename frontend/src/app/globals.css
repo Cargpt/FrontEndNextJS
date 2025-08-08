@@ -1,5 +1,29 @@
 @import "../../node_modules/slick-carousel/slick/slick.css";
 @import "../../node_modules/slick-carousel/slick/slick-theme.css";
+:root {
+  --safe-area-inset-top: env(safe-area-inset-top,0px);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-area-inset-left: env(safe-area-inset-left, 0);
+  --safe-area-inset-right: env(safe-area-inset-right, 0);
+}
+
+html.in-capacitor-app,
+body.in-capacitor-app,
+html.in-capacitor-app #__next,
+body.in-capacitor-app #__next {
+  padding-top: calc(var(--safe-area-inset-top) + 2rem);
+  padding-bottom: calc(var(--safe-area-inset-bottom) + 2rem);
+  padding-left: var(--safe-area-inset-left);
+  padding-right: var(--safe-area-inset-right);
+}
+
+html:not(.in-capacitor-app),
+body:not(.in-capacitor-app),
+html:not(.in-capacitor-app) #__next,
+body:not(.in-capacitor-app) #__next {
+  padding: 0;
+}
+
 
 :root {
   --background: #ddddd2ad;
@@ -434,4 +458,5 @@ html, body, .my-custom-scroll-container {
     60%{background-position:0%  50%, 50% 100%,100%   0%}
     80%{background-position:0%  50%, 50%  50%,100% 100%}
 }
+
 

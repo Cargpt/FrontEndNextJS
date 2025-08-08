@@ -1,0 +1,6 @@
+{
+  "iconPath": "public/capacitor-assets/icon.jpg",
+  "splashPath": "public/capacitor-assets/splash.gif",
+  "backgroundColor": "#1876d2",
+  "platforms": ["android", "ios"]
+}

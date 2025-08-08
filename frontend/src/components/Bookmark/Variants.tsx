@@ -11,6 +11,7 @@ import { formatInternational } from '@/utils/services';
 import CloseIcon from '@mui/icons-material/Close';
 import { useColorMode } from '../../Context/ColorModeContext';
 import { useTheme } from '@mui/material/styles';
+import { Capacitor } from '@capacitor/core';
 
 type Car = {
   id: number;
@@ -34,6 +35,7 @@ const Variants: React.FC<Props> = () => {
       const { mode } = useColorMode();
       const theme = useTheme();
 
+  const isNative = Capacitor.isNativePlatform()
 
 
   const onBack = () => router.back();
@@ -99,7 +101,11 @@ function updateBookmarkByVariantID(data:any, variantId:number, newState:boolean)
     <Box sx={{ minHeight: "100vh", bgcolor: mode === "dark" ? theme.palette.background.paper : "grey.100" }}>
 
       {/* Sticky Navbar */}
-     <AppBar position="fixed" elevation={0} sx={{ bgcolor: mode === 'dark' ? '#555' : '#1976d2' }}>
+     <AppBar
+      position="fixed" elevation={0} sx={{
+           pt: `calc(${theme.spacing(isNative? 5:0)} + env(safe-area-inset-top, 0px))`, // Adds safe area to original top padding
+    
+         }}>
   <Toolbar>
     <IconButton edge="start" color="inherit" onClick={onBack} aria-label="back">
       <KeyboardBackspaceSharpIcon />

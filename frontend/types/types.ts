@@ -117,3 +117,4 @@ interface VariantColor {
 ColorHex:string;
 ColorName:string
 }
+declare module '@capacitor/status-bar';

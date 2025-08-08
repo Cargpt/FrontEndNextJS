@@ -1,8 +1,9 @@
 "use client"
 import React, { useState } from "react";
-import { Box, Link } from "@mui/material";
+import { Box, Link, useTheme } from "@mui/material";
 import CookiePolicyDialog from "./CookiePolicyDialog";
 import PrivacyPolicyDialog from "./PrivacyPolicyDialog";
+import { Capacitor } from "@capacitor/core";
 
 type Props = {
   message: string;
@@ -20,7 +21,8 @@ const FixedBottomMessage: React.FC<Props> = ({ message }) => {
   // Example message: 'By messaging CarGPT, you agree to our Terms and have read our Privacy Policy. See Cookie Preferences.'
   const privacyIndex = message.indexOf('Privacy Policy');
   const cookieIndex = message.indexOf('See Cookie Preferences');
-
+const theme =useTheme()
+const isNative =Capacitor.isNativePlatform()
   return (
     <>
       <Box
@@ -32,10 +34,13 @@ const FixedBottomMessage: React.FC<Props> = ({ message }) => {
           bgcolor: 'background.paper',
           color: 'text.secondary',
           textAlign: 'center',
-          py: 1,
+          pt: 1,
           boxShadow: 3,
           zIndex: 3,
           fontSize: { xs: '12px', sm: '14px' },
+
+           pb: `calc(${theme.spacing(isNative? 5:2)} + env(safe-area-inset-top, 0px))`, // Adds safe area to original top padding
+
         }}
       >
         {/* Before Privacy Policy link */}

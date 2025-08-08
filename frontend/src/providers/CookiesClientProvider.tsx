@@ -8,10 +8,7 @@ import { BotTypeProvider } from "../Context/BotTypeContext";
 import { ChatsProvider } from "@/Context/ChatContext";
 import SnackbarProvider from "@/Context/SnackbarContext";
 import { LoginDialogProvider } from "@/Context/LoginDialogContextType";
-import {
-  
-  createTheme,
-} from "@mui/material";
+
 import { ColorModeProvider, useColorMode } from "@/Context/ColorModeContext";
 
 interface CookiesClientProviderProps {

@@ -30,6 +30,7 @@ import TeslaCard from "./Model/Cards/Car";
 import FixedHeaderWithBack from "../Navbar/Navbar";
 import AskAIChat from "./AskAi";
 import { useColorMode } from "@/Context/ColorModeContext";
+import { Capacitor } from "@capacitor/core";
 
 const ChatBox: React.FC = () => {
   const { cars, messages, setMessages, filter, bookmark, setCars } = useChats();
@@ -477,8 +478,15 @@ if(lastMsg.render==="selectOption") fetchPreference()
     ]);
     }
   }, [bookmark]);
+const isNative = Capacitor.isNativePlatform()
+  const isLastMessage = messages.length - 1;
 
-  console.log("message",messages)
+const bottomSpacing = `calc(
+  ${theme.spacing(isLastMessage ? 6 : 2)} + 
+  ${isNative ? theme.spacing(4) : theme.spacing(2)} + 
+  env(safe-area-inset-bottom, 0px)
+)`;
+
   const {mode}=useColorMode()
   return (
     <>
@@ -519,7 +527,6 @@ if(lastMsg.render==="selectOption") fetchPreference()
           >
             {messages.map((msg, index) => {
               const isLastUserMsg = msg.sender === "user" && index === lastUserMsgIndex;
-              const isLastMessage = index === messages.length - 1;
               return (
                 <Box
                   key={msg.id}
@@ -527,7 +534,8 @@ if(lastMsg.render==="selectOption") fetchPreference()
                     display: "flex",
                     flexDirection: "column",
                     alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
-                    mb: isLastMessage ? 4:2,
+
+                    mb:bottomSpacing,
                     mt: { xs: 0, sm: 1 },
                     px: { xs: 2, sm: 0 },
                     textAlign: msg.sender === "user" ? "right" : "left",

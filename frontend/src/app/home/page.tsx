@@ -13,13 +13,6 @@ const HomePage = () => {
       {/* <AdvisorIntro showInitialExample={true} onBotClick={() => {}} /> */}
       <ChatBox />
       <FixedBottomMessage message="AiCarAdvisor can make mistakes. Check important info. See Cookie Preferences."/>
-      <div className="flex justify-center mt-4">
-        <Link href="/notifications" legacyBehavior>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded">
-            View Notifications
-          </button>
-        </Link>
-      </div>
     </>
   );
 };

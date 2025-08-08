@@ -7,6 +7,8 @@ import { KeyboardBackspaceSharp } from '@mui/icons-material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'; // Outlined heart
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/navigation';
+import { useTheme } from '@mui/material';
+  import { Capacitor } from '@capacitor/core';
 
 type Props = {
   backToPrevious: () => void;
@@ -26,10 +28,22 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
 
     }
   }
+  
+  const theme=useTheme()
+  const isNative = Capacitor.isNativePlatform()
+
   return (
     <>
       <CssBaseline />
-      <AppBar position="fixed">
+      <AppBar position="fixed"
+        sx={{
+        boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+        pb: 1, // This maintains your original bottom padding
+      pt: `calc(${theme.spacing(isNative? 5:0)} + env(safe-area-inset-top, 0px))`, // Adds safe area to original top padding
+      background:"body2"
+      }}
+
+      >
         <Toolbar>
           <IconButton edge="start" color="inherit" onClick={backToPrevious} aria-label="back">
             <KeyboardBackspaceSharp />
