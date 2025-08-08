@@ -32,6 +32,7 @@ import { useBotType } from "@/Context/BotTypeContext";
 type BrandModelSelectCardProps = {
   handleUserMessage: (message: any) => void;
   brands: Brand[] | any;
+  index:number;
 };
 
 import { useSnackbar } from "@/Context/SnackbarContext";
@@ -41,6 +42,7 @@ import { useColorMode } from "@/Context/ColorModeContext";
 const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   handleUserMessage,
   brands,
+  index
 }) => {
   const [brand, setBrand] = useState<Brand>(brands[0]);
 
@@ -74,7 +76,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   const [isBrandChange, setisBrandChange] = useState<boolean>(false);
 
   const { setCars } = useChats();
-    const { messages } = useChats();
+    const { messages, setMessages } = useChats();
 
     const searchParams: any = messages[messages.length - 1]?.searchParam;
 
@@ -433,6 +435,20 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
 
 const theme=useTheme()
 const {mode}=useColorMode()
+
+
+const updateHistory = (index:number,  key:string, value:string)=>{
+  setMessages((prevMessages)=>prevMessages.map((msg)=>{
+    const prevMsg = prevMessages[index]
+    if(prevMsg){
+     const updateMsg = {...prevMsg, [key]: value}
+     return  updateMsg
+
+    }
+    return msg
+  }))
+}
+console.log("message index", messages[index])
   return (
     <Card
       sx={{

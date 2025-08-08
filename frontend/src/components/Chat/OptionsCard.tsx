@@ -61,7 +61,7 @@ const ChatBox: React.FC = () => {
   if (lastMsg.sender === "user" && lastMsg.message === "I know exactly what I want") {
     botMessage = {
       id: String(Date.now()),
-      message: { brands },
+      message: { brands, fuel:"Petrol", seat:5, budget:"5-10L",   },
       render: "brandModelSelect",
       sender: "bot",
     };
@@ -279,6 +279,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
           <BrandModelSelectCard
             handleUserMessage={handleUserMessage}
             brands={message.message?.brands}
+            index ={index}
           />
         );
       case "carOptions":
@@ -291,6 +292,8 @@ if(lastMsg.render==="selectOption") fetchPreference()
         );
       case "text":
         return <Typography sx={{fontSize:"14px"}}  id={`user-message-${index}`}>{capitalizeFirst(message.message)}</Typography>; // Default text rendering
+
+
       case "selectOption":
         return (
           <AdviceSelectionCard
@@ -488,6 +491,8 @@ const bottomSpacing = `calc(
 )`;
 
   const {mode}=useColorMode()
+
+  console.log("message", messages)
   return (
     <>
       <Box
