@@ -41,6 +41,7 @@ const router =useRouter()
     removeCookie("user", { path: "/" });
     router.push("/")
     onClose();
+    showSnackbar("Logged out successfully!", { vertical: "top", horizontal: "center", color: "info" });
   };
 
   const { showSnackbar } = useSnackbar();
@@ -311,7 +312,7 @@ const theme=useTheme()
                     }}
                   
                   >
-                    <Link href="/notificationContainer" passHref legacyBehavior>
+                    <Link href="/notifications" passHref legacyBehavior>
                       <a
                         onClick={onClose}
                         style={{
