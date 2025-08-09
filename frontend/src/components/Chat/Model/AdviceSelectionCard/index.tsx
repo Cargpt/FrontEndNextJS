@@ -23,12 +23,16 @@ interface AdviceSelectionCardProps {
   label: string;
   h1: string;
   onBack?:()=>void;
+  initialValue?: string | null;
+  onPersistSelection?: (partial: any) => void;
 }
 const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
   options,
   label,
   h1,
-  onBack
+  onBack,
+  initialValue = null,
+  onPersistSelection,
 }) => {
   const [selections, setSelections] = useState<{
     [key: string]: string | null;
@@ -37,7 +41,8 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
   });
   const [isDisable, setIsDisable] = useState<boolean>(false);
 
-  const { updateFilter, filter, setMessages, setFilter } = useChats();
+  const { updateFilter, filter, setMessages, setFilter, messages } = useChats();
+  const isFromHistory = Boolean((messages[messages.length - 1] as any)?.fromHistory);
 
   const handleSelect = (type: string, value: string) => {
     const updated = { [type]: value };
@@ -52,23 +57,26 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
     } else {
       updateFilter(label.toLowerCase().replace(/\s+/g, "_"), value);
     }
+
+    // Persist selection into last bot message so history restores selected option
+    onPersistSelection?.({ selections: { [label]: value } });
   };
 
 
   
   useEffect(() => {
-    setSelections({ [label]: label==="budget"? '0-5L': options[0] });
-   
+    const chosen = initialValue ?? (label === "budget" ? '0-5L' : options?.[0]);
+    setSelections({ [label]: chosen });
+
     if (label === "budget") {
-      const upperLimit = getUpperLimitInRupees(options[0]?.toString()) ||  500000;
-       console.log("bud", upperLimit)
+      const upperLimit = getUpperLimitInRupees((initialValue ?? options?.[0])?.toString()) || 500000;
       if (upperLimit) {
         updateFilter(label, upperLimit);
       }
-    } else {
-      updateFilter(label.toLowerCase().replace(/\s+/g, "_"), options[0]);
+    } else if (chosen) {
+      updateFilter(label.toLowerCase().replace(/\s+/g, "_"), chosen);
     }
-  }, []);
+  }, [initialValue]);
 
   const handleNext = async() => {
     // if(label=="transmission type") {
@@ -142,6 +150,7 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
   }, [label]);
 
   
+  console.log("selections", initialValue)
   return (
     <Card
       style={{
@@ -206,8 +215,8 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
             justifyItems: "center",
           }}
         >
-          <Button
-            disabled={isDisable}
+            <Button
+              disabled={isDisable || isFromHistory}
             onClick={handleNext}
             variant="contained"
             color="primary"

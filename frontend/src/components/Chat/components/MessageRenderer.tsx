@@ -15,12 +15,14 @@ type MessageRendererProps = {
   index: number;
   preferences: any[];
   filter: any;
+  availableBrands?: Brand[];
   onIknowExactly: () => void;
   onNeedAdviceSupport: () => void;
   onBack: () => void;
   onShowCars: () => boolean | void;
   onCarRecommendation: () => Promise<void>;
   onUserMessage: (text: any) => void;
+  onPersistBrandModel?: (partial: any) => void;
 };
 
 const MessageRenderer: React.FC<MessageRendererProps> = ({
@@ -28,19 +30,26 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
   index,
   preferences,
   filter,
+  availableBrands,
   onIknowExactly,
   onNeedAdviceSupport,
   onBack,
   onShowCars,
   onCarRecommendation,
   onUserMessage,
+  onPersistBrandModel,
 }) => {
   switch (message.render) {
     case "brandModelSelect":
       return (
         <BrandModelSelectCard
           handleUserMessage={onUserMessage}
-          brands={message.message?.brands}
+          brands={(typeof message.message?.brands !== 'undefined' && message.message?.brands?.length)
+            ? message.message.brands
+            : (availableBrands ?? [])}
+          onPersistState={onPersistBrandModel}
+          initialBrand={message.message?.brand ?? null}
+          initialModel={message.message?.model ?? null}
         />
       );
     case "carOptions":
@@ -57,22 +66,32 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
           {capitalizeFirst(message.message)}
         </Typography>
       );
-    case "selectOption":
+    case "selectOption": {
+      const opts = Array.isArray(preferences)
+        ? preferences.map((p: any) => p?.price_range?.toString())
+        : [];
+      const initial = (message as any)?.message?.selections?.["budget"] ?? null;
+      console.log("initial", message);
       return (
         <AdviceSelectionCard
-          options={preferences?.map((preference: any) => preference?.price_range?.toString())}
+          options={opts}
           label="budget"
           h1={
             "Hi! :👋 I can help you choose the right car based on your preferences. Let's get started! First, what's your budget range in INR?"
           }
+          initialValue={initial}
+          onPersistSelection={onPersistBrandModel}
         />
       );
+    }
     case "flueOption":
       return (
         <AdviceSelectionCard
           options={(message as any)?.data?.fuel_types}
           label="fuel type"
           h1={"⛽: Got it! What’s your preferred fuel type?\n"}
+          initialValue={(message as any)?.message?.selections?.["fuel type"] ?? null}
+          onPersistSelection={onPersistBrandModel}
         />
       );
     case "transmissionOption":
@@ -82,6 +101,8 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
           label="transmission type"
           h1="⚙️ Cool! What kind of transmission do you prefer?"
           onBack={onBack}
+          initialValue={(message as any)?.message?.selections?.["transmission type"] ?? null}
+          onPersistSelection={onPersistBrandModel}
         />
       );
     case "bodyOption":
@@ -90,6 +111,8 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
           options={(message as any)?.data?.body_types}
           label="body type"
           h1="🏎️: Great. What type of car body are you looking for?"
+          initialValue={(message as any)?.message?.selections?.["body type"] ?? null}
+          onPersistSelection={onPersistBrandModel}
         />
       );
     case "brandOption":
@@ -99,12 +122,27 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
           label="brand"
           h1="🚗: Awesome! Which car brand do you prefer?"
           onclick={onCarRecommendation}
+          initialValue={(message as any)?.selections?.["brand"] ?? null}
+          onPersistSelection={onPersistBrandModel}
         />
       );
-    case "selectedFilter":
-      return <CarRecommendationTable recommendations={filter} />;
-    case "recommendationOption":
-      return <OptionsCard onBack={onBack} onShowCars={onShowCars} />;
+    case "selectedFilter": {
+      const rec =
+        typeof (message as any)?.message === "object" && (message as any)?.message
+          ? (message as any).message
+          : filter;
+      return <CarRecommendationTable recommendations={rec} />;
+    }
+    case "recommendationOption": {
+      const disabled = Boolean((message as any)?.fromHistory);
+      return (
+        <OptionsCard
+          onBack={onBack}
+          onShowCars={() => Boolean(onShowCars())}
+          disabled={disabled}
+        />
+      );
+    }
     case "researchOncar":
       return <CarResearchMenu />;
     default:

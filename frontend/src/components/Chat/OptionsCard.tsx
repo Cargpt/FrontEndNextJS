@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Avatar, Paper, useMediaQuery, useTheme, CircularProgress } from "@mui/material";
+import { Box, Avatar, Paper, useMediaQuery, useTheme, CircularProgress, Grow } from "@mui/material";
 import { useChats } from "@/Context/ChatContext";
 import PersonIcon from "@mui/icons-material/Person";
 import { axiosInstance1 } from "@/utils/axiosInstance";
@@ -15,6 +15,7 @@ import MessageRenderer from "./components/MessageRenderer";
 import { useBrands } from "./hooks/useBrands";
 import { usePreferences } from "./hooks/usePreferences";
 import { useAutoScroll } from "./hooks/useAutoScroll";
+import { usePersistHistory } from "./hooks/usePersistHistory";
 
 const ChatBox: React.FC = () => {
   const { cars, messages, setMessages, filter, bookmark, setCars } = useChats();
@@ -23,7 +24,7 @@ const ChatBox: React.FC = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [loading, setLoading] = useState(false);
   const { brands } = useBrands();
-  const [, , removeCookie] = useCookies(["selectedOption"]);
+  const [cookies, , removeCookie] = useCookies(["selectedOption", "user"]);
 
  useEffect(() => {
   if (messages.length === 0) return;
@@ -217,8 +218,9 @@ const ChatBox: React.FC = () => {
     };
     setMessages((prev) => [...prev, userMessage]);
   };
-  const shouldFetchPreferences = messages.length > 0 && messages[messages.length - 1].render === "selectOption";
-  const { preferences } = usePreferences(shouldFetchPreferences);
+  // Fetch preferences when a selectOption card is present anywhere in the restored history
+  const hasSelectOption = messages.some((m) => m.render === "selectOption");
+  const { preferences } = usePreferences(hasSelectOption);
 
 
  
@@ -234,15 +236,34 @@ const ChatBox: React.FC = () => {
       sender: "user",
     };
 
-    const newsMessages: Message[] = [
+    const mergedPayload =
+      lastItem && typeof lastItem.message === "object" && lastItem.message !== null
+        ? { ...(lastItem.message as Record<string, any>), ...(text as Record<string, any>) }
+        : text;
+
+    const updatedLastItem: Message = {
+      ...lastItem,
+      message: mergedPayload,
+    };
+
+    const updatedMessages: Message[] = [
       ...messages.slice(0, messages.length - 1),
-      {
-        ...lastItem,
-        message: text,
-      },
+      updatedLastItem,
+      userMessage,
     ];
-    newsMessages.push(userMessage);
-    setMessages((prev) => [...prev, userMessage]);
+    setMessages(updatedMessages);
+  };
+
+  // Silent updater to persist Brand/Model intermediate selections in the last bot message
+  const updateBrandModelState = (partial: any) => {
+    if (messages.length === 0) return;
+    const lastItem = messages[messages.length - 1];
+    const merged =
+      lastItem && typeof lastItem.message === "object" && lastItem.message !== null
+        ? { ...(lastItem.message as Record<string, any>), ...(partial as Record<string, any>) }
+        : partial;
+    const updatedLastItem: Message = { ...lastItem, message: merged };
+    setMessages([...messages.slice(0, -1), updatedLastItem]);
   };
 
   
@@ -269,6 +290,12 @@ const ChatBox: React.FC = () => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef<boolean>(false);
   const { bottomRef, userAvatarRef, lastUserMsgIndex, scrollToLastMessage } = useAutoScroll(messages);
+
+  // Persist history only when a logged-in user is present
+  usePersistHistory(messages, {
+    endpoint: "/api/cargpt/history/",
+    isEnabled: Boolean(cookies?.user),
+  });
 
 
 
@@ -339,7 +366,7 @@ const bottomSpacing = `calc(
 )`;
 
   const {mode}=useColorMode()
-  console.log("pre", preferences)
+  console.log("history", messages)
   return (
     <>
       <Box
@@ -408,6 +435,7 @@ const bottomSpacing = `calc(
                       </Avatar>
                     </Box>
                   )}
+                  <Grow in appear timeout={300}>
                   <Paper
                     sx={{
                       p:  Number(`${msg.sender=="user" ? "1.5" : 0}`),
@@ -422,14 +450,17 @@ const bottomSpacing = `calc(
                       index={index}
                       preferences={preferences}
                       filter={filter}
+                      availableBrands={brands}
                       onIknowExactly={handleIknowWhatEaxactlyWhatIWant}
                       onNeedAdviceSupport={handleNeedAdviceSupport}
                       onBack={onBack}
                       onShowCars={onShowCar}
                       onCarRecommendation={handleCarRecommendation}
                       onUserMessage={handleUserMessage}
+                      onPersistBrandModel={updateBrandModelState}
                     />
                   </Paper>
+                  </Grow>
                 </Box>
               );
             })}

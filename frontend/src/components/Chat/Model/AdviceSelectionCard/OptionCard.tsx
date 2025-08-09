@@ -5,9 +5,10 @@ import { useColorMode } from '@/Context/ColorModeContext';
 interface OptionsCardProps {
   onBack: () => void;
   onShowCars: () => boolean;
+  disabled?: boolean;
 }
 
-const OptionsCard: React.FC<OptionsCardProps> = ({ onBack, onShowCars }) => {
+const OptionsCard: React.FC<OptionsCardProps> = ({ onBack, onShowCars, disabled = false }) => {
   const [clicked, setClicked] = useState<'' | 'show' | 'back'>('');
 
   const handleClick = (type: 'show' | 'back') => {
@@ -43,10 +44,10 @@ const OptionsCard: React.FC<OptionsCardProps> = ({ onBack, onShowCars }) => {
       </Typography>
 
       <Stack direction="row" spacing={1} flexWrap="wrap">
-        <Button
+         <Button
           variant={clicked === 'show' ? 'contained' : 'outlined'}
           color={clicked === 'show' ? 'primary' : 'inherit'}
-          disabled={clicked !== ''}
+           disabled={clicked !== '' || disabled}
           size="small"
           sx={{ textTransform: 'none', fontSize: 14 }}
           onClick={() => handleClick('show')}
@@ -57,7 +58,7 @@ const OptionsCard: React.FC<OptionsCardProps> = ({ onBack, onShowCars }) => {
         <Button
           variant={clicked === 'back' ? 'contained' : 'outlined'}
           color={clicked === 'back' ? 'primary' : 'inherit'}
-          disabled={clicked !== ''}
+           disabled={clicked !== '' || disabled}
           size="small"
           sx={{ textTransform: 'none', fontSize: 14 }}
           onClick={() => handleClick('back')}

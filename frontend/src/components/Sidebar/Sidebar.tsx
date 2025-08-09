@@ -10,8 +10,12 @@ import {
   AccordionSummary,
   Button,
   useTheme,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
-import { ArrowForwardIosSharp, InfoOutline, NotificationAddOutlined } from "@mui/icons-material";
+import { ArrowForwardIosSharp, InfoOutline, NotificationAddOutlined, RestoreFromTrashOutlined } from "@mui/icons-material";
 import Link from "next/link";
 import { useCookies } from "react-cookie";
 import LoginOutlinedIcon from "@mui/icons-material/LoginOutlined";
@@ -21,6 +25,8 @@ import { useLoginDialog } from "@/Context/LoginDialogContextType";
 import SignupDialog from "../Auth/SignupDialog";
 import HomeIcon from "@mui/icons-material/Home";
 import { useRouter } from "next/navigation";
+import { axiosInstance1 } from "@/utils/axiosInstance";
+import { useChats } from "@/Context/ChatContext";
 import  { useMemo } from 'react';
 import { ThemeProvider, CssBaseline, createTheme, } from '@mui/material';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
@@ -30,12 +36,124 @@ interface SidebarProps {
   onClose: () => void;
 }
 
+type HistoryItem = { id?: string; title: string; value: string };
+
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const [cookies, , removeCookie] = useCookies(["token", "user"]);
     const [mode, setMode] = useState<'light' | 'dark'>('light');
 
 const router =useRouter()
   useEffect(() => {}, [cookies.token]);
+
+  const { setMessages } = useChats();
+  const [histories, setHistories] = useState<HistoryItem[]>([]);
+  const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
+  const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
+  const [pendingDelete, setPendingDelete] = useState<HistoryItem | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchHistories = async () => {
+      try {
+        setIsLoadingHistory(true);
+        const response = await axiosInstance1.get("/api/cargpt/history/");
+        if (!isMounted) return;
+        const items: HistoryItem[] = Array.isArray(response?.data)
+          ? response.data
+          : Array.isArray(response)
+          ? response
+          : [];
+        setHistories(items);
+      } catch (e) {
+        setHistories([]);
+      } finally {
+        if (isMounted) setIsLoadingHistory(false);
+      }
+    };
+    if (!cookies.user) {
+      // Not logged in; don't fetch and clear any previous items
+      setHistories([]);
+      return () => {
+        isMounted = false;
+      };
+    }
+    fetchHistories();
+    return () => {
+      isMounted = false;
+    };
+  }, [open, cookies.user]);
+
+  const handleOpenHistory = (h: HistoryItem) => {
+    try {
+      const parsed = JSON.parse(h.value);
+      if (Array.isArray(parsed)) {
+        const flagged = (parsed as Message[]).map((m) => ({ ...m, fromHistory: true } as any));
+        setMessages(flagged as Message[]);
+      } else if (parsed && Array.isArray(parsed.messages)) {
+        const flagged = (parsed.messages as Message[]).map((m: any) => ({ ...m, fromHistory: true }));
+        setMessages(flagged as Message[]);
+      } else {
+        setMessages([
+          {
+            id: String(Date.now()),
+            sender: "user",
+            render: "text",
+            message: h.title,
+            fromHistory: true,
+          } as any,
+        ]);
+      }
+    } catch {
+      setMessages([
+        {
+          id: String(Date.now()),
+          sender: "user",
+          render: "text",
+          message: h.title,
+          fromHistory: true,
+        } as any,
+      ]);
+    }
+    onClose();
+    router.push("/home");
+  };
+
+  const handleDeleteHistory = async (h: HistoryItem) => {
+    if (!h?.id) return;
+    try {
+      await axiosInstance1.delete(`/api/cargpt/history/${h.id}/`);
+      setHistories((prev) => prev.filter((x) => x.id !== h.id));
+      showSnackbar("History deleted successfully", {
+        vertical: "bottom",
+        horizontal: "center",
+        color: "success",
+      });
+    } catch (e) {
+      showSnackbar("Failed to delete history", {
+        vertical: "bottom",
+        horizontal: "center",
+        color: "error",
+      });
+    }
+  };
+
+  const requestDeleteHistory = (h: HistoryItem) => {
+    setPendingDelete(h);
+    setConfirmOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (pendingDelete) {
+      await handleDeleteHistory(pendingDelete);
+    }
+    setConfirmOpen(false);
+    setPendingDelete(null);
+  };
+
+  const cancelDelete = () => {
+    setConfirmOpen(false);
+    setPendingDelete(null);
+  };
 
   const handleLogout = () => {
     removeCookie("user", { path: "/" });
@@ -225,6 +343,87 @@ const theme=useTheme()
                 </a>
               </Link>
             )}
+
+            {/* Histories Section (only for logged-in users) */}
+            {cookies.user && histories.length > 0 && (
+              <Box sx={{ mt: 1, mb: 1 }}>
+                <Typography
+                  component="div"
+                  sx={{ fontWeight: 700, fontSize: 15, mb: 0.5, color: theme.palette.text.primary }}
+                >
+                  Histories
+                </Typography>
+                <ul
+                  style={{
+                    listStyle: "none",
+                    margin: 0,
+                    padding: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 6,
+                  }}
+                >
+                  {histories.map((h, idx) => (
+                    <li key={h.id ?? idx}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          gap: 8,
+                          padding: "2px 2px",
+                        }}
+                      >
+                        <button
+                          onClick={() => handleOpenHistory(h)}
+                          style={{
+                            flex: 1,
+                            textAlign: "left",
+                            background: "transparent",
+                            border: "none",
+                            padding: "6px 8px",
+                            borderRadius: 6,
+                            cursor: "pointer",
+                            color: theme.palette.text.primary,
+                            fontSize: 14,
+                            fontWeight: 500,
+                          }}
+                          onMouseOver={(e) =>
+                            ((e.currentTarget.style.background = "#e3eaf6"))
+                          }
+                          onMouseOut={(e) =>
+                            ((e.currentTarget.style.background = "transparent"))
+                          }
+                          aria-label={`Open history ${h.title}`}
+                          title={h.title}
+                        >
+                          {h.title}
+                        </button>
+                        {h.id && (
+                          <button
+                            onClick={() => requestDeleteHistory(h)}
+                            aria-label={`Delete history ${h.title}`}
+                            title="Delete history"
+                            style={{
+                              background: "transparent",
+                              border: "none",
+                              cursor: "pointer",
+                              color: "#d32f2f",
+                              display: "flex",
+                              alignItems: "center",
+                              padding: 6,
+                              borderRadius: 6,
+                            }}
+                          >
+                            <RestoreFromTrashOutlined sx={{ fontSize: 18 }} />
+                          </button>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </Box>
+            )}
           </div>
 
           <Box sx={{ width: "100%", mt: "auto" }}>
@@ -364,6 +563,19 @@ const theme=useTheme()
           </Box>
         </Box>
       </Drawer>
+
+      <Dialog open={confirmOpen} onClose={cancelDelete} aria-labelledby="confirm-delete-title">
+        <DialogTitle id="confirm-delete-title">Delete history?</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ fontSize: 14 }}>
+            Are you sure you want to delete "{pendingDelete?.title}"?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={cancelDelete} variant="text">Cancel</Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">Delete</Button>
+        </DialogActions>
+      </Dialog>
 
       <LoginDialog showSignUp={showSignUP} open={openLoginDialoge} onClose={hide} />
       <SignupDialog
