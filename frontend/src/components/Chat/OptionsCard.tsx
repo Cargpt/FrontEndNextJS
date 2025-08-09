@@ -1,36 +1,20 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Box,
-  Avatar,
-  Paper,
-  Button,
-  useMediaQuery,
-  useTheme,
-  CircularProgress,
-  Typography,
-} from "@mui/material";
+import { Box, Avatar, Paper, useMediaQuery, useTheme, CircularProgress } from "@mui/material";
 import { useChats } from "@/Context/ChatContext";
-import PersonIcon from '@mui/icons-material/Person';
-
-import AdviceSelectionCard from "./Model/AdviceSelectionCard";
-import {  BudgetToRange, capitalizeFirst } from "@/utils/services";
-import CarModel from "./Model/AdviceSelectionCard/CarOptions";
+import PersonIcon from "@mui/icons-material/Person";
 import { axiosInstance1 } from "@/utils/axiosInstance";
-import CarRecommendationTable from "./Model/AdviceSelectionCard/Recommondation";
-import OptionsCard from "./Model/AdviceSelectionCard/OptionCard";
 import { useSnackbar } from "@/Context/SnackbarContext";
 import { useCookies } from "react-cookie";
-import { KeyboardBackspaceSharp } from "@mui/icons-material";
 import { useRouter } from "next/navigation";
-
-import BrandModelSelectCard from "./Model/BrandModelSelectCard";
-import CarResearchMenu from "../MoreResearchOnCar/MoreResearchOnCar";
-import TeslaCard from "./Model/Cards/Car";
 import FixedHeaderWithBack from "../Navbar/Navbar";
 import AskAIChat from "./AskAi";
 import { useColorMode } from "@/Context/ColorModeContext";
 import { Capacitor } from "@capacitor/core";
+import MessageRenderer from "./components/MessageRenderer";
+import { useBrands } from "./hooks/useBrands";
+import { usePreferences } from "./hooks/usePreferences";
+import { useAutoScroll } from "./hooks/useAutoScroll";
 
 const ChatBox: React.FC = () => {
   const { cars, messages, setMessages, filter, bookmark, setCars } = useChats();
@@ -38,19 +22,8 @@ const ChatBox: React.FC = () => {
   
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [loading, setLoading] = useState(false);
-  const [brands, setBrands] = useState<Brand[]>([]);
-
-  const [cookies, setCookie, removeCookie] = useCookies(["selectedOption"]);
-  const fetchBrands = async () => {
-    try {
-      const data = await axiosInstance1.get("/api/cargpt/brands/");
-     
-      setBrands(data?.data);
-    } catch (error) {}
-  };
-  useEffect(() => {
-    fetchBrands();
-  }, []);
+  const { brands } = useBrands();
+  const [, , removeCookie] = useCookies(["selectedOption"]);
 
  useEffect(() => {
   if (messages.length === 0) return;
@@ -189,9 +162,7 @@ const ChatBox: React.FC = () => {
     setMessages((prev) => [...prev, userMessage]);
   };
 
-  const [remondatedCarModels, setRecommondatedCarModels] = useState<
-    CarDetails[]
-  >([]);
+  const [remondatedCarModels, setRecommondatedCarModels] = useState<CarDetails[]>([]);
 
   const handleCarRecommendation = async () => {
     const data = await axiosInstance1.post(
@@ -200,7 +171,7 @@ const ChatBox: React.FC = () => {
         ...filter,
       }
     );
-    if (data.data.length === 0) return false;
+    if (data.data.length === 0) return;
     setRecommondatedCarModels(data.data);
     console.log("filter", filter)
     setCars((prev)=>[
@@ -246,111 +217,13 @@ const ChatBox: React.FC = () => {
     };
     setMessages((prev) => [...prev, userMessage]);
   };
-
-
-const [preferences, setPreferences] = useState<any[]>([]);
-  const fetchPreference = async()=>{
-    try {
-           const data = await axiosInstance1.get('/api/cargpt/preferences/')
-
-      setPreferences(data)
-    } catch (error) {
-      console.log("error", error)
-
-      
-    }
-  }
-
-  useEffect(() => {
-      if (messages.length === 0) return;
-
-  const lastMsg = messages[messages.length - 1];
-if(lastMsg.render==="selectOption") fetchPreference()
-   
-  }, [messages])
+  const shouldFetchPreferences = messages.length > 0 && messages[messages.length - 1].render === "selectOption";
+  const { preferences } = usePreferences(shouldFetchPreferences);
 
 
  
   
-  const renderMessage = (message: Message, index:number) => {
-    switch (message.render) {
-      case "brandModelSelect":
-        return (
-          <BrandModelSelectCard
-            handleUserMessage={handleUserMessage}
-            brands={message.message?.brands}
-          />
-        );
-      case "carOptions":
-        return (
-          <TeslaCard
-            onClick={handleIknowWhatEaxactlyWhatIWant}
-            selectedItem={message.message}
-            handleNeedAdviceSupport={handleNeedAdviceSupport}
-          />
-        );
-      case "text":
-        return <Typography sx={{fontSize:"14px"}}  id={`user-message-${index}`}>{capitalizeFirst(message.message)}</Typography>; // Default text rendering
-      case "selectOption":
-        return (
-          <AdviceSelectionCard
-            options={preferences?.map((preference:any)=>preference?.price_range?.toString())}
-            label="budget"
-            h1={
-              "Hi! :👋 I can help you choose the right car based on your preferences. Let's get started! First, what's your budget range in INR?"
-            }
-          />
-        );
-      case "flueOption":
-        return (
-          <AdviceSelectionCard
-            options={message?.data?.fuel_types}
-            label="fuel type"
-            h1="⛽: Got it! What’s your preferred fuel type?
-"
-          />
-        );
-        case "transmissionOption":
-        return (
-          <AdviceSelectionCard
-            options={message?.data?.transmission_types}
-            label="transmission type"
-            h1="⚙️ Cool! What kind of transmission do you prefer?"
-             onBack={onBack}
-            
-          />
-        );
-      case "bodyOption":
-        return (
-          <AdviceSelectionCard
-            options={message?.data?.body_types}
-            label="body type"
-            h1="🏎️: Great. What type of car body are you looking for?"
-          />
-        );
-      
-      case "brandOption":
-        return (
-          <CarModel
-            options={message?.data?.brands}
-            label="brand"
-            h1="🚗: Awesome! Which car brand do you prefer?"
-            onclick={handleCarRecommendation}
-          />
-        );
-      case "selectedFilter":
-        return <CarRecommendationTable recommendations={filter} />;
-      case "recommendationOption":
-        return <OptionsCard onBack={onBack} onShowCars={onShowCar} />;
-      case "researchOncar":
-        return <CarResearchMenu />;
-      // case "BestCarOption":
-      //   return <BestCars setBrands={setBrands} />;
-
-      default:
-        return null;
-    }
-  };
+  // Message rendering delegated to MessageRenderer
 
   const handleUserMessage = (text: any) => {
     const lastItem = messages[messages.length - 1];
@@ -395,15 +268,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
 
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef<boolean>(false);
-  const bottomRef = useRef<HTMLDivElement | null>(null);
-  const userAvatarRef = useRef<HTMLDivElement | null>(null);
-  // Find the last user message index
-  const lastUserMsgIndex = (() => {
-    for (let i = messages.length - 1; i >= 0; i--) {
-      if (messages[i].sender === "user") return i;
-    }
-    return -1;
-  })();
+  const { bottomRef, userAvatarRef, lastUserMsgIndex, scrollToLastMessage } = useAutoScroll(messages);
 
 
 
@@ -432,21 +297,7 @@ if(lastMsg.render==="selectOption") fetchPreference()
     draggingRef.current = false;
     scrollToLastMessage();
   };
-
-   const scrollToLastMessage = () => {
-    if (userAvatarRef.current) {
-      const rect = userAvatarRef.current.getBoundingClientRect();
-      const scrollY = window.scrollY + rect.top - 80;
-      window.scrollTo({ top: scrollY, behavior: 'smooth' });
-    } else if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }
-  };
-
-  // Add effect to scroll to the last message on mount or when new messages are added
-  useEffect(() => {
-    scrollToLastMessage();
-  }, [messages]);
+  // scrollToLastMessage handled by hook on messages change
 
 
 
@@ -488,6 +339,7 @@ const bottomSpacing = `calc(
 )`;
 
   const {mode}=useColorMode()
+  console.log("pre", preferences)
   return (
     <>
       <Box
@@ -565,7 +417,18 @@ const bottomSpacing = `calc(
                       color: "black",
                     }}
                   >
-                    {renderMessage(msg, index)}
+                    <MessageRenderer
+                      message={msg}
+                      index={index}
+                      preferences={preferences}
+                      filter={filter}
+                      onIknowExactly={handleIknowWhatEaxactlyWhatIWant}
+                      onNeedAdviceSupport={handleNeedAdviceSupport}
+                      onBack={onBack}
+                      onShowCars={onShowCar}
+                      onCarRecommendation={handleCarRecommendation}
+                      onUserMessage={handleUserMessage}
+                    />
                   </Paper>
                 </Box>
               );
