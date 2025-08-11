@@ -18,12 +18,25 @@ export default function Home() {
 
   return (
     <>
-     <Header />
+    {
+      !isNativeApp &&
+    
+        <Header />
+      
+    }
+    
       <Main />
-          
-          <FixedBottomMessage  message="By messaging AiCarAdvisor, you agree to our Terms and have read our Privacy Policy. See Cookie Preferences.
+        {
+          !isNativeApp ?(
+            <FixedBottomMessage  message="By messaging AiCarAdvisor, you agree to our Terms and have read our Privacy Policy. See Cookie Preferences.
             "/>
 
+          ) : (
+            <BottomNavigationBar />
+          )
+
+        }  
+          
            
 
 

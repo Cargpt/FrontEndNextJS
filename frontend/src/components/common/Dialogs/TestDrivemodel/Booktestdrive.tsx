@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAndroidBackClose } from '@/hooks/useAndroidBackClose';
 import { axiosInstance1 } from '@/utils/axiosInstance';
 import {
   Dialog,
@@ -209,6 +210,7 @@ const [cookies]=useCookies(['user'])
   }, [cookies?.user])
  
   console.log("user", mobile)
+  useAndroidBackClose(open, onClose);
   return (
     <Dialog
       open={open}
@@ -230,6 +232,8 @@ const [cookies]=useCookies(['user'])
           bgcolor: mode=="dark"? "dark":"grey.100",
           position: "sticky",
           top: 0,
+          pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))',
+          minHeight: 56,
           zIndex: 2,
           display: 'flex',
           alignItems: 'center',
@@ -242,9 +246,13 @@ const [cookies]=useCookies(['user'])
           onClick={onClose}
           sx={{
             border: "none",
-            minWidth: 0, // Remove minWidth to make it compact
-            p: '8px', // Add padding for click area
-            mr: 1, // Add margin right to separate from text
+            minWidth: 0,
+            p: 1,
+            position: 'absolute',
+            left: 'calc(env(safe-area-inset-left, 0px) + 8px)',
+            top: 'calc(env(safe-area-inset-top, 0px) + var(--android-top-gap, 8px) + 8px)',
+            zIndex: 3,
+            mr: 1,
           }}
         >
           <KeyboardBackspaceSharp />

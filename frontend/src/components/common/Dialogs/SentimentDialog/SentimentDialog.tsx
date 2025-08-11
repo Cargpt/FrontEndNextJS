@@ -13,6 +13,7 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { useAndroidBackClose } from "@/hooks/useAndroidBackClose";
 
 type SentimentDialogProps = {
   open: boolean;
@@ -118,6 +119,7 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
   }, [open]);
 
   const {mode}=useColorMode()
+  useAndroidBackClose(open, onClose);
   return (
     <Dialog
       open={open}
@@ -137,11 +139,11 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
   }}
     >
     
-      <DialogTitle sx={{ background:  mode=="dark" ? "": "#eeeeef" }}>
+      <DialogTitle sx={{ background:  mode=="dark" ? "": "#eeeeef", pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))', minHeight: 56 }}>
        <Button
           variant="outlined"
           onClick={onClose}
-          sx={{ position: "absolute", left: 1, top: 12,  zIndex:20, border:"none" }}
+          sx={{ position: "absolute", left: 'calc(env(safe-area-inset-left, 0px) + 8px)', top: 'calc(env(safe-area-inset-top, 0px) + var(--android-top-gap, 8px) + 8px)',  zIndex:20, border:"none", minWidth: 0, p: 1 }}
         >
           <KeyboardBackspaceSharp />
         </Button>

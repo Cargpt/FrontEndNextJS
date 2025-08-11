@@ -1,45 +1,151 @@
 "use client";
 
-import { useState } from "react";
+import * as React from "react";
 import {
   BottomNavigation,
   BottomNavigationAction,
   Paper,
+  useTheme,
+  useMediaQuery,
+  Badge,
 } from "@mui/material";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import LoginOutlinedIcon from "@mui/icons-material/LoginOutlined";
-import MoreHorizOutlinedIcon from "@mui/icons-material/MoreHorizOutlined";
+
+import HomeIcon from "@mui/icons-material/Home";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
+
 import { useRouter } from "next/navigation";
+import { useColorMode } from "@/Context/ColorModeContext";
+import { useNotifications } from "@/Context/NotificationContext";
+import { useCookies } from "react-cookie";
+import { Capacitor } from "@capacitor/core";
+import Sidebar from "../Sidebar/Sidebar";
 
-const BottomNavigationBar: React.FC = () => {
-  const [value, setValue] = useState<number>(0);
+const BottomNavigationBar = () => {
   const router = useRouter();
+  const { mode } = useColorMode();
+  const theme = useTheme();
+  const { notifications } = useNotifications();
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const unreadCount = notifications.filter((n: { read: boolean }) => !n.read).length;
+
+  const [value, setValue] = React.useState(0);
+
+  // Determine if device is native and platform is Android
+  const isNative = Capacitor.isNativePlatform();
+  const isAndroid = Capacitor.getPlatform() === "android";
+
+  // Responsive display: Only show on small screens
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  // Show BottomNavigation only if on mobile or native platform
+  const shouldShowBottomNav = isMobile || isNative;
+
+  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
     switch (newValue) {
       case 0:
         router.push("/");
         break;
       case 1:
-        router.push("/login");
+        if (cookies.user) {
+          router.push("/bookmarks");
+        } else {
+          alert("Please log in to view bookmarks.");
+        }
         break;
       case 2:
-        router.push("/more");
+        router.push("/notifications");
         break;
-      default:
+      case 3:
+        router.push("/profile");
         break;
+    }
+
+  };
+  const [cookies, setCookie] = useCookies(["token", "user", "selectedOption"]);
+
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const { setNotifications } = useNotifications();
+
+  const handleDrawerOpen = () => setDrawerOpen(true);
+  const handleDrawerClose = () => setDrawerOpen(false);
+  const handleBookmarkClick = () => {
+    if (cookies.user) {
+      setCookie("selectedOption", "I know exactly what I want", { path: "/" });
+      router.push("/bookmarks");
+    } else {
+      alert("Please log in to view bookmarks.");
     }
   };
 
+
+  if (!shouldShowBottomNav) return null;
+
   return (
-    <Paper sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }} elevation={3}>
+    <Paper
+      sx={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        backgroundColor: mode === "dark" ? theme.palette.background.paper : "#f5f6fa",
+        borderTop: "1px solid rgba(0, 0, 0, 0.1)",
+      }}
+      elevation={3}
+    >
       <BottomNavigation value={value} onChange={handleChange} showLabels>
-        <BottomNavigationAction label="Home" icon={<HomeOutlinedIcon />} />
-        <BottomNavigationAction label="Login" icon={<LoginOutlinedIcon />} />
-        <BottomNavigationAction label="More" icon={<MoreHorizOutlinedIcon />} />
+        <BottomNavigationAction label="Home" icon={<HomeIcon />} />
+        {
+          cookies.user &&
+          <BottomNavigationAction  label="Bookmarks" icon={<FavoriteBorderIcon />} />
+
+
+        }
+        <BottomNavigationAction
+          label="Alerts"
+          icon={
+            <Badge badgeContent={unreadCount} color="error">
+              <NotificationsNoneIcon />
+            </Badge>
+          }
+        />
+        {
+          cookies.user && (
+            <BottomNavigationAction label="Profile" icon={<AccountCircleIcon />} />
+          )
+        }
+
+
+<BottomNavigationAction
+            onClick={handleDrawerOpen}
+            sx={{
+              width: 40,
+              height: 40,
+              backgroundColor: theme.palette.background.paper,
+              borderRadius: 2,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              cursor: "pointer",
+            }}
+            showLabel
+            label="Menu"
+            icon={<MenuOutlinedIcon sx={{ color: mode=="dark"? 'white' :'black'}} />}
+          
+          />
+
+        l
+      
       </BottomNavigation>
-    </Paper>
+
+    
+
+      <Sidebar open={drawerOpen} onClose={handleDrawerClose} />
+          </Paper>
   );
 };
 

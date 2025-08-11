@@ -15,6 +15,7 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import React, { useState, useRef, useEffect } from "react";
+import { useAndroidBackClose } from "@/hooks/useAndroidBackClose";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import useApi from "@/hooks/useApi";
 import { useColorMode } from "@/Context/ColorModeContext";
@@ -81,6 +82,7 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
     };
   }, [open]);
 const {mode}=useColorMode()
+  useAndroidBackClose(open, onClose);
   return (
     <Dialog
       open={open}
@@ -105,6 +107,8 @@ const {mode}=useColorMode()
           bgcolor: mode=="dark"? "dark":"grey.100",
           position: "sticky",
           top: 0,
+          pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))',
+          minHeight: 56,
           zIndex: 2,
           textAlign: "center",
           fontWeight: 700,
@@ -115,12 +119,12 @@ const {mode}=useColorMode()
           onClick={onClose}
           sx={{
             position: "absolute",
-            left: 15,
-            top: 12,
+            left: 'calc(env(safe-area-inset-left, 0px) + 8px)',
+            top: 'calc(env(safe-area-inset-top, 0px) + var(--android-top-gap, 8px) + 8px)',
             zIndex: 3,
             border: "none",
-            minWidth: "unset",
-            padding: 0,
+            minWidth: 0,
+            p: 1,
           }}
         >
           <KeyboardBackspaceSharp />

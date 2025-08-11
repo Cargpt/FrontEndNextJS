@@ -29,6 +29,7 @@ const {mode}=useColorMode()
   const theme = useTheme();
 
   const isNative = Capacitor.isNativePlatform()
+  const isAndroid = Capacitor.getPlatform() === 'android'
 
   const unreadCount = notifications.filter((n: { read: boolean }) => !n.read).length;
   const readCount = notifications.filter((n: { read: boolean }) => n.read).length;
@@ -48,10 +49,11 @@ const {mode}=useColorMode()
     <AppBar
       position="static"
       sx={{
-        backgroundColor: theme.palette.background.paper,
+        backgroundColor: mode==="dark" ? theme.palette.background.paper : "#f5f6fa",
         boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-        pb: 1, // This maintains your original bottom padding
-      pt: `calc(${theme.spacing(isNative? 5:0)} + env(safe-area-inset-top, 0px))`, // Adds safe area to original top padding
+        pb: 1,
+        // Add small gap below Android status bar; add safe area for iOS
+        pt: isAndroid ? theme.spacing(1) : `calc(${theme.spacing(0)} + env(safe-area-inset-top, 0px))`,
       }}
     >
       <Toolbar
@@ -79,7 +81,7 @@ const {mode}=useColorMode()
               cursor: "pointer",
             }}
           >
-<MenuOutlinedIcon sx={{ color: mode=="dark"? 'white' :"black"}} />
+<MenuOutlinedIcon sx={{ color: mode=="dark"? 'white' :'black'}} />
 
             {/* <MenuOutlinedIcon  width={24} height={24}/> */}
             {/* <Image src="/assets/list.svg" alt="Menu" /> */}

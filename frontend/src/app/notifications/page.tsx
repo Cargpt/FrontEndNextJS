@@ -20,6 +20,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
 import { useRouter } from "next/navigation";
 import { useNotifications } from "../../Context/NotificationContext";
+import KeyboardBackspaceSharpIcon from '@mui/icons-material/KeyboardBackspaceSharp';
+import { Capacitor } from "@capacitor/core";
 
 const NotificationsPage = () => {
   const { notifications, setNotifications } = useNotifications();
@@ -39,34 +41,25 @@ const NotificationsPage = () => {
   };
 
   const hasNotifications = notifications?.length > 0;
-
+ const isNative = Capacitor.isNativePlatform()
   return (
     <Box sx={{ backgroundColor: theme.palette.background.default, minHeight: "100vh" }}>
       {/* App Bar */}
-      <AppBar position="static">
-        <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-          <Box sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="back"
-              onClick={() => router.back()}
-              sx={{ mr: 2 }}
-            >
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="h6">Notifications</Typography>
-          </Box>
-
-{hasNotifications && (
-  <Tooltip title="Clear all notifications" arrow>
-    <IconButton color="inherit" onClick={clearAllNotifications}>
-      <DeleteSweepIcon />
+      
+      <AppBar
+      position="fixed" elevation={0} sx={{
+           pt: `calc(${theme.spacing(isNative? 5:0)} + env(safe-area-inset-top, 0px))`, // Adds safe area to original top padding
+    
+         }} color="primary">
+  <Toolbar>
+    <IconButton edge="start" color="inherit" onClick={()=>router.back()} aria-label="back">
+      <KeyboardBackspaceSharpIcon />
     </IconButton>
-  </Tooltip>
-)}
-        </Toolbar>
-      </AppBar>
+    <Typography variant="h6" fontWeight="bold" sx={{ ml: 2 }}>
+      Nofications
+    </Typography>
+  </Toolbar>
+</AppBar>
 
       {/* Notifications Container */}
       <Box

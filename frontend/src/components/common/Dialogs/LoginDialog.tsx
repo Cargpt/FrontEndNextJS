@@ -1,7 +1,8 @@
 import React from "react";
-import { Dialog, DialogContent, IconButton } from "@mui/material";
+import { Dialog, DialogContent, IconButton, useMediaQuery, useTheme } from "@mui/material";
 import LoginForm from "@/components/Auth/Login";
 import { KeyboardBackspaceSharp } from "@mui/icons-material";
+import { useAndroidBackClose } from "@/hooks/useAndroidBackClose";
 
 interface LoginDialogProps {
   open: boolean;
@@ -9,23 +10,28 @@ interface LoginDialogProps {
   showSignUp: () => void;
 }
 
-const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose, showSignUp }) => (
-<Dialog
+const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose, showSignUp }) => {
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  useAndroidBackClose(open, onClose);
+
+  return (
+    <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="xs"
-      fullWidth
+      fullScreen
       PaperProps={{
         sx: {
-          m: 1,
+          m: 0,
           width: "100%",
-          maxWidth: "400px",
-          height: { xs: "100vh", sm: "auto" },
-          maxHeight: "100vh",
+          height: "100dvh",
+          maxWidth: '100%',
+          maxHeight: '100dvh',
           overflowX: "hidden",
           overflowY: "auto",
           display: "flex",
           flexDirection: "column",
+          borderRadius: 0,
         },
       }}
     >
@@ -34,9 +40,10 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose, showSignUp }) 
         onClick={onClose}
         sx={{
           position: "absolute",
-          top: 8,
-          left: 8,
+          top: "calc(env(safe-area-inset-top, 0px) + var(--android-top-gap, 8px) + 8px)",
+          left: "calc(env(safe-area-inset-left, 0px) + 8px)",
           zIndex: 1,
+          p: 1,
         }}
         aria-label="close"
       >
@@ -51,13 +58,13 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose, showSignUp }) 
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          mt: 4, // Add margin-top to avoid overlapping with IconButton
+          mt: 4,
         }}
       >
-        <LoginForm showSignUp={showSignUp}/>
+        <LoginForm showSignUp={showSignUp} />
       </DialogContent>
     </Dialog>
-
-);
+  );
+};
 
 export default LoginDialog;
