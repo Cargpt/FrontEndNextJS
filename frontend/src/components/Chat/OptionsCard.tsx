@@ -519,13 +519,18 @@ const bottomSpacing = `calc(
             messages?.[messages?.length-1]?.message!=="Ask AI" &&
 
           <Box 
-            sx={{minHeight:"100vh", background:"transparent"}}
+            sx={{minHeight:"100vh", background:"transparent", mt: isNative ? 1.5 : 0}}
             ref={chatContainerRef}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             
           >
             {messages.map((msg, index) => {
+              const isFirstMsgSpecial =
+                isNative &&
+                index === 0 &&
+                msg.sender === "user" &&
+                msg.message === "I know exactly what I want";
               const isLastUserMsg = msg.sender === "user" && index === lastUserMsgIndex;
               return (
                 <Box
@@ -536,7 +541,7 @@ const bottomSpacing = `calc(
                     alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
 
                     mb:bottomSpacing,
-                    mt: { xs: 0, sm: 1 },
+                    mt: { xs: isFirstMsgSpecial ? 1.5 : 0, sm: 1 },
                     px: { xs: 2, sm: 0 },
                     textAlign: msg.sender === "user" ? "right" : "left",
                     fontSize: "14px",
