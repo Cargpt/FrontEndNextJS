@@ -8,7 +8,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder'; // Outlined
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@mui/material';
-  import { Capacitor } from '@capacitor/core';
+import { Capacitor } from '@capacitor/core';
 
 type Props = {
   backToPrevious: () => void;
@@ -17,8 +17,6 @@ type Props = {
 const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
   const [cookies, setCookie, removeCookie]=useCookies(['token', 'user','selectedOption']); // Initialize cookies, if needed
 
-
-  
   const router = useRouter();
   const handleBookmarkClick = () => {
     if(cookies.user){
@@ -31,6 +29,7 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
   
   const theme=useTheme()
   const isNative = Capacitor.isNativePlatform()
+  const isAndroid = Capacitor.getPlatform() === 'android'
 
   return (
     <>
@@ -39,12 +38,19 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
         sx={{
         boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
         pb: 1, // This maintains your original bottom padding
-      pt: `calc(${theme.spacing(isNative? 5:0)} + env(safe-area-inset-top, 0px))`, // Adds safe area to original top padding
-      background:"body2"
-      }}
+        // Add a small gap below Android status bar for breathing room
+        pt: isAndroid ? theme.spacing(1) : `calc(${theme.spacing(isNative? 5:0)} + env(safe-area-inset-top, 0px))`,
+        background:"body2"
+        }}
+        
 
       >
-        <Toolbar>
+        <Toolbar sx={{
+                      left: 'calc(env(safe-area-inset-left, 0px) + 8px)',
+                      top: 'calc(env(safe-area-inset-top, 0px) + var(--android-top-gap, 8px) + 8px)',
+                      zIndex: 3,
+                      border: "none",
+        }}>
           <IconButton edge="start" color="inherit" onClick={backToPrevious} aria-label="back">
             <KeyboardBackspaceSharp />
           </IconButton>

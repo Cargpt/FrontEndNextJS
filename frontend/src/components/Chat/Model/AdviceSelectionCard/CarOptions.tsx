@@ -31,12 +31,16 @@ interface AdviceSelectionCardProps {
   label: string;
   h1: string;
   onclick: () => void;
+  initialValue?: string | null;
+  onPersistSelection?: (partial: any) => void;
 }
 const CarModel: FC<AdviceSelectionCardProps> = ({
   options,
   label,
   h1,
   onclick,
+  initialValue = null,
+  onPersistSelection,
 }) => {
   const [selections, setSelections] = useState<{
     [key: string]: string | null;
@@ -44,7 +48,8 @@ const CarModel: FC<AdviceSelectionCardProps> = ({
     value: null,
   });
 
-  const { updateFilter, filter, setMessages } = useChats();
+  const { updateFilter, filter, setMessages, messages } = useChats();
+  const isFromHistory = Boolean((messages[messages.length - 1] as any)?.fromHistory);
   const [isDisable, setIsDisable] = useState<boolean>(false);
   const handleSelect = (type: string, value: string) => {
     const updated = { [type]: value };
@@ -56,25 +61,26 @@ const CarModel: FC<AdviceSelectionCardProps> = ({
         updateFilter(label, value);
       }
     }
+    onPersistSelection?.({ selections: { [label]: value } });
   };
 
   useEffect(() => {
-    setSelections({ [label]: options[0] });
-    if (options[0]) {
-    }
+    const chosen = initialValue ?? options?.[0];
+    setSelections({ [label]: chosen ?? null });
+    if (!chosen) return;
     if (label === "budget") {
-      const upperLimit = getUpperLimitInRupees(options[0].toString());
+      const upperLimit = getUpperLimitInRupees(chosen.toString());
       if (upperLimit) {
         updateFilter(label, upperLimit);
       }
     } else {
       if (label === "brand") {
-        updateFilter("brand_name", options[0]);
+        updateFilter("brand_name", chosen);
       } else {
-        updateFilter(label, options[0]);
+        updateFilter(label, chosen);
       }
     }
-  }, []);
+  }, [initialValue]);
 
   const handleNext = () => {
     onclick();
@@ -135,6 +141,7 @@ const CarModel: FC<AdviceSelectionCardProps> = ({
           <InputLabel id="brand-label">{label}</InputLabel>
           <Select
             labelId="brand-label"
+            disabled={isFromHistory}
             value={selections[label] ?? ""}
             label="Brand"
             onChange={(e) => handleSelect(label, e.target.value)}
@@ -155,7 +162,7 @@ const CarModel: FC<AdviceSelectionCardProps> = ({
           }}
         >
           <Button
-            disabled={isDisable}
+            disabled={isDisable || isFromHistory}
             onClick={handleNext}
             variant="contained"
             color="primary"

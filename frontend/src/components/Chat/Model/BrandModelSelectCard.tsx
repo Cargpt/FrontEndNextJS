@@ -32,6 +32,9 @@ import { useBotType } from "@/Context/BotTypeContext";
 type BrandModelSelectCardProps = {
   handleUserMessage: (message: any) => void;
   brands: Brand[] | any;
+  onPersistState?: (partial: any) => void;
+  initialBrand?: Brand | null;
+  initialModel?: ModelProps | null;
 };
 
 import { useSnackbar } from "@/Context/SnackbarContext";
@@ -41,10 +44,13 @@ import { useColorMode } from "@/Context/ColorModeContext";
 const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   handleUserMessage,
   brands,
+  onPersistState,
+  initialBrand = null,
+  initialModel = null,
 }) => {
-  const [brand, setBrand] = useState<Brand>(brands[0]);
+  const [brand, setBrand] = useState<Brand>(initialBrand ?? brands[0]);
 
-  const [model, setModel] = useState<ModelProps | null>(null);
+  const [model, setModel] = useState<ModelProps | null>(initialModel);
   const [models, setModels] = useState<ModelProps[]>([]);
   const [carFeatures, setCarFeatures] = useState<CarFeaturesProps>({
     FuelType: ["petrol", "diesel", "CNG", "electric"],
@@ -75,15 +81,17 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
 
   const { setCars } = useChats();
     const { messages } = useChats();
+    const isFromHistory = Boolean((messages[messages.length - 1] as any)?.fromHistory);
 
     const searchParams: any = messages[messages.length - 1]?.searchParam;
 
   const fetchBrandModes = async () => {
 
-    if (messages[messages.length - 1].message?.models?.length > 0 && !isBrandChange) {
+    if (messages[messages.length - 1]?.message?.models?.length > 0 && !isBrandChange) {
       const m = messages[messages.length - 1].message?.models;
       setModel(m[0]);
       setModels(m);
+      return;
     } 
     // else if (searchParams) {
     //   let payload: any = {};
@@ -96,7 +104,7 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
     //   setModel(data?.models[0] || null);
     // } 
     
-    else {
+    else if (brand?.BrandID) {
       const payload = {
         brand_id: brand?.BrandID,
         
@@ -106,11 +114,27 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
         const data = await axiosInstance1.post("/api/cargpt/models/", payload);
 
         setModels(data?.models || []);
-        setModel(data?.models[0] || null);
+        setModel(data?.models?.[0] || null);
         setisBrandChange(false);
       } catch (error) {}
     }
   };
+
+  // Initialize brand/model from persisted state if available
+  useEffect(() => {
+    if (initialBrand) {
+      setBrand(initialBrand);
+    } else if (brands && brands.length > 0 && !brand) {
+      setBrand(brands[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialBrand, brands]);
+
+  useEffect(() => {
+    if (initialModel) {
+      setModel(initialModel);
+    }
+  }, [initialModel]);
 
   const fetchCarFeatures = async () => {
     const payload = {
@@ -466,19 +490,22 @@ const {mode}=useColorMode()
           <FormControl sx={{ mx: 0.5, minWidth: 120 }} size="small">
             <InputLabel id="brand-label">Brand</InputLabel>
             <Select
-              disabled={isDisable}
+              disabled={isDisable || isFromHistory}
               labelId="brand-label"
-              value={brand?.BrandID ?? ""}
+              value={brand?.BrandID != null ? String(brand.BrandID) : ""}
               label="Brand"
               onChange={(e) => {
+                const nextBrandIdStr = String(e.target.value);
                 const selectedBrand = brands.find(
-                  (b: Brand) => b.BrandID === e.target.value
+                  (b: Brand) => String(b.BrandID) === nextBrandIdStr
                 );
                 if (selectedBrand) {
                   setBrand(selectedBrand);
                   setisBrandChange(true);
+                  onPersistState?.({ brand: selectedBrand });
                 }
               }}
+              renderValue={() => brand?.BrandName ?? ""}
               sx={{
                 fontSize: "15px",
                 "& .MuiSelect-select": {
@@ -488,7 +515,7 @@ const {mode}=useColorMode()
             >
               {Array.isArray(brands) &&
                 brands?.map((brand: Brand, index: number) => (
-                  <MenuItem key={index} value={brand.BrandID}>
+                  <MenuItem key={index} value={String(brand.BrandID)}>
                     {/* Show logo before brand name */}
                     {brand.logo && (
                       <img
@@ -513,20 +540,22 @@ const {mode}=useColorMode()
           <FormControl
             sx={{ m: 0.5, minWidth: 120 }}
             size="small"
-            disabled={!brand}
+            disabled={!brand || isFromHistory}
           >
             <InputLabel id="model-label">Model</InputLabel>
             <Select
-              disabled={isDisable}
+              disabled={isDisable || isFromHistory}
               labelId="model-label"
-              value={model?.ModelID ?? ""}
+              value={model?.ModelID != null ? String(model.ModelID) : ""}
               label="Model"
               onChange={(e) => {
+                const nextModelIdStr = String(e.target.value);
                 const selectedModel = models.find(
-                  (m) => m.ModelID === Number(e.target.value)
+                  (m) => String(m.ModelID) === nextModelIdStr
                 );
                 if (selectedModel) {
                   setModel(selectedModel);
+                  onPersistState?.({ model: selectedModel });
                 }
               }}
               sx={{
@@ -537,7 +566,7 @@ const {mode}=useColorMode()
               }}
             >
               {models.map((model: ModelProps, index: number) => (
-                <MenuItem key={index} value={model.ModelID}>
+                <MenuItem key={index} value={String(model.ModelID)}>
                   {model.ModelName}
                 </MenuItem>
               ))}

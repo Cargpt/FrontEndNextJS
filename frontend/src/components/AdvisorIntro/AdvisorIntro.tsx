@@ -107,30 +107,59 @@ const [cookies, setCookie]=useCookies(['selectedOption', 'token'])
   return (
     <Box>
       {/* Profile Section */}
-      <Box
-        sx={{
-          textAlign: "center",
-          py: 4,
-          display: "flex",
-          flexDirection: "column",
-          gap: "30px",
-        }}
-      >
-        <div>
-          <Typography
-            variant="subtitle1"
-            style={{ fontSize: "28px", fontWeight: 700, color:  "#1876d2" }}
-          >
-            Your Car Advisor
-          </Typography>
-          <Typography
-            mt={1}
-            style={{ color: "#797979", fontSize: "14px", fontWeight: 400 }}
-          >
-            Excited you're here! Let's find your perfect car.
-          </Typography>
-        </div>
-      </Box>
+
+
+<Box
+  sx={{
+    textAlign: "center",
+    py: 4,
+    display: "flex",
+    flexDirection: "column",
+    gap: "30px",
+    alignItems: "center", // Center align items horizontally
+  }}
+>
+  {/* Title Row */}
+  <Box
+    sx={{
+      display: "flex",
+      alignItems: "center",
+    }}
+  >
+    <img
+      src="/assets/lisa.svg"
+      width={36}
+      height={36}
+      alt="Advisor Icon"
+      style={{ verticalAlign: "middle" }}
+    />
+    <Typography
+      variant="h6"
+      sx={{
+        fontSize: "28px",
+        fontWeight: 700,
+        color: "#1876d2",
+        marginLeft: 1, // = 8px
+        lineHeight: 1,
+      }}
+    >
+      Your Car Advisor
+    </Typography>
+  </Box>
+
+  {/* Subtext */}
+  <Typography
+    sx={{
+      color: "#797979",
+      fontSize: "14px",
+      fontWeight: 400,
+      mt: 1,
+    }}
+  >
+    Excited you're here! Let's find your perfect car.
+  </Typography>
+</Box>
+
 
       {/* Car Search Options */}
       <Stack spacing={2} sx={{ maxWidth: 400, mx: "auto" }}>

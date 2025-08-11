@@ -1,84 +1,67 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
-import CookiesClientProvider from "@/providers/CookiesClientProvider";
-import { NotificationProvider } from "../Context/NotificationContext";
+// layout.tsx
 
+
+import "./globals.css";
+import { type ReactNode } from 'react'; // <--- Import useEffect
 import { Roboto } from 'next/font/google';
 import Script from "next/script";
+import type { Metadata, Viewport } from 'next';
+
+// Providers and Components
+import CookiesClientProvider from "@/providers/CookiesClientProvider";
+import { NotificationProvider } from "../Context/NotificationContext";
 import SafeAreaInit from "@/components/SafeAreaInit";
+import ThemeColorMeta from "@/components/Theme/ThemeColorMeta";
 
 const roboto = Roboto({
-  weight: ['400', '700'], // Specify the weights you need (e.g., normal and bold)
-  style: ['normal', 'italic'], // Specify styles if needed
-  subsets: ['latin'], // Only load the Latin subset to reduce file size
-  display: 'swap', // Helps prevent layout shift by displaying a fallback font while Roboto loads
+  weight: ['400', '700'],
+  subsets: ['latin'],
+  display: 'swap',
 });
 
-
-
 export const metadata: Metadata = {
-  title: "AiCarAdvisor",
-  description: "AiCarAdvisor is your intelligent automotive companion, leveraging advanced AI to help you find the perfect car tailored to your needs and budget. From personalized recommendations and detailed comparisons to up-to-date market insights, AiCarAdvisor makes car shopping smarter, faster, and hassle-free.",
+  title: 'AiCarAdvisor',
+  description: 'AiCarAdvisor is your intelligent automotive companion...',
+  other: {
+    fast2sms: 'B5dSIfoanSkm5PWRBeV6YLNLP15Zg5lL',
+  },
 };
-
-
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
- 
-  viewportFit:"cover",
-  // Also useful for PWA setups
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'cyan' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  viewportFit: 'cover',
+
 };
 
+export default function RootLayout({ children }: { children: ReactNode }) {
 
-
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+  
   return (
     <html className={roboto.className} lang="en">
-      <head>
-
-        <meta name="fast2sms" content="hzsET4kOKaZbXoO5p0AOFYrhXd62r1FI"/>
-
-
-      </head>
+      
       <body>
-         
-          <CookiesClientProvider> {/* <-- Wrap your children with the client provider */}
-            <NotificationProvider>
-                      <SafeAreaInit />
-
-         
-
-          {children}
-
-
-            </NotificationProvider>
+        <CookiesClientProvider>
+          <NotificationProvider>
+            <SafeAreaInit />
+            <ThemeColorMeta />
+            {children}
+          </NotificationProvider>
         </CookiesClientProvider>
-   <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-L3EQVW9TNK"
-        strategy="afterInteractive"
-      />
 
-      {/* Initialize gtag */}
-      <Script id="gtag-init" strategy="afterInteractive">
-        {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('config', 'G-L3EQVW9TNK');
-        `}
-      </Script>
-        
+        {/* --- Google Analytics Scripts --- */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-L3EQVW9TNK"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-L3EQVW9TNK');
+          `}
+        </Script>
       </body>
     </html>
   );

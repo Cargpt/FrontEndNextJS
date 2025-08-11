@@ -28,6 +28,13 @@ export const ColorModeProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setCookie('color-mode', mode, { path: '/', maxAge: 60 * 60 * 24 * 30 }); // 30 days
   }, [mode, setCookie]);
 
+  useEffect(() => {
+    // Set data attribute on document for CSS targeting
+    if (typeof document !== 'undefined') {
+      document.documentElement.setAttribute('data-mui-color-scheme', mode);
+    }
+  }, [mode]);
+
   const toggleColorMode = () => {
     setMode((prev) => (prev === 'light' ? 'dark' : 'light'));
   };

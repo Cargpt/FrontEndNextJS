@@ -502,6 +502,7 @@ const {mode}=useColorMode()
                           alt={item.label}
                           width={20} // Reduced icon size
                           height={20}
+                          style={{ filter: mode === "dark" ? "invert(100%)" : "none" }}
                         />
                       </Box>
                       <Typography

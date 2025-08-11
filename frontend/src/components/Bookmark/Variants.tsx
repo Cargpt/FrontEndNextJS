@@ -105,7 +105,7 @@ function updateBookmarkByVariantID(data:any, variantId:number, newState:boolean)
       position="fixed" elevation={0} sx={{
            pt: `calc(${theme.spacing(isNative? 5:0)} + env(safe-area-inset-top, 0px))`, // Adds safe area to original top padding
     
-         }}>
+         }} color="primary">
   <Toolbar>
     <IconButton edge="start" color="inherit" onClick={onBack} aria-label="back">
       <KeyboardBackspaceSharpIcon />

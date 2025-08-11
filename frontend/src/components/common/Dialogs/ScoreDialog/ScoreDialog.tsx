@@ -10,6 +10,7 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { useAndroidBackClose } from "@/hooks/useAndroidBackClose";
 import ScoreLeftPanel from "./ScoreLeftPanel";
 import ScoreRightPanel from "./ScoreRightPanel";
 import { axiosInstance1 } from "@/utils/axiosInstance";
@@ -68,6 +69,7 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
     };
   }, [open]);
 
+  useAndroidBackClose(open, onClose);
   return (
     <Dialog
       open={open}
@@ -85,16 +87,18 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
         },
       }}
     >
-      <DialogTitle sx={{ background: mode === "dark" ? "" : "#eeeeef" }}>
+      <DialogTitle sx={{ background: mode === "dark" ? "" : "#eeeeef", pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))', minHeight: 56 }}>
         <Button
           variant="outlined"
           onClick={onClose}
           sx={{
             position: "absolute",
-            left: 15,
-            top: 12,
+            left: 'calc(env(safe-area-inset-left, 0px) + 8px)',
+            top: 'calc(env(safe-area-inset-top, 0px) + var(--android-top-gap, 8px) + 8px)',
             zIndex: 20,
             border: "none",
+            minWidth: 0,
+            p: 1,
           }}
         >
           <KeyboardBackspaceSharp />
