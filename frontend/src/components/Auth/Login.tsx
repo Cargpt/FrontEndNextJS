@@ -18,6 +18,7 @@ import { useSnackbar } from '@/Context/SnackbarContext';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/material.css';
 import { useColorMode } from '@/Context/ColorModeContext';
+import ForgotPasswordDialog from '@/components/Auth/ForgotPasswordDialog';
 
 interface LoginFormData {
   mobile_no: string;
@@ -40,6 +41,7 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
   const { showSnackbar } = useSnackbar();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [forgotOpen, setForgotOpen] = useState(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -186,6 +188,13 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
             required
           />
 
+          {/* Forgot password link aligned to the right, directly after password field */}
+          <Box display="flex" justifyContent="flex-end" mt={1}>
+            <Button type="button" variant="text" size="small" onClick={() => setForgotOpen(true)}>
+              Forgot Password?
+            </Button>
+          </Box>
+
           <Box
             sx={{
               display: 'flex',
@@ -229,6 +238,8 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
             </Button>
           </Box>
 
+          
+
           {error && (
             <Alert severity="error" sx={{ mt: 2 }}>
               {error}
@@ -239,6 +250,13 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
           </div>
         </form>
       </Paper>
+
+      {/* Forgot Password Flow (UI only; APIs to be plugged later) */}
+      <ForgotPasswordDialog
+        open={forgotOpen}
+        onClose={() => setForgotOpen(false)}
+        loginMobile={formData.mobile_no}
+      />
 
             <style>
         {`

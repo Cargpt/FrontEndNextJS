@@ -1,0 +1,470 @@
+"use client";
+
+import React, { useMemo, useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+  Alert,
+  Box,
+  Input,
+  InputAdornment,
+  IconButton,
+} from "@mui/material";
+import OtpBoxes from "@/components/common/otp/OtpBoxes";
+import PhoneInput from "react-phone-input-2";
+import "react-phone-input-2/lib/material.css";
+import { useColorMode } from "@/Context/ColorModeContext";
+import { useMediaQuery } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { Visibility, VisibilityOff, KeyboardBackspaceSharp } from "@mui/icons-material";
+import { Capacitor } from "@capacitor/core";
+import { axiosInstance } from "@/utils/axiosInstance";
+
+interface ForgotPasswordDialogProps {
+  open: boolean;
+  onClose: () => void;
+  /**
+   * The login mobile number to be matched. When provided, we disable editing the phone field
+   * and require it to match this value for OTP step.
+   */
+  loginMobile?: string;
+  /** Send OTP click handler (to be implemented later with API). */
+  onSendOTP?: (mobile: string) => Promise<void> | void;
+  /** Verify OTP click handler (to be implemented later with API). */
+  onVerifyOTP?: (mobile: string, otp: string) => Promise<void> | void;
+  /** Reset password click handler (to be implemented later with API). */
+  onResetPassword?: (mobile: string, newPassword: string) => Promise<void> | void;
+  /** Length of OTP boxes; default 6. */
+  otpLength?: number;
+}
+
+const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
+  open,
+  onClose,
+  loginMobile,
+  onSendOTP,
+  onVerifyOTP,
+  onResetPassword,
+  otpLength: propOtpLength = 6,
+}) => {
+  const [mobile, setMobile] = useState<string>(loginMobile || "");
+  const [otp, setOtp] = useState<string>("");
+  const [step, setStep] = useState<"mobile" | "otp" | "reset">("mobile");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [demoOtp, setDemoOtp] = useState<string>("");
+  const [otpLength, setOtpLength] = useState<number>(propOtpLength);
+  const [readingState, setReadingState] = useState<"idle" | "reading" | "failed" | "success">("idle");
+
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const isMobileMatching = useMemo(() => {
+    if (!loginMobile) return true;
+    return (mobile || "").replace(/\D/g, "") === (loginMobile || "").replace(/\D/g, "");
+  }, [mobile, loginMobile]);
+
+  const { mode } = useColorMode();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isNative = Capacitor.isNativePlatform();
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleSendOtp = async () => {
+    setError(null);
+    setSuccess(null);
+    if (!mobile) {
+      setError("Please enter mobile number");
+      return;
+    }
+    if (!isMobileMatching) {
+      setError("Entered mobile number must match the login number");
+      return;
+    }
+    try {
+      setLoading(true);
+      // Call API to send OTP with purpose 'forgot_password'
+      if (onSendOTP) {
+        await onSendOTP("+" + mobile);
+      } else {
+        await axiosInstance.post("/api/cargpt/send-otp/", {
+          phone_number: "+" + mobile,
+          purpose: "forgot_password",
+        });
+      }
+      // Generate demo OTP for UI testing
+      const generated = Math.random() < 0.5
+        ? Math.floor(1000 + Math.random() * 9000).toString()
+        : Math.floor(100000 + Math.random() * 900000).toString();
+      setDemoOtp(generated);
+      setOtpLength(generated.length);
+      setSuccess("OTP sent successfully");
+      setStep("otp");
+      // Start SMS reading indicator only on mobile
+      setReadingState(isMobile ? "reading" : "idle");
+    } catch (e) {
+      setError("Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerifyOtp = async (overrideCode?: string) => {
+    setError(null);
+    setSuccess(null);
+    const codeToVerify = (overrideCode ?? otp) || "";
+    if (!codeToVerify || codeToVerify.length < otpLength) {
+      setError("Please enter complete OTP");
+      return;
+    }
+    try {
+      setLoading(true);
+      await onVerifyOTP?.("+" + mobile, codeToVerify);
+      if (codeToVerify !== demoOtp) {
+        setError("Invalid OTP");
+      } else {
+        setReadingState("success");
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+        setSuccess("OTP verified");
+        setStep("reset");
+      }
+    } catch (e) {
+      setError("Invalid OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    setError(null);
+    setSuccess(null);
+    if (!newPassword || !confirmPassword) {
+      setError("Please enter password and confirm password");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    try {
+      setLoading(true);
+      await onResetPassword?.("+" + mobile, newPassword);
+      setSuccess("Password reset successful");
+      // close after a short delay
+      setTimeout(() => {
+        onClose();
+      }, 800);
+    } catch (e) {
+      setError("Failed to reset password");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resetStateOnClose = () => {
+    setError(null);
+    setSuccess(null);
+    setOtp("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setDemoOtp("");
+    setReadingState("idle");
+    setStep("mobile");
+    onClose();
+  };
+
+  const goBackToMobile = () => {
+    setError(null);
+    setSuccess(null);
+    setOtp("");
+    setDemoOtp("");
+    setReadingState("idle");
+    setStep("mobile");
+  };
+
+  const handleStepSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (step === "mobile") return void handleSendOtp();
+    if (step === "otp") return void handleVerifyOtp();
+    if (step === "reset") return void handleResetPassword();
+  };
+
+  const handleBack = () => {
+    if (step === "mobile") {
+      resetStateOnClose();
+    } else {
+      goBackToMobile();
+    }
+  };
+
+  // If on mobile and reading, mark failed after timeout
+  React.useEffect(() => {
+    if (step !== "otp" || !isMobile) return;
+    if (readingState !== "reading") return;
+    const timer = setTimeout(() => {
+      setReadingState((prev) => (prev === "reading" ? "failed" : prev));
+    }, 8000);
+    return () => clearTimeout(timer);
+  }, [step, isMobile, readingState]);
+
+  return (
+    <Dialog
+      open={open}
+      onClose={resetStateOnClose}
+      maxWidth="xs"
+      fullWidth
+      fullScreen={isMobile}
+      PaperProps={{
+        sx: {
+          position: "relative",
+          pt: isMobile
+            ? `calc(env(safe-area-inset-top, 0px) + ${theme.spacing(isNative ? 6 : 3)})`
+            : theme.spacing(2),
+          pl: `calc(env(safe-area-inset-left, 0px) + ${theme.spacing(1)})`,
+          pr: `calc(env(safe-area-inset-right, 0px) + ${theme.spacing(1)})`,
+        },
+      }}
+    >
+      <DialogContent sx={{ p: { xs: 3, sm: 3 }, pt: isMobile ? 1 : 3 }}>
+        {/* Top Row: Back Arrow + Centered Logo */}
+        <Box display="flex" alignItems="center" mb={2}>
+          <IconButton onClick={handleBack} aria-label="back" sx={{ mr: 1 }}>
+            <KeyboardBackspaceSharp />
+          </IconButton>
+          <Box flex={1} display="flex" justifyContent="center">
+            <img
+              loading="lazy"
+              src={mode === "light" ? "/assets/AICarAdvisor.png" : "/assets/AICarAdvisor_transparent.png"}
+              alt="Logo"
+              style={{ height: 48 }}
+              width={200}
+              height={48}
+            />
+          </Box>
+          {/* Right spacer to keep the logo visually centered */}
+          <Box sx={{ width: 40, height: 40 }} />
+        </Box>
+        {step !== "reset" && (
+          <Typography variant="h6" align="center" gutterBottom sx={{ mb: 3 }}>
+            Forgot Password
+          </Typography>
+        )}
+
+        <Box component="form" id="forgotForm" onSubmit={handleStepSubmit}>
+          {step === "mobile" && (
+            <Box sx={{ mt: 1 }}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                Enter your mobile number
+              </Typography>
+              <PhoneInput
+                country={"in"}
+                value={mobile}
+                onChange={(phone) => setMobile(phone)}
+                inputProps={{
+                  name: "mobile",
+                  required: true,
+                  onKeyDown: (e: any) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSendOtp();
+                    }
+                  },
+                }}
+                disabled={false}
+                containerStyle={{ marginTop: "8px", marginBottom: "20px" }}
+                dropdownStyle={{
+                  backgroundColor: mode === "dark" ? "#000" : "#fff",
+                  color: mode === "dark" ? "#ccc" : "#000",
+                  border: `1px solid ${mode === "dark" ? "#000" : "#ccc"}`,
+                }}
+                inputStyle={{
+                  width: "100%",
+                  backgroundColor: mode === "dark" ? "inherit" : "#fff",
+                  color: mode === "dark" ? "inherit" : "#000",
+                  border: `1px solid ${mode === "dark" ? "inherit" : "#ccc"}`,
+                  borderRadius: 4,
+                  height: 40,
+                }}
+                buttonStyle={{
+                  backgroundColor: mode === "dark" ? "inherit" : "#fff",
+                  border: `1px solid ${mode === "dark" ? "inherit" : "#ccc"}`,
+                }}
+              />
+              {!isMobileMatching && (
+                <Alert severity="warning">Entered number must match the login mobile</Alert>
+              )}
+            </Box>
+          )}
+
+          {step === "otp" && (
+            <Box sx={{ mt: 2 }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleVerifyOtp();
+                }
+              }}
+            >
+              <Typography variant="body2" align="center" sx={{ mb: 1 }}>
+                Enter OTP sent to +{mobile}
+              </Typography>
+              <Box display="flex" justifyContent="center" mb={1}>
+                <Button size="small" variant="text" onClick={goBackToMobile}>
+                  Change number
+                </Button>
+              </Box>
+              <OtpBoxes
+                length={otpLength}
+                value={otp}
+                onChange={setOtp}
+                onComplete={(code) => {
+                  setOtp(code);
+                  setReadingState("success");
+                  if (code && code.length !== otpLength) {
+                    setOtpLength(code.length);
+                  }
+                  handleVerifyOtp(code);
+                }}
+                autoFocus
+                disabled={loading}
+                useWebOtp={isMobile}
+              />
+              {isMobile && readingState === "reading" && (
+                <Alert severity="info" sx={{ mt: 1 }}>
+                  Reading OTP from SMS...
+                </Alert>
+              )}
+              {isMobile && readingState === "failed" && (
+                <Alert severity="warning" sx={{ mt: 1 }}>
+                  Could not read SMS automatically. Please enter the code manually.
+                </Alert>
+              )}
+              {demoOtp && (
+                <Alert severity="info" sx={{ mt: 1 }}>
+                  Demo OTP: {demoOtp}
+                </Alert>
+              )}
+              <Box mt={1} display="flex" justifyContent="center">
+                <Button size="small" onClick={() => setOtp(demoOtp)} disabled={!demoOtp}>
+                  Autofill Demo OTP
+                </Button>
+              </Box>
+            </Box>
+          )}
+
+          {step === "reset" && (
+            <Box sx={{ mt: 2 }}>
+              <Typography variant="h6" align="center" sx={{ mb: 2 }}>
+                Create a new password
+              </Typography>
+              <Box display="flex" justifyContent="center" mb={1}>
+                <Button size="small" variant="text" onClick={goBackToMobile}>
+                  Change number
+                </Button>
+              </Box>
+              <Input
+                type={showNewPassword ? "text" : "password"}
+                placeholder="New Password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                fullWidth
+                sx={{ mb: 2 }}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowNewPassword((s) => !s)}
+                      edge="end"
+                      aria-label="toggle password visibility"
+                    >
+                      {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+              <Input
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleResetPassword();
+                  }
+                }}
+                fullWidth
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={() => setShowConfirmPassword((s) => !s)}
+                      edge="end"
+                      aria-label="toggle password visibility"
+                    >
+                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </Box>
+          )}
+
+          {error && (
+            <Alert severity="error" sx={{ mt: 2 }}>
+              {error}
+            </Alert>
+          )}
+          {success && (
+            <Alert severity="success" sx={{ mt: 2 }}>
+              {success}
+            </Alert>
+          )}
+        </Box>
+      </DialogContent>
+
+      <DialogActions sx={{ p: 2 }}>
+        {step === "mobile" && (
+          <Button
+            form="forgotForm"
+            type="submit"
+            onClick={handleSendOtp}
+            variant="contained"
+            disabled={loading || !mobile || !isMobileMatching}
+          >
+            Send OTP
+          </Button>
+        )}
+        {step === "otp" && (
+          <Button
+            form="forgotForm"
+            type="submit"
+            onClick={() => handleVerifyOtp()}
+            variant="contained"
+            disabled={loading || otp.length < otpLength}
+          >
+            Verify OTP
+          </Button>
+        )}
+        {step === "reset" && (
+          <Button
+            form="forgotForm"
+            type="submit"
+            onClick={handleResetPassword}
+            variant="contained"
+            disabled={loading || !newPassword || !confirmPassword}
+          >
+            Reset Password
+          </Button>
+        )}
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+export default ForgotPasswordDialog;
+
+

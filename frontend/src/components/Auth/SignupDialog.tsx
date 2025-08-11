@@ -18,11 +18,13 @@ import { useTheme } from '@mui/material/styles';
 import { axiosInstance } from '@/utils/axiosInstance';
 import { useCookies } from 'react-cookie';
 import { useSnackbar } from '@/Context/SnackbarContext';
+import OtpBoxes from '@/components/common/otp/OtpBoxes';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/material.css';
 import { useColorMode } from '@/Context/ColorModeContext';
 import { KeyboardBackspaceSharp } from "@mui/icons-material";
+import { Capacitor } from "@capacitor/core";
 
 interface SignupDialogProps {
   open: boolean;
@@ -38,6 +40,12 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  // OTP UI state (no API calls yet; will be added later)
+  const [otp, setOtp] = useState<string>('');
+  const [otpSent, setOtpSent] = useState<boolean>(false);
+  const [otpVerified, setOtpVerified] = useState<boolean>(false);
+  const [otpLength, setOtpLength] = useState<number>(6);
+  const [demoOtp, setDemoOtp] = useState<string>("");
 
   const [cookies, setCookie] = useCookies(['token', 'user']);
   const { showSnackbar } = useSnackbar();
@@ -117,23 +125,27 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const {mode}=useColorMode()
+  const isNative = Capacitor.isNativePlatform();
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth={isMobile} fullScreen={isMobile}>
-      {/* Close (Back) button */}
-      <IconButton
-        onClick={onClose}
-        sx={{
-          position: "absolute",
-          top: 8,
-          left: 8,
-          zIndex: 1,
-        }}
-        aria-label="close"
-      >
-        <KeyboardBackspaceSharp />
-      </IconButton>
-
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="xs"
+      fullWidth={isMobile}
+      fullScreen={isMobile}
+      PaperProps={{
+        sx: {
+          position: "relative",
+          pt: isMobile
+            ? `calc(env(safe-area-inset-top, 0px) + ${theme.spacing(isNative ? 6 : 3)})`
+            : theme.spacing(2),
+          pl: `calc(env(safe-area-inset-left, 0px) + ${theme.spacing(1)})`,
+          pr: `calc(env(safe-area-inset-right, 0px) + ${theme.spacing(1)})`,
+          pb: `calc(env(safe-area-inset-bottom, 0px) + ${theme.spacing(2)})`,
+        },
+      }}
+    >
       <DialogContent
         sx={{
           overflowX: "hidden",
@@ -141,12 +153,25 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
           flex: 1,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "center",
-          mt: 4, // Add margin-top to avoid overlapping with IconButton
         }}
       >
-        <Box display="flex" justifyContent="center" mb={2} mt={2}>
-          <img loading='lazy' src={mode==="dark"? "/assets/AICarAdvisor_transparent.png":"/assets/AICarAdvisor.png"}  height= {60} alt="Logo" style={{ height:60  }} width={300} />
+        {/* Top Row: Back Arrow + Centered Logo */}
+        <Box display="flex" alignItems="center" mb={2}>
+          <IconButton onClick={onClose} aria-label="close" sx={{ mr: 1 }}>
+            <KeyboardBackspaceSharp />
+          </IconButton>
+          <Box flex={1} display="flex" justifyContent="center">
+            <img
+              loading='lazy'
+              src={mode==="dark"? "/assets/AICarAdvisor_transparent.png":"/assets/AICarAdvisor.png"}
+              height={60}
+              alt="Logo"
+              style={{ height: 60 }}
+              width={300}
+            />
+          </Box>
+          {/* Spacer to keep logo centered */}
+          <Box sx={{ width: 40, height: 40 }} />
         </Box>
         <Typography variant="h5" align="center" gutterBottom>
           Sign Up
@@ -180,7 +205,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
               onChange={phone => setMobile(phone)}
 
              
-              disabled={loading}
+              disabled={loading || otpVerified}
             
               inputProps={{
                 name: 'mobile',
@@ -209,6 +234,134 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
         border: `1px solid ${mode=="dark" ? 'inherit' : '#ccc'}`,
       }}
             />
+          </Box>
+
+          {/* OTP flow UI */}
+          <Box mt={2}>
+            {!otpSent ? (
+              <Button
+                fullWidth
+                variant="outlined"
+                disabled={loading || !mobile}
+                onClick={() => {
+                  setError(null);
+                  setSuccess(null);
+                  setLoading(true);
+                  (async () => {
+                    try {
+                      await axiosInstance.post('/api/cargpt/send-otp/', {
+                        phone_number: '+' + mobile,
+                        purpose: 'login',
+                      });
+                      setOtp('');
+                      setOtpSent(true);
+                      setOtpVerified(false);
+                      const generated = Math.random() < 0.5
+                        ? Math.floor(1000 + Math.random() * 9000).toString()
+                        : Math.floor(100000 + Math.random() * 900000).toString();
+                      setDemoOtp(generated);
+                      setOtpLength(generated.length);
+                    } catch (err) {
+                      setError('Failed to send OTP');
+                    } finally {
+                      setLoading(false);
+                    }
+                  })();
+                }}
+              >
+                Send OTP
+              </Button>
+            ) : !otpVerified ? (
+              <Box>
+                <Typography variant="body2" sx={{ mb: 1 }}>
+                  Enter OTP sent to +{mobile}
+                </Typography>
+                <Box display="flex" justifyContent="center" mb={1}>
+                  <Button size="small" variant="text" onClick={() => { setOtpSent(false); setOtp(''); setOtpVerified(false); setDemoOtp(''); }}>
+                    Change number
+                  </Button>
+                </Box>
+                <OtpBoxes
+                  length={otpLength}
+                  value={otp}
+                  onChange={setOtp}
+                  onComplete={(code) => {
+                    setOtp(code);
+                    if (code && code.length !== otpLength) {
+                      setOtpLength(code.length);
+                    }
+                    if (code && code.length === otpLength && code === demoOtp) {
+                      // Simulate 2s verification delay before marking verified
+                      setLoading(true);
+                      setTimeout(() => {
+                        setOtpVerified(true);
+                        setLoading(false);
+                      }, 2000);
+                    }
+                  }}
+                  autoFocus
+                  disabled={loading}
+                  useWebOtp={isMobile}
+                  autoReadClipboard
+                />
+                {/* Demo OTP display for UI-only testing */}
+                {demoOtp && (
+                  <Alert severity="info" sx={{ mt: 1 }}>
+                    Demo OTP: {demoOtp}
+                  </Alert>
+                )}
+                <Box mt={2} display="flex" gap={1}>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      // Resend placeholder
+                      setOtp('');
+                      const generated = Math.random() < 0.5
+                        ? Math.floor(1000 + Math.random() * 9000).toString()
+                        : Math.floor(100000 + Math.random() * 900000).toString();
+                      setDemoOtp(generated);
+                      setOtpLength(generated.length);
+                    }}
+                    disabled={loading}
+                    fullWidth
+                  >
+                    Resend OTP
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      // Placeholder verify; later will call API
+                      if (!otp || otp.length < otpLength) return;
+                      if (otp === demoOtp) {
+                        setOtpVerified(true);
+                      } else {
+                        setError('Invalid OTP');
+                      }
+                    }}
+                    disabled={loading || otp.length < otpLength}
+                    fullWidth
+                  >
+                    Verify OTP
+                  </Button>
+                </Box>
+                <Box mt={1}>
+                  <Button size="small" onClick={() => setOtp(demoOtp)} disabled={!demoOtp}>
+                    Autofill Demo OTP
+                  </Button>
+                </Box>
+              </Box>
+            ) : (
+              <Box>
+                <Alert severity="success" sx={{ mt: 1 }}>
+                  Mobile verified
+                </Alert>
+                <Box display="flex" justifyContent="center" mt={1}>
+                  <Button size="small" variant="text" onClick={() => { setOtpVerified(false); setOtpSent(false); setOtp(''); setDemoOtp(''); }}>
+                    Change number
+                  </Button>
+                </Box>
+              </Box>
+            )}
           </Box>
 
           {/* Password field */}
@@ -260,7 +413,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
         <Button
           onClick={handleSubmit}
           variant="contained"
-          disabled={loading}
+          disabled={loading || !otpVerified}
           startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
         >
           {loading ? 'Signing up...' : 'Sign Up'}
