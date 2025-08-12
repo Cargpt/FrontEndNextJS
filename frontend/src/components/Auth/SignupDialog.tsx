@@ -18,6 +18,7 @@ import { useTheme } from '@mui/material/styles';
 import { axiosInstance } from '@/utils/axiosInstance';
 import { useCookies } from 'react-cookie';
 import { useSnackbar } from '@/Context/SnackbarContext';
+import { useRouter } from 'next/navigation';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/material.css';
@@ -46,6 +47,8 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
 
   const [cookies, setCookie] = useCookies(['token', 'user']);
   const { showSnackbar } = useSnackbar();
+
+  const router = useRouter();
 
   const resetState = () => {
     setFullName('');
@@ -97,7 +100,6 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
       };
 
       const response = await axiosInstance.post('/api/cargpt/register/', payload);
-      handleSetCookie(response);
       console.log("Signup successful, backend response:", response.data);
       setSuccess('Signup successful!');
       showSnackbar(response?.message || "Signup successful!", {
@@ -155,8 +157,9 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
       });
       setTimeout(() => {
         setSuccess(null);
-        onSuccess(password, mobile);
         resetState(); // Call resetState to clear form/OTP state
+        onClose();
+        router.push('/'); // Redirect to home page
       }, 1000);
     } catch (err: any) {
       console.error("OTP verification error:", JSON.stringify(err.response?.data, null, 2));
