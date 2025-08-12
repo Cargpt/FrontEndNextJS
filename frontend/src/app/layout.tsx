@@ -46,6 +46,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <SafeAreaInit />
             <ThemeColorMeta />
             {children}
+            
           </NotificationProvider>
         </CookiesClientProvider>
 

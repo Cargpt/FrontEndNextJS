@@ -15,6 +15,7 @@ import {
   Stack,
   useTheme,
   Tooltip,
+  BottomNavigationAction,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
@@ -171,9 +172,14 @@ const NotificationsPage = () => {
             ))}
           </List>
         )}
+
+        {
+          isNative &&
+          <BottomNavigationAction/>
+        }
       </Box>
     </Box>
-  );
-};
+  ); 
+};   
 
 export default NotificationsPage;

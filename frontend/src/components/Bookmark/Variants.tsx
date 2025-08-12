@@ -1,6 +1,6 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import { Box, Card, CardMedia, CardContent, Typography, Stack, AppBar, Toolbar, IconButton } from '@mui/material';
+import { Box, Card, CardMedia, CardContent, Typography, Stack, AppBar, Toolbar, IconButton, BottomNavigationAction } from '@mui/material';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import KeyboardBackspaceSharpIcon from '@mui/icons-material/KeyboardBackspaceSharp';
 import { useRouter } from 'next/navigation';
@@ -213,6 +213,13 @@ function updateBookmarkByVariantID(data:any, variantId:number, newState:boolean)
           ))}
         </Box>
       </Box>
+
+
+        {
+          isNative &&
+          <BottomNavigationAction/>
+        }
+    
     </Box>
   );
 };

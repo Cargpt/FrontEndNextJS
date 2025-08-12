@@ -30,6 +30,10 @@ import { useChats } from "@/Context/ChatContext";
 import  { useMemo } from 'react';
 import { ThemeProvider, CssBaseline, createTheme, } from '@mui/material';
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import { Capacitor } from "@capacitor/core";
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { useColorMode } from "@/Context/ColorModeContext";
 
 interface SidebarProps {
   open: boolean;
@@ -40,8 +44,7 @@ type HistoryItem = { id?: string; title: string; value: string };
 
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const [cookies, , removeCookie] = useCookies(["token", "user"]);
-    const [mode, setMode] = useState<'light' | 'dark'>('light');
-
+const {mode, toggleColorMode}=useColorMode()
 const router =useRouter()
   useEffect(() => {}, [cookies.token]);
 
@@ -180,6 +183,7 @@ const theme=useTheme()
     onClose();
     show();
   };
+  const isNative = Capacitor.isNativePlatform()
 
   return (
     <>
@@ -474,6 +478,37 @@ const theme=useTheme()
                     gap: "8px",
                   }}
                 >
+
+{isNative && (
+
+                  <li>
+  <Box
+    sx={{
+      mt: 2,
+      px: 1,
+      py: 1,
+      borderTop: `1px solid ${theme.palette.grey[100]}`,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    }}
+  >
+    <Typography sx={{ fontSize: 14, fontWeight: 600 }}>
+      Theme Mode
+    </Typography>
+    <Button
+      onClick={toggleColorMode}
+      size="small"
+      variant="outlined"
+      startIcon={mode === 'light' ? <Brightness7Icon /> : <Brightness4Icon />}
+    >
+      {mode === 'light' ? 'Light' : 'Dark'}
+    </Button>
+  </Box>
+
+
+                  </li>
+                  )}
                   <li
                     style={{
                       borderRadius: 6,
