@@ -57,11 +57,14 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [demoOtp, setDemoOtp] = useState<string>("");
-  const [otpLength, setOtpLength] = useState<number>(propOtpLength);
+  const [otpLength] = useState<number>(6); // Always use 6 digits
   const [readingState, setReadingState] = useState<"idle" | "reading" | "failed" | "success">("idle");
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [resendTimer, setResendTimer] = useState(0);
+  const [canResend, setCanResend] = useState(true);
 
   const isMobileMatching = useMemo(() => {
     if (!loginMobile) return true;
@@ -102,17 +105,59 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
         ? Math.floor(1000 + Math.random() * 9000).toString()
         : Math.floor(100000 + Math.random() * 900000).toString();
       setDemoOtp(generated);
-      setOtpLength(generated.length);
       setSuccess("OTP sent successfully");
       setStep("otp");
       // Start SMS reading indicator only on mobile
       setReadingState(isMobile ? "reading" : "idle");
+      // Start resend timer
+      setResendTimer(60);
+      setCanResend(false);
     } catch (e) {
-      setError("Failed to send OTP");
+      setError("No account found with this phone number");
     } finally {
       setLoading(false);
     }
   };
+
+  const handleResendOtp = async () => {
+    if (!canResend || resendTimer > 0) return;
+    
+    setError(null);
+    try {
+      setLoading(true);
+      // Call API to resend OTP
+      if (onSendOTP) {
+        await onSendOTP("+" + mobile);
+      } else {
+        await axiosInstance.post("/api/cargpt/send-otp/", {
+          phone_number: "+" + mobile,
+          purpose: "forgot_password",
+        });
+      }
+      setSuccess("OTP resent successfully");
+      // Reset timer
+      setResendTimer(60);
+      setCanResend(false);
+    } catch (e) {
+      setError("Failed to resend OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Timer countdown effect
+  React.useEffect(() => {
+    if (resendTimer <= 0) {
+      setCanResend(true);
+      return;
+    }
+    
+    const timer = setTimeout(() => {
+      setResendTimer(prev => prev - 1);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, [resendTimer]);
 
   const handleVerifyOtp = async (overrideCode?: string) => {
     setError(null);
@@ -124,17 +169,34 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
     }
     try {
       setLoading(true);
-      await onVerifyOTP?.("+" + mobile, codeToVerify);
-      if (codeToVerify !== demoOtp) {
-        setError("Invalid OTP");
-      } else {
-        setReadingState("success");
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        setSuccess("OTP verified");
+      // Call the verify-otp API with purpose "forgot_password"
+      await axiosInstance.post("/api/cargpt/verify-otp/", {
+        phone_number: "+" + mobile,
+        otp: codeToVerify,
+        purpose: "forgot_password"
+      });
+      
+      setReadingState("success");
+      setSuccess("OTP verified successfully!");
+      // Add a small delay before moving to next step
+      setTimeout(() => {
         setStep("reset");
+      }, 1000);
+    } catch (e: any) {
+      // Handle different types of errors
+      let errorMessage = "Invalid OTP. Please check the code and try again.";
+      if (e.data?.error) {
+        errorMessage = e.data.error;
+      } else if (e.data?.detail) {
+        errorMessage = e.data.detail;
+      } else if (typeof e.data === 'string') {
+        errorMessage = e.data;
+      } else if (e.message) {
+        errorMessage = e.message;
       }
-    } catch (e) {
-      setError("Invalid OTP");
+      setError(errorMessage);
+      // Clear the OTP input on error
+      setOtp("");
     } finally {
       setLoading(false);
     }
@@ -175,6 +237,8 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
     setDemoOtp("");
     setReadingState("idle");
     setStep("mobile");
+    setResendTimer(0);
+    setCanResend(true);
     onClose();
   };
 
@@ -185,6 +249,8 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
     setDemoOtp("");
     setReadingState("idle");
     setStep("mobile");
+    setResendTimer(0);
+    setCanResend(true);
   };
 
   const handleStepSubmit = (e: React.FormEvent) => {
@@ -324,34 +390,37 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
                 onChange={setOtp}
                 onComplete={(code) => {
                   setOtp(code);
-                  setReadingState("success");
-                  if (code && code.length !== otpLength) {
-                    setOtpLength(code.length);
-                  }
-                  handleVerifyOtp(code);
+                  // Don't auto-verify, let user click verify button
                 }}
                 autoFocus
                 disabled={loading}
-                useWebOtp={isMobile}
+                useWebOtp={false}
               />
-              {isMobile && readingState === "reading" && (
-                <Alert severity="info" sx={{ mt: 1 }}>
-                  Reading OTP from SMS...
-                </Alert>
-              )}
-              {isMobile && readingState === "failed" && (
-                <Alert severity="warning" sx={{ mt: 1 }}>
-                  Could not read SMS automatically. Please enter the code manually.
-                </Alert>
-              )}
-              {demoOtp && (
-                <Alert severity="info" sx={{ mt: 1 }}>
-                  Demo OTP: {demoOtp}
-                </Alert>
-              )}
-              <Box mt={1} display="flex" justifyContent="center">
-                <Button size="small" onClick={() => setOtp(demoOtp)} disabled={!demoOtp}>
-                  Autofill Demo OTP
+              
+              {/* Manual Verify Button */}
+              <Box mt={2} display="flex" justifyContent="center">
+                <Button
+                  variant="contained"
+                  onClick={() => handleVerifyOtp()}
+                  disabled={loading || otp.length < otpLength}
+                  fullWidth
+                >
+                  Verify OTP
+                </Button>
+              </Box>
+              
+              {/* Resend OTP Button with Timer */}
+              <Box mt={2} display="flex" justifyContent="center">
+                <Button
+                  variant="text"
+                  onClick={handleResendOtp}
+                  disabled={!canResend || resendTimer > 0 || loading}
+                  sx={{ minWidth: 120 }}
+                >
+                  {resendTimer > 0 
+                    ? `Resend in ${resendTimer}s` 
+                    : "Resend OTP"
+                  }
                 </Button>
               </Box>
             </Box>
@@ -362,11 +431,6 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
               <Typography variant="h6" align="center" sx={{ mb: 2 }}>
                 Create a new password
               </Typography>
-              <Box display="flex" justifyContent="center" mb={1}>
-                <Button size="small" variant="text" onClick={goBackToMobile}>
-                  Change number
-                </Button>
-              </Box>
               <Input
                 type={showNewPassword ? "text" : "password"}
                 placeholder="New Password"
@@ -416,11 +480,6 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
           {error && (
             <Alert severity="error" sx={{ mt: 2 }}>
               {error}
-            </Alert>
-          )}
-          {success && (
-            <Alert severity="success" sx={{ mt: 2 }}>
-              {success}
             </Alert>
           )}
         </Box>

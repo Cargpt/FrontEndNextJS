@@ -2,6 +2,8 @@
 
 import React, { useEffect, useMemo, useRef } from "react";
 import { Box, TextField } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { useMediaQuery } from "@mui/material";
 
 export interface OtpBoxesProps {
   length?: number;
@@ -16,17 +18,19 @@ export interface OtpBoxesProps {
 }
 
 const OtpBoxes: React.FC<OtpBoxesProps> = ({
-  length = 6,
+  length = 6, // Default to 6 digits
   value,
   onChange,
   onComplete,
   autoFocus = false,
   disabled = false,
   gap = 1,
-  useWebOtp = true,
-  autoReadClipboard = true,
+  useWebOtp = false, // Disable auto-OTP reading by default
+  autoReadClipboard = false, // Disable auto-read clipboard by default
 }) => {
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const digits = useMemo(() => {
     const cleaned = (value || "").replace(/\D/g, "");
@@ -151,7 +155,8 @@ const OtpBoxes: React.FC<OtpBoxesProps> = ({
             inputMode: "numeric",
             pattern: "[0-9]*",
             maxLength: 1,
-            style: { textAlign: "center", fontSize: 18, width: 40 },
+            style: { textAlign: "center", fontSize: 18, width: isMobile ? 32 : 40 }, // Adjust width for mobile
+            autoComplete: "off", // Disable autocomplete
           }}
           disabled={disabled}
         />
