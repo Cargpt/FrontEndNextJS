@@ -49,9 +49,10 @@ const NotificationsPage = () => {
       
       <AppBar
       position="fixed" elevation={0} sx={{
-           pt: `calc(${theme.spacing(isNative? 5:0)} + env(safe-area-inset-top, 0px))`, // Adds safe area to original top padding
-    
-         }} color="primary">
+        paddingTop: `env(safe-area-inset-bottom)`,
+
+         }} 
+         >
   <Toolbar>
     <IconButton edge="start" color="inherit" onClick={()=>router.back()} aria-label="back">
       <KeyboardBackspaceSharpIcon />

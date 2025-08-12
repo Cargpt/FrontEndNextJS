@@ -363,6 +363,7 @@ const bottomSpacing = `calc(
   ${theme.spacing(isLastMessage ? 6 : 2)} + 
   ${isNative ? theme.spacing(4) : theme.spacing(2)} + 
   env(safe-area-inset-bottom, 0px)
+
 )`;
 
   const {mode}=useColorMode()
@@ -398,7 +399,15 @@ const bottomSpacing = `calc(
             messages?.[messages?.length-1]?.message!=="Ask AI" &&
 
           <Box 
-            sx={{minHeight:"100vh", background:"transparent"}}
+            sx={{minHeight:"100vh",
+              
+              background:"transparent",  
+              marginBottom:isNative ? "2.7rem":"1.5rem"
+
+              
+              
+            }}
+            
             ref={chatContainerRef}
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
@@ -406,16 +415,26 @@ const bottomSpacing = `calc(
           >
             {messages.map((msg, index) => {
               const isLastUserMsg = msg.sender === "user" && index === lastUserMsgIndex;
+
               return (
                 <Box
                   key={msg.id}
                   sx={{
+                     padding:"1rem",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
+                    transition: 'background 0.3s ease',
 
-                    mb:bottomSpacing,
-                    mt: { xs: 0, sm: 1 },
+
+                    '&:hover': {
+                      background: 'rgba(0, 0, 0, 0.05)', // 👈 Example hover effect
+                      cursor: 'pointer',               // Optional
+                    },
+                
+
+                    
+                    mt: { xs: isNative && index===0? 3:  0, sm: isNative && index===0? 3: 1 },
                     px: { xs: 2, sm: 0 },
                     textAlign: msg.sender === "user" ? "right" : "left",
                     fontSize: "14px",
@@ -437,12 +456,15 @@ const bottomSpacing = `calc(
                   )}
                   <Grow in appear timeout={300}>
                   <Paper
+                  elevation={isNative? 0 : 1}
                     sx={{
                       p:  Number(`${msg.sender=="user" ? "1.5" : 0}`),
                       maxWidth: isSmallScreen ? "100%" : "75%",
                       bgcolor:
                         msg.sender === "user" ? "rgb(211, 227, 255)" : mode==="dark"?"transparent":"grey.100",
                       color: "black",
+                    
+                    
                     }}
                   >
                     <MessageRenderer

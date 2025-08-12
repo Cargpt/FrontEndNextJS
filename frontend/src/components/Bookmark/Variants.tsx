@@ -103,7 +103,7 @@ function updateBookmarkByVariantID(data:any, variantId:number, newState:boolean)
       {/* Sticky Navbar */}
      <AppBar
       position="fixed" elevation={0} sx={{
-           pt: `calc(${theme.spacing(isNative? 5:0)} + env(safe-area-inset-top, 0px))`, // Adds safe area to original top padding
+        paddingTop: `env(safe-area-inset-bottom)`, // Adds safe area to original top padding
     
          }} color="primary">
   <Toolbar>

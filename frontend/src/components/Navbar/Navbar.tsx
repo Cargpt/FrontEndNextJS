@@ -9,6 +9,7 @@ import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/navigation';
 import { useTheme } from '@mui/material';
 import { Capacitor } from '@capacitor/core';
+import { useColorMode } from '@/Context/ColorModeContext';
 
 type Props = {
   backToPrevious: () => void;
@@ -30,34 +31,40 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
   const theme=useTheme()
   const isNative = Capacitor.isNativePlatform()
   const isAndroid = Capacitor.getPlatform() === 'android'
-
+const {mode}=useColorMode()
   return (
     <>
       <CssBaseline />
-      <AppBar position="fixed"
-        sx={{
-        boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-        pb: 1, // This maintains your original bottom padding
-        // Add a small gap below Android status bar for breathing room
-        pt: isAndroid ? theme.spacing(1) : `calc(${theme.spacing(isNative? 5:0)} + env(safe-area-inset-top, 0px))`,
-        background:"body2"
-        }}
+      <AppBar
+      sx={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        borderTop: `1px solid ${theme.palette.divider}`,
+        
+        boxShadow: "none",
+        paddingTop: `env(safe-area-inset-bottom)`,
+        boxSizing: "border-box",
+      }}
+    
+          elevation={0}
         
 
       >
         <Toolbar sx={{
                       left: 'calc(env(safe-area-inset-left, 0px) + 8px)',
-                      top: 'calc(env(safe-area-inset-top, 0px) + var(--android-top-gap, 8px) + 8px)',
                       zIndex: 3,
                       border: "none",
         }}>
-          <IconButton edge="start" color="inherit" onClick={backToPrevious} aria-label="back">
+          <IconButton edge="start"  onClick={backToPrevious} aria-label="back">
             <KeyboardBackspaceSharp />
           </IconButton>
           {
             cookies.user &&
-            (<IconButton onClick={handleBookmarkClick} edge="end" color="inherit" sx={{ ml: 'auto' }} aria-label="favorite">
-            <FavoriteBorderIcon sx={{ color: "#fff" }} />
+            (<IconButton onClick={handleBookmarkClick} edge="end" sx={{ ml: 'auto' }} aria-label="favorite">
+            <FavoriteBorderIcon />
           </IconButton>)
 
           }

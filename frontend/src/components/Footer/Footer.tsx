@@ -10,9 +10,9 @@ const Footer: React.FC = () => {
       <Box
         sx={{
           bgcolor: "rgba(238, 238, 239, 1)",
-          padding: "10px",
+          paddingX: "10px",
           textAlign: "center",
-          height: "70px",
+         
           position: "fixed",
           bottom: 0,
           left: 0,
@@ -20,6 +20,8 @@ const Footer: React.FC = () => {
           width: "100%",
           overflow: "hidden",
           zIndex: 1000,
+          paddingBottom: `env(safe-area-inset-bottom)`,
+
         }}
       >
         <Typography variant="body2" color="text.secondary">

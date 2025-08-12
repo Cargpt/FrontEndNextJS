@@ -204,7 +204,7 @@ html, body, .my-custom-scroll-container {
 }
 
 /* Mobile responsive tweak */
-@media (max-width: 600px) {
+/* @media (max-width: 600px) {
   .slick-prev {
     left: -16px !important;
   }
@@ -212,7 +212,7 @@ html, body, .my-custom-scroll-container {
   .slick-next {
     right: -16px !important;
   }
-}
+} */
 /* Position arrows cleanly */
 .slick-prev,
 .slick-next {
@@ -258,10 +258,10 @@ html, body, .my-custom-scroll-container {
 /* Optional: tweak for small screens */
 @media (max-width: 600px) {
   .slick-prev {
-    left: -12px !important;
+    left: -7px !important;
   }
   .slick-next {
-    right: -12px !important;
+    right: -7px !important;
   }
 }/* Slick arrow buttons */
 .slick-prev,
@@ -368,18 +368,6 @@ html, body, .my-custom-scroll-container {
 .slick-next {
   right: -20px;
 }
-
-/* Mobile tweaks */
-@media (max-width: 600px) {
-  .slick-prev {
-    left: -12px;
-  }
-
-  .slick-next {
-    right: -12px;
-  }
-} 
-
 /* Scoped styles under .prompt */
 .prompt {
   padding: 1rem;
@@ -482,3 +470,14 @@ html, body, .my-custom-scroll-container {
 
 
 
+
+
+/* Optional: tweak for small screens */
+@media (max-width: 600px) {
+  .slick-prev {
+    left: -5px !important;
+  }
+  .slick-next {
+    right: -15px !important;
+  }
+}

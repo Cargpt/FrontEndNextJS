@@ -25,6 +25,7 @@ import dayjs, { Dayjs } from 'dayjs';
 import { useCookies } from 'react-cookie';
 import { KeyboardBackspaceSharp } from "@mui/icons-material";
 import { useColorMode } from "@/Context/ColorModeContext";
+import { Capacitor } from '@capacitor/core';
 
 // Define a more specific interface for carDetails passed to this component
 interface CarDetailsForBooking {
@@ -208,7 +209,7 @@ const [cookies]=useCookies(['user'])
   
    
   }, [cookies?.user])
- 
+ const isNative=Capacitor.isNativePlatform()
   console.log("user", mobile)
   useAndroidBackClose(open, onClose);
   return (
@@ -227,7 +228,8 @@ const [cookies]=useCookies(['user'])
         },
       }}
     >
-      <DialogTitle
+  
+<DialogTitle
         sx={{
           bgcolor: mode=="dark"? "dark":"grey.100",
           position: "sticky",
@@ -235,30 +237,33 @@ const [cookies]=useCookies(['user'])
           pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))',
           minHeight: 56,
           zIndex: 2,
-          display: 'flex',
-          alignItems: 'center',
+          textAlign: "center",
           fontWeight: 700,
-          p: 2, // General padding for the title area
         }}
       >
         <Button
           variant="outlined"
           onClick={onClose}
           sx={{
-            border: "none",
-            minWidth: 0,
-            p: 1,
-            position: 'absolute',
+            position: "absolute",
             left: 'calc(env(safe-area-inset-left, 0px) + 8px)',
             top: 'calc(env(safe-area-inset-top, 0px) + var(--android-top-gap, 8px) + 8px)',
             zIndex: 3,
-            mr: 1,
+            border: "none",
+            minWidth: 0,
+            p: 1,
           }}
         >
           <KeyboardBackspaceSharp />
         </Button>
-        Book Test Drive for {carDetails.BrandName} {carDetails.ModelName}
-      </DialogTitle>
+        <Typography sx={{
+          mt: isNative?2:3    }}>
+                  Book Test Drive for {carDetails.BrandName} {carDetails.ModelName}
+
+        </Typography>
+        </DialogTitle>
+
+
       <DialogContent dividers>
         <Box component="form" noValidate autoComplete="off">
           {/* Row 1: Name and Mobile Number */}
@@ -394,13 +399,25 @@ const [cookies]=useCookies(['user'])
             </Typography>
           )}
         </Box>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+  <Button
+    onClick={handleSubmit}
+    variant="contained"
+    disabled={loading}
+    color="primary"
+    sx={{
+      px: 5,
+      py: 1.5,
+      borderRadius: 2,
+      fontWeight: 'bold',
+    }}
+  >
+    {loading ? 'Booking...' : 'Submit Booking'}
+  </Button>
+</Box>
+
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={loading}>Cancel</Button>
-        <Button onClick={handleSubmit} variant="contained" disabled={loading} color="primary">
-          {loading ? 'Booking...' : 'Submit Booking'}
-        </Button>
-      </DialogActions>
+
     </Dialog>
   );
 };

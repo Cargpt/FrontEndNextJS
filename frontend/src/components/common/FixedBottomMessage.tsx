@@ -35,11 +35,12 @@ const isNative =Capacitor.isNativePlatform()
           color: 'text.secondary',
           textAlign: 'center',
           pt: 1,
+      
           boxShadow: 3,
           zIndex: 3,
           fontSize: { xs: '12px', sm: '14px' },
+          paddingBottom:`env(safe-area-inset-bottom)`,
           // Add bottom safe-area inset, not top
-          pb: `calc(${theme.spacing(isNative ? 5 : 2)} + env(safe-area-inset-bottom, 0px))`,
 
         }}
       >

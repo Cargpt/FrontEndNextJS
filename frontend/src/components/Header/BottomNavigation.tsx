@@ -91,7 +91,7 @@ const BottomNavigationBar = () => {
     left: 0,
     right: 0,
     zIndex: 1000,
-    borderTop: "1px solid #f5f5f5",
+    borderTop: `1px solid ${theme.palette.divider}`,
     background: mode === "dark"
       ? theme.palette.background.paper
       : "#f5f5f5",
