@@ -85,19 +85,26 @@ const BottomNavigationBar = () => {
   if (!shouldShowBottomNav) return null;
 
   return (
-    <Paper
-      sx={{
-        position: "fixed",
-        bottom: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1000,
-        backgroundColor: mode === "dark" ? theme.palette.background.paper : "#f5f6fa",
-        borderTop: "1px solid rgba(0, 0, 0, 0.1)",
-      }}
-      elevation={3}
+    <Paper   sx={{
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    borderTop: "1px solid",
+    backgroundColor: mode === "dark" ? theme.palette.background.paper : "linear-gradient(202.97deg,#f1ebff 20.95%,#fff 99.56%)",
+    boxShadow: "none",
+    paddingBottom: `env(safe-area-inset-bottom)`,
+    boxSizing: "border-box",
+  }}
+
+      elevation={0}
     >
-      <BottomNavigation value={value} onChange={handleChange} showLabels>
+      <BottomNavigation value={value} onChange={handleChange} showLabels sx={{
+            backgroundColor: mode === "dark" ? theme.palette.background.paper : "linear-gradient(202.97deg,#f1ebff 20.95%,#fff 99.56%)",
+            color:"rgba(74,46,127,.8)"
+
+      }}>
         <BottomNavigationAction label="Home" icon={<HomeIcon />} />
         {
           cookies.user &&
@@ -122,16 +129,7 @@ const BottomNavigationBar = () => {
 
 <BottomNavigationAction
             onClick={handleDrawerOpen}
-            sx={{
-              width: 40,
-              height: 40,
-              backgroundColor: theme.palette.background.paper,
-              borderRadius: 2,
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
+
             showLabel
             label="Menu"
             icon={<MenuOutlinedIcon sx={{ color: mode=="dark"? 'white' :'black'}} />}
