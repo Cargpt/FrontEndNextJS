@@ -39,6 +39,7 @@ type Props = {
   onClick?: () => void;
   selectedItem: any; // Consider making this more specific if possible
   handleNeedAdviceSupport: () => void;
+  variant?: 'default' | 'compact';
 };
 
 interface typeProps {
@@ -78,6 +79,7 @@ const TeslaCard: React.FC<Props> = ({
   onClick,
   selectedItem,
   handleNeedAdviceSupport,
+  variant = 'default',
 }) => {
   const rawValues = Object.values(selectedItem);
 
@@ -230,9 +232,9 @@ const hideSignUP = () => {
   };
 
 
-  // Custom Next Arrow Component
-const CustomNextArrow = (props: any) => {
-  const { className, onClick, style } = props;
+// Custom Next Arrow Component (supports outside offset)
+const CustomNextArrow = (props: any & { outside?: boolean }) => {
+  const { className, onClick, style, outside } = props;
   const { mode } = useColorMode();
 
   return (
@@ -242,22 +244,21 @@ const CustomNextArrow = (props: any) => {
       sx={{
         ...style,
         color: mode === "dark" ? "#fff" : "#ccc",
-        
         fontSize: 30,
         cursor: "pointer",
-        right: 10, // Adjust if needed
+        right: outside ? { xs: 10, sm: -8, md: -16 } : 10,
         zIndex: 10,
-         "&:hover": {
-          color: mode === "dark" ? "#ddd" : "#222", // Custom hover color
+        "&:hover": {
+          color: mode === "dark" ? "#ddd" : "#222",
         },
       }}
     />
   );
 };
 
-// Custom Prev Arrow Component
-const CustomPrevArrow = (props: any) => {
-  const { className, onClick, style } = props;
+// Custom Prev Arrow Component (supports outside offset)
+const CustomPrevArrow = (props: any & { outside?: boolean }) => {
+  const { className, onClick, style, outside } = props;
   const { mode } = useColorMode();
 
   return (
@@ -269,10 +270,10 @@ const CustomPrevArrow = (props: any) => {
         color: mode === "dark" ? "#fff" : "#ccc",
         fontSize: 30,
         cursor: "pointer",
-        left: 10, // Adjust if needed
+        left: outside ? { xs: 10, sm: -8, md: -16 } : 10,
         zIndex: 10,
-         "&:hover": {
-          color: mode === "dark" ? "#ddd" : "#222", // Custom hover color
+        "&:hover": {
+          color: mode === "dark" ? "#ddd" : "#222",
         },
       }}
     />
@@ -280,18 +281,19 @@ const CustomPrevArrow = (props: any) => {
 };
 
 
+  const isCompact = variant === 'compact';
+  const showTwo = modelCars.length >= 2;
   const settings: Settings = {
-  
     infinite: false,
     speed: 500,
-    slidesToShow: modelCars.length > 1 ? 2 : 1,
+    slidesToShow: showTwo ? 2 : 1,
     slidesToScroll: 1,
-    autoplay: true,
+    autoplay: isCompact ? false : true,
     autoplaySpeed: 3000,
     dots: false,
-    arrows: true,
-    nextArrow: <CustomNextArrow />,
-    prevArrow: <CustomPrevArrow />,
+    arrows: showTwo,
+    nextArrow: <CustomNextArrow outside={variant === 'compact'} />,
+    prevArrow: <CustomPrevArrow outside={variant === 'compact'} />,
 
     responsive: [
       {
@@ -335,23 +337,34 @@ const {mode}=useColorMode()
     <>
 
       {modelCars.length > 0 && (
-        <Slider {...settings}>
+        <Box sx={{ width: '100%', backgroundColor: '#ffffff', '& .slick-list': { backgroundColor: '#ffffff' } }}>
+          <Slider {...settings}>
 
           {modelCars.map((car: any, index: number) => ( // Consider more specific type for 'car'
             (<Card
               key={index}
               sx={{
-                
-                borderRadius: 2,
+                borderRadius: isCompact ? 1 : 2,
                 position: "relative",
                 display: "flex",
-                
+                width: '100%',
+                backgroundColor: mode === 'dark' ? theme.palette.background.paper : '#ffffff',
+                border: isCompact ? '1px solid transparent' : undefined,
+                transition: isCompact ? 'transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease' : undefined,
+                cursor: isCompact ? 'pointer' : 'default',
+                '&:hover': isCompact ? {
+                  transform: 'translateY(-2px)',
+                  boxShadow: mode === 'dark'
+                    ? '0 6px 18px rgba(0,0,0,0.6)'
+                    : '0 6px 18px rgba(0,0,0,0.12)',
+                  borderColor: mode === 'dark' ? theme.palette.primary.dark : theme.palette.primary.light,
+                } : undefined,
               }}
             >
               <CardMedia
                 component="img"
-                height="150"
-                width="150"
+                height={isCompact ? "130" : "150"}
+                width="100%"
                 
 
                 image={car.CarImageDetails?.[0]?.CarImageURL || '/assets/card-img.png'}
@@ -381,7 +394,7 @@ const {mode}=useColorMode()
                   <CollectionsIcon />
                 </IconButton>
               </Box>
-              <Box sx={{ position: "absolute", top: 3, left: 8 }} >
+               <Box sx={{ position: "absolute", top: 3, left: 8 }} >
                 <Chip
                   label={`${car.ModelName} ${car.BodyName ? `-${car.BodyName}`: ""}`}
                   color="primary"
@@ -398,7 +411,7 @@ const {mode}=useColorMode()
               <Box
                 sx={{
                   position: "absolute",
-                  top: 110,
+                  top: isCompact ? 88 : 110,
                   left: 16,
                   backgroundColor: "white",
                   py: 0.5,
@@ -407,7 +420,7 @@ const {mode}=useColorMode()
               >
                 <Typography fontWeight="bold"
                  color="primary"
-                  fontSize={18} px={2}  sx={{
+                  fontSize={isCompact ? 16 : 18} px={2}  sx={{
                   backgroundColor: mode==="dark"?  theme.palette.background.paper : "#f5f5f5",
                   borderRadius:"5px"
                 }}>
@@ -420,7 +433,7 @@ const {mode}=useColorMode()
                   variant="h5"
                   fontWeight="bold"
                   gutterBottom
-                  sx={{ mb: 0, fontSize: "15px", display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'space-between' }}
+                  sx={{ mb: 0, fontSize: isCompact ? "14px" : "15px", display: 'flex', alignItems: 'center', gap: 1, justifyContent: 'space-between' }}
                 >
                   {car.VariantName}
                   <IconButton
@@ -509,7 +522,7 @@ const {mode}=useColorMode()
                         variant="caption"
                         color="text.secondary"
                         display="block"
-                        sx={{ lineHeight: 1.2, fontWeight: "bold", fontSize: "12px" }} // Reduced font size
+                        sx={{ lineHeight: 1.2, fontWeight: "bold", fontSize: isCompact ? "11px" : "12px" }} // Reduced font size
                       >
                         {item.label}
                       </Typography>
@@ -611,9 +624,11 @@ const {mode}=useColorMode()
               </CardContent>
             </Card>)
           ))}
-        </Slider>
+          </Slider>
+        </Box>
 
       )}
+      {!isCompact && (
       <Stack
         direction="row"
         gap={2}
@@ -647,6 +662,7 @@ const {mode}=useColorMode()
           </Button>
         )}
       </Stack>
+      )}
       {dialog.type === "gallery" && (
         <CarGallery
           open={dialog.open}
