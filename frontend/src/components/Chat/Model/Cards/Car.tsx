@@ -2,7 +2,7 @@
  
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -280,8 +280,9 @@ const CustomPrevArrow = (props: any) => {
 };
 
 
-  const settings: Settings = {
   
+
+  const settings = {
     infinite: false,
     speed: 500,
     slidesToShow: modelCars.length > 1 ? 3 : 1,
@@ -290,9 +291,10 @@ const CustomPrevArrow = (props: any) => {
     autoplaySpeed: 3000,
     dots: false,
     arrows: true,
+    centerMode: false,
+    centerPadding: "0px",
     nextArrow: <CustomNextArrow />,
     prevArrow: <CustomPrevArrow />,
-
     responsive: [
       {
         breakpoint: 1024,
@@ -300,28 +302,13 @@ const CustomPrevArrow = (props: any) => {
           slidesToShow: 1,
           slidesToScroll: 1,
           dots: false,
+          centerMode: false,
+          centerPadding: "0px",
         },
       },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          initialSlide: 0,
-          dots: false,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          dots: false,
-        },
-      },
+      // other breakpoints
     ],
   };
-
   const backTOIntial = () => {
     // Ensure that userMessage's 'sender' type is compatible with ChatContext's Message interface
     // The previous fix for Message interface should resolve this.
@@ -352,7 +339,7 @@ console.log(typeof message)
                 borderRadius: 2,
                 position: "relative",
                 display: "flex",
-                maxWidth:{md:"260px",
+                maxWidth:{md: "260px",
                   boxShadow:"none",
                 },
                 
