@@ -22,7 +22,7 @@ import { useTheme } from "@mui/material/styles";
 import { Visibility, VisibilityOff, KeyboardBackspaceSharp } from "@mui/icons-material";
 import { Capacitor } from "@capacitor/core";
 import { axiosInstance } from "@/utils/axiosInstance";
-import { useRouter } from "next/navigation";
+ 
 
 interface ForgotPasswordDialogProps {
   open: boolean;
@@ -76,7 +76,7 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const router = useRouter();
+  
 
   // Password validation function
   const validatePassword = (password: string) => {
@@ -242,16 +242,23 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
 
     try {
       setLoading(true);
-      await axiosInstance.post("/api/cargpt/reset-password/", {
-        phone_number: "+" + mobile,
+      const response = await axiosInstance.post("/api/cargpt/reset-password/", {
+        mobile_no: "+" + mobile,
         password: newPassword,
       });
-      setSuccess("Password reset successful");
+      // Show message from server response if available
+      // Example expected: { status: "success", message: "Password reset successfully." }
+      // Fallback to a sane default
+      // response can be string or object depending on backend
+      const serverMessage =
+        (response && (response as any).message) ||
+        (typeof response === "string" ? response : null) ||
+        "Password reset successful";
+      setSuccess(serverMessage as string);
       // close after a short delay
       setTimeout(() => {
         onClose();
-        router.push("/login");
-      }, 800);
+      }, 1500);
     } catch (e) {
       setError("Failed to reset password");
     } finally {
@@ -537,6 +544,11 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
           {error && (
             <Alert severity="error" sx={{ mt: 2 }}>
               {error}
+            </Alert>
+          )}
+          {success && (
+            <Alert severity="success" sx={{ mt: 2 }}>
+              {success}
             </Alert>
           )}
         </Box>
