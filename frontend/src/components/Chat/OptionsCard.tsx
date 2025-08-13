@@ -420,13 +420,14 @@ const bottomSpacing = `calc(
                 <Box
                   key={msg.id}
                   sx={{
-                     padding:"1rem",
+                     paddingX:"1rem",
+                     paddingBottom:"10px",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
                     transition: 'background 0.3s ease',
 
-
+                    borderRadius:"16px",
                     '&:hover': {
                       background: 'rgba(0, 0, 0, 0.05)', // 👈 Example hover effect
                       cursor: 'pointer',               // Optional
@@ -434,7 +435,7 @@ const bottomSpacing = `calc(
                 
 
                     
-                    mt: { xs: isNative && index===0? 3:  0, sm: isNative && index===0? 3: 1 },
+                    mt: { xs: isNative && index===0? 3:  0, sm: isNative && index===0? 3: 0 },
                     px: { xs: 2, sm: 0 },
                     textAlign: msg.sender === "user" ? "right" : "left",
                     fontSize: "14px",
@@ -456,10 +457,15 @@ const bottomSpacing = `calc(
                   )}
                   <Grow in appear timeout={300}>
                   <Paper
-                  elevation={isNative? 0 : 1}
+                  elevation={ 0}
+
                     sx={{
                       p:  Number(`${msg.sender=="user" ? "1.5" : 0}`),
                       maxWidth: isSmallScreen ? "100%" : "75%",
+                      minWidth: index%2==1 ? "100%":"0px",
+                    
+borderRadius: '16px',
+      borderBottomRightRadius: 0,
                       bgcolor:
                         msg.sender === "user" ? "rgb(211, 227, 255)" : mode==="dark"?"transparent":"grey.100",
                       color: "black",

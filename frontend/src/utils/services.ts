@@ -206,3 +206,70 @@ export function formatInternational(num:number) {
   }
 }
 
+
+
+
+
+type Car = {
+  CarID: number;
+  FuelType: string;
+  BrandName: string;
+  TransmissionType: string;
+  Trans_fullform?: string;
+  ModelName: string;
+  VariantName: string;
+  Price: number;
+  Mileage: number;
+  Seats: number;
+  ModelID: number;
+  BrandID: number;
+  EngineCapacity: string;
+  VariantID: number;
+  BodyName: string;
+  logo: string;
+  AIScore: string;
+  AISummary: string;
+  is_bookmarked: boolean;
+};
+
+type CarData = {
+  [key: string]: Car[];
+};
+
+function getBudgetRange(price: number): string {
+  const lakh = 100000;
+  const maxBudgetLakh = 40;
+
+  if (price >= maxBudgetLakh * lakh) {
+    return `${maxBudgetLakh}L or Above`;
+  }
+
+  if (price < 500000) return "0-5L";
+
+  const lower = Math.floor(price / lakh / 5) * 5;
+  const upper = lower + 5;
+  return `${lower}-${upper}L`;
+}
+
+/**
+ * Generates a short car search result message from the input data
+ */
+export function generateCarChatMessage(carData: CarData): string | null {
+  for (const brandModel in carData) {
+    const cars = carData[brandModel];
+    if (!cars || cars.length === 0) return null;
+
+    const car = cars[0];
+
+    const brandShort = car.BrandName.split(" ")[0];
+    const model = car.ModelName;
+    const fuel = car.FuelType;
+    const transmission = car.Trans_fullform || car.TransmissionType;
+    const budgetRange = getBudgetRange(car.Price);
+
+    return `Search result: ${brandShort} ${model}, ${fuel}, ${transmission}, ${budgetRange}`;
+  }
+  return null;
+}
+
+

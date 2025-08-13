@@ -40,6 +40,8 @@ type BrandModelSelectCardProps = {
 import { useSnackbar } from "@/Context/SnackbarContext";
 import BudgetSelector from "./InlineRadio";
 import { useColorMode } from "@/Context/ColorModeContext";
+import { DifferenceRounded, DirectionsCarFilledOutlined } from "@mui/icons-material";
+import DirectionsCarFilledIcon from '@mui/icons-material/DirectionsCarFilled';
 
 const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   handleUserMessage,
@@ -461,163 +463,228 @@ const {mode}=useColorMode()
     <Card
       sx={{
         minWidth: "280px", // Reduced minWidth
+        
         px: 0.5,
         py:0,// Reduced padding
         boxShadow: "none",
         border: "none",
         borderBottom: "none",
-        backgroundColor: mode==="dark"? theme.palette.background.paper:"grey.100",
+        backgroundColor: mode==="dark"? theme.palette.background.paper:"transparent",
+        borderRadius:"16px"
       }}
     >
       <CardContent sx={{ pb: 0 }}> {/* Further reduced padding-bottom */}
-        <Typography variant="h5" gutterBottom>
-          {botType}
-        </Typography>
-
-        <Box
-          sx={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: 1,
-            flexDirection: {
-              xs: "column",
-              sm: "row",
-            },
-            mb: { xs: 0.5, sm: 1 } // Further reduced margin-bottom for mobile
-          }}
-        >
-          {/* Brand Selector */}
-          <FormControl sx={{ mx: 0.5, minWidth: 120 }} size="small">
-            <InputLabel id="brand-label">Brand</InputLabel>
-            <Select
-              disabled={isDisable || isFromHistory}
-              labelId="brand-label"
-              value={brand?.BrandID != null ? String(brand.BrandID) : ""}
-              label="Brand"
-              onChange={(e) => {
-                const nextBrandIdStr = String(e.target.value);
-                const selectedBrand = brands.find(
-                  (b: Brand) => String(b.BrandID) === nextBrandIdStr
-                );
-                if (selectedBrand) {
-                  setBrand(selectedBrand);
-                  setisBrandChange(true);
-                  onPersistState?.({ brand: selectedBrand });
-                }
-              }}
-              renderValue={() => brand?.BrandName ?? ""}
-              sx={{
-                fontSize: "15px",
-                "& .MuiSelect-select": {
-                  fontSize: "15px",
-                },
-              }}
-            >
-              {Array.isArray(brands) &&
-                brands?.map((brand: Brand, index: number) => (
-                  <MenuItem key={index} value={String(brand.BrandID)}>
-                    {/* Show logo before brand name */}
-                    {brand.logo && (
-                      <img
-                        src={brand.logo}
-                        alt={brand.BrandName}
-                        style={{
-                          width: 24,
-                          height: 24,
-                          objectFit: "contain",
-                          marginRight: 8,
-                          verticalAlign: "middle",
-                        }}
-                      />
-                    )}
-                    {brand.BrandName}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-
-          {/* Model Selector */}
-          <FormControl
-            sx={{ m: 0.5, minWidth: 120 }}
-            size="small"
-            disabled={!brand || isFromHistory}
-          >
-            <InputLabel id="model-label">Model</InputLabel>
-            <Select
-              disabled={isDisable || isFromHistory}
-              labelId="model-label"
-              value={model?.ModelID != null ? String(model.ModelID) : ""}
-              label="Model"
-              onChange={(e) => {
-                const nextModelIdStr = String(e.target.value);
-                const selectedModel = models.find(
-                  (m) => String(m.ModelID) === nextModelIdStr
-                );
-                if (selectedModel) {
-                  setModel(selectedModel);
-                  onPersistState?.({ model: selectedModel });
-                }
-              }}
-              sx={{
-                fontSize: "15px",
-                "& .MuiSelect-select": {
-                  fontSize: "15px",
-                },
-              }}
-            >
-              {models.map((model: ModelProps, index: number) => (
-                <MenuItem key={index} value={String(model.ModelID)}>
-                  {model.ModelName}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
-
-        <div style={{ marginTop: "0.25rem" }}> {/* Reduced margin-top */}
-          <BudgetSelector
-            budgetTypes={FuelTypes}
-            currentBudget={currentFuelType}
-            label="Fuel Type"
-            handleBudgetChange={handleFuelChange}
-          />
-        </div>
-
-        <div style={{ marginTop: "0.25rem" }}> {/* Reduced margin-top */}
-          <BudgetSelector
-            budgetTypes={TransmissionTypes}
-            currentBudget={currentTransmissionType}
-            label="Transmission Type"
-            handleBudgetChange={handleTransmissionChange}
-          />
-        </div>
-        <div style={{ marginTop: "0.25rem" }}>
-          <BudgetSelector
-            budgetTypes={SeatCaps}
-            currentBudget={currentSeatCap?.toString?.() ?? ""}
-            label="Seating Capacity"
-            handleBudgetChange={handleSeatCapChange}
-          />
-        </div>
-
-        <div style={{ marginTop: "0.25rem" }}>
-          <BudgetSelector
-            budgetTypes={bodyTypes}
-            currentBudget={currentBodyType?.toString?.() ?? ""}
-            label="Body Type"
-            handleBudgetChange={handleBodyTypeChange}
-          />
-        </div>
+       <Typography
+  variant="h6"
+  sx={{ display: 'flex', alignItems: 'center', gap: 3, pb:2 }}
+>
+  <Box
+    sx={{
+      backgroundColor: 'primary.main',
+      color: 'white',
+      borderRadius: '50%',
+      width: 30,
+      height: 30,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    }}
+  >
+    <DirectionsCarFilledIcon fontSize="small" />
+  </Box>
+🚗 Find Your Car
+</Typography>
 
 
-        <div style={{ marginTop: "0.25rem" }}>
-          <BudgetSelector
-            budgetTypes={bugetTypes}
-            currentBudget={currentBudget?.toString?.() ?? ""}
-            label="Budget"
-            handleBudgetChange={handleBudgetChange}
-          />
-        </div>
+
+<Box
+  sx={{
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 1,
+    flexDirection: "row",
+    mb: 1,
+  }}
+>
+  
+  <FormControl
+    fullWidth
+    size="small"
+    sx={{
+      flex: {
+        xs: "1 1 100%",
+        sm: "1 1 48%",
+      },
+    }}
+  >
+    <InputLabel id="brand-label">Brand</InputLabel>
+    <Select
+      disabled={isDisable || isFromHistory}
+      labelId="brand-label"
+      value={brand?.BrandID != null ? String(brand.BrandID) : ""}
+      label="Brand"
+      onChange={(e) => {
+        const nextBrandIdStr = String(e.target.value);
+        const selectedBrand = brands.find(
+          (b: Brand) => String(b.BrandID) === nextBrandIdStr
+        );
+        if (selectedBrand) {
+          setBrand(selectedBrand);
+          setisBrandChange(true);
+          onPersistState?.({ brand: selectedBrand });
+        }
+      }}
+      renderValue={() => brand?.BrandName ?? ""}
+      sx={{
+        fontSize: "15px",
+        "& .MuiSelect-select": {
+          fontSize: "15px",
+        },
+      }}
+    >
+      {Array.isArray(brands) &&
+        brands?.map((brand: Brand, index: number) => (
+          <MenuItem key={index} value={String(brand.BrandID)}>
+            {brand.logo && (
+              <img
+                src={brand.logo}
+                alt={brand.BrandName}
+                style={{
+                  width: 24,
+                  height: 24,
+                  objectFit: "contain",
+                  marginRight: 8,
+                  verticalAlign: "middle",
+                }}
+              />
+            )}
+            {brand.BrandName}
+          </MenuItem>
+        ))}
+    </Select>
+  </FormControl>
+
+  <FormControl
+    fullWidth
+    size="small"
+    disabled={!brand || isFromHistory}
+    sx={{
+      flex: {
+        xs: "1 1 100%",
+        sm: "1 1 48%",
+      },
+    }}
+  >
+    <InputLabel id="model-label">Model</InputLabel>
+    <Select
+      disabled={isDisable || isFromHistory}
+      labelId="model-label"
+      value={model?.ModelID != null ? String(model.ModelID) : ""}
+      label="Model"
+      onChange={(e) => {
+        const nextModelIdStr = String(e.target.value);
+        const selectedModel = models.find(
+          (m) => String(m.ModelID) === nextModelIdStr
+        );
+        if (selectedModel) {
+          setModel(selectedModel);
+          onPersistState?.({ model: selectedModel });
+        }
+      }}
+      sx={{
+        fontSize: "15px",
+        "& .MuiSelect-select": {
+          fontSize: "15px",
+        },
+      }}
+    >
+      {models.map((model: ModelProps, index: number) => (
+        <MenuItem key={index} value={String(model.ModelID)}>
+          {model.ModelName}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+</Box>
+      <Box
+  sx={{
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 1.5, // Increase spacing slightly
+    mt: 3,
+    flexDirection: {
+      xs: "column",
+      sm: "row",
+    },
+  }}
+>
+  {/* Fuel Type */}
+  <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: "30%" } }}>
+    <BudgetSelector
+      budgetTypes={FuelTypes}
+      currentBudget={currentFuelType}
+      label="Fuel Type"
+      handleBudgetChange={handleFuelChange}
+    />
+  </Box>
+
+  {/* Transmission Type */}
+  <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: "30%" } }}>
+    <BudgetSelector
+      budgetTypes={TransmissionTypes}
+      currentBudget={currentTransmissionType}
+      label="Transmission Type"
+      handleBudgetChange={handleTransmissionChange}
+    />
+  </Box>
+
+  {/* Seating Capacity */}
+  <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: "30%" } }}>
+    <BudgetSelector
+      budgetTypes={SeatCaps}
+      currentBudget={currentSeatCap?.toString?.() ?? ""}
+      label="Seating Capacity"
+      handleBudgetChange={handleSeatCapChange}
+    />
+  </Box>
+</Box>
+
+{/* Second Row: Body Type + Budget */}
+<Box
+  sx={{
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 1.5,
+    mt: 1,
+    flexDirection: {
+      xs: "column",
+      sm: "row",
+    },
+  }}
+>
+  {/* Body Type */}
+  <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: "48%" } }}>
+    <BudgetSelector
+      budgetTypes={bodyTypes}
+      currentBudget={currentBodyType?.toString?.() ?? ""}
+      label="Body Type"
+      handleBudgetChange={handleBodyTypeChange}
+    />
+  </Box>
+
+  {/* Budget */}
+  <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: "48%" } }}>
+    <BudgetSelector
+      budgetTypes={bugetTypes}
+      currentBudget={currentBudget?.toString?.() ?? ""}
+      label="Budget"
+      handleBudgetChange={handleBudgetChange}
+    />
+  </Box>
+</Box>
+
+
+      
 
 
         <div

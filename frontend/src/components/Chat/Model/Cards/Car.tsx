@@ -28,7 +28,7 @@ import LoginDialog from '@/components/common/Dialogs/LoginDialog';
 import { useLoginDialog } from '@/Context/LoginDialogContextType';
 import { axiosInstance1 } from '@/utils/axiosInstance';
 import { useSnackbar } from '@/Context/SnackbarContext';
-import { formatInternational } from '@/utils/services';
+import { formatInternational, generateCarChatMessage } from '@/utils/services';
 import { Sign } from 'crypto';
 import SignupDialog from '@/components/Auth/SignupDialog';
 import { useColorMode } from '@/Context/ColorModeContext';
@@ -284,7 +284,7 @@ const CustomPrevArrow = (props: any) => {
   
     infinite: false,
     speed: 500,
-    slidesToShow: modelCars.length > 1 ? 2 : 1,
+    slidesToShow: modelCars.length > 1 ? 3 : 1,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
@@ -331,10 +331,17 @@ const CustomPrevArrow = (props: any) => {
   
   console.log("cars", cars);
 const {mode}=useColorMode()
+
+
+ 
+const message= selectedItem ? generateCarChatMessage(selectedItem || {}) :""
+console.log(typeof message)
   return (
     <>
+                     {selectedItem && <Typography sx={{px:2, py:2, fontWeight:"bold"}}>{message}</Typography>}
 
       {modelCars.length > 0 && (
+        
         <Slider {...settings}>
 
           {modelCars.map((car: any, index: number) => ( // Consider more specific type for 'car'
@@ -345,6 +352,12 @@ const {mode}=useColorMode()
                 borderRadius: 2,
                 position: "relative",
                 display: "flex",
+                maxWidth:{md:"260px",
+                  boxShadow:"none",
+                },
+                
+                
+
                 
               }}
             >

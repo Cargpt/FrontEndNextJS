@@ -97,7 +97,7 @@ const {mode}=useColorMode()
           >
             <img 
             loading="lazy"
-              src={mode==="dark"? "/assets/AICarAdvisor_transparent.png": "/assets/AICarAdvisor.png"}
+              src={"/assets/AICarAdvisor_transparent.png"}
               alt="Logo"
               width={220}
               height={50}
