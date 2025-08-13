@@ -22,6 +22,7 @@ import { useTheme } from "@mui/material/styles";
 import { Visibility, VisibilityOff, KeyboardBackspaceSharp } from "@mui/icons-material";
 import { Capacitor } from "@capacitor/core";
 import { axiosInstance } from "@/utils/axiosInstance";
+import { useRouter } from "next/navigation";
 
 interface ForgotPasswordDialogProps {
   open: boolean;
@@ -35,8 +36,6 @@ interface ForgotPasswordDialogProps {
   onSendOTP?: (mobile: string) => Promise<void> | void;
   /** Verify OTP click handler (to be implemented later with API). */
   onVerifyOTP?: (mobile: string, otp: string) => Promise<void> | void;
-  /** Reset password click handler (to be implemented later with API). */
-  onResetPassword?: (mobile: string, newPassword: string) => Promise<void> | void;
   /** Length of OTP boxes; default 6. */
   otpLength?: number;
 }
@@ -47,7 +46,6 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
   loginMobile,
   onSendOTP,
   onVerifyOTP,
-  onResetPassword,
   otpLength: propOtpLength = 6,
 }) => {
   const [mobile, setMobile] = useState<string>(loginMobile || "");
@@ -77,6 +75,28 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
   const isNative = Capacitor.isNativePlatform();
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const router = useRouter();
+
+  // Password validation function
+  const validatePassword = (password: string) => {
+    if (password.length < 8) {
+      return "Password must be at least 8 characters long.";
+    }
+    if (!/[A-Z]/.test(password)) {
+      return "Password must contain at least one uppercase letter.";
+    }
+    if (!/[a-z]/.test(password)) {
+      return "Password must contain at least one lowercase letter.";
+    }
+    if (!/[0-9]/.test(password)) {
+      return "Password must contain at least one number.";
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      return "Password must contain at least one special character.";
+    }
+    return null; // Password is valid
+  };
 
   const handleSendOtp = async () => {
     setError(null);
@@ -213,13 +233,24 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
       setError("Passwords do not match");
       return;
     }
+
+    const passwordValidationError = validatePassword(newPassword);
+    if (passwordValidationError) {
+      setError(passwordValidationError);
+      return;
+    }
+
     try {
       setLoading(true);
-      await onResetPassword?.("+" + mobile, newPassword);
+      await axiosInstance.post("/api/cargpt/reset-password/", {
+        phone_number: "+" + mobile,
+        password: newPassword,
+      });
       setSuccess("Password reset successful");
       // close after a short delay
       setTimeout(() => {
         onClose();
+        router.push("/login");
       }, 800);
     } catch (e) {
       setError("Failed to reset password");
@@ -364,6 +395,19 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
               {!isMobileMatching && (
                 <Alert severity="warning">Entered number must match the login mobile</Alert>
               )}
+              {/* Send OTP button */}
+              <Box mt={2} display="flex" justifyContent="center">
+                <Button
+                  form="forgotForm"
+                  type="submit"
+                  onClick={handleSendOtp}
+                  variant="contained"
+                  disabled={loading || !mobile || !isMobileMatching}
+                  fullWidth
+                >
+                  Send OTP
+                </Button>
+              </Box>
             </Box>
           )}
 
@@ -474,6 +518,19 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
                   </InputAdornment>
                 }
               />
+              {/* Reset Password button */}
+              <Box mt={2} display="flex" justifyContent="center">
+                <Button
+                  form="forgotForm"
+                  type="submit"
+                  onClick={handleResetPassword}
+                  variant="contained"
+                  disabled={loading || !newPassword || !confirmPassword}
+                  fullWidth
+                >
+                  Reset Password
+                </Button>
+              </Box>
             </Box>
           )}
 
@@ -486,39 +543,9 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
       </DialogContent>
 
       <DialogActions sx={{ p: 2 }}>
-        {step === "mobile" && (
-          <Button
-            form="forgotForm"
-            type="submit"
-            onClick={handleSendOtp}
-            variant="contained"
-            disabled={loading || !mobile || !isMobileMatching}
-          >
-            Send OTP
-          </Button>
-        )}
-        {step === "otp" && (
-          <Button
-            form="forgotForm"
-            type="submit"
-            onClick={() => handleVerifyOtp()}
-            variant="contained"
-            disabled={loading || otp.length < otpLength}
-          >
-            Verify OTP
-          </Button>
-        )}
-        {step === "reset" && (
-          <Button
-            form="forgotForm"
-            type="submit"
-            onClick={handleResetPassword}
-            variant="contained"
-            disabled={loading || !newPassword || !confirmPassword}
-          >
-            Reset Password
-          </Button>
-        )}
+        {/* Only show the Send OTP button for the first step */}
+        {/* Removed duplicate Verify OTP button from DialogActions */}
+        {/* Removed duplicate Reset Password button from DialogActions */}
       </DialogActions>
     </Dialog>
   );

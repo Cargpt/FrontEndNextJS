@@ -13,6 +13,7 @@ import {
   Box,
   Input,
   IconButton,
+  InputAdornment,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { axiosInstance } from '@/utils/axiosInstance';
@@ -25,6 +26,7 @@ import 'react-phone-input-2/lib/material.css';
 import { useColorMode } from '@/Context/ColorModeContext';
 import { KeyboardBackspaceSharp } from "@mui/icons-material";
 import OtpBoxes from "@/components/common/otp/OtpBoxes";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 interface SignupDialogProps {
   open: boolean;
@@ -45,10 +47,33 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
   const [resendTimer, setResendTimer] = useState(0);
   const [canResend, setCanResend] = useState(true);
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [cookies, setCookie] = useCookies(['token', 'user']);
   const { showSnackbar } = useSnackbar();
 
   const router = useRouter();
+
+  // Password validation function
+  const validatePassword = (password: string) => {
+    if (password.length < 8) {
+      return "Password must be at least 8 characters long.";
+    }
+    if (!/[A-Z]/.test(password)) {
+      return "Password must contain at least one uppercase letter.";
+    }
+    if (!/[a-z]/.test(password)) {
+      return "Password must contain at least one lowercase letter.";
+    }
+    if (!/[0-9]/.test(password)) {
+      return "Password must contain at least one number.";
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      return "Password must contain at least one special character.";
+    }
+    return null; // Password is valid
+  };
 
   const resetState = () => {
     setFullName('');
@@ -56,6 +81,15 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
     setConfirmPassword('');
     setMobile('');
     setLoading(false);
+    setError(null);
+    setSuccess(null);
+    setOtp("");
+    setSignupStep(0);
+    setResendTimer(0);
+    setCanResend(true);
+  };
+
+  const goBackToSignupForm = () => {
     setError(null);
     setSuccess(null);
     setOtp("");
@@ -87,6 +121,13 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
       return;
     }
 
+    const passwordValidationError = validatePassword(password);
+    if (passwordValidationError) {
+      setError(passwordValidationError);
+      setLoading(false);
+      return;
+    }
+
     const nameParts = fullName.trim().split(' ');
     const first_name = nameParts[0];
     const last_name = nameParts?.slice(1)?.join(' ') || '';
@@ -110,6 +151,8 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
         setSuccess(null);
         // onSuccess(password, mobile);
         setSignupStep(1);
+        setResendTimer(60);
+        setCanResend(false);
       }, 1000);
     } catch (err: any) {
       console.error("Signup error:",JSON.stringify(err.response?.data, null, 2));
@@ -347,7 +390,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
               {/* Password field */}
               <Box mt={2}>
                 <Input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   value={password}
                   onChange={e => setPassword(e.target.value)}
@@ -367,13 +410,24 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
                     border: '1px solid #c4c4c4',
                     borderRadius: '4px',
                   }}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword((s) => !s)}
+                        edge="end"
+                        aria-label="toggle password visibility"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
                 />
               </Box>
 
               {/* Confirm Password field */}
               <Box mt={2}>
                 <Input
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm Password"
                   value={confirmPassword}
                   onChange={e => setConfirmPassword(e.target.value)}
@@ -393,6 +447,17 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
                     border: '1px solid #c4c4c4',
                     borderRadius: '4px',
                   }}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowConfirmPassword((s) => !s)}
+                        edge="end"
+                        aria-label="toggle password visibility"
+                      >
+                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
                 />
               </Box>
 
@@ -420,6 +485,11 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
             <Typography variant="body2" align="center" color="textSecondary" sx={{ mb: 2 }}>
               Please enter the 6-digit code sent to {mobile}
             </Typography>
+            <Box display="flex" justifyContent="center" mb={1}>
+              <Button size="small" variant="text" onClick={goBackToSignupForm}>
+                Is the number not yours?
+              </Button>
+            </Box>
             <Box display="flex" justifyContent="center" mb={3}>
               <OtpBoxes
                 length={6}
@@ -429,6 +499,18 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
                 disabled={loading}
               />
             </Box>
+            {/* Manual Verify Button */}
+            <Box mt={2} display="flex" justifyContent="center">
+              <Button
+                variant="contained"
+                onClick={handleOtpVerification}
+                disabled={loading || otp.length < 6}
+                fullWidth
+              >
+                Verify OTP
+              </Button>
+            </Box>
+
             {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
             {success && <Alert severity="success" sx={{ mt: 2 }}>{success}</Alert>}
             {/* Resend OTP Button with Timer */}
@@ -449,15 +531,17 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
         )}
       </DialogContent>
       <DialogActions>
-        {/* Only show the Sign Up/Verify OTP button */}
-        <Button
-          onClick={signupStep === 0 ? handleSubmit : handleOtpVerification}
-          variant="contained"
-          disabled={loading}
-          startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
-        >
-          {loading ? (signupStep === 0 ? 'Signing up...' : 'Verifying...') : (signupStep === 0 ? 'Sign Up' : 'Verify OTP')}
-        </Button>
+        {/* Only show the Sign Up button for the first step */}
+        {signupStep === 0 && (
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={loading}
+            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+          >
+            {loading ? 'Signing up...' : 'Sign Up'}
+          </Button>
+        )}
       </DialogActions>
         <style>
         {`
