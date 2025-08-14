@@ -351,7 +351,7 @@ console.log(typeof message)
                   boxShadow: mode === 'dark'
                     ? '0 6px 18px rgba(0,0,0,0.6)'
                     : '0 6px 18px rgba(0,0,0,0.12)',
-                  borderColor: mode === 'dark' ? theme.palette.primary.dark : theme.palette.primary.light,
+                  // borderColor: mode === 'dark' ? theme.palette.primary.dark : theme.palette.primary.light,
                 } : undefined,
               }}
               variant="outlined"

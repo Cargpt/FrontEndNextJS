@@ -805,7 +805,7 @@ const AskAIChat: React.FC = () => {
           p: 3,
           borderTop:  "1px solid #f0f0f0",
           bgcolor:  mode === "dark" ? "#000" : "#ffffff", // Black in dark mode
-          mb: isSmallScreen ? 5 : 2,
+          mb: isSmallScreen ? 0 : 2,
           minWidth: 0,
           boxShadow: 'none', // Remove any shadow that could cause a black box effect
         }}
@@ -875,7 +875,7 @@ const AskAIChat: React.FC = () => {
                 onClick={() => handleSuggestionClick(s)}
                 sx={{
                   px: 1.5,
-                  py: 1.25,
+                  py:  1.25,
                   cursor: 'pointer',
                   bgcolor: idx === highlightIndex ? 'action.selected' : 'transparent',
                   '&:hover': { bgcolor: 'action.hover' },
@@ -889,15 +889,16 @@ const AskAIChat: React.FC = () => {
           </Box>
         )}
         <Box
-          sx={{
-            display: "flex",
-            alignItems: "flex-end",
-            position: "relative",
-            minWidth: 0,
-            overflow: "visible", // ✅ Fix overflow on input focus
-          }}
-        >
-          <TextField
+      sx={{
+        display: "flex",
+        alignItems: "flex-end",
+        position: "relative",
+        overflow: "visible",
+        flexWrap: "wrap",
+        gap: 1,
+      }}
+    >
+      <TextField
         fullWidth
         multiline
         maxRows={3}
@@ -911,74 +912,76 @@ const AskAIChat: React.FC = () => {
         disabled={loading}
         sx={{
           pr: 0,
-          minWidth: 0,
           "& .MuiOutlinedInput-root": {
             borderRadius: 999,
-            bgcolor: mode === "dark" ? "#232323" : "#f5f5f5", // Dark gray in dark mode
+            bgcolor: mode === "dark" ? "#232323" : "#f5f5f5",
             border: "none",
             transition: "all 0.2s ease",
-            minWidth: 0,
-            maxWidth: "100%",
             "& fieldset": {
               border: "none",
             },
             "&:hover": {
-              bgcolor: mode === "dark" ? "#232323" : "#eeeeee", // Dark gray in dark mode
+              bgcolor: mode === "dark" ? "#232323" : "#eeeeee",
             },
             "&.Mui-focused": {
-              bgcolor: mode === "dark" ? "#232323" : "white", // Dark gray in dark mode
-              boxShadow: "none", // Remove shadow in dark mode
+              bgcolor: mode === "dark" ? "#232323" : "white",
+              boxShadow: "none",
             },
             "&.Mui-focused fieldset": {
-              border: `2px solid ${mode === "dark" ? "#90caf9" : "#1876d2"}`,
+              border: `2px solid ${mode === "dark" ? "none" : "#1876d2"}`,
             },
           },
           "& .MuiInputBase-input": {
-            padding: "10px 14px",
+            padding: {
+              xs: "8px 10px",
+              sm: "10px 14px",
+            },
             fontSize: "16px",
             lineHeight: "1.4",
-            minWidth: 0,
             color: mode === "dark" ? "#fff" : "#000",
             "&::placeholder": {
               color: mode === "dark" ? "#aaa" : "#9e9e9e",
               opacity: 1,
             },
           },
-          "& .MuiInputBase-root": {
-            minWidth: 0,
-            borderRadius: 999,
-            "&:has(input:focus)": {
-              bgcolor: mode === "dark" ? "#232323" : "white", // Dark gray in dark mode
-            },
-          },
         }}
         InputProps={{
           endAdornment: (
-            <Box sx={{ display: "flex", alignItems: "flex-end", minWidth: 0, position: 'relative' }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                position: "relative",
+                flexShrink: 0,
+              }}
+            >
               <IconButton
                 onClick={handleUploadClick}
                 disabled={loading}
                 sx={{
                   bgcolor: mode === "dark" ? "#2c2c2c" : "#eeeeee",
                   color: mode === "dark" ? "#fff" : "#000",
-                  width: 38,
-                  height: 38,
+                  width: { xs: 32, sm: 38 },
+                  height: { xs: 32, sm: 38 },
                   borderRadius: "50%",
-                  mr: 1,
+                  transition: "all 0.2s ease",
                   "&:hover": {
                     bgcolor: mode === "dark" ? "#3a3a3a" : "#e0e0e0",
-                    transform: "scale(1.05)",
+                    transform: {
+                      xs: "none",
+                      sm: "scale(1.05)",
+                    },
                   },
                   "&:disabled": {
                     bgcolor: "#e0e0e0",
                     color: "#9e9e9e",
                   },
-                  transition: "all 0.2s ease",
                 }}
               >
-                <ImageIcon />
+                <ImageIcon fontSize="small" />
               </IconButton>
-              {/* suggestions moved below input */}
+
               {isMobileDevice && (
                 <Menu
                   anchorEl={imageMenuAnchor}
@@ -1000,36 +1003,43 @@ const AskAIChat: React.FC = () => {
                   </MenuItem>
                 </Menu>
               )}
+
               <IconButton
-                onClick={() => sendMessage()}
+                onClick={(e) => {
+    e.preventDefault(); // optional: prevents form submission if inside a form
+    sendMessage();
+  }
+}
                 disabled={!inputMessage.trim() || loading}
                 sx={{
                   bgcolor: "#1876d2",
                   color: "white",
-                  width: 38,
-                  height: 38,
+                  width: { xs: 32, sm: 38 },
+                  height: { xs: 32, sm: 38 },
                   borderRadius: "50%",
-                  ml: 1,
+                  transition: "all 0.2s ease",
+                  boxShadow: "0 2px 8px rgba(24, 118, 210, 0.3)",
                   "&:hover": {
                     bgcolor: "#1565c0",
-                    transform: "scale(1.05)",
+                    transform: {
+                      xs: "none",
+                      sm: "scale(1.05)",
+                    },
                   },
                   "&:disabled": {
                     bgcolor: "#e0e0e0",
                     color: "#9e9e9e",
                   },
-                  transition: "all 0.2s ease",
-                  boxShadow: "0 2px 8px rgba(24, 118, 210, 0.3)",
                 }}
               >
-                <Send />
+                <Send fontSize="small" />
               </IconButton>
             </Box>
           ),
         }}
       />
+    </Box>
 
-        </Box>
       </Box>
       {/* Hidden inputs for camera and gallery */}
       <input
