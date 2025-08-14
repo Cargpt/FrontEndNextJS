@@ -331,7 +331,7 @@ console.log(typeof message)
                      {selectedItem && <Typography sx={{px:2, py:2, fontWeight:"bold"}}>{message}</Typography>}
 
       {modelCars.length > 0 && (
-        <Box sx={{ width: '100%', backgroundColor: '#ffffff', '& .slick-list': { backgroundColor: '#ffffff' } }}>
+        <Box sx={{ width: { xs:"100%" , md: modelCars.length < 2? "50%":'100%'}, backgroundColor: '#ffffff', '& .slick-list': { backgroundColor: '#ffffff' } }}>
           <Slider {...settings}>
 
           {modelCars.map((car: any, index: number) => ( // Consider more specific type for 'car'
@@ -625,38 +625,68 @@ console.log(typeof message)
       )}
       {!isCompact && (
       <Stack
-        direction="row"
-        gap={2}
-        mt={1}
-        flexWrap="nowrap"
-        justifyContent="center"
-        sx={{pb:2}}
-      >
-        <Button
-          variant="outlined"
-          onClick={onClick}
-          sx={{ textTransform: "capitalize", fontSize: 13  }}
-        >
-          I know exactly what I want
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={handleNeedAdviceSupport}
-          sx={{ textTransform: "capitalize", fontSize: 13 }}
-        >
-          I need advisor support
-        </Button>
+  direction="row"
+  gap={2}
+  mt={1}
+  flexWrap="nowrap"
+  justifyContent="start"
+  sx={{ pb: 2 }}
+>
+  <Chip
+    label="I know exactly what I want"
+    variant="filled"
+    size="small"
+    icon={<FaceIcon />}
+    onClick={() => {
+      setChipsDisabled(true);
+      onClick?.();
+    }}
+    disabled={chipsDisabled}
+    sx={{
+      fontSize: 13,
+      textTransform: "capitalize",
+      borderWidth: 1,
+    }}
+  />
 
-        {cookies.selectedOption == "I want to do more research on cars" && (
-          <Button
-            variant="outlined"
-            onClick={backTOIntial}
-            sx={{ textTransform: "capitalize", fontSize: 13 }}
-          >
-            Back to car research
-          </Button>
-        )}
-      </Stack>
+  <Chip
+    label="I need advisor support"
+    variant="filled"
+    size="small"
+    color="default"
+    icon={<SupportAgentIcon />}
+    onClick={() => {
+      setChipsDisabled(true);
+      handleNeedAdviceSupport();
+    }}
+    disabled={chipsDisabled}
+    sx={{
+      fontSize: 13,
+      textTransform: "capitalize",
+      borderWidth: 1,
+    }}
+  />
+
+  {cookies.selectedOption === "I want to do more research on cars" && (
+    <Chip
+      label="Back to car research"
+      variant="outlined"
+      size="small"
+      icon={<DirectionsCarIcon />}
+      onClick={backTOIntial}
+      sx={{
+        fontSize: 13,
+        textTransform: "capitalize",
+        color: "black",
+        borderColor: "black",
+        borderWidth: 1,
+        borderStyle: "solid",
+        "& .MuiChip-icon": { color: "black" },
+      }}
+    />
+  )}
+</Stack>
+
       )}
       {dialog.type === "gallery" && (
         <CarGallery

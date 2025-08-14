@@ -467,7 +467,7 @@ borderRadius: '16px',
       borderBottomRightRadius: 0,
                       
                       bgcolor:
-                        msg.sender === "user" ? "rgb(211, 227, 255)" : mode==="dark"?"transparent":"",
+                        msg.sender === "user" && mode==="light"? "rgb(211, 227, 255)" : mode==="dark"?"transparent":"",
                     
                     
                     }}
