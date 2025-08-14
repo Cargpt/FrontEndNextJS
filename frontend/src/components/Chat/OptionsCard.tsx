@@ -368,6 +368,7 @@ const bottomSpacing = `calc(
 
   const {mode}=useColorMode()
   console.log("history", messages)
+  
   return (
     <>
       <Box
@@ -426,7 +427,6 @@ const bottomSpacing = `calc(
                     flexDirection: "column",
                     alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
                     transition: 'background 0.3s ease',
-
                     borderRadius:"16px",
                     // '&:hover': {
                     //   background: 'rgba(0, 0, 0, 0.05)', // 👈 Example hover effect
@@ -462,12 +462,12 @@ const bottomSpacing = `calc(
                       p:  Number(`${msg.sender=="user" ? "1.5" : 0}`),
                       maxWidth: isSmallScreen ? "100%" : "75%",
                       minWidth: index%2==1 ? "100%":"0px",
-                    
+                     backgroundImage:"none",
 borderRadius: '16px',
       borderBottomRightRadius: 0,
                       
                       bgcolor:
-                        msg.sender === "user" && mode==="light"? "rgb(211, 227, 255)" : mode==="dark"?"transparent":"",
+                        msg.sender === "user" && mode==="light"? "rgb(211, 227, 255)"   : mode==="dark" && msg.sender==="user"? "primary":"transparent",
                     
                     
                     }}

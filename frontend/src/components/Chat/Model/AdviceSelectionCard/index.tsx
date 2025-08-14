@@ -161,7 +161,7 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
         borderBottom: "none",
         boxShadow: "none",
         backgroundColor: "transparent",
-        maxWidth:"600px"
+        backgroundImage:"none"
       }}
     >
       <CardContent

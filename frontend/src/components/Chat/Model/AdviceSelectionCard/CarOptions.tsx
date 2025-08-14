@@ -106,7 +106,6 @@ const CarModel: FC<AdviceSelectionCardProps> = ({
         borderBottom: "none",
         boxShadow: "none",
         background:"transparent",
-        maxWidth:"360px"
   
       }}
       

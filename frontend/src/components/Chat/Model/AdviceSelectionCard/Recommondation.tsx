@@ -12,6 +12,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { getBudgetRange } from "@/utils/services";
 
 interface CarFilter {
   budget: number;
@@ -32,7 +33,7 @@ const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const rows = [
-    { label: "Budget", value: `₹${recommendations.budget.toLocaleString()}` },
+    { label: "Budget", value: `₹${getBudgetRange(recommendations.budget) }`},
     { label: "Fuel", value: recommendations.fuel_type || "-" },
     { label: "Body", value: recommendations.body_type || "-" },
     { label: "Transmission", value: recommendations.transmission_type || "-" },

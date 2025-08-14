@@ -331,7 +331,7 @@ console.log(typeof message)
                      {selectedItem && <Typography sx={{px:2, py:2, fontWeight:"bold"}}>{message}</Typography>}
 
       {modelCars.length > 0 && (
-        <Box sx={{ width: { xs:"100%" , md: modelCars.length < 2? "50%":'100%'}, backgroundColor: '#ffffff', '& .slick-list': { backgroundColor: '#ffffff' } }}>
+        <Box sx={{ width: { xs:"100%" , md: modelCars.length < 2? "50%":'100%'} }}>
           <Slider {...settings}>
 
           {modelCars.map((car: any, index: number) => ( // Consider more specific type for 'car'

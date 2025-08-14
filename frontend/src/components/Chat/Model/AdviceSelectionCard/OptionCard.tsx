@@ -36,6 +36,8 @@ const OptionsCard: React.FC<OptionsCardProps> = ({ onBack, onShowCars, disabled 
         maxWidth: 550,
         width: '100%',
         borderRadius: 0,
+        backgroundColor:"transparent",
+        backgroundImage:"none"
       }}
     >
       <Typography variant="body1" mb={2}>

@@ -469,19 +469,19 @@ const {mode}=useColorMode()
         boxShadow: "none",
         border: "none",
         borderBottom: "none",
-        backgroundColor: mode==="dark"? theme.palette.background.paper:"transparent",
+        backgroundColor:"transparent",
+        backgroundImage:"none",
         borderRadius:"16px"
       }}
     >
       <CardContent sx={{ pb: 0 }}> {/* Further reduced padding-bottom */}
        <Typography
   variant="h6"
-  sx={{ display: 'flex', alignItems: 'center', gap: 3, pb:2 }}
+  sx={{ display: 'flex', alignItems: 'center', gap: 1, pb:3 }}
 >
   <Box
     sx={{
-      backgroundColor: 'primary.main',
-      color: 'white',
+      backgroundColor:"transparent",
       borderRadius: '50%',
       width: 30,
       height: 30,
@@ -490,9 +490,9 @@ const {mode}=useColorMode()
       justifyContent: 'center',
     }}
   >
-    <DirectionsCarFilledIcon fontSize="small" />
+    <DirectionsCarFilledIcon fontSize="small"   />
   </Box>
-🚗 Find Your Car
+Find Your Car
 </Typography>
 
 

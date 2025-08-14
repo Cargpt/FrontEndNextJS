@@ -237,6 +237,9 @@ html, body, .my-custom-scroll-container {
 .slick-next {
   right: -20px !important;
 }
+.slick-list{
+  background: transparent;
+}
 
 /* Arrow icons (default Slick icons) */
 .slick-prev::before,

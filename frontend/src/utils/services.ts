@@ -236,11 +236,11 @@ type CarData = {
   [key: string]: Car[];
 };
 
-function getBudgetRange(price: number): string {
+export function getBudgetRange(price: number): string {
   const lakh = 100000;
   const maxBudgetLakh = 40;
 
-  if (price >= maxBudgetLakh * lakh) {
+  if (price > maxBudgetLakh * lakh) {
     return `${maxBudgetLakh}L or Above`;
   }
 
