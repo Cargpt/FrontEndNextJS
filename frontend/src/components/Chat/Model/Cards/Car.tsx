@@ -334,7 +334,7 @@ console.log(typeof message)
         <Box sx={{ width: { xs:"100%" , md: modelCars.length < 2? "50%":'100%'}}}>
           <Slider {...settings}>
 
-          {modelCars.map((car: any, index: number) => ( // Consider more specific type for 'car'
+          {modelCars.map((car: any, index: number) => ( 
             (<Card
               key={index}
               sx={{
