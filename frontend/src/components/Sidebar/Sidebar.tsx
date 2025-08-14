@@ -15,7 +15,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { ArrowForwardIosSharp, InfoOutline, NotificationAddOutlined, RestoreFromTrashOutlined } from "@mui/icons-material";
+import { ArrowForwardIosSharp, InfoOutline, InfoOutlined, NotificationAddOutlined, RestoreFromTrashOutlined } from "@mui/icons-material";
 import Link from "next/link";
 import { useCookies } from "react-cookie";
 import LoginOutlinedIcon from "@mui/icons-material/LoginOutlined";
@@ -531,7 +531,7 @@ const theme=useTheme()
                         }}
                       >
                         <span>
-                                                                          <InfoOutline sx={{width:15, height:15}}/>
+                        <InfoOutlined sx={{width:15, height:15}}/>
 
                         </span>
                         <span>About</span>
