@@ -203,7 +203,7 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
               mt: 2,
             }}
           >
-            <Button
+            {/* <Button
               onClick={handleGoogleLogin}
               type="button"
               variant="contained"
@@ -225,7 +225,7 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
             >
               <img src="/assets/google.svg" alt="Google icon" width={20} height={20} />
               Continue with Google
-            </Button>
+            </Button> */}
 
             <Button
               type="submit"
