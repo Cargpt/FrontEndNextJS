@@ -328,10 +328,10 @@ const message= selectedItem ? generateCarChatMessage(selectedItem || {}) :""
 console.log(typeof message)
   return (
     <>
-                     {selectedItem && <Typography sx={{px:2, py:2, fontWeight:"bold"}}>{message}</Typography>}
+                     {selectedItem && <Typography sx={{px:2, pb:2, fontWeight:"bold"}}>{message}</Typography>}
 
       {modelCars.length > 0 && (
-        <Box sx={{ width: { xs:"100%" , md: modelCars.length < 2? "50%":'100%'} }}>
+        <Box sx={{ width: { xs:"100%" , md: modelCars.length < 2? "50%":'100%'}}}>
           <Slider {...settings}>
 
           {modelCars.map((car: any, index: number) => ( // Consider more specific type for 'car'

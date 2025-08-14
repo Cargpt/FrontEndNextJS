@@ -173,6 +173,9 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
           borderBottom: "none",
           boxShadow: "none",
         }}
+        sx={{
+          pt:0
+        }}
       >
         <Typography
           variant="body2"

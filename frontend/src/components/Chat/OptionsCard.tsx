@@ -418,17 +418,19 @@ const bottomSpacing = `calc(
               const isLastUserMsg = msg.sender === "user" && index === lastUserMsgIndex;
 
               return (
+                <>
                 <Box
                   key={msg.id}
                   sx={{
                      paddingX:"1rem",
-                     paddingBottom: index%2==1 && index>0 ? "20px" : "1px",
+                     
+                     paddingBottom: index%2==1 && index>0 ? "20px" : "10px",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
                     transition: 'background 0.3s ease',
-                    borderRadius:"16px",
-                    // '&:hover': {
+
+                     // '&:hover': {
                     //   background: 'rgba(0, 0, 0, 0.05)', // 👈 Example hover effect
                     //   cursor: 'pointer',               // Optional
                     // },
@@ -489,6 +491,22 @@ borderRadius: '16px',
                   </Paper>
                   </Grow>
                 </Box>
+                {
+                  index%2==1 &&
+                   <Box
+                   sx={{
+                   borderBottom: "1px solid",
+  borderColor: (theme) =>
+    theme.palette.mode === 'light'
+      ? '#f7f7f7'        // ✅ subtle for white bg
+      : theme.palette.grey[800], // ✅ soft dark gray for dark mode
+ 
+              mb:1
+                }}>
+                  </Box>
+                }
+               
+                  </>
               );
             })}
             {loading && (

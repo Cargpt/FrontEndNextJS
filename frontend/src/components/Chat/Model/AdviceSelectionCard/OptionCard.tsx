@@ -32,7 +32,8 @@ const OptionsCard: React.FC<OptionsCardProps> = ({ onBack, onShowCars, disabled 
     <Paper
       elevation={0}
       sx={{
-        p: 2,
+        px: 2,
+        pb:2, 
         maxWidth: 550,
         width: '100%',
         borderRadius: 0,

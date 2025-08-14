@@ -118,7 +118,9 @@ const CarModel: FC<AdviceSelectionCardProps> = ({
           border: "none",
           borderBottom: "none",
           boxShadow: "none",
+          
         }}
+        sx={{pt:0}}
       >
         <Typography
           variant="body2"

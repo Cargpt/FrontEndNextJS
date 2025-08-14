@@ -465,7 +465,8 @@ const {mode}=useColorMode()
         minWidth: "280px", // Reduced minWidth
         
         px: 0.5,
-        py:0,// Reduced padding
+        pt:0,// Reduced padding
+      
         boxShadow: "none",
         border: "none",
         borderBottom: "none",
@@ -474,7 +475,7 @@ const {mode}=useColorMode()
         borderRadius:"16px"
       }}
     >
-      <CardContent sx={{ pb: 0 }}> {/* Further reduced padding-bottom */}
+      <CardContent sx={{ py:0 }}> {/* Further reduced padding-bottom */}
        <Typography
   variant="h6"
   sx={{ display: 'flex', alignItems: 'center', gap: 1, pb:3 }}
