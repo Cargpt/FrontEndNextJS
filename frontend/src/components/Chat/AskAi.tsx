@@ -12,9 +12,9 @@ import {
   Typography,
   useColorScheme,
 } from "@mui/material";
-import { Send, Person, KeyboardBackspaceSharp } from "@mui/icons-material";
+import { Send, Person, KeyboardBackspaceSharp, Image as ImageIcon } from "@mui/icons-material";
 
-import { useChats } from "@/Context/ChatContext";
+// import { useChats } from "@/Context/ChatContext";
 import { useSnackbar } from "@/Context/SnackbarContext";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import { useRouter } from "next/navigation";
@@ -24,9 +24,10 @@ import { useColorMode } from "@/Context/ColorModeContext";
 
 interface Message {
   id: string;
-  message: string;
+  message: any;
   sender: "user" | "bot";
   timestamp: Date;
+  render?: "carOptions" | "text";
 }
 
 const AskAIChat: React.FC = () => {
@@ -44,6 +45,7 @@ const AskAIChat: React.FC = () => {
   ]);
   const [inputMessage, setInputMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const { showSnackbar } = useSnackbar();
 
@@ -144,6 +146,163 @@ const AskAIChat: React.FC = () => {
 
   const {mode}=useColorMode()
   console.log(mode)
+
+  const getTokenFromCookies = () => {
+    const name = "token=";
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const cookies = decodedCookie.split(";");
+    for (let cookie of cookies) {
+      const trimmed = cookie.trim();
+      if (trimmed.startsWith(name)) {
+        return trimmed.substring(name.length);
+      }
+    }
+    return null;
+  };
+  // Hint mobile browsers to open camera first; users can still choose gallery within camera UI
+  const isMobileDevice = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const userMessage: Message = {
+      id: String(Date.now()),
+      message: `Sent an image: ${file.name}`,
+      sender: "user",
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("car_image", file);
+
+      const token = getTokenFromCookies();
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      const url = `${baseUrl}/api/cargpt/ai-response/`;
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        body: formData,
+        mode: "cors",
+      });
+
+      if (!response.ok) {
+        const errText = await response.text().catch(() => "");
+        const message = errText || response.statusText || "Unknown error";
+        throw new Error(`Upload failed (${response.status}): ${message}`);
+      }
+
+      const contentType = response.headers.get("content-type") || "";
+      let replyText = "";
+      let jsonData: any = null;
+      if (contentType.includes("application/json")) {
+        try {
+          jsonData = await response.json();
+        } catch (e) {
+          replyText = await response.text();
+        }
+      } else {
+        replyText = await response.text();
+      }
+
+      // If API returned JSON that looks like car data, render a card inside Ask AI chat
+      let renderedCard = false;
+      if (jsonData) {
+        const candidates = Array.isArray(jsonData)
+          ? jsonData
+          : Array.isArray(jsonData?.data)
+          ? jsonData.data
+          : jsonData?.result && Array.isArray(jsonData.result)
+          ? jsonData.result
+          : jsonData?.cars && Array.isArray(jsonData.cars)
+          ? jsonData.cars
+          : null;
+
+        if (candidates && candidates.length) {
+          const keyName = candidates?.[0]?.ModelName || candidates?.[0]?.VariantName || "matched";
+          const selectedItem: Record<string, any[]> = { [String(keyName)]: candidates };
+          const identifiedTitle = [
+            candidates?.[0]?.BrandName,
+            candidates?.[0]?.ModelName,
+            candidates?.[0]?.VariantName,
+          ]
+            .filter(Boolean)
+            .join(" ");
+
+          // Optional: include model's own summary text if present
+          const messagesToAdd: Message[] = [];
+
+          if (replyText && replyText.trim()) {
+            messagesToAdd.push({
+              id: String(Date.now() + 1),
+              message: replyText.trim(),
+              sender: "bot",
+              timestamp: new Date(),
+            });
+          }
+
+          const textMessage: Message = {
+            id: String(Date.now() + 2),
+            message:
+              identifiedTitle
+                ? `This looks like ${identifiedTitle}. Here are the matching variants:`
+                : "Here are the cars that match your image:",
+            sender: "bot",
+            timestamp: new Date(),
+          };
+          messagesToAdd.push(textMessage);
+
+          const cardMessage: Message = {
+            id: String(Date.now() + 2),
+            message: selectedItem,
+            render: "carOptions",
+            sender: "bot",
+            timestamp: new Date(),
+          };
+          messagesToAdd.push(cardMessage);
+
+          setMessages((prev) => [...prev, ...messagesToAdd]);
+          renderedCard = true;
+        }
+      }
+
+      if (!renderedCard) {
+        const botMessage: Message = {
+          id: String(Date.now() + 1),
+          message: replyText || (jsonData ? JSON.stringify(jsonData) : "Sorry, I couldn't get a response."),
+          sender: "bot",
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, botMessage]);
+      }
+    } catch (error:any) {
+      console.error("Image upload failed:", error);
+      showSnackbar(`Failed to upload image. ${error?.message ?? ""}`.trim(), {
+        horizontal: "center",
+        vertical: "bottom",
+      });
+      const botMessage: Message = {
+        id: String(Date.now() + 1),
+        message:
+          `Unable to process the image right now. ${error?.message ?? ""}`.trim(),
+        sender: "bot",
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, botMessage]);
+    } finally {
+      setLoading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
   return (
     <Box
       sx={{
@@ -156,6 +315,7 @@ const AskAIChat: React.FC = () => {
         overflow: "hidden",
         mx: "auto",
         overflowX: "clip",
+        bgcolor: "#ffffff", // Force white background for Ask AI container
       }}
     >
       {/* Messages Area */}
@@ -169,9 +329,19 @@ const AskAIChat: React.FC = () => {
           flexDirection: "column",
           gap: 2,
           minWidth: 0,
+          bgcolor: "#ffffff", // Ensure message area background remains white
         }}
       >
-       {messages.map((message) => (
+       {messages.map((message, index) => {
+  const showAvatar = index === 0 || (messages[index - 1] && messages[index - 1].sender !== message.sender);
+  const isCard = (message as any)?.render === "carOptions";
+  const isFullWidthText =
+    message.sender === "bot" && !isCard && (
+      (messages[index + 1] && (messages[index + 1] as any)?.render === "carOptions") ||
+      (messages[index + 2] && (messages[index + 2] as any)?.render === "carOptions")
+    );
+  const showTimestamp = isCard || !isFullWidthText;
+  return (
   <Box
     key={message.id}
     sx={{
@@ -182,121 +352,133 @@ const AskAIChat: React.FC = () => {
     }}
   >
     {/* Avatar on top */}
-    <Box sx={{ mb: 0.5 }}>
-      {message.sender === "bot" ? (
-        <Avatar
-          sx={{
-            width: 32,
-            height: 32,
-            bgcolor: "transparent",
-          }}
-        >
-          <img loading="lazy" src="/assets/lisa.svg" alt="Lisa" width={32} height={32} />
-        </Avatar>
-      ) : (
-        <Avatar
-          sx={{
-            width: 36,
-            height: 36,
-            bgcolor: "primary.main",
-            color: "white",
-            boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-            border: "2px solid white",
-          }}
-        >
-          <Person sx={{ fontSize: "1.2rem" }} />
-        </Avatar>
-      )}
-    </Box>
+    {showAvatar && (
+      <Box sx={{ mb: 1 }}>
+        {message.sender === "bot" ? (
+          <Avatar
+            sx={{
+              width: 32,
+              height: 32,
+              bgcolor: "transparent",
+            }}
+          >
+            <img loading="lazy" src="/assets/lisa.svg" alt="Lisa" width={32} height={32} />
+          </Avatar>
+        ) : (
+          <Avatar
+            sx={{
+              width: 36,
+              height: 36,
+              bgcolor: "primary.main",
+              color: "white",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+              border: "2px solid white",
+            }}
+          >
+            <Person sx={{ fontSize: "1.2rem" }} />
+          </Avatar>
+        )}
+      </Box>
+    )}
 
     {/* Message Bubble */}
     <Box
       sx={{
-        maxWidth: {
-          xs: "90%", // 👈 80% width on small screens
-          sm: "60%", // 👈 narrower on medium/large
-        },
+        maxWidth: (isCard || isFullWidthText)
+          ? "100%"
+          : {
+              xs: "90%",
+              sm: "60%",
+            },
+        width: (isCard || isFullWidthText) ? "100%" : undefined,
         alignSelf: message.sender === "user" ? "flex-end" : "flex-start",
       }}
     >
       <Paper
         sx={{
-          p: 2,
-          bgcolor: message.sender === "user" ? mode=="dark"? "rgba(82, 139, 237, 1)":  "rgb(211, 227, 255)" : mode==="dark"? "" : "#F5F5F5", // light blue for user, slightly deeper light blue for bot
-          borderRadius:
-            message.sender === "user"
-              ? "18px 18px 4px 18px"
-              : "18px 18px 18px 4px",
+          p: (isCard || isFullWidthText) ? 0 : 2,
+          bgcolor: isCard
+            ? "#ffffff"
+            : (isFullWidthText
+              ? "transparent"
+              : (message.sender === "user"
+                ? (mode=="dark"? "rgba(82, 139, 237, 1)":  "rgb(211, 227, 255)")
+                : (mode==="dark"? "" : "#F5F5F5"))),
+          borderRadius: isCard
+            ? 1
+            : ((isFullWidthText)
+              ? 0
+              : (message.sender === "user"
+                ? "18px 18px 4px 18px"
+                : "18px 18px 18px 4px")),
           wordBreak: "break-word",
-          boxShadow: "0 2px 8px rgba(24, 118, 210, 0.10)",
+          boxShadow: (isCard || isFullWidthText) ? "none" : "0 2px 8px rgba(24, 118, 210, 0.10)",
           position: "relative",
         }}
       >
         {message.sender === "bot" ? (
-          <Typography
-  variant="body2"
-  component="div"
-  sx={{
-    fontSize: {
-      xs: "13px", // Small screen (phones)
-      sm: "14px", // Default size
-    },
-    lineHeight: "1.4",
-    fontWeight: 400,
-  }}
-  dangerouslySetInnerHTML={{
-  __html: message.message
-    .replace(/\*\*(.*?)\*\*/g, `<b>$1</b>`)
-    .replace(
-      /\* (.*?)\n/g,
-      `<div style="
-        display: flex;
-        align-items: flex-start;
-        gap: 6px;
-        margin-top: 10px;
-        margin-bottom: 5px;
-        flex-wrap: wrap;
-        word-break: break-word;
-      ">
-        <span style="
-          color: #1876d2;
-          font-size: 16px;
-          line-height: 1;
-        ">
-          👉
-        </span>
-        <span style="flex: 1; min-width: 0;">
-          $1
-        </span>
-      </div>`
-    )
-   ,
-}}
-
-/>
-
+          message.render === "carOptions" && message.message && typeof message.message === "object" ? (
+            <div>
+              {/* Embed car cards inside Ask AI bubble as an iframe-like block */}
+              {/* Keep Paper container; cards component handles its own layout */}
+              {/* We reuse the existing Cards component by lazy requiring to avoid circular deps */}
+              {(() => {
+                const TeslaCard = require("./Model/Cards/Car").default;
+                return (
+                  <Box sx={{ width: '100%', backgroundColor: '#ffffff' }}>
+                    <TeslaCard
+                      selectedItem={message.message}
+                      onClick={() => {}}
+                      handleNeedAdviceSupport={() => {}}
+                      variant="compact"
+                    />
+                  </Box>
+                );
+              })()}
+            </div>
+          ) : (
+            <Typography
+              variant="body2"
+              component="div"
+              sx={{
+                fontSize: { xs: "13px", sm: "14px" },
+                lineHeight: "1.4",
+                fontWeight: 400,
+              }}
+              dangerouslySetInnerHTML={{
+                __html: String(message.message)
+                  .replace(/\*\*(.*?)\*\*/g, `<b>$1</b>`)
+                  .replace(
+                    /\* (.*?)\n/g,
+                    `<div style="display:flex;align-items:flex-start;gap:6px;margin-top:10px;margin-bottom:5px;flex-wrap:wrap;word-break:break-word;">
+                       <span style="color:#1876d2;font-size:16px;line-height:1;">👉</span>
+                       <span style="flex:1;min-width:0;">$1</span>
+                     </div>`
+                  ),
+              }}
+            />
+          )
         ) : (
-          <Typography
-            variant="body2"
-            sx={{ fontSize: "14px", lineHeight: "1.4", fontWeight: 400 }}
-          >
-            {message.message}
+          <Typography variant="body2" sx={{ fontSize: "14px", lineHeight: "1.4", fontWeight: 400 }}>
+            {String(message.message)}
           </Typography>
         )}
       </Paper>
-      <Typography
-        variant="caption"
-        sx={{
-          color: "text.secondary",
-          mt: 0.5,
-          fontSize: "0.75rem",
-        }}
-      >
-        {formatTime(message.timestamp)}
-      </Typography>
+      {showTimestamp && (
+        <Typography
+          variant="caption"
+          sx={{
+            color: "text.secondary",
+            mt: 0.5,
+            fontSize: "0.75rem",
+          }}
+        >
+          {formatTime(message.timestamp)}
+        </Typography>
+      )}
     </Box>
   </Box>
-))}
+)})}
 
         {loading && (
           <Box
@@ -353,8 +535,8 @@ const AskAIChat: React.FC = () => {
       <Box
         sx={{
           p: 3,
-          borderTop:  mode=="dark" ? "#000" : "1px solid #f0f0f0",
-          bgcolor:  mode=="dark" ? "#000" : "white",
+          borderTop:  "1px solid #f0f0f0",
+          bgcolor:  "#ffffff", // Force white background for input area as well
           mb: isSmallScreen ? 5 : 2,
           minWidth: 0,
         }}
@@ -425,6 +607,29 @@ const AskAIChat: React.FC = () => {
           endAdornment: (
             <Box sx={{ display: "flex", alignItems: "flex-end", minWidth: 0 }}>
               <IconButton
+                onClick={handleUploadClick}
+                disabled={loading}
+                sx={{
+                  bgcolor: mode === "dark" ? "#2c2c2c" : "#eeeeee",
+                  color: mode === "dark" ? "#fff" : "#000",
+                  width: 38,
+                  height: 38,
+                  borderRadius: "50%",
+                  mr: 1,
+                  "&:hover": {
+                    bgcolor: mode === "dark" ? "#3a3a3a" : "#e0e0e0",
+                    transform: "scale(1.05)",
+                  },
+                  "&:disabled": {
+                    bgcolor: "#e0e0e0",
+                    color: "#9e9e9e",
+                  },
+                  transition: "all 0.2s ease",
+                }}
+              >
+                <ImageIcon />
+              </IconButton>
+              <IconButton
                 onClick={sendMessage}
                 disabled={!inputMessage.trim() || loading}
                 sx={{
@@ -455,6 +660,14 @@ const AskAIChat: React.FC = () => {
 
         </Box>
       </Box>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture={isMobileDevice ? "environment" : undefined}
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
     </Box>
   );
 };
