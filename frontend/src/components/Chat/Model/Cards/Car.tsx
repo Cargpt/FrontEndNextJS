@@ -626,11 +626,14 @@ console.log(typeof message)
       {!isCompact && (
       <Stack
   direction="row"
-  gap={2}
+  gap={1.5}
   mt={1}
-  flexWrap="nowrap"
-  justifyContent="start"
-  sx={{ pb: 2 }}
+  flexWrap="wrap"  // ✅ allow wrapping
+  justifyContent="flex-start"  // keep aligned to start
+  sx={{
+    pb: 2,
+    rowGap: 1, // optional: vertical gap between rows
+  }}
 >
   <Chip
     label="I know exactly what I want"

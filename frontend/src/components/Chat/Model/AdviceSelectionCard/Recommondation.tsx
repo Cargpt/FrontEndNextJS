@@ -45,7 +45,7 @@ const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({
       <Typography gutterBottom sx={{ fontSize: "15px", textAlign: "left", fontWeight: 600 }}>
         ✅ Based on your preferences, here are our recommendations:
       </Typography>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{backgroundColor:"transparent", backgroundImage:"none"}}>
         <Table size="small" aria-label="recommendation table">
           {isMobile ? (
             // 📱 Vertical view for small screens

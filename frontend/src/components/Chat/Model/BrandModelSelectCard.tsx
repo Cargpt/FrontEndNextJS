@@ -490,7 +490,7 @@ const {mode}=useColorMode()
       justifyContent: 'center',
     }}
   >
-    <DirectionsCarFilledIcon fontSize="small"   />
+    <DirectionsCarFilledIcon fontSize="medium"   />
   </Box>
 Find Your Car
 </Typography>
