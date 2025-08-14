@@ -138,9 +138,7 @@ html, body, .my-custom-scroll-container {
     display: none;
   }
 } */
- .slick-slider {
-  background-color: #f0f0f0; /* light grey or your preferred color */
-}
+ 
 
 .slick-slider .slick-track {
   display: flex !important;

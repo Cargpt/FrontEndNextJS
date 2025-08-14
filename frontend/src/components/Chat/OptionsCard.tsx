@@ -421,24 +421,23 @@ const bottomSpacing = `calc(
                   key={msg.id}
                   sx={{
                      paddingX:"1rem",
-                     paddingBottom:"10px",
+                     paddingBottom: index%2==1 && index>0 ? "20px" : "1px",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
                     transition: 'background 0.3s ease',
 
                     borderRadius:"16px",
-                    '&:hover': {
-                      background: 'rgba(0, 0, 0, 0.05)', // 👈 Example hover effect
-                      cursor: 'pointer',               // Optional
-                    },
+                    // '&:hover': {
+                    //   background: 'rgba(0, 0, 0, 0.05)', // 👈 Example hover effect
+                    //   cursor: 'pointer',               // Optional
+                    // },
                 
 
                     
                     mt: { xs: isNative && index===0? 3:  0, sm: isNative && index===0? 3: 0 },
                     px: { xs: 2, sm: 0 },
                     textAlign: msg.sender === "user" ? "right" : "left",
-                    fontSize: "14px",
                   }}
                 >
                   {msg.sender === "bot" && (
@@ -466,9 +465,9 @@ const bottomSpacing = `calc(
                     
 borderRadius: '16px',
       borderBottomRightRadius: 0,
+                      
                       bgcolor:
-                        msg.sender === "user" ? "rgb(211, 227, 255)" : mode==="dark"?"transparent":"grey.100",
-                      color: "black",
+                        msg.sender === "user" ? "rgb(211, 227, 255)" : mode==="dark"?"transparent":"",
                     
                     
                     }}

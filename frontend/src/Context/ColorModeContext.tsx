@@ -14,6 +14,7 @@ import {
   PaletteMode,
 } from '@mui/material';
 import { useCookies } from 'react-cookie';
+import { grey } from '@mui/material/colors';
 
 interface ColorModeContextType {
   toggleColorMode: () => void;
@@ -69,19 +70,59 @@ export const ColorModeProvider: React.FC<{ children: React.ReactNode }> = ({
     applyStatusBar();
   }, [mode]);
 
-  const toggleColorMode = () => {
-    setMode((prev) => (prev === 'light' ? 'dark' : 'light'));
-  };
-
+  // ✅ Custom theme
   const theme = useMemo(
     () =>
       createTheme({
         palette: {
           mode,
+          ...(mode === 'light' && {
+            text: {
+              primary: grey[600],
+              secondary: grey[600],
+            },
+          }),
+        },
+        components: {
+          MuiTypography: {
+            styleOverrides: {
+              root: {
+                ...(mode === 'light' && {
+                  color: grey[600],
+                }),
+              },
+            },
+          },
+          MuiChip: {
+            styleOverrides: {
+              root: {
+                ...(mode === 'light' && {
+                  color: grey[700],
+                }),
+              },
+              icon: {
+                ...(mode === 'light' && {
+                  color: grey[500],
+                }),
+              },
+            },
+          },
+          // MuiButton: {
+          //   styleOverrides: {
+          //     root: {
+          //       ...(mode === 'light' && {
+          //         color: grey[900],
+          //       }),
+          //     },
+          //   },
+          // },
         },
       }),
     [mode]
   );
+const toggleColorMode = () => {
+  setMode((prev) => (prev === 'light' ? 'dark' : 'light'));
+};
 
   return (
     <ColorModeContext.Provider value={{ toggleColorMode, mode }}>

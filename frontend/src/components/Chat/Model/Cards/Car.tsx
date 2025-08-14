@@ -7,11 +7,13 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
-import Chip from "@mui/material/Chip";
 import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import ElectricCarIcon from "@mui/icons-material/ElectricCar";
+import { Stack, Chip } from "@mui/material";
+import FaceIcon from '@mui/icons-material/Face';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 
 import { useChats } from "@/Context/ChatContext"; // This brings in the Message type from ChatContext
 import { useCookies } from "react-cookie";
@@ -115,6 +117,7 @@ const showSignUP = () => {
   setshowSignUpState(true);
   hide();
 }
+const [chipsDisabled, setChipsDisabled] = useState(false);
 
 const hideSignUP = () => {
   setshowSignUpState(false);
@@ -340,13 +343,14 @@ console.log(typeof message)
                 position: "relative",
                 display: "flex",
                 maxWidth:{md: "260px",
-                  boxShadow:"none",
+
                 },
                 
                 
 
                 
               }}
+              variant="outlined"
             >
               <CardMedia
                 component="img"
@@ -614,7 +618,7 @@ console.log(typeof message)
         </Slider>
 
       )}
-      <Stack
+      {/* <Stack
         direction="row"
         gap={2}
         mt={1}
@@ -646,7 +650,72 @@ console.log(typeof message)
             Back to car research
           </Button>
         )}
-      </Stack>
+      </Stack> */}
+
+<Stack
+  direction="row"
+  gap={2}
+  mt={1}
+  flexWrap="nowrap"
+  justifyContent="start"
+  sx={{ pb: 2 }}
+>
+  <Chip
+    label="I know exactly what I want"
+    variant="filled"
+    size="small"
+    icon={<FaceIcon />}
+    onClick={() => {
+      setChipsDisabled(true);
+      onClick?.();
+    }}
+    disabled={chipsDisabled}
+    sx={{
+      fontSize: 13,
+      textTransform: "capitalize",
+      borderWidth: 1,
+    }}
+  />
+
+  <Chip
+    label="I need advisor support"
+    variant="filled"
+    size="small"
+    color="default"
+    icon={<SupportAgentIcon />}
+    onClick={() => {
+      setChipsDisabled(true);
+      handleNeedAdviceSupport();
+    }}
+    disabled={chipsDisabled}
+    sx={{
+      fontSize: 13,
+      textTransform: "capitalize",
+      borderWidth: 1,
+    }}
+  />
+
+  {cookies.selectedOption === "I want to do more research on cars" && (
+    <Chip
+      label="Back to car research"
+      variant="outlined"
+      size="small"
+      icon={<DirectionsCarIcon />}
+      onClick={backTOIntial}
+      sx={{
+        fontSize: 13,
+        textTransform: "capitalize",
+        color: "black",
+        borderColor: "black",
+        borderWidth: 1,
+        borderStyle: "solid",
+        "& .MuiChip-icon": { color: "black" },
+      }}
+    />
+  )}
+</Stack>
+
+
       {dialog.type === "gallery" && (
         <CarGallery
           open={dialog.open}

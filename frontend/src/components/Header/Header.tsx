@@ -51,7 +51,7 @@ const {mode}=useColorMode()
       sx={{
         backgroundColor: mode==="dark" ? theme.palette.background.paper : "#f5f6fa",
         boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-        pb: 1,
+        // pb: 1,
         // Add small gap below Android status bar; add safe area for iOS
         pt: isAndroid ? theme.spacing(1) : `calc(${theme.spacing(0)} + env(safe-area-inset-top, 0px))`,
       }}
@@ -73,7 +73,6 @@ const {mode}=useColorMode()
             sx={{
               width: 40,
               height: 40,
-              backgroundColor: theme.palette.background.paper,
               borderRadius: 2,
               display: "flex",
               justifyContent: "center",

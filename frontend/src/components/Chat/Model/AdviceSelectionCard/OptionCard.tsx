@@ -35,7 +35,6 @@ const OptionsCard: React.FC<OptionsCardProps> = ({ onBack, onShowCars, disabled 
         p: 2,
         maxWidth: 550,
         width: '100%',
-        bgcolor: mode==="dark" ? "transparent" :'#f5f5f5',
         borderRadius: 0,
       }}
     >
@@ -45,8 +44,9 @@ const OptionsCard: React.FC<OptionsCardProps> = ({ onBack, onShowCars, disabled 
 
       <Stack direction="row" spacing={1} flexWrap="wrap">
          <Button
-          variant={clicked === 'show' ? 'contained' : 'outlined'}
-          color={clicked === 'show' ? 'primary' : 'inherit'}
+         variant='contained'
+          // variant={clicked === 'show' ? 'contained' : 'outlined'}
+          // color={clicked === 'show' ? 'primary' : 'inherit'}
            disabled={clicked !== '' || disabled}
           size="small"
           sx={{ textTransform: 'none', fontSize: 14 }}
@@ -56,8 +56,9 @@ const OptionsCard: React.FC<OptionsCardProps> = ({ onBack, onShowCars, disabled 
         </Button>
 
         <Button
-          variant={clicked === 'back' ? 'contained' : 'outlined'}
-          color={clicked === 'back' ? 'primary' : 'inherit'}
+        variant='contained'
+          // variant={clicked === 'back' ? 'contained' : 'outlined'}
+          // color={clicked === 'back' ? 'primary' : 'inherit'}
            disabled={clicked !== '' || disabled}
           size="small"
           sx={{ textTransform: 'none', fontSize: 14 }}
