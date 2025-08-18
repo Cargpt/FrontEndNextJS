@@ -799,30 +799,6 @@ console.log(typeof message)
     />
   )}
 
-  {onTriggerOverallRecommendations && (
-    <Chip
-      label={loadingOverallRecommendations ? <CircularProgress size={20} /> : "Get More Recommendations"}
-      clickable
-      color="default"
-      variant="filled"
-      size="small"
-      icon={<LightbulbIcon />}
-      onClick={async () => {
-        setLoadingOverallRecommendations(true);
-        await onTriggerOverallRecommendations?.();
-        setLoadingOverallRecommendations(false);
-      }}
-      disabled={loadingOverallRecommendations}
-      sx={{
-        fontSize: 13,
-        textTransform: "capitalize",
-        borderWidth: 1,
-        "& .MuiChip-icon": { color: "rgba(0, 0, 0, 0.54)" }, // Adjust icon color
-        flex: { xs: '1 1 100%', sm: '0 auto' }, // Full width on mobile to center
-        maxWidth: { xs: '100%', sm: 'none' },
-      }}
-    />
-  )}
 </Stack>
 
       )}
