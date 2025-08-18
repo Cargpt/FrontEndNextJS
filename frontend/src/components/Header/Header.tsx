@@ -20,12 +20,13 @@ import { axiosInstance1 } from "@/utils/axiosInstance";
 import AskLocation from "./AskLocation";
 
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
+import CityInputForm from "./CityInputForm";
 
 
 const Header: React.FC = () => {
 
 
-  const [cookies, setCookie] = useCookies(["token", "user", "selectedOption"]);
+  const [cookies, setCookie, removeCookie] = useCookies(["token", "user", "selectedOption", "currentCity"]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { notifications, setNotifications } = useNotifications();
   const router = useRouter();
@@ -52,8 +53,8 @@ const [locationDenied, setLocationDenied] = useState(false); // for dialog
   };
 
 
-  useEffect(() => {
-  if (!navigator.geolocation) {
+  const handleLocation = (isClose: boolean)=>{
+      if (!navigator.geolocation) {
     console.warn("Geolocation is not supported");
     return;
   }
@@ -70,18 +71,50 @@ const [locationDenied, setLocationDenied] = useState(false); // for dialog
 
         if (res?.city) {
           setCity(res.city);
+          setCookie("currentCity", res?.city, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+    });
+    if(isClose){
+      toggleCity()
+
+    }
         }
       } catch (error) {
         console.error("Failed to fetch city from coordinates", error);
       }
     },
     (error) => {
+
+removeCookie('currentCity')
       setLocationDenied(true); // Trigger dialog
 
       console.warn("Location permission denied", error);
     }
   );
-}, []);
+  }
+
+  useEffect(() => {
+    if(cookies.currentCity) return;
+    handleLocation(false)
+
+
+}, [cookies.currentCity]);
+
+
+  const [enterCitydialogOpen, setEnterCityDialogOpen] = useState(false);
+  const toggleCity = ()=>  setEnterCityDialogOpen(!enterCitydialogOpen)
+
+  const handleCitySubmit = (city: string) => {
+    console.log("User entered city:", city);
+              setCity(city);
+          setCookie("currentCity", city, {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+    });
+
+    // Store or send to backend
+  };
 
 
 
@@ -161,6 +194,8 @@ const [locationDenied, setLocationDenied] = useState(false); // for dialog
           
         
   <Box
+  onClick={toggleCity}
+
     sx={{
       display:
         
@@ -174,10 +209,13 @@ const [locationDenied, setLocationDenied] = useState(false); // for dialog
     
       borderRadius: 2,
       backgroundColor: "transparent",
+    
     }}
+    
+  
   >
-    <LocationOnOutlinedIcon sx={{ color: "#555", fontSize: 20 }} />
-    <Box sx={{ fontSize: 14, color: "#333" }}>{city?? "Select City"}</Box>
+    <LocationOnOutlinedIcon  sx={{ color: "#555", fontSize: 20 }}  />
+    <Box sx={{ fontSize: 14, color: "#333" }}>{cookies.currentCity?? "Select City"}</Box>
 
 
 
@@ -292,6 +330,7 @@ const [locationDenied, setLocationDenied] = useState(false); // for dialog
       {/* Sidebar Drawer */}
       <Sidebar open={drawerOpen} onClose={handleDrawerClose} />
       <AskLocation show={locationDenied} onClose={onCLoseLocationPopup}  />
+      <CityInputForm open={enterCitydialogOpen} onSubmit={handleCitySubmit} onClose={toggleCity} handleLocation={handleLocation}/>
     </AppBar>
   );
 };

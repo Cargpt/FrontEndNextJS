@@ -299,7 +299,7 @@ const CustomPrevArrow = (props: any & { outside?: boolean }) => {
   const settings: Settings = {
     infinite: false,
     speed: 500,
-    slidesToShow: showTwo ? 2 : 1,
+    slidesToShow: showTwo ? 3 : 1,
     slidesToScroll: 1,
     autoplay: isCompact ? false : true,
     autoplaySpeed: 3000,
@@ -391,21 +391,16 @@ console.log(typeof message)
               }}
               variant="outlined"
             >
-              <CardMedia
-                component="img"
-                height={isCompact ? "130" : "150"}
-                width="100%"
-                
+              
 
-                image={car.CarImageDetails?.[0]?.CarImageURL || '/assets/card-img.png'}
-                alt="Car card"
-                sx={{
-                  cursor: 'pointer',
-                  pointerEvents: `${!car.CarImageDetails?.[0]?.CarImageURL && "none"}`,
-                
-                }}
-                onClick={() => openDialog("gallery", car)}
-              />
+              <Box sx={{ width: '100%',
+              
+              height: isCompact ? 130 : 170, // or any desired responsive height
+               display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', backgroundColor: "#ffffff", // optional placeholder background 
+               borderRadius: 2, }} >
+               <CardMedia component="img" image={car.CarImageDetails?.[0]?.CarImageURL || '/assets/card-img.png'} alt="Car card" sx={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', cursor: car.CarImageDetails?.[0]?.CarImageURL ? 'pointer' : 'default', pointerEvents: car.CarImageDetails?.[0]?.CarImageURL ? 'auto' : 'none', }} onClick={() => openDialog("gallery", car)} />
+               
+               </Box>
               {/* Gallery Icon */}
               <Box
                 sx={{

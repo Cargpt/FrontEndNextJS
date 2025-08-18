@@ -1,4 +1,4 @@
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton } from '@mui/material';
 import React, { useState } from 'react'
 import AllowLocationHelp from './AllowLocationHelp';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -15,7 +15,7 @@ const AskLocation = (props: Props) => {
     
       const handleShowInfo = ()=>setShowLocationHelp(!showLocationHelp)
   return (
-   <Dialog open={props.show} onClose={()=>{}}>
+   <Dialog open={props.show} onClose={props.onClose}>
   <DialogTitle>Location Required</DialogTitle>
   <DialogContent>
     <DialogContentText>
@@ -34,9 +34,9 @@ const AskLocation = (props: Props) => {
     {/* <Button onClick={props.onClose} color="secondary">
       Cancel
     </Button> */}
-    {/* <Button onClick={props.onClose} color="primary" autoFocus>
-      Try Again
-    </Button> */}
+    <Button onClick={props.onClose} color="primary" autoFocus>
+      Ok
+    </Button>
   </DialogActions>
         <AllowLocationHelp open={showLocationHelp} onClose={handleShowInfo} />
 

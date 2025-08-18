@@ -17,6 +17,8 @@ import {
 } from "@mui/material";
 import { ArrowForwardIosSharp, InfoOutline, InfoOutlined, NotificationAddOutlined, RestoreFromTrashOutlined } from "@mui/icons-material";
 import Link from "next/link";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+
 import { useCookies } from "react-cookie";
 import LoginOutlinedIcon from "@mui/icons-material/LoginOutlined";
 import LoginDialog from "../common/Dialogs/LoginDialog";
@@ -509,6 +511,43 @@ const theme=useTheme()
 
                   </li>
                   )}
+
+                
+                    { cookies.user &&
+ <li
+                    style={{
+                      borderRadius: 6,
+                      transition: "background 0.2s",
+                    }}
+                   
+                  >
+                    <Link href="/bookmarks" passHref legacyBehavior>
+                      <a
+                        onClick={onClose}
+                        style={{
+                          display: "flex",
+                          gap: 8,
+                          alignItems: "center",
+                          padding: "8px 10px",
+                          textDecoration: "none",
+                          fontSize: 14,
+                          fontWeight: 500,
+                          color: theme.palette.text.primary,
+                        }}
+                      >
+                        <span>
+                        <FavoriteBorderIcon sx={{width:15, height:15}} />
+
+                        </span>
+                        <span>Wishlist</span>
+                      </a>
+                    </Link>
+                  </li>
+
+                    }
+                  
+                 
+
                   <li
                     style={{
                       borderRadius: 6,
@@ -538,6 +577,9 @@ const theme=useTheme()
                       </a>
                     </Link>
                   </li>
+
+
+                  
 
                   <li
                     style={{

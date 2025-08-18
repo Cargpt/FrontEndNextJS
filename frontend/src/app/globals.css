@@ -142,7 +142,7 @@ html, body, .my-custom-scroll-container {
 
 .slick-slider .slick-track {
   display: flex !important;
-  gap: 10px;
+  gap: 4px;
   align-items: stretch;
 }
 
