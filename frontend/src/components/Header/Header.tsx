@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AppBar, Box, Toolbar, IconButton, useTheme } from "@mui/material";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone"; // Bell icon
 import ThemeToggle from "../Theme/ThemeToggle";
@@ -12,10 +12,14 @@ import { useRouter } from "next/navigation";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Badge from "@mui/material/Badge";
   import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined';
+import LocationOnIcon from "@mui/icons-material/LocationOn"; // Icon for city
 
 import { useNotifications } from "../../Context/NotificationContext";
 import { Capacitor } from "@capacitor/core";
+import { axiosInstance1 } from "@/utils/axiosInstance";
+import AskLocation from "./AskLocation";
 
+import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 
 
 const Header: React.FC = () => {
@@ -33,7 +37,9 @@ const {mode}=useColorMode()
 
   const unreadCount = notifications.filter((n: { read: boolean }) => !n.read).length;
   const readCount = notifications.filter((n: { read: boolean }) => n.read).length;
-
+const [city, setCity] = useState<string | null>(null);
+const [locationDenied, setLocationDenied] = useState(false); // for dialog
+ const onCLoseLocationPopup = ()=>setLocationDenied(false)
   const handleDrawerOpen = () => setDrawerOpen(true);
   const handleDrawerClose = () => setDrawerOpen(false);
   const handleBookmarkClick = () => {
@@ -44,6 +50,40 @@ const {mode}=useColorMode()
       alert("Please log in to view bookmarks.");
     }
   };
+
+
+  useEffect(() => {
+  if (!navigator.geolocation) {
+    console.warn("Geolocation is not supported");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const { latitude, longitude } = position.coords;
+
+      try {
+        const res = await axiosInstance1.post("/api/cargpt/coordinate-to-city/", {
+          lat:latitude,
+          lng:longitude,
+        });
+
+        if (res?.city) {
+          setCity(res.city);
+        }
+      } catch (error) {
+        console.error("Failed to fetch city from coordinates", error);
+      }
+    },
+    (error) => {
+      setLocationDenied(true); // Trigger dialog
+
+      console.warn("Location permission denied", error);
+    }
+  );
+}, []);
+
+
 
   return (
     <AppBar
@@ -105,6 +145,9 @@ const {mode}=useColorMode()
           </Box>
         </Box>
 
+
+
+
         {/* Right Section: Icons */}
         <Box
           sx={{
@@ -114,6 +157,33 @@ const {mode}=useColorMode()
             gap: { xs: 1.5, sm: 2 },
           }}
         >
+
+          
+        
+  <Box
+    sx={{
+      display:
+        
+    'flex'
+      ,
+      alignItems: "center",
+      gap: 0.5,
+     ml: "auto",
+     px:"10px",
+
+    
+      borderRadius: 2,
+      backgroundColor: "transparent",
+    }}
+  >
+    <LocationOnOutlinedIcon sx={{ color: "#555", fontSize: 20 }} />
+    <Box sx={{ fontSize: 14, color: "#333" }}>{city?? "Select City"}</Box>
+
+
+
+  </Box>
+
+
           {/* Bookmark Icon */}
           {cookies.user && (
             <Box
@@ -144,6 +214,8 @@ const {mode}=useColorMode()
             </Box>
           )}
   
+
+
 
           {/* Notification Bell Icon */}
           <Box
@@ -204,7 +276,7 @@ const {mode}=useColorMode()
               width: { xs: 32, sm: 36, md: 40 },
               height: { xs: 32, sm: 36, md: 40 },
               borderRadius: "50%",
-              display: "flex",
+              display: {md:"flex", sm:"none", xs:"none"},
               justifyContent: "center",
               alignItems: "center",
               cursor: "pointer",
@@ -219,6 +291,7 @@ const {mode}=useColorMode()
 
       {/* Sidebar Drawer */}
       <Sidebar open={drawerOpen} onClose={handleDrawerClose} />
+      <AskLocation show={locationDenied} onClose={onCLoseLocationPopup}  />
     </AppBar>
   );
 };
