@@ -32,8 +32,8 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose, showSignUp }) 
           display: "flex",
           flexDirection: "column",
           borderRadius: 0,
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-
+          //  background: 'linear-gradient(to right, #00c6ff, #0072ff)' /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+ 
         },
       }}
     >
