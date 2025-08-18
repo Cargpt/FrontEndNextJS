@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Avatar, Paper, useMediaQuery, useTheme, CircularProgress, Grow, Chip } from "@mui/material";
+import { Box, Avatar, Paper, useMediaQuery, useTheme, CircularProgress, Grow } from "@mui/material";
 import { useChats } from "@/Context/ChatContext";
 import PersonIcon from "@mui/icons-material/Person";
 import { axiosInstance1 } from "@/utils/axiosInstance";
@@ -25,7 +25,6 @@ const ChatBox: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { brands } = useBrands();
   const [cookies, , removeCookie] = useCookies(["selectedOption", "user"]);
-  const [loadingMoreRecommendations, setLoadingMoreRecommendations] = useState<boolean>(false);
 
  useEffect(() => {
   if (messages.length === 0) return;
@@ -167,88 +166,48 @@ const ChatBox: React.FC = () => {
   const [remondatedCarModels, setRecommondatedCarModels] = useState<CarDetails[]>([]);
 
   const handleCarRecommendation = async () => {
-    setLoadingMoreRecommendations(true);
-    try {
-      const payload = {
-        price: 12500000,
-        model_id: 122,
-      };
-      const data = await axiosInstance1.post(
-        "/api/cargpt/recommend-by-price/",
-        payload
-      );
-      if (!data || !Array.isArray(data.recommendations) || data.recommendations.length === 0) {
-        showSnackbar("No cars found for the selected parameters.", {
-          horizontal: "center",
-          vertical: "bottom",
-        });
-        return;
+    const data = await axiosInstance1.post(
+      "/api/cargpt/car-for-para-advisor/",
+      {
+        ...filter,
       }
-      setRecommondatedCarModels(data.recommendations);
-      console.log("filter", filter)
-      // We don't have brand_name or model_name from recommend-by-price, so we'll use a generic key or derive one if possible.
-      // For now, let's just add the new recommendations under a generic key or the first car's brand/model if available.
-      const newCarsEntry = { "Recommendations": data.recommendations };
-      setCars((prev)=>[
-        ...prev, newCarsEntry
+    );
+    if (data.data.length === 0) return;
+    setRecommondatedCarModels(data.data);
+    console.log("filter", filter)
+    setCars((prev)=>[
+      ...prev, {[`${filter?.brand_name}_${filter.model_name}`]: data?.data}
 
-      ])
-      // onShowCar(); // Removed direct call to onShowCar
-      return;
-    } catch (error: any) {
-      console.error("Error fetching recommendations:", error);
-      let errorMessage = "Failed to fetch recommendations. Please try again later.";
-      if (error?.data?.message) {
-        errorMessage = error.data.message;
-      } else if (error?.message) {
-        errorMessage = error.message;
-      }
-      showSnackbar(errorMessage, {
-        horizontal: "center",
-        vertical: "bottom",
-      });
-      return;
-    } finally {
-      setLoadingMoreRecommendations(false);
-    }
+    ])
   };
 
   const { showSnackbar } = useSnackbar();
   const onShowCar = () => {
-    console.log("remondatedCarModels in onShowCar:", remondatedCarModels); // Debug log
     if (remondatedCarModels.length === 0) {
       showSnackbar("No car models found for the selected parameters.", {
         horizontal: "center",
         vertical: "bottom",
       });
       return false;
-    } 
-    return true;
-  };
-
-  // New useEffect to display cars when remondatedCarModels updates
-  useEffect(() => {
-    if (remondatedCarModels.length > 0) {
-      const count = remondatedCarModels.length;
-      const carPlural = count === 1 ? "car" : "cars";
+    } else {
+      // Add user message before bot message
       const userMessage: Message = {
         id: String(Date.now()),
-        message: `Here are the best ${count} ${carPlural} that match your preferences 🚗✨`,
+        message: "Show cars that fit my preferences",
         render: "text",
         sender: "user",
       };
       const botMessage: Message = {
         id: String(Date.now() + 1),
-        // When using recommend-by-price, filter.brand_name might be undefined.
-        // We need a fallback key here, e.g., "Recommendations" or the first car's brand name.
-        message: { [filter.brand_name || "Recommendations"]: remondatedCarModels },
+        message: { [filter.brand_name]: remondatedCarModels },
         render: "carOptions",
         sender: "bot",
       };
       setMessages((prev) => [...prev, userMessage, botMessage]);
-      setRecommondatedCarModels([]); // Clear after displaying
+      setRecommondatedCarModels([]);
+      return true;
     }
-  }, [remondatedCarModels]);
+  };
 
   const onBack = () => {
     const userMessage: Message = {
@@ -409,33 +368,6 @@ const bottomSpacing = `calc(
 
   const {mode}=useColorMode()
   console.log("history", messages)
-  // Helper function to sort car arrays
-  const [sortOption, setSortOption] = useState<string>("none");
-  useEffect(() => {
-    const handler = (e: any) => {
-      const detail = e?.detail as string;
-      if (detail === "price" || detail === "mileage" || detail === "none") {
-        setSortOption(detail);
-      }
-    };
-    if (typeof window !== 'undefined') {
-      window.addEventListener('car-sort', handler as EventListener);
-    }
-    return () => {
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('car-sort', handler as EventListener);
-      }
-    };
-  }, []);
-  const sortCars = (carsArray: any[], option: string) => {
-    if (option === "price") {
-      return [...carsArray].sort((a, b) => (a.Price || 0) - (b.Price || 0));
-    } else if (option === "mileage") {
-      return [...carsArray].sort((a, b) => (b.Mileage || 0) - (a.Mileage || 0));
-    }
-    return carsArray;
-  };
-  
   return (
     <>
       <Box
@@ -465,7 +397,7 @@ const bottomSpacing = `calc(
           }
           {
             messages?.[messages?.length-1]?.message!=="Ask AI" &&
-          <>
+
           <Box 
             sx={{minHeight:"100vh",
               
@@ -482,35 +414,21 @@ const bottomSpacing = `calc(
             
           >
             {messages.map((msg, index) => {
-              // If this is a carOptions render, sort the car data before passing
-              let sortedMsg = msg;
-              if (msg.render === "carOptions" && msg.message && typeof msg.message === "object") {
-                const carObj = msg.message as Record<string, any>;
-                const key = Object.keys(carObj)[0];
-                if (Array.isArray(carObj[key])) {
-                  const sortedArr = sortCars(carObj[key], sortOption);
-                  sortedMsg = {
-                    ...msg,
-                    message: { [key]: sortedArr },
-                  } as typeof msg;
-                }
-              }
               const isLastUserMsg = msg.sender === "user" && index === lastUserMsgIndex;
 
               return (
-                <>
                 <Box
                   key={msg.id}
                   sx={{
                      paddingX:"1rem",
-                     
-                     paddingBottom: index%2==1 && index>0 ? "20px" : "10px",
+                     paddingBottom: index%2==1 && index>0 ? "20px" : "1px",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
                     transition: 'background 0.3s ease',
 
-                     // '&:hover': {
+                    borderRadius:"16px",
+                    // '&:hover': {
                     //   background: 'rgba(0, 0, 0, 0.05)', // 👈 Example hover effect
                     //   cursor: 'pointer',               // Optional
                     // },
@@ -544,18 +462,18 @@ const bottomSpacing = `calc(
                       p:  Number(`${msg.sender=="user" ? "1.5" : 0}`),
                       maxWidth: isSmallScreen ? "100%" : "75%",
                       minWidth: index%2==1 ? "100%":"0px",
-                     backgroundImage:"none",
+                    
 borderRadius: '16px',
       borderBottomRightRadius: 0,
                       
                       bgcolor:
-                        msg.sender === "user" && mode==="light"? "rgb(211, 227, 255)"   : mode==="dark" && msg.sender==="user"? "primary":"transparent",
+                        msg.sender === "user" ? "rgb(211, 227, 255)" : mode==="dark"?"transparent":"",
                     
                     
                     }}
                   >
                     <MessageRenderer
-                      message={sortedMsg}
+                      message={msg}
                       index={index}
                       preferences={preferences}
                       filter={filter}
@@ -567,27 +485,10 @@ borderRadius: '16px',
                       onCarRecommendation={handleCarRecommendation}
                       onUserMessage={handleUserMessage}
                       onPersistBrandModel={updateBrandModelState}
-                      onTriggerOverallRecommendations={handleCarRecommendation} // Pass the function here
                     />
                   </Paper>
                   </Grow>
                 </Box>
-                {
-                  index%2==1 &&
-                   <Box
-                   sx={{
-                   borderBottom: "1px solid",
-  borderColor: (theme) =>
-    theme.palette.mode === 'light'
-      ? '#f7f7f7'        // ✅ subtle for white bg
-      : theme.palette.grey[800], // ✅ soft dark gray for dark mode
- 
-              mb:1
-                }}>
-                  </Box>
-                }
-               
-                  </>
               );
             })}
             {loading && (
@@ -595,10 +496,8 @@ borderRadius: '16px',
                 <CircularProgress />
               </Box>
             )}
-            
             <div ref={bottomRef} />
           </Box>
-          </>
 }
         </Paper>
       </Box>
