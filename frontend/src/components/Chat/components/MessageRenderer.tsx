@@ -20,9 +20,10 @@ type MessageRendererProps = {
   onNeedAdviceSupport: () => void;
   onBack: () => void;
   onShowCars: () => boolean | void;
-  onCarRecommendation: () => Promise<void>;
+  onCarRecommendation: () => Promise<boolean | void>;
   onUserMessage: (text: any) => void;
   onPersistBrandModel?: (partial: any) => void;
+  onTriggerOverallRecommendations?: () => Promise<void | boolean>; // Add this prop
 };
 
 const MessageRenderer: React.FC<MessageRendererProps> = ({
@@ -58,6 +59,7 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
           onClick={onIknowExactly}
           selectedItem={message.message}
           handleNeedAdviceSupport={onNeedAdviceSupport}
+          onTriggerOverallRecommendations={onCarRecommendation}
         />
       );
     case "text":

@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
-import { Box, Avatar, Paper, useMediaQuery, useTheme, CircularProgress, Grow } from "@mui/material";
+import { Box, Avatar, Paper, useMediaQuery, useTheme, CircularProgress, Grow, Chip } from "@mui/material";
 import { useChats } from "@/Context/ChatContext";
 import PersonIcon from "@mui/icons-material/Person";
 import { axiosInstance1 } from "@/utils/axiosInstance";
@@ -25,6 +25,7 @@ const ChatBox: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { brands } = useBrands();
   const [cookies, , removeCookie] = useCookies(["selectedOption", "user"]);
+  const [loadingMoreRecommendations, setLoadingMoreRecommendations] = useState<boolean>(false);
 
  useEffect(() => {
   if (messages.length === 0) return;
@@ -166,31 +167,68 @@ const ChatBox: React.FC = () => {
   const [remondatedCarModels, setRecommondatedCarModels] = useState<CarDetails[]>([]);
 
   const handleCarRecommendation = async () => {
-    const data = await axiosInstance1.post(
-      "/api/cargpt/car-for-para-advisor/",
-      {
-        ...filter,
+    setLoadingMoreRecommendations(true);
+    try {
+      const payload = {
+        price: 12500000,
+        model_id: 122,
+      };
+      const data = await axiosInstance1.post(
+        "/api/cargpt/recommend-by-price/",
+        payload
+      );
+      if (!data || !Array.isArray(data.recommendations) || data.recommendations.length === 0) {
+        showSnackbar("No cars found for the selected parameters.", {
+          horizontal: "center",
+          vertical: "bottom",
+        });
+        return;
       }
-    );
-    if (data.data.length === 0) return;
-    setRecommondatedCarModels(data.data);
-    console.log("filter", filter)
-    setCars((prev)=>[
-      ...prev, {[`${filter?.brand_name}_${filter.model_name}`]: data?.data}
+      setRecommondatedCarModels(data.recommendations);
+      console.log("filter", filter)
+      // We don't have brand_name or model_name from recommend-by-price, so we'll use a generic key or derive one if possible.
+      // For now, let's just add the new recommendations under a generic key or the first car's brand/model if available.
+      const newCarsEntry = { "Recommendations": data.recommendations };
+      setCars((prev)=>[
+        ...prev, newCarsEntry
 
-    ])
+      ])
+      // onShowCar(); // Removed direct call to onShowCar
+      return;
+    } catch (error: any) {
+      console.error("Error fetching recommendations:", error);
+      let errorMessage = "Failed to fetch recommendations. Please try again later.";
+      if (error?.data?.message) {
+        errorMessage = error.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      showSnackbar(errorMessage, {
+        horizontal: "center",
+        vertical: "bottom",
+      });
+      return;
+    } finally {
+      setLoadingMoreRecommendations(false);
+    }
   };
 
   const { showSnackbar } = useSnackbar();
   const onShowCar = () => {
+    console.log("remondatedCarModels in onShowCar:", remondatedCarModels); // Debug log
     if (remondatedCarModels.length === 0) {
       showSnackbar("No car models found for the selected parameters.", {
         horizontal: "center",
         vertical: "bottom",
       });
       return false;
-    } else {
-      // Add user message before bot message
+    } 
+    return true;
+  };
+
+  // New useEffect to display cars when remondatedCarModels updates
+  useEffect(() => {
+    if (remondatedCarModels.length > 0) {
       const count = remondatedCarModels.length;
       const carPlural = count === 1 ? "car" : "cars";
       const userMessage: Message = {
@@ -201,15 +239,16 @@ const ChatBox: React.FC = () => {
       };
       const botMessage: Message = {
         id: String(Date.now() + 1),
-        message: { [filter.brand_name]: remondatedCarModels },
+        // When using recommend-by-price, filter.brand_name might be undefined.
+        // We need a fallback key here, e.g., "Recommendations" or the first car's brand name.
+        message: { [filter.brand_name || "Recommendations"]: remondatedCarModels },
         render: "carOptions",
         sender: "bot",
       };
       setMessages((prev) => [...prev, userMessage, botMessage]);
-      setRecommondatedCarModels([]);
-      return true;
+      setRecommondatedCarModels([]); // Clear after displaying
     }
-  };
+  }, [remondatedCarModels]);
 
   const onBack = () => {
     const userMessage: Message = {
@@ -528,6 +567,7 @@ borderRadius: '16px',
                       onCarRecommendation={handleCarRecommendation}
                       onUserMessage={handleUserMessage}
                       onPersistBrandModel={updateBrandModelState}
+                      onTriggerOverallRecommendations={handleCarRecommendation} // Pass the function here
                     />
                   </Paper>
                   </Grow>
@@ -555,6 +595,7 @@ borderRadius: '16px',
                 <CircularProgress />
               </Box>
             )}
+            
             <div ref={bottomRef} />
           </Box>
           </>

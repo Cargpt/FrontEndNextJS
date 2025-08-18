@@ -12,6 +12,8 @@ import {
   SelectChangeEvent,
   Button,
   useTheme,
+  IconButton,
+  InputAdornment // Add InputAdornment
 } from "@mui/material";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import {
@@ -42,6 +44,16 @@ import BudgetSelector from "./InlineRadio";
 import { useColorMode } from "@/Context/ColorModeContext";
 import { DifferenceRounded, DirectionsCarFilledOutlined } from "@mui/icons-material";
 import DirectionsCarFilledIcon from '@mui/icons-material/DirectionsCarFilled';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward'; // Import the new icon
+import SettingsIcon from '@mui/icons-material/Settings'; // Import SettingsIcon
+import LocalGasStationIcon from '@mui/icons-material/LocalGasStation'; // Fuel Type
+import EngineeringIcon from '@mui/icons-material/Engineering'; // Transmission Type
+import EventSeatIcon from '@mui/icons-material/EventSeat'; // Seating Capacity
+import DriveEtaIcon from '@mui/icons-material/DriveEta'; // Body Type
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet'; // Budget
+import StyleIcon from '@mui/icons-material/Style'; // Icon for Body Type
+import SpeedIcon from '@mui/icons-material/Speed'; // Import SpeedIcon
+import AutoAwesome from '@mui/icons-material/AutoAwesome'; // Import AutoAwesome icon
 
 const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
   handleUserMessage,
@@ -238,9 +250,10 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
 
       handleUserMessage({ ...payload });
 
-      setIsDisable(true);
+      setIsDisable(true); // Disable input fields
+      // The disableBtn remains true, keeping the button disabled after successful submission.
     } catch (error) {
-      setDisableBtn(false);
+      setDisableBtn(false); // Re-enable button on error
     }
   };
 
@@ -476,35 +489,46 @@ const {mode}=useColorMode()
       }}
     >
       <CardContent sx={{ py:0 }}> {/* Further reduced padding-bottom */}
-       <Typography
+       <Box sx={{ p: 2, pb: 0, pt: 0 }}> {/* Padding for the entire card content, reduced top padding */}
+        <Typography
   variant="h6"
-  sx={{ display: 'flex', alignItems: 'center', gap: 1, pb:3 }}
->
+
+sx={{ display: 'flex', alignItems: 'center', gap: 1, pb:0 }}>
   <Box
     sx={{
-      backgroundColor:"transparent",
-      borderRadius: '50%',
-      width: 30,
-      height: 30,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
+      background: mode === "dark" ? "#ffffff" : "#0062ee",
+      borderRadius: { xs: "6px", sm: "8px" },
+      width: { xs: 24, sm: 28 },
+      height: { xs: 24, sm: 28 },
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      boxShadow: mode === "dark"
+        ? "0 2px 8px rgba(255, 255, 255, 0.2)"
+        : "0 2px 8px rgba(0, 98, 238, 0.3)",
     }}
   >
-    <DirectionsCarFilledIcon fontSize="medium"   />
+    <AutoAwesome sx={{ color: mode === "dark" ? "#000000" : "white", fontSize: { xs: 12, sm: 14 } }} />
   </Box>
-Find Your Car
+  <Typography variant="h6" sx={{ fontWeight: "bold", fontSize: "1.1rem", mt: 0 }}>
+    Find Your Car
+  </Typography>
 </Typography>
 
+<Typography variant="body2" color="text.secondary" sx={{ mt: 0.5, ml: 4 }}> {/* Subtitle moved here with ml for indentation */}
+  Pick your preferences — we'll match the best options
+</Typography>
 
 
 <Box
   sx={{
     display: "flex",
-    flexWrap: "wrap",
-    gap: 1,
+    // REMOVED: flexWrap: "wrap",
+    gap: 2, // Increased gap for better spacing
     flexDirection: "row",
-    mb: 1,
+    mt: 3,
+    justifyContent: "space-between", // Distribute space between items
+    alignItems: "center", // Align items vertically in the center
   }}
 >
   
@@ -512,13 +536,45 @@ Find Your Car
     fullWidth
     size="small"
     sx={{
-      flex: {
-        xs: "1 1 100%",
-        sm: "1 1 48%",
+      flex: 1, // Make it take equal space
+      "& .MuiOutlinedInput-root": {
+        borderRadius: "8px",
+        background: mode === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 98, 238, 0.03)",
+        border: "none",
+        outline: "none",
+        minHeight: { xs: "32px", sm: "36px" },
+        "&:hover": {
+          background: mode === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 98, 238, 0.03)",
+        },
+        "&.Mui-focused": {
+          background: mode === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 98, 238, 0.08)",
+          boxShadow: mode === "dark"
+            ? "0 0 0 4px rgba(255, 255, 255, 0.1)"
+            : "0 0 0 4px rgba(0, 98, 238, 0.1)",
+        },
+        "& fieldset": {
+          border: "none",
+        },
+      },
+      "& .MuiInputLabel-root": {
+        color: mode === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.6)",
+        fontWeight: 500,
+        fontSize: { xs: "0.7rem", sm: "0.75rem" },
+      },
+      "& .MuiSelect-select": {
+        fontSize: { xs: "0.75rem", sm: "0.8rem" },
+        fontWeight: 500,
+        color: mode === "dark" ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.8)",
+        py: { xs: 0.5, sm: 0.75 },
       },
     }}
   >
-    <InputLabel id="brand-label">Brand</InputLabel>
+    <InputLabel id="brand-label">
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <DirectionsCarFilledIcon sx={{ fontSize: 20, color: mode === "dark" ? "#ffffff" : "#0062ee" }} />
+        Brand
+      </Box>
+    </InputLabel>
     <Select
       disabled={isDisable || isFromHistory}
       labelId="brand-label"
@@ -536,6 +592,11 @@ Find Your Car
         }
       }}
       renderValue={() => brand?.BrandName ?? ""}
+      // REMOVED: startAdornment={ // Add InputAdornment for icon
+      //   <InputAdornment position="start">
+      //     <DirectionsCarFilledOutlined />
+      //   </InputAdornment>
+      // }
       sx={{
         fontSize: "15px",
         "& .MuiSelect-select": {
@@ -545,21 +606,34 @@ Find Your Car
     >
       {Array.isArray(brands) &&
         brands?.map((brand: Brand, index: number) => (
-          <MenuItem key={index} value={String(brand.BrandID)}>
-            {brand.logo && (
-              <img
-                src={brand.logo}
-                alt={brand.BrandName}
-                style={{
-                  width: 24,
-                  height: 24,
-                  objectFit: "contain",
-                  marginRight: 8,
-                  verticalAlign: "middle",
-                }}
-              />
-            )}
-            {brand.BrandName}
+          <MenuItem
+            key={index}
+            value={String(brand.BrandID)}
+            sx={{
+              borderRadius: "8px",
+              margin: "4px 8px",
+              "&:hover": {
+                background: mode === "dark" ? "rgba(255, 255, 255, 0.1)" : "rgba(0, 98, 238, 0.1)",
+              },
+            }}
+          >
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+              {brand.logo && (
+                <img
+                  src={brand.logo}
+                  alt={brand.BrandName}
+                  style={{
+                    width: 28,
+                    height: 28,
+                    objectFit: "contain",
+                    borderRadius: "6px",
+                  }}
+                />
+              )}
+              <Typography sx={{ fontWeight: 500 }}>
+                {brand.BrandName}
+              </Typography>
+            </Box>
           </MenuItem>
         ))}
     </Select>
@@ -570,13 +644,45 @@ Find Your Car
     size="small"
     disabled={!brand || isFromHistory}
     sx={{
-      flex: {
-        xs: "1 1 100%",
-        sm: "1 1 48%",
+      flex: 1, // Make it take equal space
+      "& .MuiOutlinedInput-root": {
+        borderRadius: "8px",
+        background: mode === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 98, 238, 0.03)",
+        border: "none",
+        outline: "none",
+        minHeight: { xs: "32px", sm: "36px" },
+        "&:hover": {
+          background: mode === "dark" ? "rgba(255, 255, 255, 0.05)" : "rgba(0, 98, 238, 0.03)",
+        },
+        "&.Mui-focused": {
+          background: mode === "dark" ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 98, 238, 0.08)",
+          boxShadow: mode === "dark"
+            ? "0 0 0 4px rgba(255, 255, 255, 0.1)"
+            : "0 0 0 4px rgba(0, 98, 238, 0.1)",
+        },
+        "& fieldset": {
+          border: "none",
+        },
+      },
+      "& .MuiInputLabel-root": {
+        color: mode === "dark" ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.6)",
+        fontWeight: 500,
+        fontSize: { xs: "0.7rem", sm: "0.75rem" },
+      },
+      "& .MuiSelect-select": {
+        fontSize: { xs: "0.75rem", sm: "0.8rem" },
+        fontWeight: 500,
+        color: mode === "dark" ? "rgba(255, 255, 255, 0.9)" : "rgba(0, 0, 0, 0.8)",
+        py: { xs: 0.5, sm: 0.75 },
       },
     }}
   >
-    <InputLabel id="model-label">Model</InputLabel>
+    <InputLabel id="model-label">
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        <SpeedIcon sx={{ fontSize: 20, color: mode === "dark" ? "#ffffff" : "#0062ee" }} />
+        Model
+      </Box>
+    </InputLabel>
     <Select
       disabled={isDisable || isFromHistory}
       labelId="model-label"
@@ -592,6 +698,11 @@ Find Your Car
           onPersistState?.({ model: selectedModel });
         }
       }}
+      // REMOVED: startAdornment={ // Add InputAdornment for icon
+      //   <InputAdornment position="start">
+      //     <SettingsIcon />
+      //   </InputAdornment>
+      // }
       sx={{
         fontSize: "15px",
         "& .MuiSelect-select": {
@@ -600,8 +711,20 @@ Find Your Car
       }}
     >
       {models.map((model: ModelProps, index: number) => (
-        <MenuItem key={index} value={String(model.ModelID)}>
-          {model.ModelName}
+        <MenuItem
+          key={index}
+          value={String(model.ModelID)}
+          sx={{
+            borderRadius: "8px",
+            margin: "4px 8px",
+            "&:hover": {
+              background: "rgba(102, 126, 234, 0.1)",
+            },
+          }}
+        >
+          <Typography sx={{ fontWeight: 500 }}>
+            {model.ModelName}
+          </Typography>
         </MenuItem>
       ))}
     </Select>
@@ -621,31 +744,43 @@ Find Your Car
 >
   {/* Fuel Type */}
   <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: "30%" } }}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+      <LocalGasStationIcon sx={{ fontSize: 18, color: mode === "dark" ? "#ffffff" : "#0062ee" }} />
+      <Typography variant="body2" sx={{ fontWeight: 600 }}>Fuel Type</Typography>
+    </Box>
     <BudgetSelector
       budgetTypes={FuelTypes}
       currentBudget={currentFuelType}
-      label="Fuel Type"
       handleBudgetChange={handleFuelChange}
+      // REMOVED: icon={<LocalGasStationIcon sx={{ fontSize: 20 }} />} // Add icon prop
     />
   </Box>
 
   {/* Transmission Type */}
   <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: "30%" } }}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+      <SettingsIcon sx={{ fontSize: 18, color: mode === "dark" ? "#ffffff" : "#0062ee" }} />
+      <Typography variant="body2" sx={{ fontWeight: 600 }}>Transmission Type</Typography>
+    </Box>
     <BudgetSelector
       budgetTypes={TransmissionTypes}
       currentBudget={currentTransmissionType}
-      label="Transmission Type"
       handleBudgetChange={handleTransmissionChange}
+      // REMOVED: icon={<SettingsIcon sx={{ fontSize: 20 }} />} // Changed to SettingsIcon
     />
   </Box>
 
   {/* Seating Capacity */}
   <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: "30%" } }}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+      <EventSeatIcon sx={{ fontSize: 18, color: mode === "dark" ? "#ffffff" : "#0062ee" }} />
+      <Typography variant="body2" sx={{ fontWeight: 600 }}>Seating Capacity</Typography>
+    </Box>
     <BudgetSelector
       budgetTypes={SeatCaps}
       currentBudget={currentSeatCap?.toString?.() ?? ""}
-      label="Seating Capacity"
       handleBudgetChange={handleSeatCapChange}
+      // REMOVED: icon={<EventSeatIcon sx={{ fontSize: 20 }} />} // Add icon prop
     />
   </Box>
 </Box>
@@ -665,21 +800,29 @@ Find Your Car
 >
   {/* Body Type */}
   <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: "48%" } }}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+      <StyleIcon sx={{ fontSize: 18, color: mode === "dark" ? "#ffffff" : "#0062ee" }} />
+      <Typography variant="body2" sx={{ fontWeight: 600 }}>Body Type</Typography>
+    </Box>
     <BudgetSelector
       budgetTypes={bodyTypes}
       currentBudget={currentBodyType?.toString?.() ?? ""}
-      label="Body Type"
       handleBudgetChange={handleBodyTypeChange}
+      // REMOVED: icon={<DriveEtaIcon sx={{ fontSize: 20 }} />} // Add icon prop
     />
   </Box>
 
   {/* Budget */}
   <Box sx={{ flex: 1, minWidth: { xs: "100%", sm: "48%" } }}>
+    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+      <AccountBalanceWalletIcon sx={{ fontSize: 18, color: mode === "dark" ? "#ffffff" : "#0062ee" }} />
+      <Typography variant="body2" sx={{ fontWeight: 600 }}>Budget</Typography>
+    </Box>
     <BudgetSelector
       budgetTypes={bugetTypes}
       currentBudget={currentBudget?.toString?.() ?? ""}
-      label="Budget"
       handleBudgetChange={handleBudgetChange}
+      // REMOVED: icon={<AccountBalanceWalletIcon sx={{ fontSize: 20 }} />} // Add icon prop
     />
   </Box>
 </Box>
@@ -688,40 +831,41 @@ Find Your Car
       
 
 
-        <div
-          style={{
+        <Box
+          sx={{
             display: "flex",
-            justifyContent: "end",
-            justifyItems: "center",
-            marginTop: "0.25rem", // Further reduced margin-top for the button div
+            justifyContent: "flex-end",
+            marginTop: "0.5rem", // Reduced margin-top to move it slightly up
+            pb: 1,
           }}
         >
-          <Button
-            disabled={disableBtn}
-            variant="contained"
+          <IconButton
+            disabled={disableBtn || isDisable}
             color="primary"
             onClick={fetchDataBasedOnParameters}
-            type="button"
+            sx={{
+              backgroundColor: theme.palette.primary.main,
+              color: "white",
+              width: 40, // Decreased width
+              height: 40, // Decreased height
+              borderRadius: "50%", // Make it circular
+              marginRight: "1rem", // Added margin-right to move it slightly left
+              "&:hover": {
+                backgroundColor: theme.palette.primary.dark,
+              },
+              "&.Mui-disabled": {
+                backgroundColor: theme.palette.action.disabledBackground, // Revert to default disabled background
+                color: theme.palette.action.disabled, // Revert to default disabled color
+              },
+            }}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  );
+            <ArrowForwardIcon sx={{ fontSize: 20, mb: 0.5 }} /> {/* Further adjusted font size */}
+          </IconButton>
+        </Box>
+      </Box>
+    </CardContent>
+  </Card>
+);
 };
 
 export default BrandModelSelectCard;

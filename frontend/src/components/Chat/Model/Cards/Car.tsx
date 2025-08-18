@@ -36,6 +36,8 @@ import SignupDialog from '@/components/Auth/SignupDialog';
 import { useColorMode } from '@/Context/ColorModeContext';
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import CircularProgress from '@mui/material/CircularProgress';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
 
 type Props = {
   onClick?: () => void;
@@ -76,12 +78,17 @@ interface CarDetailsForBooking {
   VariantName?: string; // Optional as per BookTestDrive's interface
 }
 
+// Add new prop for triggering overall recommendations
+interface CarCardProps extends Props {
+  onTriggerOverallRecommendations?: () => Promise<void | boolean>;
+}
 
-const TeslaCard: React.FC<Props> = ({
+const TeslaCard: React.FC<CarCardProps> = ({
   onClick,
   selectedItem,
   handleNeedAdviceSupport,
   variant = 'default',
+  onTriggerOverallRecommendations, // Destructure new prop
 }) => {
   const rawValues = Object.values(selectedItem);
 
@@ -113,6 +120,8 @@ const TeslaCard: React.FC<Props> = ({
 const {showSnackbar}=useSnackbar()
 
 const [showSignUpState, setshowSignUpState] = useState<boolean>(false);
+const [loadingRecommendations, setLoadingRecommendations] = useState<boolean>(false);
+const [loadingOverallRecommendations, setLoadingOverallRecommendations] = useState<boolean>(false); // New state
 
 const showSignUP = () => {
 
@@ -202,7 +211,63 @@ const handleSelectSort = (value: 'none' | 'price' | 'mileage') => {
     
   };
 
+  const handleRecommendByPrice = async (price: number, modelId: number, modelName: string) => {
+    setLoadingRecommendations(true);
+    try {
+      const payload = {
+        price: price,
+        model_id: modelId,
+      };
+      const response = await axiosInstance1.post('/api/cargpt/recommend-by-price/', payload);
 
+      if (response?.data && response.data.length > 0) {
+        const recommendedCars = response.data;
+        const count = recommendedCars.length;
+        const carPlural = count === 1 ? "car" : "cars";
+
+        const userMessage: Message = {
+          id: String(Date.now()),
+          message: `Show recommendations for ${modelName} at price ${formatInternational(price)}`, // User-friendly message
+          render: "text",
+          sender: "user",
+        };
+
+        const botMessage: Message = {
+          id: String(Date.now() + 1),
+          message: { [`${modelName}_Recommendations`]: recommendedCars }, // Group by model name
+          render: "carOptions", // Use 'carOptions' to display in carousel
+          sender: "bot",
+        };
+
+        setMessages((prev) => [...prev, userMessage, botMessage]);
+        showSnackbar(`Found ${count} recommended ${carPlural} for ${modelName}.`, {
+          vertical: 'top',
+          horizontal: 'center',
+          autoHideDuration: 7000,
+          color: 'success',
+        });
+      } else {
+        showSnackbar("No recommendations found for this car.", {
+          horizontal: "center",
+          vertical: "bottom",
+        });
+      }
+    } catch (error: any) {
+      console.error("Error fetching recommendations:", error);
+      let errorMessage = "Failed to fetch recommendations. Please try again later.";
+      if (error?.data?.message) {
+        errorMessage = error.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      showSnackbar(errorMessage, {
+        horizontal: "center",
+        vertical: "bottom",
+      });
+    } finally {
+      setLoadingRecommendations(false);
+    }
+  };
 
 
   const userMessage = { // No need to explicitly type userMessage here if ChatContext's Message is used
@@ -366,10 +431,11 @@ console.log(typeof message)
       )}
 
       {modelCars.length > 0 && (
-        <Box sx={{ width: { xs:"100%" , md: modelCars.length < 2? "50%":'100%'}}}>
+        <Box sx={{ width: { xs:"100%" , md: modelCars.length < 2? "50%":'100%'}}}
+        >
           <Slider {...settings}>
 
-          {modelCars.map((car: any, index: number) => ( 
+          {modelCars.map((car: any, index: number) => (
             (<Card
               key={index}
               sx={{
@@ -421,7 +487,7 @@ console.log(typeof message)
               </Box>
                <Box sx={{ position: "absolute", top: 3, left: 8 }} >
                 <Chip
-                  label={`${car.ModelName} ${car.BodyName ? `-${car.BodyName}`: ""}`}
+                  label={`${car.ModelName} ${car.BodyName ? `- ${car.BodyName}`: ""}`}
                   color="primary"
                   sx={{ backgroundColor:  "#f5f5f5", color: "black", paddingX:"2px", fontSize:"10px", paddingY:'1px' }}
                   icon={
@@ -646,6 +712,9 @@ console.log(typeof message)
   </Stack>
 </Box>
 
+  {/* New Recommend Button */}
+  
+
               </CardContent>
             </Card>)
           ))}
@@ -659,7 +728,7 @@ console.log(typeof message)
   gap={1.5}
   mt={1}
   flexWrap="wrap"  // ✅ allow wrapping
-  justifyContent="flex-start"  // keep aligned to start
+  justifyContent={{ xs: "center", sm: "flex-start" }}  // center on mobile, start on larger
   sx={{
     pb: 2,
     rowGap: 1, // optional: vertical gap between rows
@@ -679,6 +748,8 @@ console.log(typeof message)
       fontSize: 13,
       textTransform: "capitalize",
       borderWidth: 1,
+      flex: { xs: '1 1 calc(50% - 12px)', sm: '0 auto' }, // 2 chips per row on mobile
+      maxWidth: { xs: 'calc(50% - 12px)', sm: 'none' },
     }}
   />
 
@@ -697,6 +768,8 @@ console.log(typeof message)
       fontSize: 13,
       textTransform: "capitalize",
       borderWidth: 1,
+      flex: { xs: '1 1 calc(50% - 12px)', sm: '0 auto' }, // 2 chips per row on mobile
+      maxWidth: { xs: 'calc(50% - 12px)', sm: 'none' },
     }}
   />
 
@@ -715,9 +788,12 @@ console.log(typeof message)
         borderWidth: 1,
         borderStyle: "solid",
         "& .MuiChip-icon": { color: "black" },
+        flex: { xs: '1 1 calc(50% - 12px)', sm: '0 auto' }, // 2 chips per row on mobile
+        maxWidth: { xs: 'calc(50% - 12px)', sm: 'none' },
       }}
     />
   )}
+
 </Stack>
 
       )}
