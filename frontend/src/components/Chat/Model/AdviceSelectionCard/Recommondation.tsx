@@ -12,6 +12,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { getBudgetRange } from "@/utils/services";
 
 interface CarFilter {
   budget: number;
@@ -32,7 +33,7 @@ const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const rows = [
-    { label: "Budget", value: `₹${recommendations.budget.toLocaleString()}` },
+    { label: "Budget", value: `₹${getBudgetRange(recommendations.budget) }`},
     { label: "Fuel", value: recommendations.fuel_type || "-" },
     { label: "Body", value: recommendations.body_type || "-" },
     { label: "Transmission", value: recommendations.transmission_type || "-" },
@@ -44,7 +45,7 @@ const CarRecommendationTable: React.FC<CarRecommendationTableProps> = ({
       <Typography gutterBottom sx={{ fontSize: "15px", textAlign: "left", fontWeight: 600 }}>
         ✅ Based on your preferences, here are our recommendations:
       </Typography>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{backgroundColor:"transparent", backgroundImage:"none"}}>
         <Table size="small" aria-label="recommendation table">
           {isMobile ? (
             // 📱 Vertical view for small screens

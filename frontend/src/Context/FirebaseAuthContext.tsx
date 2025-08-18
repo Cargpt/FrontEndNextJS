@@ -19,6 +19,7 @@ import {
   onAuthStateChanged,
   User,
 } from "firebase/auth";
+
 import {
   getFirestore,
   doc,
@@ -84,7 +85,7 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [cookies, setCookie] = useCookies(["token"]);
+  const [cookies, setCookie] = useCookies(["token", "user"]);
 
    const pathname=usePathname()
   useEffect(() => {
@@ -111,6 +112,11 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
           }
           setUserRole(role);
           localStorage.setItem("user", JSON.stringify(authUser));
+          setCookie("user", JSON.stringify(authUser), {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+    })
+    console.log("here we are")
           // setCookie('token', authUser?.accessToken)
           localStorage.setItem("userRole", role);
         } catch (err) {
@@ -151,9 +157,11 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
     firebaseSignIn(firebaseAuth, email, password);
 
   const signInWithGoogle = async () => {
+    const provider =       new GoogleAuthProvider()
+
     const result = await signInWithPopup(
       firebaseAuth,
-      new GoogleAuthProvider()
+      provider
     );
     const user = result.user;
 
@@ -171,6 +179,12 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
     }
 
     localStorage.setItem("user", JSON.stringify(user));
+      setCookie("user", JSON.stringify(user), {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+    })
+
+    
     localStorage.setItem("userRole", "user");
     return user;
   };

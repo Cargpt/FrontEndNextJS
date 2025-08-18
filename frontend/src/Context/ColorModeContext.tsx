@@ -76,47 +76,9 @@ export const ColorModeProvider: React.FC<{ children: React.ReactNode }> = ({
       createTheme({
         palette: {
           mode,
-          ...(mode === 'light' && {
-            text: {
-              primary: grey[600],
-              secondary: grey[600],
-            },
-          }),
+        
         },
-        components: {
-          MuiTypography: {
-            styleOverrides: {
-              root: {
-                ...(mode === 'light' && {
-                  color: grey[600],
-                }),
-              },
-            },
-          },
-          MuiChip: {
-            styleOverrides: {
-              root: {
-                ...(mode === 'light' && {
-                  color: grey[700],
-                }),
-              },
-              icon: {
-                ...(mode === 'light' && {
-                  color: grey[500],
-                }),
-              },
-            },
-          },
-          // MuiButton: {
-          //   styleOverrides: {
-          //     root: {
-          //       ...(mode === 'light' && {
-          //         color: grey[900],
-          //       }),
-          //     },
-          //   },
-          // },
-        },
+        
       }),
     [mode]
   );

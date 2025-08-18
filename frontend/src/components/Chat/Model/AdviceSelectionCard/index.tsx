@@ -161,7 +161,7 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
         borderBottom: "none",
         boxShadow: "none",
         backgroundColor: "transparent",
-        maxWidth:"600px"
+        backgroundImage:"none"
       }}
     >
       <CardContent
@@ -172,6 +172,9 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
           border: "none",
           borderBottom: "none",
           boxShadow: "none",
+        }}
+        sx={{
+          pt:0
         }}
       >
         <Typography

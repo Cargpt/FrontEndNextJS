@@ -1,51 +1,61 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import {
-  TextField,
-  Button,
   Box,
+  Button,
   Typography,
   Paper,
-  CircularProgress,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Divider,
+  useTheme,
   Alert,
+  alpha,
 } from '@mui/material';
+
+import {
+  Visibility,
+  VisibilityOff,
+  Lock,
+  Google,
+  Apple,
+} from '@mui/icons-material';
+
 import { axiosInstance } from '@/utils/axiosInstance';
 import { useCookies } from 'react-cookie';
 import { v4 as uuidv4 } from 'uuid';
 import { useFirebase } from '@/Context/FirebaseAuthContext';
 import { useLoginDialog } from '@/Context/LoginDialogContextType';
 import { useSnackbar } from '@/Context/SnackbarContext';
+import { getRandomWelcomeMessage } from '@/utils/services';
+import ForgotPasswordDialog from '@/components/Auth/ForgotPasswordDialog';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/material.css';
-import { useColorMode } from '@/Context/ColorModeContext';
-import ForgotPasswordDialog from '@/components/Auth/ForgotPasswordDialog';
 
-interface LoginFormData {
-  mobile_no: string;
-  password: string;
-}
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface LoginFormProps {
   showSignUp?: () => void;
-
 }
-const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
-  const [formData, setFormData] = useState<LoginFormData>({
-    mobile_no: '',
-    password: '',
-  });
+
+const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
+  const theme = useTheme();
+  const mode = theme.palette.mode;
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({ phone: '', password: '' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [forgotOpen, setForgotOpen] = useState(false);
 
   const [cookies, setCookie] = useCookies(['token', 'user']);
   const firebase = useFirebase();
   const { hide } = useLoginDialog();
   const { showSnackbar } = useSnackbar();
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [forgotOpen, setForgotOpen] = useState(false);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleInputChange = (field: string) => (event: ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, [field]: event.target.value }));
   };
 
   const handleSetCookie = (cookieValueInput: any) => {
@@ -53,39 +63,41 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
       path: '/',
       maxAge: 60 * 60 * 24 * 365,
     });
+
     setCookie('user', cookieValueInput?.user, {
       path: '/',
       maxAge: 60 * 60 * 24 * 365,
     });
+
     hide();
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
+    setIsLoading(true);
 
     try {
       const payload = {
-        email: "+"+formData.mobile_no,
+        email: '+' + formData.phone,
         password: formData.password,
       };
 
       const response = await axiosInstance.post('/api/cargpt/login/', payload);
       handleSetCookie(response);
-      showSnackbar(response?.message || 'Login successful!', {
+
+      let displayName = response?.user?.first_name || '';
+      if (response?.user?.last_name) displayName += ' ' + response.user.last_name;
+
+      showSnackbar(`${getRandomWelcomeMessage(displayName)}`, {
         vertical: 'top',
         horizontal: 'center',
       });
     } catch (error: any) {
-      console.error('Login error:', error?.data?.non_field_errors?.[0]);
-      if (error?.data?.non_field_errors?.[0]) {
-        setError(error.data.non_field_errors[0]);
-      } else {
-        setError('Login failed. Please try again.');
-      }
+      const msg = error?.data?.non_field_errors?.[0] || 'Login failed. Please try again.';
+      setError(msg);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -102,164 +114,225 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
         password: 'test@1234',
       };
 
-      await axiosInstance.post(`/api/cargpt/createUser/`, payload, {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
+      const response = await axiosInstance.post('/api/cargpt/createUser/', payload, {
+        headers: { Authorization: `Bearer ${idToken}` },
       });
+
+      if (response.token) {
+        setCookie('token', response.token, {
+          path: '/',
+          maxAge: 60 * 60 * 24 * 365,
+        });
+
+        const displayName = googleUser?.displayName || '';
+        showSnackbar(`${getRandomWelcomeMessage(displayName)}`, {
+          vertical: 'top',
+          horizontal: 'center',
+        });
+
+        hide();
+      }
     } catch (err) {
       console.error('Google Sign-In Error:', err);
     }
   };
 
-  const handleGuestLogin = async () => {
-    const uniqueUserId = uuidv4();
-    const payload = { userId: uniqueUserId };
-    const response = await axiosInstance.post(`/api/cargpt/createUser/`, payload);
-    if (response.token) {
-      localStorage.setItem('auth_token', response.token);
-      setCookie('token', response.token, { path: '/', maxAge: 365 * 60 * 60 });
-    }
+  const handleAppleLogin = () => {
+    showSnackbar('This login method is available soon!', {
+      vertical: 'top',
+      horizontal: 'center',
+    });
   };
 
-  const {mode}=useColorMode()
   return (
-    <Box display="flex" justifyContent="center" sx={{ px: 2 }}>
-      <Paper
-        elevation={3}
-        sx={{
-          p: 4,
-          width: { xs: '100%', sm: 400 },
-          boxShadow: 'none',
-          maxWidth: 400,
-        }}
-      >
-        <Box display="flex" justifyContent="center" mb={2}>
-          <img loading='lazy' src={mode==="light" ? "/assets/AICarAdvisor.png":"/assets/AICarAdvisor_transparent.png"} alt="Logo" style={{ height: 60 }} width={340} height={60} />
-        </Box>
-        <Typography variant="h5" align="center" gutterBottom>
-          Login
-        </Typography>
-
-        <form onSubmit={handleSubmit}>
-          {/* ✅ Phone Input with Country Code + Flag */}
-          <PhoneInput
-            country={'in'}
-            value={formData.mobile_no}
-            onChange={(phone) => setFormData(prev => ({ ...prev, mobile_no: phone }))}
-            inputProps={{
-              name: 'mobile_no',
-              required: true,
-              autoFocus: true,
-            }}
-             containerStyle={{ marginBottom: '16px' }}
-             dropdownStyle={{
-              backgroundColor: mode=="dark" ? '#000' : '#fff',
-        color: mode=="dark" ? 'ccc' : '#00',
-        border: `1px solid ${mode=="dark" ? '#000' : '#ccc'}`,
-             }
-
-
-             }
-          
-                  inputStyle={{
-        width: '100%',
-        backgroundColor: mode=="dark" ? 'inherit' : '#fff',
-        color: mode=="dark" ? 'inherit' : '#000',
-        border: `1px solid ${mode=="dark" ? 'inherit' : '#ccc'}`,
-        borderRadius: 4,
-        height: 40,
-      }}
-      buttonStyle={{
-        backgroundColor: mode=="dark" ? 'inherit' : '#fff',
-        border: `1px solid ${mode=="dark" ? 'inherit' : '#ccc'}`,
-      }}
-
-          />
-
-          <TextField
-            label="Password"
-            name="password"
-            type="password"
-            fullWidth
-            margin="normal"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-
-          {/* Forgot password link aligned to the right, directly after password field */}
-          <Box display="flex" justifyContent="flex-end" mt={1}>
-            <Button type="button" variant="text" size="small" onClick={() => setForgotOpen(true)}>
-              Forgot Password?
-            </Button>
-          </Box>
-
-          <Box
-            sx={{
-              display: 'flex',
-              flexDirection: { xs: 'column', sm: 'row' },
-              gap: 2,
-              mt: 2,
-            }}
-          >
-            {/* <Button
-              onClick={handleGoogleLogin}
-              type="button"
-              variant="contained"
-              fullWidth
+    <Box display="flex" justifyContent="center" p={2}>
+      <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}>
+        <Paper
+          elevation={mode === 'dark' ? 6 : 3}
+          sx={{
+            p: 4,
+            width: { xs: '100%', sm: 450 },
+            maxWidth: 450,
+            borderRadius: 3,
+            backgroundColor: mode === 'dark' ? alpha('#121212', 0.95) : alpha('#ffffff', 0.95),
+            backdropFilter: 'blur(15px)',
+            border: `1px solid ${alpha('#ffffff', mode === 'dark' ? 0.1 : 0.2)}`,
+            boxShadow: 'none',
+          }}
+        >
+          <Box textAlign="center" mb={4}>
+            <Box
               sx={{
-                backgroundColor: 'lightgray',
-                color: 'black',
-                textTransform: 'none',
-                fontSize: 12,
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                background: 'linear-gradient(to right, #00c6ff, #0072ff)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 1,
-                whiteSpace: 'nowrap',
-                '&:hover': {
-                  backgroundColor: '#d3d3d3',
-                },
+                margin: '0 auto 16px',
+                boxShadow: `0 10px 30px ${alpha('#667eea', 0.3)}`,
               }}
             >
-              <img src="/assets/google.svg" alt="Google icon" width={20} height={20} />
-              Continue with Google
-            </Button> */}
+              <Lock sx={{ color: 'white', fontSize: 40 }} />
+            </Box>
+            <Typography
+              variant="h4"
+              sx={{
+                fontWeight: 700,
+                background: 'linear-gradient(to right, #00c6ff, #0072ff)',
+                backgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                mb: 1,
+              }}
+            >
+              Welcome Back
+            </Typography>
+            <Typography variant="body1" color="text.secondary">
+              Sign in to continue
+            </Typography>
+          </Box>
+
+          <form onSubmit={handleSubmit}>
+            <PhoneInput
+              country={'in'}
+              value={formData.phone}
+              onChange={phone => setFormData(prev => ({ ...prev, phone }))}
+              inputProps={{
+                name: 'phone',
+                required: true,
+                autoFocus: false,
+              }}
+              inputStyle={{
+                width: '100%',
+                height: '56px',
+                borderRadius: '8px',
+                fontSize: '16px',
+                paddingLeft: '48px',
+                border: `1px solid ${mode === 'dark' ? '#444' : '#ccc'}`,
+                backgroundColor: mode === 'dark' ? '#1e1e1e' : '#f8f9fa',
+                color: mode === 'dark' ? '#fff' : '#000',
+              }}
+              containerStyle={{ marginBottom: '24px' }}
+              buttonStyle={{
+                backgroundColor: mode === 'dark' ? '#1e1e1e' : '#fff',
+                border: `1px solid ${mode === 'dark' ? '#444' : '#ccc'}`,
+              }}
+            />
+
+            <TextField
+              fullWidth
+              label="Password"
+              type={showPassword ? 'text' : 'password'}
+              value={formData.password}
+              onChange={handleInputChange('password')}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Lock sx={{ color: '#0072ff' }} />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end">
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                mb: 2,
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: 2,
+                  backgroundColor: mode === 'dark' ? '#1e1e1e' : '#f8f9fa',
+                },
+              }}
+            />
+
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+
+            <Box textAlign="right" mb={2}>
+              <Button onClick={() => setForgotOpen(true)} variant="text" sx={{ color: '#0072ff' }}>
+                Forgot Password?
+              </Button>
+            </Box>
 
             <Button
               type="submit"
-              variant="contained"
               fullWidth
-              disabled={loading}
-              startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
+              variant="contained"
+              disabled={isLoading}
+              sx={{
+                mb: 3,
+                height: 50,
+                borderRadius: 2,
+                background: 'linear-gradient(to right, #00c6ff, #0072ff)',
+                boxShadow: 'none',
+                '&:hover': {
+                  background: 'linear-gradient(to right, #0072ff, #00c6ff)',
+                },
+              }}
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {isLoading ? 'Signing In...' : 'Sign In'}
             </Button>
-          </Box>
+          </form>
 
-          
+          <Divider sx={{ my: 2 }} />
 
-          {error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {error}
-            </Alert>
-          )}
-          <div  role='button'  style={{display:"flex", justifyContent:"center", alignItems:"center", cursor:"pointer"}}>
-          <span  onClick={showSignUp} style={{marginTop:"1rem", fontSize:"14px", color:mode==="dark"? "#fff": "blue"}} >Don't have account  SignUp</span>
-          </div>
-        </form>
-      </Paper>
+          <Button
+            onClick={handleGoogleLogin}
+            startIcon={<Google />}
+            fullWidth
+            variant="outlined"
+            sx={{
+              mb: 2,
+              borderColor: mode === 'dark' ? '#444' : '#ccc',
+              color: mode === 'dark' ? '#fff' : '#000',
+              '&:hover': {
+                backgroundColor: mode === 'dark' ? '#333' : '#eee',
+              },
+            }}
+          >
+            Sign in with Google
+          </Button>
 
-      {/* Forgot Password Flow (UI only; APIs to be plugged later) */}
-      <ForgotPasswordDialog
-        open={forgotOpen}
-        onClose={() => setForgotOpen(false)}
-        loginMobile={formData.mobile_no}
-      />
+          <Button
+            onClick={handleAppleLogin}
+            startIcon={<Apple />}
+            fullWidth
+            variant="outlined"
+            sx={{
+              borderColor: mode === 'dark' ? '#444' : '#ccc',
+              color: mode === 'dark' ? '#fff' : '#000',
+              '&:hover': {
+                backgroundColor: mode === 'dark' ? '#333' : '#eee',
+              },
+            }}
+          >
+            Sign in with Apple
+          </Button>
 
-            <style>
-        {`
+          <Typography variant="body2" textAlign="center" mt={3}>
+            Don’t have an account?{' '}
+            <Button onClick={showSignUp} sx={{ color: '#0072ff', textTransform: 'none' }}>
+              Sign Up
+            </Button>
+          </Typography>
+        </Paper>
+      </motion.div>
+
+      <AnimatePresence>
+        {forgotOpen && (
+          <ForgotPasswordDialog open={forgotOpen} onClose={() => setForgotOpen(false)} />
+        )}
+      </AnimatePresence>
+
+                  <style>
+         {`
           .react-tel-input .special-label {
             background-color: ${mode === 'dark' ? '#333' : '#fff'} !important;
             color: ${mode === 'dark' ? '#fff' : '#000'} !important;
@@ -269,10 +342,8 @@ const LoginForm: React.FC<LoginFormProps>   = ({showSignUp}) => {
             .react-tel-input .country-list .country:hover, .react-tel-input .country-list .country.highlight {
     background-color:  ${mode === 'dark' ? '#333' : '#f1f1f1'} !important;
 }
-
-        `}
-      </style>
-
+         `}
+       </style>
     </Box>
   );
 };

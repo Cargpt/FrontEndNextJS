@@ -236,11 +236,11 @@ type CarData = {
   [key: string]: Car[];
 };
 
-function getBudgetRange(price: number): string {
+export function getBudgetRange(price: number): string {
   const lakh = 100000;
   const maxBudgetLakh = 40;
 
-  if (price >= maxBudgetLakh * lakh) {
+  if (price > maxBudgetLakh * lakh) {
     return `${maxBudgetLakh}L or Above`;
   }
 
@@ -263,3 +263,23 @@ export function generateCarChatMessage(car: any, count: number): string {
 }
 
 
+
+
+export function getRandomWelcomeMessage(userName:string) {
+
+  const welcomeMessages = [
+    "स्वागत",         // Hindi
+    "ਸਵਾਗਤ",         // Punjabi
+    "வரவேற்பு",      // Tamil
+    "ಸ್ವಾಗತ",         // Kannada
+    "Welcome",        // English
+    "स्वागत आहे",      // Marathi
+    "స్వాగతం",        // Telugu
+    "স্বাগতম",         // Bengali
+  ];
+
+  // Pick a random welcome message
+  const randomGreeting = welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)];
+
+  return `${randomGreeting}, ${userName}!`;
+}

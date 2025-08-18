@@ -106,7 +106,6 @@ const CarModel: FC<AdviceSelectionCardProps> = ({
         borderBottom: "none",
         boxShadow: "none",
         background:"transparent",
-        maxWidth:"360px"
   
       }}
       
@@ -119,7 +118,9 @@ const CarModel: FC<AdviceSelectionCardProps> = ({
           border: "none",
           borderBottom: "none",
           boxShadow: "none",
+          
         }}
+        sx={{pt:0}}
       >
         <Typography
           variant="body2"
