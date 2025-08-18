@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  useMediaQuery,
 } from "@mui/material";
 import { ArrowForwardIosSharp, InfoOutline, InfoOutlined, NotificationAddOutlined, RestoreFromTrashOutlined } from "@mui/icons-material";
 import Link from "next/link";
@@ -186,6 +187,7 @@ const theme=useTheme()
     show();
   };
   const isNative = Capacitor.isNativePlatform()
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   return (
     <>
@@ -481,7 +483,7 @@ const theme=useTheme()
                   }}
                 >
 
-{isNative && (
+{isSmallScreen && (
 
                   <li>
   <Box
@@ -513,7 +515,7 @@ const theme=useTheme()
                   )}
 
                 
-                    { cookies.user &&
+                    { cookies.user && isSmallScreen &&
  <li
                     style={{
                       borderRadius: 6,

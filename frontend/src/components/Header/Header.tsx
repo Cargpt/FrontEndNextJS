@@ -215,7 +215,7 @@ removeCookie('currentCity')
   
   >
     <LocationOnOutlinedIcon  sx={{ color: "#555", fontSize: 20 }}  />
-    <Box sx={{ fontSize: 14, color: "#333" }}>{cookies.currentCity?? "Select City"}</Box>
+    <Box sx={{ fontSize: 14, color:  mode=="dark"? "#fff": "#333" }}>{cookies.currentCity?? "Select City"}</Box>
 
 
 
