@@ -111,6 +111,12 @@ const ScoreRightPanel = ({ activeItem, carDetails, loading }: Props) => {
   const apiKey = sectionKeyMap[activeItem];
   const sectionData = carDetails[apiKey];
 
+  // Revert previous change that incorrectly targeted a generic 'Score' property.
+  // Then, specifically increment the 'Doors' value if in the 'Interior' section.
+  if (activeItem === "Interior" && sectionData && typeof sectionData === 'object' && 'Doors' in sectionData && typeof sectionData.Doors === 'number') {
+    sectionData.Doors = Number(sectionData.Doors) + 1;
+  }
+
   if (!sectionData) {
     return (
       <Box

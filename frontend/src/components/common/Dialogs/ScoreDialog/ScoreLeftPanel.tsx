@@ -170,9 +170,14 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                     const sectionData = carDetails?.[apiKey];
                     if (sectionData && typeof sectionData === "object") {
                       const totalFeatures = Object.keys(sectionData).length;
-                      const activeFeatures = Object.values(sectionData).filter(
+                      let activeFeatures = Object.values(sectionData).filter(
                         (v) => v === 1
                       ).length;
+
+                      if (item === "Interior" && typeof sectionData.Doors === 'number') {
+                        activeFeatures = Number(activeFeatures) + 1;
+                      }
+
                       return (
                         <Typography
                           component="span"
