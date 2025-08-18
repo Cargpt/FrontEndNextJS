@@ -364,7 +364,7 @@ const CustomPrevArrow = (props: any & { outside?: boolean }) => {
   const settings: Settings = {
     infinite: false,
     speed: 500,
-    slidesToShow: showTwo ? 3 : 1,
+    slidesToShow: showTwo ? 2 : 1,
     slidesToScroll: 1,
     autoplay: isCompact ? false : true,
     autoplaySpeed: 3000,
