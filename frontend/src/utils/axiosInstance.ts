@@ -133,7 +133,7 @@ function createAxiosLike(
     const response = await fetch(baseURL + url, options);
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      const errorData = await response.json().catch(() => ({ message: response.statusText }));
       const error: ErrorResponse = {
         status: response.status,
         statusText: response.statusText,

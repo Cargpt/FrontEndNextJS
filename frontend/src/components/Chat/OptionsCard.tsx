@@ -191,9 +191,11 @@ const ChatBox: React.FC = () => {
       return false;
     } else {
       // Add user message before bot message
+      const count = remondatedCarModels.length;
+      const carPlural = count === 1 ? "car" : "cars";
       const userMessage: Message = {
         id: String(Date.now()),
-        message: "Show me car models for the selected parameters.",
+        message: `Here are the best ${count} ${carPlural} that match your preferences 🚗✨`,
         render: "text",
         sender: "user",
       };
@@ -368,6 +370,33 @@ const bottomSpacing = `calc(
 
   const {mode}=useColorMode()
   console.log("history", messages)
+  // Helper function to sort car arrays
+  const [sortOption, setSortOption] = useState<string>("none");
+  useEffect(() => {
+    const handler = (e: any) => {
+      const detail = e?.detail as string;
+      if (detail === "price" || detail === "mileage" || detail === "none") {
+        setSortOption(detail);
+      }
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('car-sort', handler as EventListener);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('car-sort', handler as EventListener);
+      }
+    };
+  }, []);
+  const sortCars = (carsArray: any[], option: string) => {
+    if (option === "price") {
+      return [...carsArray].sort((a, b) => (a.Price || 0) - (b.Price || 0));
+    } else if (option === "mileage") {
+      return [...carsArray].sort((a, b) => (b.Mileage || 0) - (a.Mileage || 0));
+    }
+    return carsArray;
+  };
+  
   return (
     <>
       <Box
@@ -397,7 +426,7 @@ const bottomSpacing = `calc(
           }
           {
             messages?.[messages?.length-1]?.message!=="Ask AI" &&
-
+          <>
           <Box 
             sx={{minHeight:"100vh",
               
@@ -414,30 +443,43 @@ const bottomSpacing = `calc(
             
           >
             {messages.map((msg, index) => {
+              // If this is a carOptions render, sort the car data before passing
+              let sortedMsg = msg;
+              if (msg.render === "carOptions" && msg.message && typeof msg.message === "object") {
+                const carObj = msg.message as Record<string, any>;
+                const key = Object.keys(carObj)[0];
+                if (Array.isArray(carObj[key])) {
+                  const sortedArr = sortCars(carObj[key], sortOption);
+                  sortedMsg = {
+                    ...msg,
+                    message: { [key]: sortedArr },
+                  } as typeof msg;
+                }
+              }
               const isLastUserMsg = msg.sender === "user" && index === lastUserMsgIndex;
 
               return (
                 <Box
                   key={msg.id}
                   sx={{
-                     padding:"1rem",
+                     paddingX:"1rem",
+                     paddingBottom: index%2==1 && index>0 ? "20px" : "1px",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
                     transition: 'background 0.3s ease',
 
-
-                    '&:hover': {
-                      background: 'rgba(0, 0, 0, 0.05)', // 👈 Example hover effect
-                      cursor: 'pointer',               // Optional
-                    },
+                    borderRadius:"16px",
+                    // '&:hover': {
+                    //   background: 'rgba(0, 0, 0, 0.05)', // 👈 Example hover effect
+                    //   cursor: 'pointer',               // Optional
+                    // },
                 
 
                     
-                    mt: { xs: isNative && index===0? 3:  0, sm: isNative && index===0? 3: 1 },
+                    mt: { xs: isNative && index===0? 3:  0, sm: isNative && index===0? 3: 0 },
                     px: { xs: 2, sm: 0 },
                     textAlign: msg.sender === "user" ? "right" : "left",
-                    fontSize: "14px",
                   }}
                 >
                   {msg.sender === "bot" && (
@@ -456,19 +498,24 @@ const bottomSpacing = `calc(
                   )}
                   <Grow in appear timeout={300}>
                   <Paper
-                  elevation={isNative? 0 : 1}
+                  elevation={ 0}
+
                     sx={{
                       p:  Number(`${msg.sender=="user" ? "1.5" : 0}`),
                       maxWidth: isSmallScreen ? "100%" : "75%",
+                      minWidth: index%2==1 ? "100%":"0px",
+                    
+borderRadius: '16px',
+      borderBottomRightRadius: 0,
+                      
                       bgcolor:
-                        msg.sender === "user" ? "rgb(211, 227, 255)" : mode==="dark"?"transparent":"grey.100",
-                      color: "black",
+                        msg.sender === "user" && mode==="light"? "rgb(211, 227, 255)" : mode==="dark"?"transparent":"",
                     
                     
                     }}
                   >
                     <MessageRenderer
-                      message={msg}
+                      message={sortedMsg}
                       index={index}
                       preferences={preferences}
                       filter={filter}
@@ -493,6 +540,7 @@ const bottomSpacing = `calc(
             )}
             <div ref={bottomRef} />
           </Box>
+          </>
 }
         </Paper>
       </Box>

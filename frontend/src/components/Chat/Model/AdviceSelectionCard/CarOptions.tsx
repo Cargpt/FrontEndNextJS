@@ -96,7 +96,6 @@ const CarModel: FC<AdviceSelectionCardProps> = ({
     setIsDisable(true);
   };
 
-  console.log("f", filter)
   return (
     <Card
       style={{
@@ -107,6 +106,7 @@ const CarModel: FC<AdviceSelectionCardProps> = ({
         borderBottom: "none",
         boxShadow: "none",
         background:"transparent",
+        maxWidth:"360px"
   
       }}
       

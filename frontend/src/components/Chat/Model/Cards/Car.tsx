@@ -2,16 +2,18 @@
  
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
-import Chip from "@mui/material/Chip";
 import Button from "@mui/material/Button";
-import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import ElectricCarIcon from "@mui/icons-material/ElectricCar";
+import { Stack, Chip, Menu, MenuItem } from "@mui/material";
+import FaceIcon from '@mui/icons-material/Face';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
 
 import { useChats } from "@/Context/ChatContext"; // This brings in the Message type from ChatContext
 import { useCookies } from "react-cookie";
@@ -28,7 +30,7 @@ import LoginDialog from '@/components/common/Dialogs/LoginDialog';
 import { useLoginDialog } from '@/Context/LoginDialogContextType';
 import { axiosInstance1 } from '@/utils/axiosInstance';
 import { useSnackbar } from '@/Context/SnackbarContext';
-import { formatInternational } from '@/utils/services';
+import { formatInternational, generateCarChatMessage } from '@/utils/services';
 import { Sign } from 'crypto';
 import SignupDialog from '@/components/Auth/SignupDialog';
 import { useColorMode } from '@/Context/ColorModeContext';
@@ -117,10 +119,21 @@ const showSignUP = () => {
   setshowSignUpState(true);
   hide();
 }
+const [chipsDisabled, setChipsDisabled] = useState(false);
 
 const hideSignUP = () => {
   setshowSignUpState(false);
 }
+// Sorting menu (funnel icon) state
+const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+const [currentSort, setCurrentSort] = useState<string>('none');
+const handleSelectSort = (value: 'none' | 'price' | 'mileage') => {
+  setCurrentSort(value);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('car-sort', { detail: value }));
+  }
+  setAnchorEl(null);
+};
    const handleFavoriteClick = async(variant:any, variantId: number, index:number) => {
     // Example: send to API or log
     // You can replace this with an API call or any other logic
@@ -302,28 +315,13 @@ const CustomPrevArrow = (props: any & { outside?: boolean }) => {
           slidesToShow: 1,
           slidesToScroll: 1,
           dots: false,
+          centerMode: false,
+          centerPadding: "0px",
         },
       },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          initialSlide: 0,
-          dots: false,
-        },
-      },
-      {
-        breakpoint: 480,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          dots: false,
-        },
-      },
+      // other breakpoints
     ],
   };
-
   const backTOIntial = () => {
     // Ensure that userMessage's 'sender' type is compatible with ChatContext's Message interface
     // The previous fix for Message interface should resolve this.
@@ -333,11 +331,43 @@ const CustomPrevArrow = (props: any & { outside?: boolean }) => {
   
   console.log("cars", cars);
 const {mode}=useColorMode()
+
+ 
+const message= selectedItem ? generateCarChatMessage(selectedItem || {}, modelCars.length) :""
+console.log(typeof message)
   return (
     <>
+                     {selectedItem && (
+        <Box sx={{ px: 2, py: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+          <Typography sx={{ fontWeight: "bold" }}>{message}</Typography>
+          {modelCars.length > 1 && (
+            <Box>
+              <IconButton
+                size="small"
+                onClick={(e) => setAnchorEl(e.currentTarget)}
+                aria-label="Filter"
+                sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 0.5 }}
+              >
+                <img src="/assets/funnel.svg" alt="Filter" width={18} height={18} style={{ filter: mode === "dark" ? "invert(100%)" : "none" }} />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              >
+                <MenuItem selected={currentSort === 'none'} onClick={() => handleSelectSort('none')}>Default</MenuItem>
+                <MenuItem selected={currentSort === 'price'} onClick={() => handleSelectSort('price')}>Price</MenuItem>
+                <MenuItem selected={currentSort === 'mileage'} onClick={() => handleSelectSort('mileage')}>Mileage</MenuItem>
+              </Menu>
+            </Box>
+          )}
+        </Box>
+      )}
 
       {modelCars.length > 0 && (
-        <Box sx={{ width: '100%', backgroundColor: '#ffffff', '& .slick-list': { backgroundColor: '#ffffff' } }}>
+        <Box sx={{ width: { xs:"100%" , md: modelCars.length < 2? "50%":'100%'}, backgroundColor: '#ffffff', '& .slick-list': { backgroundColor: '#ffffff' } }}>
           <Slider {...settings}>
 
           {modelCars.map((car: any, index: number) => ( // Consider more specific type for 'car'
@@ -360,6 +390,7 @@ const {mode}=useColorMode()
                   borderColor: mode === 'dark' ? theme.palette.primary.dark : theme.palette.primary.light,
                 } : undefined,
               }}
+              variant="outlined"
             >
               <CardMedia
                 component="img"
@@ -630,38 +661,68 @@ const {mode}=useColorMode()
       )}
       {!isCompact && (
       <Stack
-        direction="row"
-        gap={2}
-        mt={1}
-        flexWrap="nowrap"
-        justifyContent="center"
-        sx={{pb:2}}
-      >
-        <Button
-          variant="outlined"
-          onClick={onClick}
-          sx={{ textTransform: "capitalize", fontSize: 13  }}
-        >
-          I know exactly what I want
-        </Button>
-        <Button
-          variant="outlined"
-          onClick={handleNeedAdviceSupport}
-          sx={{ textTransform: "capitalize", fontSize: 13 }}
-        >
-          I need advisor support
-        </Button>
+  direction="row"
+  gap={2}
+  mt={1}
+  flexWrap="nowrap"
+  justifyContent="start"
+  sx={{ pb: 2 }}
+>
+  <Chip
+    label="I know exactly what I want"
+    variant="filled"
+    size="small"
+    icon={<FaceIcon />}
+    onClick={() => {
+      setChipsDisabled(true);
+      onClick?.();
+    }}
+    disabled={chipsDisabled}
+    sx={{
+      fontSize: 13,
+      textTransform: "capitalize",
+      borderWidth: 1,
+    }}
+  />
 
-        {cookies.selectedOption == "I want to do more research on cars" && (
-          <Button
-            variant="outlined"
-            onClick={backTOIntial}
-            sx={{ textTransform: "capitalize", fontSize: 13 }}
-          >
-            Back to car research
-          </Button>
-        )}
-      </Stack>
+  <Chip
+    label="I need advisor support"
+    variant="filled"
+    size="small"
+    color="default"
+    icon={<SupportAgentIcon />}
+    onClick={() => {
+      setChipsDisabled(true);
+      handleNeedAdviceSupport();
+    }}
+    disabled={chipsDisabled}
+    sx={{
+      fontSize: 13,
+      textTransform: "capitalize",
+      borderWidth: 1,
+    }}
+  />
+
+  {cookies.selectedOption === "I want to do more research on cars" && (
+    <Chip
+      label="Back to car research"
+      variant="outlined"
+      size="small"
+      icon={<DirectionsCarIcon />}
+      onClick={backTOIntial}
+      sx={{
+        fontSize: 13,
+        textTransform: "capitalize",
+        color: "black",
+        borderColor: "black",
+        borderWidth: 1,
+        borderStyle: "solid",
+        "& .MuiChip-icon": { color: "black" },
+      }}
+    />
+  )}
+</Stack>
+
       )}
       {dialog.type === "gallery" && (
         <CarGallery

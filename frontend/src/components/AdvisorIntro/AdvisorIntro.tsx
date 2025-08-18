@@ -20,7 +20,9 @@ import { axiosInstance } from "@/utils/axiosInstance";
 import { useChats } from "@/Context/ChatContext";
 import { useColorMode } from "@/Context/ColorModeContext";
 import { ChatBubble, ChatBubbleOutline, FilterAltOutlined, FilterCenterFocusOutlined, Lightbulb, LightbulbOutline, SearchOffOutlined, StarOutline } from "@mui/icons-material";
-
+import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined';
 interface AdvisorIntroProps {
   showInitialExample: boolean;
   onBotClick: (type: string) => void;
@@ -50,12 +52,12 @@ const {handleBookmark,bookmark} =useChats()
     },
     {
       label: "I need advisor support",
-      icon: <ChatBubbleOutline/>,
+      icon: <SupportAgentOutlinedIcon/>,
       type: "support",
     },
     {
       label: "I want to do more research on cars",
-      icon:<SearchOffOutlined/>,
+      icon:<SearchOutlinedIcon/>,
       type: "search",
     },
     {
@@ -65,7 +67,7 @@ const {handleBookmark,bookmark} =useChats()
     },
     {
       label: "Ask AI",
-      icon: <StarOutline/>,
+      icon: <AutoAwesomeOutlinedIcon/>,
       type: "ai",
     },
   ];
@@ -169,7 +171,10 @@ const [cookies, setCookie]=useCookies(['selectedOption', 'token'])
             onClick={() => handleOptionClick(option.label)}
             sx={{ "background": mode==="dark"? "linear-gradient(rgba(255, 255, 255, 0.092), rgba(255, 255, 255, 0.092))": "#d3e3ff", borderRadius: "25px" }}
           >
-            <ListItemIcon>
+            <ListItemIcon
+                sx={{ minWidth: 32, mr: "2px" }} // 👈 Reduce horizontal space here (default is 56)
+
+            >
              {option.icon}
             </ListItemIcon>
             <ListItemText primary={option.label} />

@@ -206,3 +206,60 @@ export function formatInternational(num:number) {
   }
 }
 
+
+
+
+
+type Car = {
+  CarID: number;
+  FuelType: string;
+  BrandName: string;
+  TransmissionType: string;
+  Trans_fullform?: string;
+  ModelName: string;
+  VariantName: string;
+  Price: number;
+  Mileage: number;
+  Seats: number;
+  ModelID: number;
+  BrandID: number;
+  EngineCapacity: string;
+  VariantID: number;
+  BodyName: string;
+  logo: string;
+  AIScore: string;
+  AISummary: string;
+  is_bookmarked: boolean;
+};
+
+type CarData = {
+  [key: string]: Car[];
+};
+
+function getBudgetRange(price: number): string {
+  const lakh = 100000;
+  const maxBudgetLakh = 40;
+
+  if (price >= maxBudgetLakh * lakh) {
+    return `${maxBudgetLakh}L or Above`;
+  }
+
+  if (price < 500000) return "0-5L";
+
+  const lower = Math.floor(price / lakh / 5) * 5;
+  const upper = lower + 5;
+  return `${lower}-${upper}L`;
+}
+
+/**
+ * Generates a short car search result message from the input data
+ */
+export function generateCarChatMessage(car: any, count: number): string {
+  if (car) {
+    const carPlural = count === 1 ? "car" : "cars";
+    return `Here are the best ${count} ${carPlural} that match your preferences 🚗✨`;
+  }
+  return "";
+}
+
+

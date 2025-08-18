@@ -111,7 +111,17 @@ const TestDriveDashboard: React.FC = () => {
         <Typography variant="subtitle2" color="textSecondary">
           {label}
         </Typography>
-        <Typography fontWeight={500}           sx={{ color: statusColors[value.toLowerCase()] || "text.primary" }}>{value}</Typography>
+        <Typography
+          fontWeight={500}
+          sx={{
+            color:
+              label === "Booking Status" && typeof value === "string"
+                ? statusColors[value.toLowerCase()] || "text.primary"
+                : "text.primary",
+          }}
+        >
+          {value ?? "-"}
+        </Typography>
       </Box>
     ))}
   </Box>

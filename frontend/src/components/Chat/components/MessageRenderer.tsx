@@ -62,7 +62,8 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
       );
     case "text":
       return (
-        <Typography sx={{ fontSize: "14px" }} id={`user-message-${index}`}>
+        <Typography sx={{ fontSize: "14px", lineHeight: "1.4", fontWeight: 100 }}
+ id={`user-message-${index}`}>
           {capitalizeFirst(message.message)}
         </Typography>
       );
@@ -110,7 +111,7 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
         <AdviceSelectionCard
           options={(message as any)?.data?.body_types}
           label="body type"
-          h1="🏎️: Great. What type of car body are you looking for?"
+          h1="🚙: Great. What type of car body are you looking for?"
           initialValue={(message as any)?.message?.selections?.["body type"] ?? null}
           onPersistSelection={onPersistBrandModel}
         />

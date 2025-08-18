@@ -104,9 +104,9 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
           <KeyboardBackspaceSharp />
         </Button>
         <Typography
-          sx={{ position: "relative", textAlign: "center", fontWeight: 700 }}
+          sx={{ position: "relative", textAlign: "center", fontWeight: 700, mt: 2 }}
         >
-          AI Car Advisor Store
+          AI Car Advisor Score
         </Typography>
       </DialogTitle>
 
