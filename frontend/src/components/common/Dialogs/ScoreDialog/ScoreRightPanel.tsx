@@ -165,22 +165,6 @@ const {mode}=useColorMode()
       }}
     >
       {/* Section Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography
-          variant="h5"
-          fontWeight="bold"
-          color="primary.main"
-          gutterBottom
-        >
-          {activeItem} Details
-        </Typography>
-        <Chip
-          label={`${dataEntries.length} Features`}
-          color="primary"
-          variant="outlined"
-          size="small"
-        />
-      </Box>
 
       {/* Available Features */}
       {availableEntries.length > 0 && (

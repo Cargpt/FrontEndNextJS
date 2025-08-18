@@ -254,22 +254,12 @@ export function getBudgetRange(price: number): string {
 /**
  * Generates a short car search result message from the input data
  */
-export function generateCarChatMessage(carData: CarData): string | null {
-  for (const brandModel in carData) {
-    const cars = carData[brandModel];
-    if (!cars || cars.length === 0) return null;
-
-    const car = cars[0];
-
-    const brandShort = car.BrandName.split(" ")[0];
-    const model = car.ModelName;
-    const fuel = car.FuelType;
-    const transmission = car.Trans_fullform || car.TransmissionType;
-    const budgetRange = getBudgetRange(car.Price);
-
-    return `Search result: ${brandShort} ${model}, ${fuel}, ${transmission}, ${budgetRange}`;
+export function generateCarChatMessage(car: any, count: number): string {
+  if (car) {
+    const carPlural = count === 1 ? "car" : "cars";
+    return `Here are the best ${count} ${carPlural} that match your preferences 🚗✨`;
   }
-  return null;
+  return "";
 }
 
 

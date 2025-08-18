@@ -191,9 +191,11 @@ const ChatBox: React.FC = () => {
       return false;
     } else {
       // Add user message before bot message
+      const count = remondatedCarModels.length;
+      const carPlural = count === 1 ? "car" : "cars";
       const userMessage: Message = {
         id: String(Date.now()),
-        message: "Show me car models for the selected parameters.",
+        message: `Here are the best ${count} ${carPlural} that match your preferences 🚗✨`,
         render: "text",
         sender: "user",
       };
@@ -368,6 +370,32 @@ const bottomSpacing = `calc(
 
   const {mode}=useColorMode()
   console.log("history", messages)
+  // Helper function to sort car arrays
+  const [sortOption, setSortOption] = useState<string>("none");
+  useEffect(() => {
+    const handler = (e: any) => {
+      const detail = e?.detail as string;
+      if (detail === "price" || detail === "mileage" || detail === "none") {
+        setSortOption(detail);
+      }
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('car-sort', handler as EventListener);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('car-sort', handler as EventListener);
+      }
+    };
+  }, []);
+  const sortCars = (carsArray: any[], option: string) => {
+    if (option === "price") {
+      return [...carsArray].sort((a, b) => (a.Price || 0) - (b.Price || 0));
+    } else if (option === "mileage") {
+      return [...carsArray].sort((a, b) => (b.Mileage || 0) - (a.Mileage || 0));
+    }
+    return carsArray;
+  };
   
   return (
     <>
@@ -398,7 +426,7 @@ const bottomSpacing = `calc(
           }
           {
             messages?.[messages?.length-1]?.message!=="Ask AI" &&
-
+          <>
           <Box 
             sx={{minHeight:"100vh",
               
@@ -415,6 +443,19 @@ const bottomSpacing = `calc(
             
           >
             {messages.map((msg, index) => {
+              // If this is a carOptions render, sort the car data before passing
+              let sortedMsg = msg;
+              if (msg.render === "carOptions" && msg.message && typeof msg.message === "object") {
+                const carObj = msg.message as Record<string, any>;
+                const key = Object.keys(carObj)[0];
+                if (Array.isArray(carObj[key])) {
+                  const sortedArr = sortCars(carObj[key], sortOption);
+                  sortedMsg = {
+                    ...msg,
+                    message: { [key]: sortedArr },
+                  } as typeof msg;
+                }
+              }
               const isLastUserMsg = msg.sender === "user" && index === lastUserMsgIndex;
 
               return (
@@ -475,7 +516,7 @@ borderRadius: '16px',
                     }}
                   >
                     <MessageRenderer
-                      message={msg}
+                      message={sortedMsg}
                       index={index}
                       preferences={preferences}
                       filter={filter}
@@ -516,6 +557,7 @@ borderRadius: '16px',
             )}
             <div ref={bottomRef} />
           </Box>
+          </>
 }
         </Paper>
       </Box>

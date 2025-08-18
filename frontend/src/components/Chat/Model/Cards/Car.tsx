@@ -10,7 +10,7 @@ import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import ElectricCarIcon from "@mui/icons-material/ElectricCar";
-import { Stack, Chip } from "@mui/material";
+import { Stack, Chip, Menu, MenuItem } from "@mui/material";
 import FaceIcon from '@mui/icons-material/Face';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
@@ -124,6 +124,16 @@ const [chipsDisabled, setChipsDisabled] = useState(false);
 const hideSignUP = () => {
   setshowSignUpState(false);
 }
+// Sorting menu (funnel icon) state
+const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+const [currentSort, setCurrentSort] = useState<string>('none');
+const handleSelectSort = (value: 'none' | 'price' | 'mileage') => {
+  setCurrentSort(value);
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('car-sort', { detail: value }));
+  }
+  setAnchorEl(null);
+};
    const handleFavoriteClick = async(variant:any, variantId: number, index:number) => {
     // Example: send to API or log
     // You can replace this with an API call or any other logic
@@ -322,13 +332,39 @@ const CustomPrevArrow = (props: any & { outside?: boolean }) => {
   console.log("cars", cars);
 const {mode}=useColorMode()
 
-
  
-const message= selectedItem ? generateCarChatMessage(selectedItem || {}) :""
+const message= selectedItem ? generateCarChatMessage(selectedItem || {}, modelCars.length) :""
 console.log(typeof message)
   return (
     <>
-                     {selectedItem && <Typography sx={{px:2, pb:2, fontWeight:"bold"}}>{message}</Typography>}
+                     {selectedItem && (
+        <Box sx={{ px: 2, py: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
+          <Typography sx={{ fontWeight: "bold" }}>{message}</Typography>
+          {modelCars.length > 1 && (
+            <Box>
+              <IconButton
+                size="small"
+                onClick={(e) => setAnchorEl(e.currentTarget)}
+                aria-label="Filter"
+                sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 0.5 }}
+              >
+                <img src="/assets/funnel.svg" alt="Filter" width={18} height={18} style={{ filter: mode === "dark" ? "invert(100%)" : "none" }} />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={() => setAnchorEl(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+              >
+                <MenuItem selected={currentSort === 'none'} onClick={() => handleSelectSort('none')}>Default</MenuItem>
+                <MenuItem selected={currentSort === 'price'} onClick={() => handleSelectSort('price')}>Price</MenuItem>
+                <MenuItem selected={currentSort === 'mileage'} onClick={() => handleSelectSort('mileage')}>Mileage</MenuItem>
+              </Menu>
+            </Box>
+          )}
+        </Box>
+      )}
 
       {modelCars.length > 0 && (
         <Box sx={{ width: { xs:"100%" , md: modelCars.length < 2? "50%":'100%'}}}>
