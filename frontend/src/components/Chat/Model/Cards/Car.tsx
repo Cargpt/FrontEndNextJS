@@ -323,7 +323,6 @@ const CustomPrevArrow = (props: any & { outside?: boolean }) => {
     ],
   };
   const backTOIntial = () => {
-    // Ensure that userMessage's 'sender' type is compatible with ChatContext's Message interface
     // The previous fix for Message interface should resolve this.
     setMessages((prev) => [...prev, userMessage]);
   };
