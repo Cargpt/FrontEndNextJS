@@ -1,7 +1,7 @@
 // ...existing code...
 
 import React from "react";
-import ChatBox from "../../components/Chat/OptionsCard";
+import ChatBox from "../../components/Chat/OptionsCard/OptionsCard";
 import FixedBottomMessage from "../../components/common/FixedBottomMessage";
 import Link from "next/link";
 
