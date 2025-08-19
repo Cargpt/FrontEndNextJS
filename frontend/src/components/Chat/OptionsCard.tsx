@@ -25,6 +25,7 @@ import { usePreferences } from "./hooks/usePreferences";
 import { useAutoScroll } from "./hooks/useAutoScroll";
 import { usePersistHistory } from "./hooks/usePersistHistory";
 
+// This is a dummy comment to trigger linter re-evaluation
 const ChatBox: React.FC = () => {
   const { cars, messages, setMessages, filter, bookmark, setCars } = useChats();
   const theme = useTheme();
@@ -308,7 +309,7 @@ const ChatBox: React.FC = () => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef<boolean>(false);
   const { bottomRef, userAvatarRef, lastUserMsgIndex, scrollToLastMessage } =
-    useAutoScroll(messages);
+    useAutoScroll(messages, chatContainerRef as React.RefObject<HTMLDivElement | null>);
 
   // Persist history only when a logged-in user is present
   usePersistHistory(messages, {
@@ -388,6 +389,24 @@ const ChatBox: React.FC = () => {
           ml: { xs: 0, sm: 19 },
         }}
       >
+        {!isSmallScreen && (
+          <Box
+            sx={{
+              width: "20%",
+              minWidth: "150px",
+              mr: 2,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
+          >
+            {/* Latest Products List */}
+            <Paper elevation={3} sx={{ p: 2, height: "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              Latest Products
+            </Paper>
+            {/* You can add more components here for the left sidebar */}
+          </Box>
+        )}
         <Paper
           elevation={3}
           sx={{
@@ -407,7 +426,8 @@ const ChatBox: React.FC = () => {
             <Box
               sx={{
                 minHeight: "100vh",
-
+                maxHeight: "calc(100vh - 120px)", // Adjust this value as needed
+                overflowY: "auto",
                 background: "transparent",
                 marginBottom: isNative ? "2.7rem" : "1.5rem",
               }}
@@ -493,7 +513,7 @@ const ChatBox: React.FC = () => {
                                 : "transparent",
 
                             color:
-                              msg.sender === "user" && mode === "dark"
+                              mode === "light" || msg.sender === "user"
                                 ? "black"
                                 : "white",
                           }}
@@ -523,7 +543,6 @@ const ChatBox: React.FC = () => {
                             theme.palette.mode === "light"
                               ? "#f7f7f7" // ✅ subtle for white bg
                               : theme.palette.grey[800], // ✅ soft dark gray for dark mode
-
                           mb: 1,
                         }}
                       ></Box>
@@ -540,6 +559,24 @@ const ChatBox: React.FC = () => {
             </Box>
           )}
         </Paper>
+        {!isSmallScreen && (
+          <Box
+            sx={{
+              width: "20%",
+              minWidth: "150px",
+              ml: 2,
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
+          >
+            {/* Dealer List */}
+            <Paper elevation={3} sx={{ p: 2, height: "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              Dealer List
+            </Paper>
+            {/* You can add more components here for the right sidebar */}
+          </Box>
+        )}
       </Box>
 
       {/* <div ref={bottomRef} /> */}
