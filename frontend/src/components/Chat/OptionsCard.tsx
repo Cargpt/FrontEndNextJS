@@ -493,7 +493,7 @@ const ChatBox: React.FC = () => {
                                 : "transparent",
 
                                 color: 
-                                msg.sender === "user" && mode === "dark" ? "black" : "white"
+                                msg.sender === "user" && mode === "dark" ? "black" : "black"
                           }}
                         >
                           <MessageRenderer
