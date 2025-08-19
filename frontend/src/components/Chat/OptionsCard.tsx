@@ -24,7 +24,7 @@ import { useBrands } from "./hooks/useBrands";
 import { usePreferences } from "./hooks/usePreferences";
 import { useAutoScroll } from "./hooks/useAutoScroll";
 import { usePersistHistory } from "./hooks/usePersistHistory";
-import DealerList from "./components/DealerList";
+import DealerList from "./OptionsCard/DealerList";
 
 // This is a dummy comment to trigger linter re-evaluation
 const ChatBox: React.FC = () => {
