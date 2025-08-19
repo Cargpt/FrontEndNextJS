@@ -193,7 +193,7 @@ const ChatBox: React.FC = () => {
       // Add user message before bot message
       const userMessage: Message = {
         id: String(Date.now()),
-        message: "Show cars that fit my preferences",
+        message: "Show me car models for the selected parameters.",
         render: "text",
         sender: "user",
       };
@@ -368,6 +368,7 @@ const bottomSpacing = `calc(
 
   const {mode}=useColorMode()
   console.log("history", messages)
+  
   return (
     <>
       <Box
@@ -417,18 +418,19 @@ const bottomSpacing = `calc(
               const isLastUserMsg = msg.sender === "user" && index === lastUserMsgIndex;
 
               return (
+                <>
                 <Box
                   key={msg.id}
                   sx={{
                      paddingX:"1rem",
-                     paddingBottom: index%2==1 && index>0 ? "20px" : "1px",
+                     
+                     paddingBottom: index%2==1 && index>0 ? "20px" : "10px",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: msg.sender === "user" ? "flex-end" : "flex-start",
                     transition: 'background 0.3s ease',
 
-                    borderRadius:"16px",
-                    // '&:hover': {
+                     // '&:hover': {
                     //   background: 'rgba(0, 0, 0, 0.05)', // 👈 Example hover effect
                     //   cursor: 'pointer',               // Optional
                     // },
@@ -462,12 +464,12 @@ const bottomSpacing = `calc(
                       p:  Number(`${msg.sender=="user" ? "1.5" : 0}`),
                       maxWidth: isSmallScreen ? "100%" : "75%",
                       minWidth: index%2==1 ? "100%":"0px",
-                    
+                     backgroundImage:"none",
 borderRadius: '16px',
       borderBottomRightRadius: 0,
                       
                       bgcolor:
-                        msg.sender === "user" ? "rgb(211, 227, 255)" : mode==="dark"?"transparent":"",
+                        msg.sender === "user" && mode==="light"? "rgb(211, 227, 255)"   : mode==="dark" && msg.sender==="user"? "primary":"transparent",
                     
                     
                     }}
@@ -489,6 +491,22 @@ borderRadius: '16px',
                   </Paper>
                   </Grow>
                 </Box>
+                {
+                  index%2==1 &&
+                   <Box
+                   sx={{
+                   borderBottom: "1px solid",
+  borderColor: (theme) =>
+    theme.palette.mode === 'light'
+      ? '#f7f7f7'        // ✅ subtle for white bg
+      : theme.palette.grey[800], // ✅ soft dark gray for dark mode
+ 
+              mb:1
+                }}>
+                  </Box>
+                }
+               
+                  </>
               );
             })}
             {loading && (
