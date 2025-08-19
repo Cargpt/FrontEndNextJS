@@ -764,26 +764,28 @@ const TeslaCard: React.FC<CarCardProps> = ({
                     }}
                   >
                     {/* AI Car Advisor Score Button */}
-                   <Button
-  variant="outlined"
-  size="small"
-  sx={{
-    textTransform: "none",
-    fontSize: "12px",
-    height: 36, // Reduced height
-    px: 1.5,
-    borderRadius: "6px",
-    whiteSpace: "nowrap",
-    width: "100%",
-  }}
-  onClick={() => openDialog("score", car)}
->
-  AI Car Advisor Score:
-  <Box component="span" sx={{ fontWeight: "bold", ml: 0.5 }}>
-    {car?.AIScore || "--"}
-  </Box>
-</Button>
-
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      sx={{
+                        textTransform: "none",
+                        fontSize: "12px",
+                        height: 36, // Reduced height
+                        px: 1.5,
+                        borderRadius: "6px",
+                        whiteSpace: "nowrap",
+                        width: "100%",
+                      }}
+                      onClick={() => openDialog("score", car)}
+                    >
+                      AI Car Advisor Score:
+                      <Box
+                        component="span"
+                        sx={{ fontWeight: "bold", ml: 0.5 }}
+                      >
+                        {car?.AIScore || "--"}
+                      </Box>
+                    </Button>
 
                     {/* User Sentiments Button */}
                     <Button
