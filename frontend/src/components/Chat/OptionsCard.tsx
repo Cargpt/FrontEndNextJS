@@ -24,6 +24,7 @@ import { useBrands } from "./hooks/useBrands";
 import { usePreferences } from "./hooks/usePreferences";
 import { useAutoScroll } from "./hooks/useAutoScroll";
 import { usePersistHistory } from "./hooks/usePersistHistory";
+import DealerList from "./components/DealerList";
 
 // This is a dummy comment to trigger linter re-evaluation
 const ChatBox: React.FC = () => {
@@ -96,7 +97,7 @@ const ChatBox: React.FC = () => {
         render: "brandOption",
         sender: "bot",
         data: messages[messages.length - 1].data,
-      };
+      }; 
     } else if (
       lastMsg.sender === "user" &&
       typeof lastMsg.message === "string" &&
@@ -387,6 +388,7 @@ const ChatBox: React.FC = () => {
           alignItems: "flex-start",
           width: isSmallScreen ? "100%" : "80%",
           ml: { xs: 0, sm: 19 },
+          overflow: "hidden", // Hide parent scrollbar
         }}
       >
         {!isSmallScreen && (
@@ -398,6 +400,8 @@ const ChatBox: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               gap: 2,
+              maxHeight: "calc(100vh - 80px)", // Adjust as needed
+              overflowY: "auto",
             }}
           >
             {/* Latest Products List */}
@@ -429,7 +433,7 @@ const ChatBox: React.FC = () => {
                 maxHeight: "calc(100vh - 120px)", // Adjust this value as needed
                 overflowY: "auto",
                 background: "transparent",
-                marginBottom: isNative ? "2.7rem" : "1.5rem",
+                // marginBottom: isNative ? "2.7rem" : "1.5rem",
               }}
               ref={chatContainerRef}
               onDragStart={handleDragStart}
@@ -568,12 +572,12 @@ const ChatBox: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               gap: 2,
+              maxHeight: "calc(100vh - 80px)", // Adjust as needed
+              overflowY: "auto",
             }}
           >
             {/* Dealer List */}
-            <Paper elevation={3} sx={{ p: 2, height: "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              Dealer List
-            </Paper>
+            <DealerList />
             {/* You can add more components here for the right sidebar */}
           </Box>
         )}
