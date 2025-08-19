@@ -45,9 +45,12 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
       return (
         <BrandModelSelectCard
           handleUserMessage={onUserMessage}
-          brands={(typeof message.message?.brands !== 'undefined' && message.message?.brands?.length)
-            ? message.message.brands
-            : (availableBrands ?? [])}
+          brands={
+            typeof message.message?.brands !== "undefined" &&
+            message.message?.brands?.length
+              ? message.message.brands
+              : availableBrands ?? []
+          }
           onPersistState={onPersistBrandModel}
           initialBrand={message.message?.brand ?? null}
           initialModel={message.message?.model ?? null}
@@ -64,8 +67,10 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
       );
     case "text":
       return (
-        <Typography sx={{ fontSize: "14px", lineHeight: "1.4", fontWeight: 100 }}
- id={`user-message-${index}`}>
+        <Typography
+          sx={{ fontSize: "14px", lineHeight: "1.4", fontWeight: 100 }}
+          id={`user-message-${index}`}
+        >
           {capitalizeFirst(message.message)}
         </Typography>
       );
@@ -93,7 +98,9 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
           options={(message as any)?.data?.fuel_types}
           label="fuel type"
           h1={"⛽: Got it! What’s your preferred fuel type?\n"}
-          initialValue={(message as any)?.message?.selections?.["fuel type"] ?? null}
+          initialValue={
+            (message as any)?.message?.selections?.["fuel type"] ?? null
+          }
           onPersistSelection={onPersistBrandModel}
         />
       );
@@ -104,7 +111,9 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
           label="transmission type"
           h1="⚙️ Cool! What kind of transmission do you prefer?"
           onBack={onBack}
-          initialValue={(message as any)?.message?.selections?.["transmission type"] ?? null}
+          initialValue={
+            (message as any)?.message?.selections?.["transmission type"] ?? null
+          }
           onPersistSelection={onPersistBrandModel}
         />
       );
@@ -114,7 +123,9 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
           options={(message as any)?.data?.body_types}
           label="body type"
           h1="🚙: Great. What type of car body are you looking for?"
-          initialValue={(message as any)?.message?.selections?.["body type"] ?? null}
+          initialValue={
+            (message as any)?.message?.selections?.["body type"] ?? null
+          }
           onPersistSelection={onPersistBrandModel}
         />
       );
@@ -131,7 +142,8 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
       );
     case "selectedFilter": {
       const rec =
-        typeof (message as any)?.message === "object" && (message as any)?.message
+        typeof (message as any)?.message === "object" &&
+        (message as any)?.message
           ? (message as any).message
           : filter;
       return <CarRecommendationTable recommendations={rec} />;
@@ -154,5 +166,3 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
 };
 
 export default MessageRenderer;
-
-
