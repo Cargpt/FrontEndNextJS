@@ -145,7 +145,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
   };
 
   return (
-    <Box display="flex" justifyContent="center" p={2}>
+    <Box
+      display="flex"
+      justifyContent="center"
+      p={2}
+      sx={{
+        maxHeight: '100vh',         // ✅ fix for unwanted scrolling
+        overflowY: 'auto',          // ✅ enables scroll only if needed
+      }}
+    >
       <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}>
         <Paper
           elevation={mode === 'dark' ? 6 : 3}
@@ -331,19 +339,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
         )}
       </AnimatePresence>
 
-                  <style>
-         {`
+      <style>
+        {`
           .react-tel-input .special-label {
             background-color: ${mode === 'dark' ? '#333' : '#fff'} !important;
             color: ${mode === 'dark' ? '#fff' : '#000'} !important;
             border-radius: 4px;
             padding: 2px 6px;
           }
-            .react-tel-input .country-list .country:hover, .react-tel-input .country-list .country.highlight {
-    background-color:  ${mode === 'dark' ? '#333' : '#f1f1f1'} !important;
-}
-         `}
-       </style>
+          .react-tel-input .country-list .country:hover, 
+          .react-tel-input .country-list .country.highlight {
+            background-color: ${mode === 'dark' ? '#333' : '#f1f1f1'} !important;
+          }
+        `}
+      </style>
     </Box>
   );
 };
