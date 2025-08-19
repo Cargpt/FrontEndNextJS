@@ -25,6 +25,7 @@ import { usePreferences } from "../hooks/usePreferences";
 import { useAutoScroll } from "../hooks/useAutoScroll";
 import { usePersistHistory } from "../hooks/usePersistHistory";
 import DealerList from "./DealerList";
+import Feeds from "./Feeds";
 
 // This is a dummy comment to trigger linter re-evaluation
 const ChatBox: React.FC = () => {
@@ -386,33 +387,19 @@ const ChatBox: React.FC = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-start",
-          width: isSmallScreen ? "100%" : "80%",
-          ml: { xs: 0, sm: 19 },
+          ml: { xs: 0, sm: 0},
         }}
       >
         {!isSmallScreen && (
-          <Box
-            sx={{
-              width: "20%",
-              minWidth: "150px",
-              mr: 2,
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-            }}
-          >
-            {/* Latest Products List */}
-            <Paper elevation={3} sx={{ p: 2, height: "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              Latest Products
-            </Paper>
-            {/* You can add more components here for the left sidebar */}
-          </Box>
+          <Feeds />
         )}
-        <Paper
+                <Paper
           elevation={3}
           sx={{
-            p: 2,
-            width: isSmallScreen ? "100%" : "70%",
+            p: 2,         
+
+
+            width: isSmallScreen ? "100%" : "50%",
             display: "flex",
             flexDirection: "column",
             padding: isSmallScreen ? "0px" : "16px",
@@ -426,7 +413,7 @@ const ChatBox: React.FC = () => {
           {messages?.[messages?.length - 1]?.message !== "Ask AI" && (
             <Box
               sx={{
-                minHeight: "100vh",
+                minHeight: "80vh",
                 maxHeight: "calc(100vh - 120px)", // Adjust this value as needed
                 overflowY: "auto",
                 background: "transparent",

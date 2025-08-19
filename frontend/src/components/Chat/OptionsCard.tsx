@@ -24,7 +24,7 @@ import { useBrands } from "./hooks/useBrands";
 import { usePreferences } from "./hooks/usePreferences";
 import { useAutoScroll } from "./hooks/useAutoScroll";
 import { usePersistHistory } from "./hooks/usePersistHistory";
-import DealerList from "./components/DealerList";
+import DealerList from "./OptionsCard/DealerList";
 
 // This is a dummy comment to trigger linter re-evaluation
 const ChatBox: React.FC = () => {
@@ -380,28 +380,28 @@ const ChatBox: React.FC = () => {
   console.log("history", messages);
 
   return (
-    <>
+    
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "flex-start",
-          width: isSmallScreen ? "100%" : "80%",
-          ml: { xs: 0, sm: 19 },
-          overflow: "hidden", // Hide parent scrollbar
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    width: "100%",
+    overflow: "hidden",
+
         }}
       >
         {!isSmallScreen && (
           <Box
             sx={{
-              width: "20%",
-              minWidth: "150px",
-              mr: 2,
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-              maxHeight: "calc(100vh - 80px)", // Adjust as needed
-              overflowY: "auto",
+             width: "25%", // ✅ Left 25%
+        minWidth: "200px",
+        mr: 2,
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        maxHeight: "calc(100vh - 80px)",
+        overflowY: "auto",
             }}
           >
             {/* Latest Products List */}
@@ -414,11 +414,13 @@ const ChatBox: React.FC = () => {
         <Paper
           elevation={3}
           sx={{
-            p: 2,
-            width: isSmallScreen ? "100%" : "70%",
-            display: "flex",
-            flexDirection: "column",
-            padding: isSmallScreen ? "0px" : "16px",
+width: "50%", // ✅ Center 50%
+      minWidth: "300px",
+      p: 2,
+      display: "flex",
+      flexDirection: "column",
+      padding: isSmallScreen ? "0px" : "16px",
+
           }}
         >
           <FixedHeaderWithBack backToPrevious={backToPrevious} />
@@ -566,7 +568,7 @@ const ChatBox: React.FC = () => {
         {!isSmallScreen && (
           <Box
             sx={{
-              width: "20%",
+              width: "40%",
               minWidth: "150px",
               ml: 2,
               display: "flex",
@@ -583,8 +585,7 @@ const ChatBox: React.FC = () => {
         )}
       </Box>
 
-      {/* <div ref={bottomRef} /> */}
-    </>
+  
   );
 };
 
