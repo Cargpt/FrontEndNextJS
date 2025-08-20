@@ -316,13 +316,18 @@ const ChatBox: React.FC = () => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef<boolean>(false);
   const { bottomRef, userAvatarRef, lastUserMsgIndex, scrollToLastMessage } =
-    useAutoScroll(messages, chatContainerRef as React.RefObject<HTMLDivElement | null>);
+    useAutoScroll(
+      messages,
+      chatContainerRef as React.RefObject<HTMLDivElement | null>
+    );
 
   const handleScroll = () => {
     if (chatContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+      const { scrollTop, scrollHeight, clientHeight } =
+        chatContainerRef.current;
+      console.log('scrollTop:', scrollTop, 'scrollHeight:', scrollHeight, 'clientHeight:', clientHeight);
       setShowScrollToTop(scrollTop > 0);
-      setShowScrollToBottom(scrollTop + clientHeight < scrollHeight);
+      setShowScrollToBottom(scrollTop + clientHeight + 5 < scrollHeight);
     }
   };
 
@@ -428,17 +433,14 @@ const ChatBox: React.FC = () => {
           display: "flex",
           justifyContent: "center",
           alignItems: "flex-start",
-          ml: { xs: 0, sm: 0},
+          ml: { xs: 0, sm: 0 },
         }}
       >
-        {!isSmallScreen && (
-          <Feeds />
-        )}
-                <Paper
+        {!isSmallScreen && <Feeds />}
+        <Paper
           elevation={3}
           sx={{
-            p: 2,         
-
+            p: 2,
 
             width: isSmallScreen ? "100%" : "50%",
             display: "flex",
@@ -619,11 +621,8 @@ const ChatBox: React.FC = () => {
             </Box>
           )}
         </Paper>
-        {!isSmallScreen && (
-          <DealerList />
-        )}
+        {!isSmallScreen && <DealerList />}
       </Box>
-    
 
       {/* <div ref={bottomRef} /> */}
     </>
