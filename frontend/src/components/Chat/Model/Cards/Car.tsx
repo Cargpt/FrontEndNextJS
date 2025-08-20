@@ -90,6 +90,8 @@ const TeslaCard: React.FC<CarCardProps> = ({
   variant = "default",
   onTriggerOverallRecommendations, // Destructure new prop
 }) => {
+
+
   const rawValues = Object.values(selectedItem);
 
   const { open, hide, show } = useLoginDialog();
@@ -126,6 +128,8 @@ const TeslaCard: React.FC<CarCardProps> = ({
     useState<boolean>(false);
   const [loadingOverallRecommendations, setLoadingOverallRecommendations] =
     useState<boolean>(false); // New state
+ 
+const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
 
   const showSignUP = () => {
     setshowSignUpState(true);
@@ -925,6 +929,88 @@ const TeslaCard: React.FC<CarCardProps> = ({
               }}
             />
           )}
+
+
+           {onTriggerOverallRecommendations && (
+    <Chip
+      label={loadingOverallRecommendations ? <CircularProgress size={20} /> : "Get More Recommendations"}
+      clickable
+      color="default"
+      variant="filled"
+      size="small"
+      icon={<LightbulbIcon />}
+      onClick={async () => {
+        setLoadingOverallRecommendations(true);
+        setMoreRecDisabled(true);
+        const carToRecommend = modelCars[0]; // Get the first car object from the array
+        try {
+          const payload = {
+            price: carToRecommend?.Price >= 4000000 ? 10000000 : carToRecommend?.Price  ??  0,
+            model_name: carToRecommend?.ModelName || "",
+            transmission: carToRecommend?.Trans_fullform === "Automatic"
+              ? "AT"
+              : carToRecommend?.Trans_fullform === "Manual"
+                ? "MT"
+                : carToRecommend?.Trans_fullform || "",
+            seats: carToRecommend?.Seats || 0,
+            body_type: carToRecommend?.BodyName ?? carToRecommend?.BodyType ?? "", 
+            fuel: carToRecommend?.FuelType || "",
+          };
+
+          const response = await axiosInstance1.post("/api/cargpt/recommend-by-price/", payload);
+          const data = response; // axiosInstance1 returns parsed data directly
+          const recommendedCars = Array.isArray(data)
+            ? data
+            : (Array.isArray((data as any)?.recommendations) ? (data as any).recommendations : []);
+
+          if (recommendedCars.length > 0) {
+            const count = recommendedCars.length;
+            const carPlural = count === 1 ? "car" : "cars";
+
+            const userMessage: Message = {
+              id: String(Date.now()),
+              message: "See other recommendations",
+              render: "text",
+              sender: "user",
+            };
+
+            const botMessage: Message = {
+              id: String(Date.now() + 1),
+              message: { [`${carToRecommend?.ModelName}_Recommendations`]: recommendedCars },
+              render: "carOptions",
+              sender: "bot",
+            };
+
+            setMessages((prev) => [...prev, userMessage, botMessage]);
+            
+          } else {
+            showSnackbar("No more recommendations found.", {
+              horizontal: "center",
+              vertical: "bottom",
+            });
+          }
+        } catch (error: any) {
+          console.error("Error fetching overall recommendations:", error);
+          showSnackbar(error.message || "Failed to fetch recommendations. Please try again later.", {
+            horizontal: "center",
+            vertical: "bottom",
+          });
+          setMoreRecDisabled(false);
+        } finally {
+          setLoadingOverallRecommendations(false);
+        }
+      }}
+      disabled={loadingOverallRecommendations || moreRecDisabled}
+      sx={{
+        fontSize: 13,
+        textTransform: "capitalize",
+        borderWidth: 1,
+        "& .MuiChip-icon": { color: "rgba(0, 0, 0, 0.54)" }, // Adjust icon color
+        flex: { xs: '1 1 100%', sm: '0 auto' }, // Full width on mobile to center
+        maxWidth: { xs: '100%', sm: 'none' },
+      }}
+    />
+  )}
         </Stack>
       )}
       {dialog.type === "gallery" && (
