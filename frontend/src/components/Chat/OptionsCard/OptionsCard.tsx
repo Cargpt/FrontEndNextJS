@@ -314,17 +314,15 @@ const ChatBox: React.FC = () => {
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef<boolean>(false);
   const {
-   
+    bottomRef,
+    userAvatarRef,
+    lastUserMsgIndex,
+    scrollToLastMessage,
     isAtBottom,
   } = useAutoScroll(
     messages,
     chatContainerRef as React.RefObject<HTMLDivElement | null>
   );
-  const { bottomRef, userAvatarRef, lastUserMsgIndex, scrollToLastMessage } =
-    useAutoScroll(
-      messages,
-      chatContainerRef as React.RefObject<HTMLDivElement | null>
-    );
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -404,7 +402,6 @@ const ChatBox: React.FC = () => {
 )`;
 
   const { mode } = useColorMode();
-  console.log("history", messages);
 
   return (
     <>
@@ -443,16 +440,16 @@ const ChatBox: React.FC = () => {
                 marginBottom: isNative ? "2.7rem" : "1.5rem",
 
                 scrollbarWidth: "thin", // Firefox
-                scrollbarColor: "transparent transparent", // Firefox
-                "&::-webkit-scrollbar": {
-                  width: "6px",
-                },
-                "&::-webkit-scrollbar-thumb": {
-                  backgroundColor: "transparent",
-                },
-                "&::-webkit-scrollbar-track": {
-                  backgroundColor: "transparent",
-                },
+        scrollbarColor: "transparent transparent", // Firefox
+        "&::-webkit-scrollbar": {
+          width: "6px",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          backgroundColor: "transparent",
+        },
+        "&::-webkit-scrollbar-track": {
+          backgroundColor: "transparent",
+        },
               }}
               ref={chatContainerRef}
               onDragStart={handleDragStart}
