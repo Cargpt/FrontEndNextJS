@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const useAutoScroll = <T extends { sender: string }>(messages: T[], chatContainerRef: React.RefObject<HTMLDivElement | null>) => {
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const userAvatarRef = useRef<HTMLDivElement | null>(null);
+  const [isAtBottom, setIsAtBottom] = useState(true);
 
   const scrollToLastMessage = () => {
     if (chatContainerRef.current) {
@@ -22,6 +23,30 @@ export const useAutoScroll = <T extends { sender: string }>(messages: T[], chatC
     scrollToLastMessage();
   }, [messages]);
 
+  useEffect(() => {
+    if (!chatContainerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsAtBottom(entry.isIntersecting);
+      },
+      {
+        root: chatContainerRef.current,
+        threshold: 0.1, // Adjust as needed
+      }
+    );
+
+    if (bottomRef.current) {
+      observer.observe(bottomRef.current);
+    }
+
+    return () => {
+      if (bottomRef.current) {
+        observer.unobserve(bottomRef.current);
+      }
+    };
+  }, [chatContainerRef.current, bottomRef.current]);
+
   const lastUserMsgIndex = (() => {
     for (let i = messages.length - 1; i >= 0; i--) {
       if ((messages[i] as any).sender === "user") return i;
@@ -29,7 +54,7 @@ export const useAutoScroll = <T extends { sender: string }>(messages: T[], chatC
     return -1;
   })();
 
-  return { bottomRef, userAvatarRef, lastUserMsgIndex, scrollToLastMessage };
+  return { bottomRef, userAvatarRef, lastUserMsgIndex, scrollToLastMessage, isAtBottom };
 };
 
 

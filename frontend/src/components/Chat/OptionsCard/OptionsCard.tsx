@@ -10,7 +10,6 @@ import {
   Grow,
   Fab, // Add Fab import
 } from "@mui/material";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp"; // Add KeyboardArrowUpIcon import
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"; // Add KeyboardArrowDownIcon import
 import { useChats } from "@/Context/ChatContext";
 import PersonIcon from "@mui/icons-material/Person";
@@ -39,7 +38,6 @@ const ChatBox: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { brands } = useBrands();
   const [cookies, , removeCookie] = useCookies(["selectedOption", "user"]);
-  const [showScrollToTop, setShowScrollToTop] = useState(false);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
   useEffect(() => {
@@ -315,42 +313,29 @@ const ChatBox: React.FC = () => {
 
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef<boolean>(false);
-  const { bottomRef, userAvatarRef, lastUserMsgIndex, scrollToLastMessage } =
-    useAutoScroll(
-      messages,
-      chatContainerRef as React.RefObject<HTMLDivElement | null>
-    );
-
-  const handleScroll = () => {
-    if (chatContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } =
-        chatContainerRef.current;
-      console.log('scrollTop:', scrollTop, 'scrollHeight:', scrollHeight, 'clientHeight:', clientHeight);
-      setShowScrollToTop(scrollTop > 0);
-      setShowScrollToBottom(scrollTop + clientHeight + 5 < scrollHeight);
-    }
-  };
+  const {
+    bottomRef,
+    userAvatarRef,
+    lastUserMsgIndex,
+    scrollToLastMessage,
+    isAtBottom,
+  } = useAutoScroll(
+    messages,
+    chatContainerRef as React.RefObject<HTMLDivElement | null>
+  );
 
   useEffect(() => {
-    const chatContainer = chatContainerRef.current;
-    if (chatContainer) {
-      chatContainer.addEventListener("scroll", handleScroll);
-      // Initial check
-      handleScroll();
+    if (chatContainerRef.current) {
+      setShowScrollToBottom(!isAtBottom);
     }
-    return () => {
-      if (chatContainer) {
-        chatContainer.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, [messages]);
+  }, [isAtBottom]);
 
-  const scrollToTop = () => {
-    chatContainerRef.current?.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
+  // const scrollToTop = () => {
+  //   chatContainerRef.current?.scrollTo({
+  //     top: 0,
+  //     behavior: "smooth",
+  //   });
+  // };
 
   const scrollToBottom = () => {
     chatContainerRef.current?.scrollTo({
