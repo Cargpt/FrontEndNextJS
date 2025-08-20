@@ -69,7 +69,9 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
       return (
         <div
           className="prompt"
-          dangerouslySetInnerHTML={{ __html: capitalizeFirst(message.message as string) }}
+          dangerouslySetInnerHTML={{
+            __html: capitalizeFirst(message.message as string),
+          }}
           id={`user-message-${index}`}
         />
       );

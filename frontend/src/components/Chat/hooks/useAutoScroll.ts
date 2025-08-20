@@ -32,7 +32,7 @@ export const useAutoScroll = <T extends { sender: string }>(messages: T[], chatC
       },
       {
         root: chatContainerRef.current,
-        threshold: 0.1, // Adjust as needed
+        threshold: 1.0, // Changed threshold to 1.0
       }
     );
 

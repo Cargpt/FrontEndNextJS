@@ -20,7 +20,15 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { Send, Person, KeyboardBackspaceSharp, Image as ImageIcon, PhotoCamera, PhotoLibrary, AutoAwesome } from "@mui/icons-material";
+import {
+  Send,
+  Person,
+  KeyboardBackspaceSharp,
+  Image as ImageIcon,
+  PhotoCamera,
+  PhotoLibrary,
+  AutoAwesome,
+} from "@mui/icons-material";
 
 // import { useChats } from "@/Context/ChatContext";
 import { useSnackbar } from "@/Context/SnackbarContext";
@@ -42,7 +50,7 @@ const AskAIChat: React.FC = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const router = useRouter();
-  const [cookies, setCookie, removeCookie] = useCookies(['selectedOption']);
+  const [cookies, setCookie, removeCookie] = useCookies(["selectedOption"]);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -58,7 +66,9 @@ const AskAIChat: React.FC = () => {
   const galleryInputRef = useRef<HTMLInputElement | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const { showSnackbar } = useSnackbar();
-  const [imageMenuAnchor, setImageMenuAnchor] = useState<null | HTMLElement>(null);
+  const [imageMenuAnchor, setImageMenuAnchor] = useState<null | HTMLElement>(
+    null
+  );
   const isImageMenuOpen = Boolean(imageMenuAnchor);
   const [cameraDialogOpen, setCameraDialogOpen] = useState(false);
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -105,8 +115,8 @@ const AskAIChat: React.FC = () => {
   };
 
   const handleBack = () => {
-    removeCookie('selectedOption');
-    router.push('/');
+    removeCookie("selectedOption");
+    router.push("/");
   };
 
   const sendMessage = async (textOverride?: string) => {
@@ -153,11 +163,12 @@ const AskAIChat: React.FC = () => {
       }
       const botMessage: Message = {
         id: generateMessageId(),
-        message: "Due to too much traffic on site, we are unable to respond to your query. Please try again later.",
+        message:
+          "Due to too much traffic on site, we are unable to respond to your query. Please try again later.",
         sender: "bot",
         timestamp: new Date(),
       };
-            setMessages((prev) => [...prev, botMessage]);
+      setMessages((prev) => [...prev, botMessage]);
 
       setLoading(false);
     }
@@ -178,13 +189,17 @@ const AskAIChat: React.FC = () => {
         // ignore and fallback
       }
       if (mounted) {
-        const picks = [...SUGGESTION_POOL].sort(() => Math.random() - 0.5).slice(0, 8);
+        const picks = [...SUGGESTION_POOL]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 8);
         setQuickPrompts(picks);
         setTypeaheadPool(SUGGESTION_POOL);
       }
     };
     init();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -204,7 +219,7 @@ const AskAIChat: React.FC = () => {
         next = 0;
         direction = 1;
       }
-      el.scrollTo({ left: next, behavior: 'smooth' });
+      el.scrollTo({ left: next, behavior: "smooth" });
     }, 3000);
     return () => clearInterval(timer);
   }, [quickPrompts.length]);
@@ -242,19 +257,21 @@ const AskAIChat: React.FC = () => {
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-//  Lisa risponse
+  //  Lisa risponse
   const fetchReply = async (input: string) => {
     // Ensure plain text response is returned
-    const response = await axiosInstance1.post(`/api/cargpt/ai-response/`, { input: encodeURIComponent(input) });
+    const response = await axiosInstance1.post(`/api/cargpt/ai-response/`, {
+      input: encodeURIComponent(input),
+    });
     // If response is plain text, wrap it as { data: response }
     if (typeof response === "string") {
       return { data: response };
     }
     return response;
-  }
+  };
 
-  const {mode}=useColorMode()
-  console.log(mode)
+  const { mode } = useColorMode();
+  console.log(mode);
 
   const getTokenFromCookies = () => {
     const name = "token=";
@@ -282,18 +299,27 @@ const AskAIChat: React.FC = () => {
       if (Array.isArray(arr)) return normalizeQuestions(arr);
     }
     if (typeof data === "string") {
-      return data.split(/\r?\n+/).map((s) => s.trim()).filter(Boolean);
+      return data
+        .split(/\r?\n+/)
+        .map((s) => s.trim())
+        .filter(Boolean);
     }
     return [];
   };
 
   const fetchFaqPrompts = async (): Promise<string[]> => {
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://ec2-3-110-170-230.ap-south-1.compute.amazonaws.com";
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_BASE_URL ||
+      "http://ec2-3-110-170-230.ap-south-1.compute.amazonaws.com";
     const url = `${baseUrl}/api/cargpt/faqs/questions/`;
     const token = getTokenFromCookies();
     const headers: Record<string, string> = {};
     if (token) headers["Authorization"] = `Bearer ${token}`;
-    const res = await fetch(url, { method: "GET", headers, redirect: "follow" as any });
+    const res = await fetch(url, {
+      method: "GET",
+      headers,
+      redirect: "follow" as any,
+    });
     if (!res.ok) throw new Error(`Failed to fetch FAQs (${res.status})`);
     const contentType = res.headers.get("content-type") || "";
     let data: any;
@@ -301,12 +327,18 @@ const AskAIChat: React.FC = () => {
       data = await res.json();
     } else {
       const text = await res.text();
-      try { data = JSON.parse(text); } catch { data = text; }
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = text;
+      }
     }
     return normalizeQuestions(data);
   };
   // Hint mobile browsers to open camera first; users can still choose gallery within camera UI
-  const isMobileDevice = typeof window !== 'undefined' && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isMobileDevice =
+    typeof window !== "undefined" &&
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   const handleUploadClick = (event: React.MouseEvent<HTMLElement>) => {
     if (isMobileDevice) {
@@ -326,7 +358,10 @@ const AskAIChat: React.FC = () => {
     }
     try {
       setCameraError(null);
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: "environment" } }, audio: false });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: "environment" } },
+        audio: false,
+      });
       streamRef.current = stream;
       if (videoRef.current) {
         // @ts-ignore - srcObject exists on HTMLVideoElement
@@ -334,7 +369,7 @@ const AskAIChat: React.FC = () => {
         await videoRef.current.play();
       }
       setCameraDialogOpen(true);
-    } catch (err:any) {
+    } catch (err: any) {
       setCameraError(err?.message || "Unable to access camera");
       // Fallback to file input if camera not available
       galleryInputRef.current?.click();
@@ -370,16 +405,21 @@ const AskAIChat: React.FC = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
     ctx.drawImage(video, 0, 0, width, height);
-    canvas.toBlob(async (blob) => {
-      if (!blob) return;
-      const file = new File([blob], `camera_capture_${Date.now()}.jpg`, { type: "image/jpeg" });
-      await uploadFile(file);
-      handleCloseCameraDialog();
-    }, "image/jpeg", 0.92);
+    canvas.toBlob(
+      async (blob) => {
+        if (!blob) return;
+        const file = new File([blob], `camera_capture_${Date.now()}.jpg`, {
+          type: "image/jpeg",
+        });
+        await uploadFile(file);
+        handleCloseCameraDialog();
+      },
+      "image/jpeg",
+      0.92
+    );
   };
 
   const uploadFile = async (file: File) => {
-
     const userMessage: Message = {
       id: generateMessageId(),
       message: `Sent an image: ${file.name}`,
@@ -438,8 +478,13 @@ const AskAIChat: React.FC = () => {
           : null;
 
         if (candidates && candidates.length) {
-          const keyName = candidates?.[0]?.ModelName || candidates?.[0]?.VariantName || "matched";
-          const selectedItem: Record<string, any[]> = { [String(keyName)]: candidates };
+          const keyName =
+            candidates?.[0]?.ModelName ||
+            candidates?.[0]?.VariantName ||
+            "matched";
+          const selectedItem: Record<string, any[]> = {
+            [String(keyName)]: candidates,
+          };
           const identifiedTitle = [
             candidates?.[0]?.BrandName,
             candidates?.[0]?.ModelName,
@@ -462,10 +507,9 @@ const AskAIChat: React.FC = () => {
 
           const textMessage: Message = {
             id: generateMessageId(),
-            message:
-              identifiedTitle
-                ? `This looks like ${identifiedTitle}. Here are the matching variants:`
-                : "Here are the cars that match your image:",
+            message: identifiedTitle
+              ? `This looks like ${identifiedTitle}. Here are the matching variants:`
+              : "Here are the cars that match your image:",
             sender: "bot",
             timestamp: new Date(),
           };
@@ -488,13 +532,17 @@ const AskAIChat: React.FC = () => {
       if (!renderedCard) {
         const botMessage: Message = {
           id: generateMessageId(),
-          message: replyText || (jsonData ? JSON.stringify(jsonData) : "Sorry, I couldn't get a response."),
+          message:
+            replyText ||
+            (jsonData
+              ? JSON.stringify(jsonData)
+              : "Sorry, I couldn't get a response."),
           sender: "bot",
           timestamp: new Date(),
         };
         setMessages((prev) => [...prev, botMessage]);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Image upload failed:", error);
       showSnackbar(`Failed to upload image. ${error?.message ?? ""}`.trim(), {
         horizontal: "center",
@@ -502,8 +550,9 @@ const AskAIChat: React.FC = () => {
       });
       const botMessage: Message = {
         id: generateMessageId(),
-        message:
-          `Unable to process the image right now. ${error?.message ?? ""}`.trim(),
+        message: `Unable to process the image right now. ${
+          error?.message ?? ""
+        }`.trim(),
         sender: "bot",
         timestamp: new Date(),
       };
@@ -516,7 +565,9 @@ const AskAIChat: React.FC = () => {
     }
   };
 
-  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
+  const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = async (
+    e
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
     await uploadFile(file);
@@ -531,13 +582,17 @@ const AskAIChat: React.FC = () => {
       return;
     }
     const lower = trimmed.toLowerCase();
-    const results = typeaheadPool.filter((s) => s.toLowerCase().includes(lower)).slice(0, 6);
+    const results = typeaheadPool
+      .filter((s) => s.toLowerCase().includes(lower))
+      .slice(0, 6);
     setFilteredSuggestions(results);
     setShowSuggestions(results.length > 0);
     setHighlightIndex(results.length ? 0 : -1);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const value = e.target.value;
     setInputMessage(value);
     updateSuggestions(value);
@@ -551,19 +606,22 @@ const AskAIChat: React.FC = () => {
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!showSuggestions || filteredSuggestions.length === 0) return;
-    if (e.key === 'ArrowDown') {
+    if (e.key === "ArrowDown") {
       e.preventDefault();
       setHighlightIndex((prev) => (prev + 1) % filteredSuggestions.length);
-    } else if (e.key === 'ArrowUp') {
+    } else if (e.key === "ArrowUp") {
       e.preventDefault();
-      setHighlightIndex((prev) => (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length);
-    } else if (e.key === 'Enter') {
+      setHighlightIndex(
+        (prev) =>
+          (prev - 1 + filteredSuggestions.length) % filteredSuggestions.length
+      );
+    } else if (e.key === "Enter") {
       if (highlightIndex >= 0) {
         e.preventDefault();
         const chosen = filteredSuggestions[highlightIndex];
         handleSuggestionClick(chosen);
       }
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       setShowSuggestions(false);
     }
   };
@@ -596,157 +654,201 @@ const AskAIChat: React.FC = () => {
           bgcolor: mode === "dark" ? "#232323" : "#ffffff", // Use #232323 for dark mode
         }}
       >
-       {messages.map((message, index) => {
-  const showAvatar = index === 0 || (messages[index - 1] && messages[index - 1].sender !== message.sender);
-  const isCard = (message as any)?.render === "carOptions";
-  const isFullWidthText =
-    message.sender === "bot" && !isCard && (
-      (messages[index + 1] && (messages[index + 1] as any)?.render === "carOptions") ||
-      (messages[index + 2] && (messages[index + 2] as any)?.render === "carOptions")
-    );
-  const showTimestamp = isCard || !isFullWidthText;
-  return (
-  <Box
-    key={message.id}
-    sx={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: message.sender === "user" ? "flex-end" : "flex-start",
-      width: "100%",
-    }}
-  >
-    {/* Avatar on top */}
-    {showAvatar && (
-      <Box sx={{ mb: 1 }}>
-        {message.sender === "bot" ? (
-          <Avatar
-            sx={{
-              width: 32,
-              height: 32,
-              bgcolor: "transparent",
-            }}
-            onMouseEnter={() => { autoScrollPaused.current = true; }}
-            onMouseLeave={() => { autoScrollPaused.current = false; }}
-            onTouchStart={() => { autoScrollPaused.current = true; }}
-            onTouchEnd={() => { autoScrollPaused.current = false; }}
-          >
-            <img loading="lazy" src="/assets/lisa.svg" alt="Lisa" width={32} height={32} />
-          </Avatar>
-        ) : (
-          <Avatar
-            sx={{
-              width: 36,
-              height: 36,
-              bgcolor: "primary.main",
-              color: "white",
-              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
-              border: "2px solid white",
-            }}
-          >
-            <Person sx={{ fontSize: "1.2rem" }} />
-          </Avatar>
-        )}
-      </Box>
-    )}
-
-    {/* Message Bubble */}
-    <Box
-      sx={{
-        maxWidth: (isCard || isFullWidthText)
-          ? "100%"
-          : {
-              xs: "90%",
-              sm: "60%",
-            },
-        width: (isCard || isFullWidthText) ? "100%" : undefined,
-        alignSelf: message.sender === "user" ? "flex-end" : "flex-start",
-      }}
-    >
-      <Paper
-        sx={{
-          p: (isCard || isFullWidthText) ? 0 : 2,
-          bgcolor: isCard
-            ? (mode === "dark" ? "#232323" : "#ffffff")
-            : (isFullWidthText
-              ? "transparent"
-              : (message.sender === "user"
-                ? (mode=="dark"? "#232323":  "rgb(211, 227, 255)")
-                : (mode==="dark"? "#232323" : "#F5F5F5"))),
-          borderRadius: isCard
-            ? 1
-            : ((isFullWidthText)
-              ? 0
-              : (message.sender === "user"
-                ? "18px 18px 4px 18px"
-                : "18px 18px 18px 4px")),
-          wordBreak: "break-word",
-          boxShadow: (isCard || isFullWidthText) ? "none" : "0 2px 8px rgba(24, 118, 210, 0.10)",
-          position: "relative",
-        }}
-      >
-        {message.sender === "bot" ? (
-          message.render === "carOptions" && message.message && typeof message.message === "object" ? (
-            <div>
-              {/* Embed car cards inside Ask AI bubble as an iframe-like block */}
-              {/* Keep Paper container; cards component handles its own layout */}
-              {/* We reuse the existing Cards component by lazy requiring to avoid circular deps */}
-              {(() => {
-                const TeslaCard = require("./Model/Cards/Car").default;
-                return (
-                  <Box sx={{ width: '100%', backgroundColor: '#ffffff' }}>
-                    <TeslaCard
-                      selectedItem={message.message}
-                      onClick={() => {}}
-                      handleNeedAdviceSupport={() => {}}
-                      variant="compact"
-                    />
-                  </Box>
-                );
-              })()}
-            </div>
-          ) : (
-            <Typography
-              variant="body2"
-              component="div"
+        {messages.map((message, index) => {
+          const showAvatar =
+            index === 0 ||
+            (messages[index - 1] &&
+              messages[index - 1].sender !== message.sender);
+          const isCard = (message as any)?.render === "carOptions";
+          const isFullWidthText =
+            message.sender === "bot" &&
+            !isCard &&
+            ((messages[index + 1] &&
+              (messages[index + 1] as any)?.render === "carOptions") ||
+              (messages[index + 2] &&
+                (messages[index + 2] as any)?.render === "carOptions"));
+          const showTimestamp = isCard || !isFullWidthText;
+          return (
+            <Box
+              key={message.id}
               sx={{
-                fontSize: { xs: "13px", sm: "14px" },
-                lineHeight: "1.4",
-                fontWeight: 400,
+                display: "flex",
+                flexDirection: "column",
+                alignItems:
+                  message.sender === "user" ? "flex-end" : "flex-start",
+                width: "100%",
               }}
-              dangerouslySetInnerHTML={{
-                __html: String(message.message)
-                  .replace(/\*\*(.*?)\*\*/g, `<b>$1</b>`)
-                  .replace(
-                    /\* (.*?)\n/g,
-                    `<div style="display:flex;align-items:flex-start;gap:6px;margin-top:10px;margin-bottom:5px;flex-wrap:wrap;word-break:break-word;">
+            >
+              {/* Avatar on top */}
+              {showAvatar && (
+                <Box sx={{ mb: 1 }}>
+                  {message.sender === "bot" ? (
+                    <Avatar
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        bgcolor: "transparent",
+                      }}
+                      onMouseEnter={() => {
+                        autoScrollPaused.current = true;
+                      }}
+                      onMouseLeave={() => {
+                        autoScrollPaused.current = false;
+                      }}
+                      onTouchStart={() => {
+                        autoScrollPaused.current = true;
+                      }}
+                      onTouchEnd={() => {
+                        autoScrollPaused.current = false;
+                      }}
+                    >
+                      <img
+                        loading="lazy"
+                        src="/assets/lisa.svg"
+                        alt="Lisa"
+                        width={32}
+                        height={32}
+                      />
+                    </Avatar>
+                  ) : (
+                    <Avatar
+                      sx={{
+                        width: 36,
+                        height: 36,
+                        bgcolor: "primary.main",
+                        color: "white",
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+                        border: "2px solid white",
+                      }}
+                    >
+                      <Person sx={{ fontSize: "1.2rem" }} />
+                    </Avatar>
+                  )}
+                </Box>
+              )}
+
+              {/* Message Bubble */}
+              <Box
+                sx={{
+                  maxWidth:
+                    isCard || isFullWidthText
+                      ? "100%"
+                      : {
+                          xs: "90%",
+                          sm: "60%",
+                        },
+                  width: isCard || isFullWidthText ? "100%" : undefined,
+                  alignSelf:
+                    message.sender === "user" ? "flex-end" : "flex-start",
+                }}
+              >
+                <Paper
+                  sx={{
+                    p: isCard || isFullWidthText ? 0 : 2,
+                    bgcolor: isCard
+                      ? mode === "dark"
+                        ? "#232323"
+                        : "#ffffff"
+                      : isFullWidthText
+                      ? "transparent"
+                      : message.sender === "user"
+                      ? mode == "dark"
+                        ? "#232323"
+                        : "rgb(211, 227, 255)"
+                      : mode === "dark"
+                      ? "#232323"
+                      : "#F5F5F5",
+                    borderRadius: isCard
+                      ? 1
+                      : isFullWidthText
+                      ? 0
+                      : message.sender === "user"
+                      ? "18px 18px 4px 18px"
+                      : "18px 18px 18px 4px",
+                    wordBreak: "break-word",
+                    boxShadow:
+                      isCard || isFullWidthText
+                        ? "none"
+                        : "0 2px 8px rgba(24, 118, 210, 0.10)",
+                    position: "relative",
+                  }}
+                >
+                  {message.sender === "bot" ? (
+                    message.render === "carOptions" &&
+                    message.message &&
+                    typeof message.message === "object" ? (
+                      <div>
+                        {/* Embed car cards inside Ask AI bubble as an iframe-like block */}
+                        {/* Keep Paper container; cards component handles its own layout */}
+                        {/* We reuse the existing Cards component by lazy requiring to avoid circular deps */}
+                        {(() => {
+                          const TeslaCard =
+                            require("./Model/Cards/Car").default;
+                          return (
+                            <Box
+                              sx={{ width: "100%", backgroundColor: "#ffffff" }}
+                            >
+                              <TeslaCard
+                                selectedItem={message.message}
+                                onClick={() => {}}
+                                handleNeedAdviceSupport={() => {}}
+                                variant="compact"
+                              />
+                            </Box>
+                          );
+                        })()}
+                      </div>
+                    ) : (
+                      <Typography
+                        variant="body2"
+                        component="div"
+                        sx={{
+                          fontSize: { xs: "13px", sm: "14px" },
+                          lineHeight: "1.4",
+                          fontWeight: 400,
+                        }}
+                        dangerouslySetInnerHTML={{
+                          __html: String(message.message)
+                            .replace(/\*\*(.*?)\*\*/g, `<b>$1</b>`)
+                            .replace(
+                              /\* (.*?)\n/g,
+                              `<div style="display:flex;align-items:flex-start;gap:6px;margin-top:10px;margin-bottom:5px;flex-wrap:wrap;word-break:break-word;">
                        <span style="color:#1876d2;font-size:16px;line-height:1;">👉</span>
                        <span style="flex:1;min-width:0;">$1</span>
                      </div>`
-                  ),
-              }}
-            />
-          )
-        ) : (
-          <Typography variant="body2" sx={{ fontSize: "14px", lineHeight: "1.4", fontWeight: 400 }}>
-            {String(message.message)}
-          </Typography>
-        )}
-      </Paper>
-      {showTimestamp && (
-        <Typography
-          variant="caption"
-          sx={{
-            color: "text.secondary",
-            mt: 0.5,
-            fontSize: "0.75rem",
-          }}
-        >
-          {formatTime(message.timestamp)}
-        </Typography>
-      )}
-    </Box>
-  </Box>
-)})}
+                            ),
+                        }}
+                      />
+                    )
+                  ) : (
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "14px",
+                        lineHeight: "1.4",
+                        fontWeight: 400,
+                      }}
+                    >
+                      {String(message.message)}
+                    </Typography>
+                  )}
+                </Paper>
+                {showTimestamp && (
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      color: "text.secondary",
+                      mt: 0.5,
+                      fontSize: "0.75rem",
+                    }}
+                  >
+                    {formatTime(message.timestamp)}
+                  </Typography>
+                )}
+              </Box>
+            </Box>
+          );
+        })}
 
         {loading && (
           <Box
@@ -763,32 +865,46 @@ const AskAIChat: React.FC = () => {
                 bgcolor: "transparent",
               }}
             >
-              <img loading="lazy" src="/assets/lisa.svg" alt="Lisa" width={32} height={32} />
+              <img
+                loading="lazy"
+                src="/assets/lisa.svg"
+                alt="Lisa"
+                width={32}
+                height={32}
+              />
             </Avatar>
             <Paper
               sx={{
                 p: 2,
-                bgcolor: mode=="dark"? "transparent": "#F5F5F5",
+                bgcolor: mode == "dark" ? "transparent" : "#F5F5F5",
                 borderRadius: 2,
                 display: "flex",
                 alignItems: "center",
                 gap: 1,
               }}
             >
-
               {/* <CircularProgress size={16} /> */}
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Box sx={{
-                  px: 2,
-                  py: 1,
-                
-                  borderRadius: 2,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1,
-                  background: mode=="dark"? "transparent": "#F5F5F5",
-                }}>
-                  <Typography variant="body2" sx={{ m: 0, fontWeight: 500, background:mode=="dark"? "": "#F5F5F5" }} >
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Box
+                  sx={{
+                    px: 2,
+                    py: 1,
+
+                    borderRadius: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    background: mode == "dark" ? "transparent" : "#F5F5F5",
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      m: 0,
+                      fontWeight: 500,
+                      background: mode == "dark" ? "" : "#F5F5F5",
+                    }}
+                  >
                     Lisa is typing
                   </Typography>
                   <div className="loader"></div>
@@ -803,71 +919,76 @@ const AskAIChat: React.FC = () => {
       <Box
         sx={{
           p: 3,
-          borderTop:  "1px solid #f0f0f0",
-          bgcolor:  mode === "dark" ? "#000" : "#ffffff", // Black in dark mode
+          borderTop: "1px solid #f0f0f0",
+          bgcolor: mode === "dark" ? "#000" : "#ffffff", // Black in dark mode
           mb: isSmallScreen ? 0 : 2,
           minWidth: 0,
-          boxShadow: 'none', // Remove any shadow that could cause a black box effect
+          boxShadow: "none", // Remove any shadow that could cause a black box effect
         }}
       >
-      {/* Quick prompts row */}
-      {!showSuggestions && quickPrompts.length > 0 && (!hasCarCard || inputMessage.length > 0) && (
-        <Box
-          ref={quickRowRef}
-          sx={{
-            display: "flex",
-            flexWrap: "nowrap",
-            overflowX: "auto",
-            gap: 1,
-            mb: 1.5,
-            px: 0.5,
-            whiteSpace: 'nowrap',
-            scrollBehavior: 'smooth',
-            WebkitOverflowScrolling: 'touch',
-            msOverflowStyle: 'none',
-            scrollbarWidth: 'none',
-            '&::-webkit-scrollbar': { display: 'none' },
-            bgcolor: mode === "dark" ? "#232323" : undefined, // Match dark background
-          }}
-        >
-            {quickPrompts.map((p) => (
-              <Button
-                key={p}
-                onClick={() => handleQuickPromptClick(p)}
-                disabled={loading}
-                variant="contained"
-                size="small"
-                startIcon={<AutoAwesome sx={{ fontSize: 16 }} />}
-                sx={{
-                  flex: '0 0 auto',
-                  borderRadius: 999,
-                  textTransform: "none",
-                  px: 1.8,
-                  py: 0.8,
-                  bgcolor:"background.paper",
-                  color: "text.primary",
-                  boxShadow: '0 2px 10px rgba(24,118,210,0.15)',
-                  border: '1px solid rgba(24,118,210,0.25)',
-                  '&:hover': {
-                    background: 'linear-gradient(90deg, #D0E7FC 0%, #A8D0FA 100%)',
-                  },
-                }}
-              >
-                {p}
-              </Button>
-            ))}
-          </Box>
-        )}
+        {/* Quick prompts row */}
+        {!showSuggestions &&
+          quickPrompts.length > 0 &&
+          (!hasCarCard || inputMessage.length > 0) && (
+            <Box
+              ref={quickRowRef}
+              sx={{
+                display: "flex",
+                flexWrap: "nowrap",
+                overflowX: "auto",
+                gap: 1,
+                mb: 1.5,
+                px: 0.5,
+                whiteSpace: "nowrap",
+                scrollBehavior: "smooth",
+                WebkitOverflowScrolling: "touch",
+                msOverflowStyle: "none",
+                scrollbarWidth: "none",
+                "&::-webkit-scrollbar": { display: "none" },
+                bgcolor: mode === "dark" ? "#232323" : undefined, // Match dark background
+              }}
+            >
+              {quickPrompts.map((p) => (
+                <Button
+                  key={p}
+                  onClick={() => handleQuickPromptClick(p)}
+                  disabled={loading}
+                  variant="contained"
+                  size="small"
+                  startIcon={<AutoAwesome sx={{ fontSize: 16 }} />}
+                  sx={{
+                    flex: "0 0 auto",
+                    borderRadius: 999,
+                    textTransform: "none",
+                    px: 1.8,
+                    py: 0.8,
+                    bgcolor: "background.paper",
+                    color: "text.primary",
+                    boxShadow: "0 2px 10px rgba(24,118,210,0.15)",
+                    border: "1px solid rgba(24,118,210,0.25)",
+                    "&:hover": {
+                      background:
+                        "linear-gradient(90deg, #D0E7FC 0%, #A8D0FA 100%)",
+                    },
+                  }}
+                >
+                  {p}
+                </Button>
+              ))}
+            </Box>
+          )}
         {showSuggestions && filteredSuggestions.length > 0 && (
-          <Box sx={{
-            mb: 1,
-            mx: 0.5,
-            borderRadius: 1,
-            boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
-            overflow: 'auto',
-            maxHeight: 168,
-            bgcolor: 'background.paper',
-          }}>
+          <Box
+            sx={{
+              mb: 1,
+              mx: 0.5,
+              borderRadius: 1,
+              boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
+              overflow: "auto",
+              maxHeight: 168,
+              bgcolor: "background.paper",
+            }}
+          >
             {filteredSuggestions.map((s, idx) => (
               <Box
                 key={s}
@@ -875,11 +996,12 @@ const AskAIChat: React.FC = () => {
                 onClick={() => handleSuggestionClick(s)}
                 sx={{
                   px: 1.5,
-                  py:  1.25,
-                  cursor: 'pointer',
-                  bgcolor: idx === highlightIndex ? 'action.selected' : 'transparent',
-                  '&:hover': { bgcolor: 'action.hover' },
-                  fontSize: '14px',
+                  py: 1.25,
+                  cursor: "pointer",
+                  bgcolor:
+                    idx === highlightIndex ? "action.selected" : "transparent",
+                  "&:hover": { bgcolor: "action.hover" },
+                  fontSize: "14px",
                   minHeight: 48,
                 }}
               >
@@ -889,157 +1011,158 @@ const AskAIChat: React.FC = () => {
           </Box>
         )}
         <Box
-      sx={{
-        display: "flex",
-        alignItems: "flex-end",
-        position: "relative",
-        overflow: "visible",
-        flexWrap: "wrap",
-        gap: 1,
-      }}
-    >
-      <TextField
-        fullWidth
-        multiline
-        maxRows={3}
-        value={inputMessage}
-        onChange={handleInputChange}
-        onKeyPress={handleKeyPress}
-        onKeyDown={handleKeyDown}
-        placeholder="Type your message..."
-        variant="outlined"
-        size="small"
-        disabled={loading}
-        sx={{
-          pr: 0,
-          "& .MuiOutlinedInput-root": {
-            borderRadius: 999,
-            bgcolor: mode === "dark" ? "#232323" : "#f5f5f5",
-            border: "none",
-            transition: "all 0.2s ease",
-            "& fieldset": {
-              border: "none",
-            },
-            "&:hover": {
-              bgcolor: mode === "dark" ? "#232323" : "#eeeeee",
-            },
-            "&.Mui-focused": {
-              bgcolor: mode === "dark" ? "#232323" : "white",
-              boxShadow: "none",
-            },
-            "&.Mui-focused fieldset": {
-              border: `2px solid ${mode === "dark" ? "none" : "#1876d2"}`,
-            },
-          },
-          "& .MuiInputBase-input": {
-            padding: {
-              xs: "8px 10px",
-              sm: "10px 14px",
-            },
-            fontSize: "16px",
-            lineHeight: "1.4",
-            color: mode === "dark" ? "#fff" : "#000",
-            "&::placeholder": {
-              color: mode === "dark" ? "#aaa" : "#9e9e9e",
-              opacity: 1,
-            },
-          },
-        }}
-        InputProps={{
-          endAdornment: (
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: 1,
-                position: "relative",
-                flexShrink: 0,
-              }}
-            >
-              <IconButton
-                onClick={handleUploadClick}
-                disabled={loading}
-                sx={{
-                  bgcolor: mode === "dark" ? "#2c2c2c" : "#eeeeee",
-                  color: mode === "dark" ? "#fff" : "#000",
-                  width: { xs: 32, sm: 38 },
-                  height: { xs: 32, sm: 38 },
-                  borderRadius: "50%",
-                  transition: "all 0.2s ease",
-                  "&:hover": {
-                    bgcolor: mode === "dark" ? "#3a3a3a" : "#e0e0e0",
-                    transform: {
-                      xs: "none",
-                      sm: "scale(1.05)",
-                    },
-                  },
-                  "&:disabled": {
-                    bgcolor: "#e0e0e0",
-                    color: "#9e9e9e",
-                  },
-                }}
-              >
-                <ImageIcon fontSize="small" />
-              </IconButton>
-
-              {isMobileDevice && (
-                <Menu
-                  anchorEl={imageMenuAnchor}
-                  open={isImageMenuOpen}
-                  onClose={handleCloseImageMenu}
-                  keepMounted
+          sx={{
+            display: "flex",
+            alignItems: "flex-end",
+            position: "relative",
+            overflow: "visible",
+            flexWrap: "wrap",
+            gap: 1,
+          }}
+        >
+          <TextField
+            fullWidth
+            multiline
+            maxRows={3}
+            value={inputMessage}
+            onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyDown}
+            placeholder="Type your message..."
+            variant="outlined"
+            size="small"
+            disabled={loading}
+            sx={{
+              pr: 0,
+              "& .MuiOutlinedInput-root": {
+                borderRadius: 999,
+                bgcolor: mode === "dark" ? "#232323" : "#f5f5f5",
+                border: "none",
+                transition: "all 0.2s ease",
+                "& fieldset": {
+                  border: "none",
+                },
+                "&:hover": {
+                  bgcolor: mode === "dark" ? "#232323" : "#eeeeee",
+                },
+                "&.Mui-focused": {
+                  bgcolor: mode === "dark" ? "#232323" : "white",
+                  boxShadow: "none",
+                },
+                "&.Mui-focused fieldset": {
+                  border: `2px solid ${mode === "dark" ? "none" : "#1876d2"}`,
+                },
+              },
+              "& .MuiInputBase-input": {
+                padding: {
+                  xs: "8px 10px",
+                  sm: "10px 14px",
+                },
+                fontSize: "16px",
+                lineHeight: "1.4",
+                color: mode === "dark" ? "#fff" : "#000",
+                "&::placeholder": {
+                  color: mode === "dark" ? "#aaa" : "#9e9e9e",
+                  opacity: 1,
+                },
+              },
+            }}
+            InputProps={{
+              endAdornment: (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    position: "relative",
+                    flexShrink: 0,
+                  }}
                 >
-                  <MenuItem onClick={handleChooseCamera} disabled={loading}>
-                    <ListItemIcon>
-                      <PhotoCamera fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Open Camera</ListItemText>
-                  </MenuItem>
-                  <MenuItem onClick={handleChooseGallery} disabled={loading}>
-                    <ListItemIcon>
-                      <PhotoLibrary fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Open Gallery</ListItemText>
-                  </MenuItem>
-                </Menu>
-              )}
+                  <IconButton
+                    onClick={handleUploadClick}
+                    disabled={loading}
+                    sx={{
+                      bgcolor: mode === "dark" ? "#2c2c2c" : "#eeeeee",
+                      color: mode === "dark" ? "#fff" : "#000",
+                      width: { xs: 32, sm: 38 },
+                      height: { xs: 32, sm: 38 },
+                      borderRadius: "50%",
+                      transition: "all 0.2s ease",
+                      "&:hover": {
+                        bgcolor: mode === "dark" ? "#3a3a3a" : "#e0e0e0",
+                        transform: {
+                          xs: "none",
+                          sm: "scale(1.05)",
+                        },
+                      },
+                      "&:disabled": {
+                        bgcolor: "#e0e0e0",
+                        color: "#9e9e9e",
+                      },
+                    }}
+                  >
+                    <ImageIcon fontSize="small" />
+                  </IconButton>
 
-              <IconButton
-                onClick={(e) => {
-    e.preventDefault(); // optional: prevents form submission if inside a form
-    sendMessage();
-  }
-}
-                disabled={!inputMessage.trim() || loading}
-                sx={{
-                  bgcolor: "#1876d2",
-                  color: "white",
-                  width: { xs: 32, sm: 38 },
-                  height: { xs: 32, sm: 38 },
-                  borderRadius: "50%",
-                  transition: "all 0.2s ease",
-                  boxShadow: "0 2px 8px rgba(24, 118, 210, 0.3)",
-                  "&:hover": {
-                    bgcolor: "#1565c0",
-                    transform: {
-                      xs: "none",
-                      sm: "scale(1.05)",
-                    },
-                  },
-                  "&:disabled": {
-                    bgcolor: "#e0e0e0",
-                    color: "#9e9e9e",
-                  },
-                }}
-              >
-                <Send fontSize="small" />
-              </IconButton>
-            </Box>
-          ),
-        }}
-      />
-    </Box>
+                  {isMobileDevice && (
+                    <Menu
+                      anchorEl={imageMenuAnchor}
+                      open={isImageMenuOpen}
+                      onClose={handleCloseImageMenu}
+                      keepMounted
+                    >
+                      <MenuItem onClick={handleChooseCamera} disabled={loading}>
+                        <ListItemIcon>
+                          <PhotoCamera fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>Open Camera</ListItemText>
+                      </MenuItem>
+                      <MenuItem
+                        onClick={handleChooseGallery}
+                        disabled={loading}
+                      >
+                        <ListItemIcon>
+                          <PhotoLibrary fontSize="small" />
+                        </ListItemIcon>
+                        <ListItemText>Open Gallery</ListItemText>
+                      </MenuItem>
+                    </Menu>
+                  )}
 
+                  <IconButton
+                    onClick={(e) => {
+                      e.preventDefault(); // optional: prevents form submission if inside a form
+                      sendMessage();
+                    }}
+                    disabled={!inputMessage.trim() || loading}
+                    sx={{
+                      bgcolor: "#1876d2",
+                      color: "white",
+                      width: { xs: 32, sm: 38 },
+                      height: { xs: 32, sm: 38 },
+                      borderRadius: "50%",
+                      transition: "all 0.2s ease",
+                      boxShadow: "0 2px 8px rgba(24, 118, 210, 0.3)",
+                      "&:hover": {
+                        bgcolor: "#1565c0",
+                        transform: {
+                          xs: "none",
+                          sm: "scale(1.05)",
+                        },
+                      },
+                      "&:disabled": {
+                        bgcolor: "#e0e0e0",
+                        color: "#9e9e9e",
+                      },
+                    }}
+                  >
+                    <Send fontSize="small" />
+                  </IconButton>
+                </Box>
+              ),
+            }}
+          />
+        </Box>
       </Box>
       {/* Hidden inputs for camera and gallery */}
       <input
@@ -1058,25 +1181,43 @@ const AskAIChat: React.FC = () => {
         onChange={handleFileChange}
       />
       {/* Desktop camera dialog */}
-      <Dialog open={cameraDialogOpen} onClose={handleCloseCameraDialog} maxWidth="sm" fullWidth>
+      <Dialog
+        open={cameraDialogOpen}
+        onClose={handleCloseCameraDialog}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Take a photo</DialogTitle>
         <DialogContent>
           {cameraError ? (
-            <Typography color="error" variant="body2">{cameraError}</Typography>
+            <Typography color="error" variant="body2">
+              {cameraError}
+            </Typography>
           ) : (
-            <Box sx={{ position: 'relative', width: '100%' }}>
-              <video ref={videoRef} style={{ width: '100%', borderRadius: 8 }} playsInline muted />
-              <canvas ref={canvasRef} style={{ display: 'none' }} />
+            <Box sx={{ position: "relative", width: "100%" }}>
+              <video
+                ref={videoRef}
+                style={{ width: "100%", borderRadius: 8 }}
+                playsInline
+                muted
+              />
+              <canvas ref={canvasRef} style={{ display: "none" }} />
             </Box>
           )}
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseCameraDialog}>Cancel</Button>
-          <Button onClick={captureFromCamera} variant="contained" startIcon={<PhotoCamera />}>Capture</Button>
+          <Button
+            onClick={captureFromCamera}
+            variant="contained"
+            startIcon={<PhotoCamera />}
+          >
+            Capture
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
   );
 };
 
-export default AskAIChat; 
+export default AskAIChat;

@@ -330,13 +330,6 @@ const ChatBox: React.FC = () => {
     }
   }, [isAtBottom]);
 
-  // const scrollToTop = () => {
-  //   chatContainerRef.current?.scrollTo({
-  //     top: 0,
-  //     behavior: "smooth",
-  //   });
-  // };
-
   const scrollToBottom = () => {
     chatContainerRef.current?.scrollTo({
       top: chatContainerRef.current.scrollHeight,
