@@ -313,6 +313,7 @@ const ChatBox: React.FC = () => {
 
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef<boolean>(false);
+<<<<<<< HEAD
   const {
     bottomRef,
     userAvatarRef,
@@ -323,6 +324,30 @@ const ChatBox: React.FC = () => {
     messages,
     chatContainerRef as React.RefObject<HTMLDivElement | null>
   );
+=======
+  const { bottomRef, userAvatarRef, lastUserMsgIndex, scrollToLastMessage } =
+    useAutoScroll(
+      messages,
+      chatContainerRef as React.RefObject<HTMLDivElement | null>
+    );
+
+  const handleScroll = () => {
+    if (chatContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } =
+        chatContainerRef.current;
+      console.log(
+        "scrollTop:",
+        scrollTop,
+        "scrollHeight:",
+        scrollHeight,
+        "clientHeight:",
+        clientHeight
+      );
+      setShowScrollToTop(scrollTop > 0);
+      setShowScrollToBottom(scrollTop + clientHeight + 5 < scrollHeight);
+    }
+  };
+>>>>>>> 2b9f8c44e456fdfaf14cceb9070b03fe61dc27a4
 
   useEffect(() => {
     if (chatContainerRef.current) {
@@ -447,18 +472,17 @@ const ChatBox: React.FC = () => {
                 background: "transparent",
                 marginBottom: isNative ? "2.7rem" : "1.5rem",
 
-
                 scrollbarWidth: "thin", // Firefox
-        scrollbarColor: "transparent transparent", // Firefox
-        "&::-webkit-scrollbar": {
-          width: "6px",
-        },
-        "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "transparent",
-        },
-        "&::-webkit-scrollbar-track": {
-          backgroundColor: "transparent",
-        },
+                scrollbarColor: "transparent transparent", // Firefox
+                "&::-webkit-scrollbar": {
+                  width: "6px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "transparent",
+                },
+                "&::-webkit-scrollbar-track": {
+                  backgroundColor: "transparent",
+                },
               }}
               ref={chatContainerRef}
               onDragStart={handleDragStart}
