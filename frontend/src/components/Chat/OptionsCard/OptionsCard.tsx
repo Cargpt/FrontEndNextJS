@@ -313,41 +313,18 @@ const ChatBox: React.FC = () => {
 
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef<boolean>(false);
-<<<<<<< HEAD
   const {
-    bottomRef,
-    userAvatarRef,
-    lastUserMsgIndex,
-    scrollToLastMessage,
+   
     isAtBottom,
   } = useAutoScroll(
     messages,
     chatContainerRef as React.RefObject<HTMLDivElement | null>
   );
-=======
   const { bottomRef, userAvatarRef, lastUserMsgIndex, scrollToLastMessage } =
     useAutoScroll(
       messages,
       chatContainerRef as React.RefObject<HTMLDivElement | null>
     );
-
-  const handleScroll = () => {
-    if (chatContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } =
-        chatContainerRef.current;
-      console.log(
-        "scrollTop:",
-        scrollTop,
-        "scrollHeight:",
-        scrollHeight,
-        "clientHeight:",
-        clientHeight
-      );
-      setShowScrollToTop(scrollTop > 0);
-      setShowScrollToBottom(scrollTop + clientHeight + 5 < scrollHeight);
-    }
-  };
->>>>>>> 2b9f8c44e456fdfaf14cceb9070b03fe61dc27a4
 
   useEffect(() => {
     if (chatContainerRef.current) {
