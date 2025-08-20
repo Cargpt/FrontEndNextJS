@@ -334,6 +334,7 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
             : theme.spacing(2),
           pl: `calc(env(safe-area-inset-left, 0px) + ${theme.spacing(1)})`,
           pr: `calc(env(safe-area-inset-right, 0px) + ${theme.spacing(1)})`,
+          overflowX: 'hidden',
         },
       }}
     >
@@ -359,18 +360,19 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
         sx={{
           maxHeight: '100vh',
           overflowY: 'auto',
+          overflowX: 'hidden',
         }}
       >
         <Paper
-          elevation={mode === 'dark' ? 6 : 3}
+          elevation={0}
           sx={{
             p: 2.2, /* More compact padding */
             width: { xs: '100%', sm: 420 },
             maxWidth: 420,
             borderRadius: 3,
-            backgroundColor: mode === 'dark' ? alpha('#121212', 0.95) : alpha('#ffffff', 0.95),
-            backdropFilter: 'blur(15px)',
-            border: `1px solid ${alpha('#ffffff', mode === 'dark' ? 0.1 : 0.2)}`,
+            backgroundColor: 'transparent',
+            backdropFilter: 'none',
+            border: 'none',
             boxShadow: 'none',
           }}
         >
