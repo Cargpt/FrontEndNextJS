@@ -117,7 +117,11 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
       maxAge: 60 * 60 * 24 * 365,
     })
     console.log("here we are")
-          // setCookie('token', authUser?.accessToken)
+          const token = await authUser.getIdToken();
+          setCookie('token', token, {
+            path: '/',
+            maxAge: 60 * 60 * 24 * 365,
+          })
           localStorage.setItem("userRole", role);
         } catch (err) {
           console.error(err);

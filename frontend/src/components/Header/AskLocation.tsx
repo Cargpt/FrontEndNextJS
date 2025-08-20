@@ -6,6 +6,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 type Props = {
    onClose: ()=>void;
    show:boolean;
+   onAcknowledge: ()=>void; // New prop
 
 
 }
@@ -34,7 +35,7 @@ const AskLocation = (props: Props) => {
     {/* <Button onClick={props.onClose} color="secondary">
       Cancel
     </Button> */}
-    <Button onClick={props.onClose} color="primary" autoFocus>
+    <Button onClick={() => { props.onAcknowledge(); props.onClose(); }} color="primary" autoFocus>
       Ok
     </Button>
   </DialogActions>
