@@ -820,7 +820,7 @@ console.log(typeof message)
         const carToRecommend = modelCars[0]; // Get the first car object from the array
         try {
           const payload = {
-            price: carToRecommend?.Price || 0,
+            price: carToRecommend?.Price >= 4000000 ? 10000000 : carToRecommend?.Price  ??  0,
             model_name: carToRecommend?.ModelName || "",
             transmission: carToRecommend?.Trans_fullform === "Automatic"
               ? "AT"
@@ -828,7 +828,7 @@ console.log(typeof message)
                 ? "MT"
                 : carToRecommend?.Trans_fullform || "",
             seats: carToRecommend?.Seats || 0,
-            body_type: carToRecommend?.BodyName || "",
+            body_type: carToRecommend?.BodyName ?? carToRecommend?.BodyType ?? "", 
             fuel: carToRecommend?.FuelType || "",
           };
           console.log("Request Payload:", payload); // Log the payload

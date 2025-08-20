@@ -170,14 +170,13 @@ const ChatBox: React.FC = () => {
     setLoadingMoreRecommendations(true);
     try {
       const payload = {
-        price: 12500000,
-        model_id: 122,
+        ...filter
       };
       const response = await axiosInstance1.post(
-        "/api/cargpt/recommend-by-price/",
+        "/api/cargpt/car-for-para-advisor/",
         payload
       );
-      const data = response; // axiosInstance1 returns parsed data directly
+      const data = response?.data; // axiosInstance1 returns parsed data directly
       const recommendations = Array.isArray(data)
         ? data
         : (Array.isArray((data as any)?.recommendations) ? (data as any).recommendations : []);
@@ -220,40 +219,55 @@ const ChatBox: React.FC = () => {
 
   const { showSnackbar } = useSnackbar();
   const onShowCar = () => {
-    console.log("remondatedCarModels in onShowCar:", remondatedCarModels); // Debug log
     if (remondatedCarModels.length === 0) {
       showSnackbar("No car models found for the selected parameters.", {
         horizontal: "center",
         vertical: "bottom",
       });
       return false;
-    } 
-    return true;
-  };
-
-  // New useEffect to display cars when remondatedCarModels updates
-  useEffect(() => {
-    if (remondatedCarModels.length > 0) {
-      const count = remondatedCarModels.length;
-      const carPlural = count === 1 ? "car" : "cars";
+    } else {
+      // Add user message before bot message
       const userMessage: Message = {
         id: String(Date.now()),
-        message: `Here are the best ${count} ${carPlural} that match your preferences 🚗✨`,
+        message: "Show me car models for the selected parameters.",
         render: "text",
         sender: "user",
       };
       const botMessage: Message = {
         id: String(Date.now() + 1),
-        // When using recommend-by-price, filter.brand_name might be undefined.
-        // We need a fallback key here, e.g., "Recommendations" or the first car's brand name.
-        message: { [filter.brand_name || "Recommendations"]: remondatedCarModels },
+        message: { [filter.brand_name]: remondatedCarModels },
         render: "carOptions",
         sender: "bot",
       };
       setMessages((prev) => [...prev, userMessage, botMessage]);
-      setRecommondatedCarModels([]); // Clear after displaying
+      setRecommondatedCarModels([]);
+      return true;
     }
-  }, [remondatedCarModels]);
+  };
+
+  // New useEffect to display cars when remondatedCarModels updates
+  // useEffect(() => {
+  //   if (remondatedCarModels.length > 0) {
+  //     const count = remondatedCarModels.length;
+  //     const carPlural = count === 1 ? "car" : "cars";
+  //     const userMessage: Message = {
+  //       id: String(Date.now()),
+  //       message: `Here are the best ${count} ${carPlural} that match your preferences 🚗✨`,
+  //       render: "text",
+  //       sender: "user",
+  //     };
+  //     const botMessage: Message = {
+  //       id: String(Date.now() + 1),
+  //       // When using recommend-by-price, filter.brand_name might be undefined.
+  //       // We need a fallback key here, e.g., "Recommendations" or the first car's brand name.
+  //       message: { [filter.brand_name || "Recommendations"]: remondatedCarModels },
+  //       render: "carOptions",
+  //       sender: "bot",
+  //     };
+  //     setMessages((prev) => [...prev, userMessage, botMessage]);
+  //     setRecommondatedCarModels([]); // Clear after displaying
+  //   }
+  // }, [remondatedCarModels]);
 
   const onBack = () => {
     const userMessage: Message = {
