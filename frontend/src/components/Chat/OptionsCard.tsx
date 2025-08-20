@@ -173,22 +173,27 @@ const ChatBox: React.FC = () => {
         price: 12500000,
         model_id: 122,
       };
-      const data = await axiosInstance1.post(
+      const response = await axiosInstance1.post(
         "/api/cargpt/recommend-by-price/",
         payload
       );
-      if (!data || !Array.isArray(data.recommendations) || data.recommendations.length === 0) {
+      const data = response; // axiosInstance1 returns parsed data directly
+      const recommendations = Array.isArray(data)
+        ? data
+        : (Array.isArray((data as any)?.recommendations) ? (data as any).recommendations : []);
+
+      if (!recommendations || recommendations.length === 0) {
         showSnackbar("No cars found for the selected parameters.", {
           horizontal: "center",
           vertical: "bottom",
         });
         return;
       }
-      setRecommondatedCarModels(data.recommendations);
+      setRecommondatedCarModels(recommendations);
       console.log("filter", filter)
       // We don't have brand_name or model_name from recommend-by-price, so we'll use a generic key or derive one if possible.
       // For now, let's just add the new recommendations under a generic key or the first car's brand/model if available.
-      const newCarsEntry = { "Recommendations": data.recommendations };
+      const newCarsEntry = { "Recommendations": recommendations };
       setCars((prev)=>[
         ...prev, newCarsEntry
 

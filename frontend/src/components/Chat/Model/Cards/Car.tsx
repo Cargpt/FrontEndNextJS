@@ -91,11 +91,13 @@ const TeslaCard: React.FC<CarCardProps> = ({
   onTriggerOverallRecommendations, // Destructure new prop
 }) => {
   const rawValues = Object.values(selectedItem);
-
+  
     const { open, hide, show } = useLoginDialog();
 
   const modelCars: any[] = Array.isArray(rawValues[0]) ? rawValues[0] : [];
- 
+   // Extract recommendedCars if selectedItem is in the new format
+  const recommendedCars = selectedItem?.[Object.keys(selectedItem)[0]] || [];
+
    const theme=useTheme()
   const [carInfo, setCarInfo] = useState<any>(null);
   const [dialog, setDialog] = useState<typeProps>({ open: false, type: null });
@@ -122,6 +124,7 @@ const {showSnackbar}=useSnackbar()
 const [showSignUpState, setshowSignUpState] = useState<boolean>(false);
 const [loadingRecommendations, setLoadingRecommendations] = useState<boolean>(false);
 const [loadingOverallRecommendations, setLoadingOverallRecommendations] = useState<boolean>(false); // New state
+const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
 
 const showSignUP = () => {
 
@@ -219,9 +222,12 @@ const handleSelectSort = (value: 'none' | 'price' | 'mileage') => {
         model_id: modelId,
       };
       const response = await axiosInstance1.post('/api/cargpt/recommend-by-price/', payload);
+      const data = response; // axiosInstance1 returns parsed data directly
+      const recommendedCars = Array.isArray(data)
+        ? data
+        : (Array.isArray((data as any)?.recommendations) ? (data as any).recommendations : []);
 
-      if (response?.data && response.data.length > 0) {
-        const recommendedCars = response.data;
+      if (recommendedCars.length > 0) {
         const count = recommendedCars.length;
         const carPlural = count === 1 ? "car" : "cars";
 
@@ -397,14 +403,14 @@ const CustomPrevArrow = (props: any & { outside?: boolean }) => {
 const {mode}=useColorMode()
 
  
-const message= selectedItem ? generateCarChatMessage(selectedItem || {}, modelCars.length) :""
+const message= selectedItem ? generateCarChatMessage(selectedItem || {}, recommendedCars.length) :""
 console.log(typeof message)
   return (
     <>
                      {selectedItem && (
         <Box sx={{ px: 2, py: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2 }}>
           <Typography sx={{ fontWeight: "bold" }}>{message}</Typography>
-          {modelCars.length > 1 && (
+          {recommendedCars.length > 1 && (
             <Box>
               <IconButton
                 size="small"
@@ -430,12 +436,12 @@ console.log(typeof message)
         </Box>
       )}
 
-      {modelCars.length > 0 && (
-        <Box sx={{ width: { xs:"100%" , md: modelCars.length < 2? "50%":'100%'}}}
+      {recommendedCars.length > 0 && (
+        <Box sx={{ width: { xs:"100%" , md: recommendedCars.length < 2? "50%":'100%'}}}
         >
           <Slider {...settings}>
 
-          {modelCars.map((car: any, index: number) => (
+          {recommendedCars.map((car: any, index: number) => (
             (<Card
               key={index}
               sx={{
@@ -799,6 +805,94 @@ console.log(typeof message)
     />
   )}
 
+  {onTriggerOverallRecommendations && (
+    <Chip
+      label={loadingOverallRecommendations ? <CircularProgress size={20} /> : "Get More Recommendations"}
+      clickable
+      color="default"
+      variant="filled"
+      size="small"
+      icon={<LightbulbIcon />}
+      onClick={async () => {
+        setLoadingOverallRecommendations(true);
+        setMoreRecDisabled(true);
+        console.log("Selected Item for Recommendations:", selectedItem); // Log selectedItem
+        const carToRecommend = modelCars[0]; // Get the first car object from the array
+        try {
+          const payload = {
+            price: carToRecommend?.Price || 0,
+            model_name: carToRecommend?.ModelName || "",
+            transmission: carToRecommend?.Trans_fullform === "Automatic"
+              ? "AT"
+              : carToRecommend?.Trans_fullform === "Manual"
+                ? "MT"
+                : carToRecommend?.Trans_fullform || "",
+            seats: carToRecommend?.Seats || 0,
+            body_type: carToRecommend?.BodyName || "",
+            fuel: carToRecommend?.FuelType || "",
+          };
+          console.log("Request Payload:", payload); // Log the payload
+
+          const response = await axiosInstance1.post("/api/cargpt/recommend-by-price/", payload);
+          console.log("Raw API Response:", response); // Log the raw response
+          const data = response; // axiosInstance1 returns parsed data directly
+          const recommendedCars = Array.isArray(data)
+            ? data
+            : (Array.isArray((data as any)?.recommendations) ? (data as any).recommendations : []);
+
+          if (recommendedCars.length > 0) {
+            const count = recommendedCars.length;
+            const carPlural = count === 1 ? "car" : "cars";
+
+            const userMessage: Message = {
+              id: String(Date.now()),
+              message: "See other recommendations",
+              render: "text",
+              sender: "user",
+            };
+
+            const botMessage: Message = {
+              id: String(Date.now() + 1),
+              message: { [`${carToRecommend?.ModelName}_Recommendations`]: recommendedCars },
+              render: "carOptions",
+              sender: "bot",
+            };
+
+            setMessages((prev) => [...prev, userMessage, botMessage]);
+            showSnackbar(`Found ${count} recommended ${carPlural}.`, {
+              vertical: 'top',
+              horizontal: 'center',
+              autoHideDuration: 7000,
+              color: 'success',
+            });
+          } else {
+            showSnackbar("No more recommendations found.", {
+              horizontal: "center",
+              vertical: "bottom",
+            });
+          }
+        } catch (error: any) {
+          console.error("Error fetching overall recommendations:", error);
+          showSnackbar(error.message || "Failed to fetch recommendations. Please try again later.", {
+            horizontal: "center",
+            vertical: "bottom",
+          });
+          setMoreRecDisabled(false);
+        } finally {
+          setLoadingOverallRecommendations(false);
+        }
+      }}
+      disabled={loadingOverallRecommendations || moreRecDisabled}
+      sx={{
+        fontSize: 13,
+        textTransform: "capitalize",
+        borderWidth: 1,
+        "& .MuiChip-icon": { color: "rgba(0, 0, 0, 0.54)" }, // Adjust icon color
+        flex: { xs: '1 1 100%', sm: '0 auto' }, // Full width on mobile to center
+        maxWidth: { xs: '100%', sm: 'none' },
+      }}
+    />
+  )}
 </Stack>
 
       )}
