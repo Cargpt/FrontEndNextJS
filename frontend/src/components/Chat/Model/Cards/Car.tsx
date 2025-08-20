@@ -862,7 +862,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
           flexWrap="wrap" // ✅ allow wrapping
           justifyContent={{ xs: "center", sm: "flex-start" }} // center on mobile, start on larger
           sx={{
-            pb: 2,
+            pb: "15px",
             rowGap: 1, // optional: vertical gap between rows
           }}
         >

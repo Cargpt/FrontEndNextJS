@@ -409,7 +409,7 @@ const CarResearchMenu: React.FC = () => {
               flexWrap="wrap"
               justifyContent={{ xs: "center", sm: "flex-start" }}
               sx={{
-                pb: 2,
+                pb: '15px',
                 rowGap: 1,
               }}
             >
@@ -479,6 +479,7 @@ const CarResearchMenu: React.FC = () => {
           .prompt {
             color: ${mode === "dark" ? "#e0e0e0" : "#333"} !important;
             line-height: 1.6;
+            padding-bottom: 15px;
           }
           .prompt h1, .prompt h2, .prompt h3, .prompt h4, .prompt h5, .prompt h6 {
             color: ${mode === "dark" ? "#fff" : "#1976d2"} !important; /* Blue for light, white for dark */
