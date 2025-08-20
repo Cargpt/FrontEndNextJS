@@ -10,6 +10,7 @@ import {
   Grow,
   Fab, // Add Fab import
 } from "@mui/material";
+
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"; // Add KeyboardArrowDownIcon import
 import { useChats } from "@/Context/ChatContext";
 import PersonIcon from "@mui/icons-material/Person";
@@ -17,17 +18,20 @@ import { axiosInstance1 } from "@/utils/axiosInstance";
 import { useSnackbar } from "@/Context/SnackbarContext";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/navigation";
-import FixedHeaderWithBack from "../../Navbar/Navbar";
-import AskAIChat from "../AskAi";
+
 import { useColorMode } from "@/Context/ColorModeContext";
 import { Capacitor } from "@capacitor/core";
-import MessageRenderer from "../components/MessageRenderer";
-import { useBrands } from "../hooks/useBrands";
-import { usePreferences } from "../hooks/usePreferences";
-import { useAutoScroll } from "../hooks/useAutoScroll";
-import { usePersistHistory } from "../hooks/usePersistHistory";
-import DealerList from "./DealerList";
-import Feeds from "./Feeds";
+import MessageRenderer from "./components/MessageRenderer";
+import { useBrands } from "./hooks/useBrands";
+import { usePreferences } from "./hooks/usePreferences";
+import { useAutoScroll } from "./hooks/useAutoScroll";
+import { usePersistHistory } from "./hooks/usePersistHistory";
+
+import FixedBottomMessage from "../common/FixedBottomMessage";
+import AskAIChat from "./AskAi";
+import DealerList from "./OptionsCard/DealerList";
+import Feeds from "./OptionsCard/Feeds";
+import FixedHeaderWithBack from "../Navbar/Navbar";
 
 // This is a dummy comment to trigger linter re-evaluation
 const ChatBox: React.FC = () => {
