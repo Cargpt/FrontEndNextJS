@@ -151,6 +151,7 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                   height={20}
                   style={{
                     marginBottom: isSmallScreen ? "4px" : 0,
+                    backgroundColor: mode === "dark" ? "white" : "transparent",
                   }}
                 />
                 <Typography
