@@ -8,7 +8,10 @@ import {
   useTheme,
   CircularProgress,
   Grow,
+  Fab, // Add Fab import
 } from "@mui/material";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp"; // Add KeyboardArrowUpIcon import
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"; // Add KeyboardArrowDownIcon import
 import { useChats } from "@/Context/ChatContext";
 import PersonIcon from "@mui/icons-material/Person";
 import { axiosInstance1 } from "@/utils/axiosInstance";
@@ -36,6 +39,8 @@ const ChatBox: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { brands } = useBrands();
   const [cookies, , removeCookie] = useCookies(["selectedOption", "user"]);
+  const [showScrollToTop, setShowScrollToTop] = useState(false);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
   useEffect(() => {
     if (messages.length === 0) return;
@@ -313,6 +318,42 @@ const ChatBox: React.FC = () => {
   const { bottomRef, userAvatarRef, lastUserMsgIndex, scrollToLastMessage } =
     useAutoScroll(messages, chatContainerRef as React.RefObject<HTMLDivElement | null>);
 
+  const handleScroll = () => {
+    if (chatContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+      setShowScrollToTop(scrollTop > 0);
+      setShowScrollToBottom(scrollTop + clientHeight < scrollHeight);
+    }
+  };
+
+  useEffect(() => {
+    const chatContainer = chatContainerRef.current;
+    if (chatContainer) {
+      chatContainer.addEventListener("scroll", handleScroll);
+      // Initial check
+      handleScroll();
+    }
+    return () => {
+      if (chatContainer) {
+        chatContainer.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, [messages]);
+
+  const scrollToTop = () => {
+    chatContainerRef.current?.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  };
+
+  const scrollToBottom = () => {
+    chatContainerRef.current?.scrollTo({
+      top: chatContainerRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
   // Persist history only when a logged-in user is present
   usePersistHistory(messages, {
     endpoint: "/api/cargpt/history/",
@@ -423,6 +464,24 @@ const ChatBox: React.FC = () => {
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >
+              {showScrollToBottom && (
+                <Fab
+                  size="small"
+                  color="primary"
+                  aria-label="scroll to bottom"
+                  onClick={scrollToBottom}
+                  sx={{
+                    position: "absolute",
+                    bottom: isNative ? "70px" : "50px", // Adjust as needed
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    zIndex: 999,
+                  }}
+                >
+                  <KeyboardArrowDownIcon />
+                </Fab>
+              )}
+
               {messages.map((msg, index) => {
                 const isLastUserMsg =
                   msg.sender === "user" && index === lastUserMsgIndex;

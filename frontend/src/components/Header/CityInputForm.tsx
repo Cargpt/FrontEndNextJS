@@ -43,7 +43,6 @@ const CityInputDialog: React.FC<Props> = ({
       setLoadingAllCities(true);
       try {
         const response = await axiosInstance1.get(`/api/dealers/cities/`);
-        console.log("Cities API Response:", response);
         if (response && response.length > 0) {
           setAllAvailableCities(
             response.map((item: { id: number; city: string }) => item.city)
