@@ -12,6 +12,8 @@ import {
   Input,
   InputAdornment,
   IconButton,
+  Paper,
+  TextField,
 } from "@mui/material";
 import OtpBoxes from "@/components/common/otp/OtpBoxes";
 import PhoneInput from "react-phone-input-2";
@@ -19,9 +21,10 @@ import "react-phone-input-2/lib/material.css";
 import { useColorMode } from "@/Context/ColorModeContext";
 import { useMediaQuery } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { Visibility, VisibilityOff, KeyboardBackspaceSharp } from "@mui/icons-material";
+import { Visibility, VisibilityOff, KeyboardBackspaceSharp, Lock, VpnKey } from "@mui/icons-material";
 import { Capacitor } from "@capacitor/core";
 import { axiosInstance } from "@/utils/axiosInstance";
+import { alpha } from "@mui/material/styles";
  
 
 interface ForgotPasswordDialogProps {
@@ -334,231 +337,359 @@ const ForgotPasswordDialog: React.FC<ForgotPasswordDialogProps> = ({
         },
       }}
     >
-      <DialogContent sx={{ p: { xs: 3, sm: 3 }, pt: isMobile ? 1 : 3 }}>
-        {/* Top Row: Back Arrow + Centered Logo */}
-        <Box display="flex" alignItems="center" mb={2}>
-          <IconButton onClick={handleBack} aria-label="back" sx={{ mr: 1 }}>
-            <KeyboardBackspaceSharp />
-          </IconButton>
-          <Box flex={1} display="flex" justifyContent="center">
-            <img
-              loading="lazy"
-              src={mode === "light" ? "/assets/AICarAdvisor.png" : "/assets/AICarAdvisor_transparent.png"}
-              alt="Logo"
-              style={{ height: 48 }}
-              width={200}
-              height={48}
-            />
-          </Box>
-          {/* Right spacer to keep the logo visually centered */}
-          <Box sx={{ width: 40, height: 40 }} />
-        </Box>
-        {step !== "reset" && (
-          <Typography variant="h6" align="center" gutterBottom sx={{ mb: 3 }}>
-            Forgot Password
-          </Typography>
-        )}
+      {/* Close (Back) button */}
+      <IconButton
+        onClick={handleBack}
+        sx={{
+          position: "absolute",
+          top: "calc(env(safe-area-inset-top, 0px) + var(--android-top-gap, 8px) - 4px)",
+          left: "calc(env(safe-area-inset-left, 0px) + 8px)",
+          zIndex: 1,
+          p: 1,
+        }}
+        aria-label="close"
+      >
+        <KeyboardBackspaceSharp />
+      </IconButton>
 
-        <Box component="form" id="forgotForm" onSubmit={handleStepSubmit}>
-          {step === "mobile" && (
-            <Box sx={{ mt: 1 }}>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                Enter your mobile number
-              </Typography>
-              <PhoneInput
-                country={"in"}
-                value={mobile}
-                onChange={(phone) => setMobile(phone)}
-                inputProps={{
-                  name: "mobile",
-                  required: true,
-                  onKeyDown: (e: any) => {
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      handleSendOtp();
-                    }
-                  },
-                }}
-                disabled={false}
-                containerStyle={{ marginTop: "8px", marginBottom: "20px" }}
-                dropdownStyle={{
-                  backgroundColor: mode === "dark" ? "#000" : "#fff",
-                  color: mode === "dark" ? "#ccc" : "#000",
-                  border: `1px solid ${mode === "dark" ? "#000" : "#ccc"}`,
-                }}
-                inputStyle={{
-                  width: "100%",
-                  backgroundColor: mode === "dark" ? "inherit" : "#fff",
-                  color: mode === "dark" ? "inherit" : "#000",
-                  border: `1px solid ${mode === "dark" ? "inherit" : "#ccc"}`,
-                  borderRadius: 4,
-                  height: 40,
-                }}
-                buttonStyle={{
-                  backgroundColor: mode === "dark" ? "inherit" : "#fff",
-                  border: `1px solid ${mode === "dark" ? "inherit" : "#ccc"}`,
-                }}
-              />
-              {!isMobileMatching && (
-                <Alert severity="warning">Entered number must match the login mobile</Alert>
-              )}
-              {/* Send OTP button */}
-              <Box mt={2} display="flex" justifyContent="center">
-                <Button
-                  form="forgotForm"
-                  type="submit"
-                  onClick={handleSendOtp}
-                  variant="contained"
-                  disabled={loading || !mobile || !isMobileMatching}
-                  fullWidth
-                >
-                  Send OTP
-                </Button>
-              </Box>
-            </Box>
-          )}
-
-          {step === "otp" && (
-            <Box sx={{ mt: 2 }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  handleVerifyOtp();
-                }
+      <Box
+        display="flex"
+        justifyContent="center"
+        p={2}
+        sx={{
+          maxHeight: '100vh',
+          overflowY: 'auto',
+        }}
+      >
+        <Paper
+          elevation={mode === 'dark' ? 6 : 3}
+          sx={{
+            p: 2.2, /* More compact padding */
+            width: { xs: '100%', sm: 420 },
+            maxWidth: 420,
+            borderRadius: 3,
+            backgroundColor: mode === 'dark' ? alpha('#121212', 0.95) : alpha('#ffffff', 0.95),
+            backdropFilter: 'blur(15px)',
+            border: `1px solid ${alpha('#ffffff', mode === 'dark' ? 0.1 : 0.2)}`,
+            boxShadow: 'none',
+          }}
+        >
+          {/* Top Row: Back Arrow + Centered Logo */}
+          <Box textAlign="center" mb={0.5}>
+            <Box
+              sx={{
+                width: 80,
+                height: 80,
+                borderRadius: '50%',
+                background: 'linear-gradient(to right, #00c6ff, #0072ff)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                margin: '0 auto 8px',
+                boxShadow: `0 10px 30px ${alpha('#667eea', 0.3)}`,
               }}
             >
-              <Typography variant="body2" align="center" sx={{ mb: 1 }}>
-                Enter OTP sent to +{mobile}
-              </Typography>
-              <Box display="flex" justifyContent="center" mb={1}>
-                <Button size="small" variant="text" onClick={goBackToMobile}>
-                  Change number
-                </Button>
-              </Box>
-              <OtpBoxes
-                length={otpLength}
-                value={otp}
-                onChange={setOtp}
-                onComplete={(code) => {
-                  setOtp(code);
-                  // Don't auto-verify, let user click verify button
-                }}
-                autoFocus
-                disabled={loading}
-                useWebOtp={false}
-              />
-              
-              {/* Manual Verify Button */}
-              <Box mt={2} display="flex" justifyContent="center">
-                <Button
-                  variant="contained"
-                  onClick={() => handleVerifyOtp()}
-                  disabled={loading || otp.length < otpLength}
-                  fullWidth
-                >
-                  Verify OTP
-                </Button>
-              </Box>
-              
-              {/* Resend OTP Button with Timer */}
-              <Box mt={2} display="flex" justifyContent="center">
-                <Button
-                  variant="text"
-                  onClick={handleResendOtp}
-                  disabled={!canResend || resendTimer > 0 || loading}
-                  sx={{ minWidth: 120 }}
-                >
-                  {resendTimer > 0 
-                    ? `Resend in ${resendTimer}s` 
-                    : "Resend OTP"
-                  }
-                </Button>
-              </Box>
+              {step === 'otp' ? (
+                <VpnKey sx={{ color: 'white', fontSize: 40 }} />
+              ) : (
+                <Lock sx={{ color: 'white', fontSize: 40 }} />
+              )}
             </Box>
-          )}
+            <Typography
+              variant="h4"
+              sx={{
+                fontWeight: 700,
+                background: 'linear-gradient(to right, #00c6ff, #0072ff)',
+                backgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                mb: 0.2,
+                fontSize: { xs: 28, sm: 32 },
+              }}
+            >
+              Forgot Password
+            </Typography>
+            {/* Removed 'Reset your password' subtitle as requested */}
+          </Box>
 
-          {step === "reset" && (
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="h6" align="center" sx={{ mb: 2 }}>
-                Create a new password
-              </Typography>
-              <Input
-                type={showNewPassword ? "text" : "password"}
-                placeholder="New Password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                fullWidth
-                sx={{ mb: 2 }}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowNewPassword((s) => !s)}
-                      edge="end"
-                      aria-label="toggle password visibility"
-                    >
-                      {showNewPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-              <Input
-                type={showConfirmPassword ? "text" : "password"}
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+          <form onSubmit={handleStepSubmit}>
+            {step === "mobile" && (
+              <Box mt={1}>
+                <Typography variant="body2" sx={{ mb: 0.5 }}>
+                  Enter your mobile number
+                </Typography>
+                <PhoneInput
+                  country={"in"}
+                  value={mobile}
+                  onChange={(phone) => setMobile(phone)}
+                  inputProps={{
+                    name: "mobile",
+                    required: true,
+                    onKeyDown: (e: any) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleSendOtp();
+                      }
+                    },
+                  }}
+                  disabled={false}
+                  containerStyle={{
+                    marginBottom: '0px',
+                    marginTop: "8px"
+                   }}
+                  dropdownStyle={{
+                    backgroundColor: mode === "dark" ? "#000" : "#fff",
+                    color: mode === "dark" ? "#ccc" : "#000",
+                    border: `1px solid ${mode === "dark" ? "#000" : "#ccc"}`,
+                  }}
+                  inputStyle={{
+                    width: "100%",
+                    height: "56px",
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    paddingLeft: '48px',
+                    backgroundColor: mode === "dark" ? "#1e1e1e" : "#f8f9fa",
+                    color: mode === "dark" ? "#fff" : "#000",
+                    border: `1px solid ${mode === "dark" ? "#444" : "#ccc"}`,
+                  }}
+                  buttonStyle={{
+                    backgroundColor: mode === "dark" ? "#1e1e1e" : "#fff",
+                    border: `1px solid ${mode === "dark" ? "#444" : "#ccc"}`,
+                  }}
+                />
+                {!isMobileMatching && (
+                  <Alert severity="warning" sx={{ mt: 0.5 }}>Entered number must match the login mobile</Alert>
+                )}
+                {/* Send OTP button */}
+                <Box mt={1.5} display="flex" justifyContent="center">
+                  <Button
+                    form="forgotForm"
+                    type="submit"
+                    onClick={handleSendOtp}
+                    variant="contained"
+                    disabled={loading || !mobile || !isMobileMatching}
+                    fullWidth
+                    sx={{
+                      mb: 1,
+                      height: 50,
+                      borderRadius: 2,
+                      background: 'linear-gradient(to right, #00c6ff, #0072ff)',
+                      boxShadow: 'none',
+                      '&:hover': {
+                        background: 'linear-gradient(to right, #0072ff, #00c6ff)',
+                      },
+                    }}
+                  >
+                    Send OTP
+                  </Button>
+                </Box>
+              </Box>
+            )}
+
+            {step === "otp" && (
+              <Box sx={{ mt: 1 }}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    handleResetPassword();
+                    handleVerifyOtp();
                   }
                 }}
-                fullWidth
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowConfirmPassword((s) => !s)}
-                      edge="end"
-                      aria-label="toggle password visibility"
-                    >
-                      {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-              {/* Reset Password button */}
-              <Box mt={2} display="flex" justifyContent="center">
-                <Button
-                  form="forgotForm"
-                  type="submit"
-                  onClick={handleResetPassword}
-                  variant="contained"
-                  disabled={loading || !newPassword || !confirmPassword}
-                  fullWidth
-                >
-                  Reset Password
-                </Button>
+              >
+                <Typography variant="body2" align="center" sx={{ mb: 0.5 }}>
+                  Enter OTP sent to +{mobile}
+                </Typography>
+                <Box display="flex" justifyContent="center" mb={0.2}>
+                  <Button size="small" variant="text" onClick={goBackToMobile} sx={{ fontSize: 14, p: 0 }}>
+                    Change number
+                  </Button>
+                </Box>
+                <Box mt={1}>
+                  <OtpBoxes
+                    length={otpLength}
+                    value={otp}
+                    onChange={setOtp}
+                    onComplete={(code) => {
+                      setOtp(code);
+                      // Don't auto-verify, let user click verify button
+                    }}
+                    autoFocus
+                    disabled={loading}
+                    useWebOtp={false}
+                  />
+                </Box>
+                
+                {/* Manual Verify Button */}
+                <Box mt={1} display="flex" justifyContent="center">
+                  <Button
+                    variant="contained"
+                    onClick={() => handleVerifyOtp()}
+                    disabled={loading || otp.length < otpLength}
+                    fullWidth
+                    sx={{
+                      mb: 1,
+                      height: 44,
+                      borderRadius: 2,
+                      background: 'linear-gradient(to right, #00c6ff, #0072ff)',
+                      boxShadow: 'none',
+                      fontSize: 16,
+                      '&:hover': {
+                        background: 'linear-gradient(to right, #0072ff, #00c6ff)',
+                      },
+                    }}
+                  >
+                    Verify OTP
+                  </Button>
+                </Box>
+                
+                {/* Resend OTP Button with Timer */}
+                <Box mt={0.2} display="flex" justifyContent="center">
+                  <Button
+                    variant="text"
+                    onClick={handleResendOtp}
+                    disabled={!canResend || resendTimer > 0 || loading}
+                    sx={{ minWidth: 120, fontSize: 14 }}
+                  >
+                    {resendTimer > 0 
+                      ? `Resend in ${resendTimer}s` 
+                      : "Resend OTP"
+                    }
+                  </Button>
+                </Box>
               </Box>
-            </Box>
-          )}
+            )}
 
-          {error && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              {error}
-            </Alert>
-          )}
-          {success && (
-            <Alert severity="success" sx={{ mt: 2 }}>
-              {success}
-            </Alert>
-          )}
-        </Box>
-      </DialogContent>
+            {step === "reset" && (
+              <Box sx={{ mt: 1 }}>
+                <Typography variant="h6" align="center" sx={{ mb: 0.5 }}>
+                  Create a new password
+                </Typography>
+                <TextField
+                  fullWidth
+                  label="New Password"
+                  type={showNewPassword ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Lock sx={{ color: '#0072ff' }} />
+                      </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowNewPassword((s) => !s)}
+                          edge="end"
+                          aria-label="toggle password visibility"
+                        >
+                          {showNewPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    mb: 1.5,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 2,
+                      backgroundColor: mode === 'dark' ? '#1e1e1e' : '#f8f9fa',
+                    },
+                  }}
+                />
+                <TextField
+                  fullWidth
+                  label="Confirm Password"
+                  type={showConfirmPassword ? "text" : "password"}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleResetPassword();
+                    }
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Lock sx={{ color: '#0072ff' }} />
+                      </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowConfirmPassword((s) => !s)}
+                          edge="end"
+                          aria-label="toggle password visibility"
+                        >
+                          {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  sx={{
+                    mb: 2.5,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: 2,
+                      backgroundColor: mode === 'dark' ? '#1e1e1e' : '#f8f9fa',
+                    },
+                  }}
+                />
+                {/* Reset Password button */}
+                <Box mt={0.5} display="flex" justifyContent="center">
+                  <Button
+                    form="forgotForm"
+                    type="submit"
+                    onClick={handleResetPassword}
+                    variant="contained"
+                    disabled={loading || !newPassword || !confirmPassword}
+                    fullWidth
+                    sx={{
+                      mb: 1,
+                      height: 50,
+                      borderRadius: 2,
+                      background: 'linear-gradient(to right, #00c6ff, #0072ff)',
+                      boxShadow: 'none',
+                      '&:hover': {
+                        background: 'linear-gradient(to right, #0072ff, #00c6ff)',
+                      },
+                    }}
+                  >
+                    Reset Password
+                  </Button>
+                </Box>
+              </Box>
+            )}
+
+            {error && (
+              <Alert severity="error" sx={{ mt: 0.5 }}>
+                {error}
+              </Alert>
+            )}
+            {success && (
+              <Alert severity="success" sx={{ mt: 0.5 }}>
+                {success}
+              </Alert>
+            )}
+          </form>
+        </Paper>
+      </Box>
 
       <DialogActions sx={{ p: 2 }}>
         {/* Only show the Send OTP button for the first step */}
         {/* Removed duplicate Verify OTP button from DialogActions */}
         {/* Removed duplicate Reset Password button from DialogActions */}
       </DialogActions>
+      <style>
+        {`
+          .react-tel-input .special-label {
+            background-color: ${mode === 'dark' ? '#333' : '#fff'} !important;
+            color: ${mode === 'dark' ? '#fff' : '#000'} !important;
+            border-radius: 4px;
+            padding: 2px 6px;
+          }
+.react-tel-input .country-list .country:hover, .react-tel-input .country-list .country.highlight {
+    background-color:  ${mode === 'dark' ? '#333' : '#f1f1f1'} !important;
+}
+        `}
+      </style>
     </Dialog>
   );
 };

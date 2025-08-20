@@ -19,6 +19,7 @@ import {
   Lock,
   Google,
   Apple,
+  Person,
 } from '@mui/icons-material';
 
 import { axiosInstance } from '@/utils/axiosInstance';
@@ -158,7 +159,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
         <Paper
           elevation={mode === 'dark' ? 6 : 3}
           sx={{
-            p: 4,
+            p: 3,
             width: { xs: '100%', sm: 450 },
             maxWidth: 450,
             borderRadius: 3,
@@ -168,7 +169,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
             boxShadow: 'none',
           }}
         >
-          <Box textAlign="center" mb={4}>
+          <Box textAlign="center" mb={0.7} mt={-5}>
             <Box
               sx={{
                 width: 80,
@@ -178,11 +179,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 16px',
+                margin: '0 auto 8px',
                 boxShadow: `0 10px 30px ${alpha('#667eea', 0.3)}`,
               }}
             >
-              <Lock sx={{ color: 'white', fontSize: 40 }} />
+              <Person sx={{ color: 'white', fontSize: 40 }} />
             </Box>
             <Typography
               variant="h4"
@@ -191,7 +192,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
                 background: 'linear-gradient(to right, #00c6ff, #0072ff)',
                 backgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                mb: 1,
+                mb: 0.5,
               }}
             >
               Welcome Back
@@ -221,7 +222,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
                 backgroundColor: mode === 'dark' ? '#1e1e1e' : '#f8f9fa',
                 color: mode === 'dark' ? '#fff' : '#000',
               }}
-              containerStyle={{ marginBottom: '24px' }}
+              containerStyle={{ marginBottom: '8px' }}
               buttonStyle={{
                 backgroundColor: mode === 'dark' ? '#1e1e1e' : '#fff',
                 border: `1px solid ${mode === 'dark' ? '#444' : '#ccc'}`,
@@ -249,7 +250,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
                 ),
               }}
               sx={{
-                mb: 2,
+                mb: 0.8,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 2,
                   backgroundColor: mode === 'dark' ? '#1e1e1e' : '#f8f9fa',
@@ -263,7 +264,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
               </Alert>
             )}
 
-            <Box textAlign="right" mb={2}>
+            <Box textAlign="right" mb={0.8}>
               <Button onClick={() => setForgotOpen(true)} variant="text" sx={{ color: '#0072ff' }}>
                 Forgot Password?
               </Button>
@@ -275,7 +276,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
               variant="contained"
               disabled={isLoading}
               sx={{
-                mb: 3,
+                mb: 1.5,
                 height: 50,
                 borderRadius: 2,
                 background: 'linear-gradient(to right, #00c6ff, #0072ff)',

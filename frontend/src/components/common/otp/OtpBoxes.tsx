@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useRef } from "react";
 import { Box, TextField } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useMediaQuery } from "@mui/material";
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
 
 export interface OtpBoxesProps {
   length?: number;
@@ -15,6 +16,7 @@ export interface OtpBoxesProps {
   gap?: number;
   useWebOtp?: boolean;
   autoReadClipboard?: boolean;
+  showIcon?: boolean;
 }
 
 const OtpBoxes: React.FC<OtpBoxesProps> = ({
@@ -27,6 +29,7 @@ const OtpBoxes: React.FC<OtpBoxesProps> = ({
   gap = 1,
   useWebOtp = false, // Disable auto-OTP reading by default
   autoReadClipboard = false, // Disable auto-read clipboard by default
+  showIcon = false,
 }) => {
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const theme = useTheme();
@@ -142,7 +145,8 @@ const OtpBoxes: React.FC<OtpBoxesProps> = ({
   };
 
   return (
-    <Box display="flex" gap={gap} justifyContent="center">
+    <Box display="flex" alignItems="center" gap={gap} justifyContent="center">
+      {showIcon && <VpnKeyIcon sx={{ color: '#0072ff', fontSize: 28, mr: 1 }} />}
       {Array.from({ length }).map((_, idx) => (
         <TextField
           key={idx}
