@@ -325,7 +325,14 @@ const ChatBox: React.FC = () => {
     if (chatContainerRef.current) {
       const { scrollTop, scrollHeight, clientHeight } =
         chatContainerRef.current;
-      console.log('scrollTop:', scrollTop, 'scrollHeight:', scrollHeight, 'clientHeight:', clientHeight);
+      console.log(
+        "scrollTop:",
+        scrollTop,
+        "scrollHeight:",
+        scrollHeight,
+        "clientHeight:",
+        clientHeight
+      );
       setShowScrollToTop(scrollTop > 0);
       setShowScrollToBottom(scrollTop + clientHeight + 5 < scrollHeight);
     }
@@ -462,18 +469,17 @@ const ChatBox: React.FC = () => {
                 background: "transparent",
                 marginBottom: isNative ? "2.7rem" : "1.5rem",
 
-
                 scrollbarWidth: "thin", // Firefox
-        scrollbarColor: "transparent transparent", // Firefox
-        "&::-webkit-scrollbar": {
-          width: "6px",
-        },
-        "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "transparent",
-        },
-        "&::-webkit-scrollbar-track": {
-          backgroundColor: "transparent",
-        },
+                scrollbarColor: "transparent transparent", // Firefox
+                "&::-webkit-scrollbar": {
+                  width: "6px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "transparent",
+                },
+                "&::-webkit-scrollbar-track": {
+                  backgroundColor: "transparent",
+                },
               }}
               ref={chatContainerRef}
               onDragStart={handleDragStart}
