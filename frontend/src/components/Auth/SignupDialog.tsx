@@ -360,7 +360,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
                   Welcome
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 0.2, fontSize: 16 }}>
-                  Sign up to continue
+                  SingUp to continue
                 </Typography>
               </Box>
               <form onSubmit={handleSubmit}>

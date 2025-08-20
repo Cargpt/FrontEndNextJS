@@ -38,6 +38,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import CircularProgress from "@mui/material/CircularProgress";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
+import { LightbulbOutline } from "@mui/icons-material";
 
 type Props = {
   onClick?: () => void;
@@ -912,18 +913,20 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
           {cookies.selectedOption === "I want to do more research on cars" && (
             <Chip
               label="Back to car research"
-              variant="outlined"
-              size="small"
+              variant="filled"
+            size="small"
+            color="default"
+            disabled={chipsDisabled}
+            
               icon={<DirectionsCarIcon />}
               onClick={backTOIntial}
               sx={{
                 fontSize: 13,
                 textTransform: "capitalize",
-                color: "black",
-                borderColor: "black",
+               
                 borderWidth: 1,
                 borderStyle: "solid",
-                "& .MuiChip-icon": { color: "black" },
+              
                 flex: { xs: "1 1 calc(50% - 12px)", sm: "0 auto" }, // 2 chips per row on mobile
                 maxWidth: { xs: "calc(50% - 12px)", sm: "none" },
               }}
@@ -935,10 +938,11 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
     <Chip
       label={loadingOverallRecommendations ? <CircularProgress size={20} /> : "Get More Recommendations"}
       clickable
-      color="default"
-      variant="filled"
-      size="small"
-      icon={<LightbulbIcon />}
+              variant="filled"
+            size="small"
+            color="default"
+            
+      icon={<LightbulbOutline/>}
       onClick={async () => {
         setLoadingOverallRecommendations(true);
         setMoreRecDisabled(true);
@@ -1000,12 +1004,14 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
           setLoadingOverallRecommendations(false);
         }
       }}
-      disabled={loadingOverallRecommendations || moreRecDisabled}
+      disabled={loadingOverallRecommendations || moreRecDisabled || chipsDisabled}
+              
+
       sx={{
+
         fontSize: 13,
         textTransform: "capitalize",
         borderWidth: 1,
-        "& .MuiChip-icon": { color: "rgba(0, 0, 0, 0.54)" }, // Adjust icon color
         flex: { xs: '1 1 100%', sm: '0 auto' }, // Full width on mobile to center
         maxWidth: { xs: '100%', sm: 'none' },
       }}
