@@ -293,7 +293,10 @@ const CarResearchMenu: React.FC = () => {
     };
     const botMessage: Message = {
       id: String(Date.now()) + 1,
-      message: { brands: brands as { BrandID: number; BrandName: string }[], models: models },
+      message: {
+        brands: brands as { BrandID: number; BrandName: string }[],
+        models: models,
+      },
       render: "brandModelSelect",
       sender: "bot",
       searchParam: search,
@@ -349,18 +352,18 @@ const CarResearchMenu: React.FC = () => {
                             padding: "5px 10px",
                             textTransform: "none",
                             // New attractive styling
-                            backgroundColor: (theme) => 
+                            backgroundColor: (theme) =>
                               item.prompt__text === disbleBtn
                                 ? theme.palette.primary.main
                                 : theme.palette.background.paper,
-                            color: (theme) => 
+                            color: (theme) =>
                               item.prompt__text === disbleBtn
                                 ? theme.palette.primary.contrastText
                                 : theme.palette.text.primary,
                             borderColor: (theme) => theme.palette.divider,
                             border: "1px solid",
                             "&:hover": {
-                              backgroundColor: (theme) => 
+                              backgroundColor: (theme) =>
                                 item.prompt__text === disbleBtn
                                   ? theme.palette.primary.dark
                                   : theme.palette.action.hover,
@@ -474,34 +477,64 @@ const CarResearchMenu: React.FC = () => {
         <style>
           {`
           .prompt {
-            color: ${mode === "dark" ? "#fff" : "#000"} !important;
-           
+            color: ${mode === "dark" ? "#e0e0e0" : "#333"} !important;
+            line-height: 1.6;
           }
-                      .prompt card {
-            color: ${mode === "dark" ? "#fff" : "#000"} !important;
-            background: ${mode === "dark" ? "transparent" : "#fff"} !important;
-
-           
+          .prompt h1, .prompt h2, .prompt h3, .prompt h4, .prompt h5, .prompt h6 {
+            color: ${mode === "dark" ? "#fff" : "#1976d2"} !important; /* Blue for light, white for dark */
+            margin-top: 1.5em;
+            margin-bottom: 0.8em;
+            font-weight: 600;
+            padding-left: 5px; /* Added padding to headings */
           }
-            .prompt h2 {
-                        color: ${mode === "dark" ? "#fff" : "#333"} !important;
-
-
-            }
-                        .prompt h3, .prompt ul{
-                          color: ${
-                            mode === "dark" ? "#fff" : "#333"
-                          } !important;
-
-                        }
-                          .prompt li strong{
-                              color: ${
-                                mode === "dark" ? "#fff" : "#000"
-                              } !important;
-
-                          }
-           
-
+          .prompt h1 {
+            font-size: 1.8em;
+          }
+          .prompt h2 {
+            font-size: 1.5em;
+          }
+          .prompt h3 {
+            font-size: 1.2em;
+          }
+          .prompt ul,
+          .prompt ol {
+            list-style-type: none; /* Remove all default list markers */
+            padding-left: 0; /* Reset default padding */
+            margin-bottom: 1em;
+          }
+          .prompt li {
+            margin-bottom: 0.6em;
+            color: ${mode === "dark" ? "#ccc" : "#555"} !important;
+            position: relative;
+            padding-left: 20px; /* Space for the custom icon */
+          }
+          .prompt li::before {
+            content: "▶"; /* Custom right-pointing triangle */
+            color: ${mode === "dark" ? "#1976d2" : "#1976d2"} !important;
+            position: absolute;
+            left: 0;
+            font-size: 0.8em;
+            line-height: inherit;
+          }
+          .prompt ul ul,
+          .prompt ol ol {
+            padding-left: 20px; /* Indent nested lists, but keep custom icon */
+            list-style-type: none !important; /* Remove all default list markers */
+          }
+          .prompt li strong {
+            color: ${mode === "dark" ? "#fff" : "#1976d2"} !important;
+            list-style-type: none;
+          }
+          .prompt p {
+            margin-bottom: 1em;
+            padding-left: 5px;
+          }
+          .prompt .card {
+            // background: ${mode === "dark" ? "#333" : "#f0f0f0"} !important;
+            // border-radius: 8px;
+            padding: 5px;
+            margin-bottom: 1em;
+          }
         `}
         </style>
       </Box>
