@@ -67,12 +67,11 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
       );
     case "text":
       return (
-        <Typography
-          sx={{ fontSize: "14px", lineHeight: "1.4", fontWeight: 100 }}
+        <div
+          className="prompt"
+          dangerouslySetInnerHTML={{ __html: capitalizeFirst(message.message as string) }}
           id={`user-message-${index}`}
-        >
-          {capitalizeFirst(message.message)}
-        </Typography>
+        />
       );
     case "selectOption": {
       const opts = Array.isArray(preferences)
