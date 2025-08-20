@@ -52,7 +52,6 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
   const [canResend, setCanResend] = useState(true);
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [cookies, setCookie] = useCookies(['token', 'user']);
   const { showSnackbar } = useSnackbar();
@@ -317,15 +316,15 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
         }}
       >
         <Paper
-          elevation={mode === 'dark' ? 6 : 3}
+          elevation={0}
           sx={{
             p: 3, // Reduced padding
             width: { xs: '100%', sm: 520 },
             maxWidth: 520,
             borderRadius: 3,
-            backgroundColor: mode === 'dark' ? alpha('#121212', 0.95) : alpha('#ffffff', 0.95),
-            backdropFilter: 'blur(15px)',
-            border: `1px solid ${alpha('#ffffff', mode === 'dark' ? 0.1 : 0.2)}`,
+            backgroundColor: 'transparent',
+            backdropFilter: 'none',
+            border: 'none',
             boxShadow: 'none',
           }}
         >
@@ -361,7 +360,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
                   Welcome
                 </Typography>
                 <Typography variant="body1" color="text.secondary" sx={{ mb: 0.2, fontSize: 16 }}>
-                  Sign in to continue
+                  Sign up to continue
                 </Typography>
               </Box>
               <form onSubmit={handleSubmit}>
@@ -492,7 +491,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
                   <TextField
                     fullWidth
                     label="Confirm Password"
-                    type={showConfirmPassword ? "text" : "password"}
+                    type="password"
                     value={confirmPassword}
                     onChange={e => setConfirmPassword(e.target.value)}
                     required
@@ -507,25 +506,6 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
                       startAdornment: (
                         <InputAdornment position="start">
                           <Lock sx={{ color: '#0072ff', fontSize: 20 }} />
-                        </InputAdornment>
-                      ),
-                      endAdornment: (
-                        <InputAdornment position="end" sx={{ width: 64, justifyContent: 'center' }}>
-                          <IconButton
-                            onClick={() => setShowConfirmPassword((s) => !s)}
-                            edge="end"
-                            aria-label="toggle password visibility"
-                            size="small"
-                            sx={{ p: 0 }}
-                          >
-                            {showConfirmPassword ? (
-                              <VisibilityOff sx={{ fontSize: 22 }} />
-                            ) : (
-                              <SvgIcon sx={{ fontSize: 22 }}>
-                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5M12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5m0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3" />
-                              </SvgIcon>
-                            )}
-                          </IconButton>
                         </InputAdornment>
                       ),
                     }}
@@ -637,7 +617,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
           )}
         </Paper>
       </Box>
-      <DialogActions sx={{ p: 1 }}>
+      <DialogActions sx={{ p: 1, justifyContent: 'center' }}>
         {/* Only show the Sign Up button for the first step */}
         {signupStep === 0 && (
           <Button
