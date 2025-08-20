@@ -126,7 +126,7 @@ const Feeds = () => {
             py: 1,
             px: 1,
             fontWeight: "bold",
-            fontSize: "1.7rem",
+            fontSize: "1rem",
           }}
         >
           News Feeds
