@@ -8,23 +8,26 @@ import {
   useTheme,
   CircularProgress,
   Grow,
+  Fab, // Add Fab import
 } from "@mui/material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown"; // Add KeyboardArrowDownIcon import
 import { useChats } from "@/Context/ChatContext";
 import PersonIcon from "@mui/icons-material/Person";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import { useSnackbar } from "@/Context/SnackbarContext";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/navigation";
-import FixedHeaderWithBack from "../Navbar/Navbar";
-import AskAIChat from "./AskAi";
+import FixedHeaderWithBack from "../../Navbar/Navbar";
+import AskAIChat from "../AskAi";
 import { useColorMode } from "@/Context/ColorModeContext";
 import { Capacitor } from "@capacitor/core";
-import MessageRenderer from "./components/MessageRenderer";
-import { useBrands } from "./hooks/useBrands";
-import { usePreferences } from "./hooks/usePreferences";
-import { useAutoScroll } from "./hooks/useAutoScroll";
-import { usePersistHistory } from "./hooks/usePersistHistory";
-import DealerList from "./OptionsCard/DealerList";
+import MessageRenderer from "../components/MessageRenderer";
+import { useBrands } from "../hooks/useBrands";
+import { usePreferences } from "../hooks/usePreferences";
+import { useAutoScroll } from "../hooks/useAutoScroll";
+import { usePersistHistory } from "../hooks/usePersistHistory";
+import DealerList from "./DealerList";
+import Feeds from "./Feeds";
 
 // This is a dummy comment to trigger linter re-evaluation
 const ChatBox: React.FC = () => {
@@ -35,6 +38,7 @@ const ChatBox: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { brands } = useBrands();
   const [cookies, , removeCookie] = useCookies(["selectedOption", "user"]);
+  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
 
   useEffect(() => {
     if (messages.length === 0) return;
@@ -97,7 +101,7 @@ const ChatBox: React.FC = () => {
         render: "brandOption",
         sender: "bot",
         data: messages[messages.length - 1].data,
-      }; 
+      };
     } else if (
       lastMsg.sender === "user" &&
       typeof lastMsg.message === "string" &&
@@ -309,8 +313,29 @@ const ChatBox: React.FC = () => {
 
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
   const draggingRef = useRef<boolean>(false);
-  const { bottomRef, userAvatarRef, lastUserMsgIndex, scrollToLastMessage } =
-    useAutoScroll(messages, chatContainerRef as React.RefObject<HTMLDivElement | null>);
+  const {
+    bottomRef,
+    userAvatarRef,
+    lastUserMsgIndex,
+    scrollToLastMessage,
+    isAtBottom,
+  } = useAutoScroll(
+    messages,
+    chatContainerRef as React.RefObject<HTMLDivElement | null>
+  );
+
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      setShowScrollToBottom(!isAtBottom);
+    }
+  }, [isAtBottom]);
+
+  const scrollToBottom = () => {
+    chatContainerRef.current?.scrollTo({
+      top: chatContainerRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  };
 
   // Persist history only when a logged-in user is present
   usePersistHistory(messages, {
@@ -377,50 +402,27 @@ const ChatBox: React.FC = () => {
 )`;
 
   const { mode } = useColorMode();
-  console.log("history", messages);
 
   return (
-    
+    <>
       <Box
         sx={{
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    width: "100%",
-    overflow: "hidden",
-
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "flex-start",
+          ml: { xs: 0, sm: 0 },
         }}
       >
-        {!isSmallScreen && (
-          <Box
-            sx={{
-             width: "25%", // ✅ Left 25%
-        minWidth: "200px",
-        mr: 2,
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        maxHeight: "calc(100vh - 80px)",
-        overflowY: "auto",
-            }}
-          >
-            {/* Latest Products List */}
-            <Paper elevation={3} sx={{ p: 2, height: "300px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              Latest Products
-            </Paper>
-            {/* You can add more components here for the left sidebar */}
-          </Box>
-        )}
+        {!isSmallScreen && <Feeds />}
         <Paper
           elevation={3}
           sx={{
-width: "50%", // ✅ Center 50%
-      minWidth: "300px",
-      p: 2,
-      display: "flex",
-      flexDirection: "column",
-      padding: isSmallScreen ? "0px" : "16px",
+            p: 2,
 
+            width: isSmallScreen ? "100%" : "50%",
+            display: "flex",
+            flexDirection: "column",
+            padding: isSmallScreen ? "0px" : "16px",
           }}
         >
           <FixedHeaderWithBack backToPrevious={backToPrevious} />
@@ -431,16 +433,46 @@ width: "50%", // ✅ Center 50%
           {messages?.[messages?.length - 1]?.message !== "Ask AI" && (
             <Box
               sx={{
-                minHeight: "100vh",
+                minHeight: "80vh",
                 maxHeight: "calc(100vh - 120px)", // Adjust this value as needed
                 overflowY: "auto",
                 background: "transparent",
-                // marginBottom: isNative ? "2.7rem" : "1.5rem",
+                marginBottom: isNative ? "2.7rem" : "1.5rem",
+
+                scrollbarWidth: "thin", // Firefox
+        scrollbarColor: "transparent transparent", // Firefox
+        "&::-webkit-scrollbar": {
+          width: "6px",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          backgroundColor: "transparent",
+        },
+        "&::-webkit-scrollbar-track": {
+          backgroundColor: "transparent",
+        },
               }}
               ref={chatContainerRef}
               onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
             >
+              {showScrollToBottom && (
+                <Fab
+                  size="small"
+                  color="primary"
+                  aria-label="scroll to bottom"
+                  onClick={scrollToBottom}
+                  sx={{
+                    position: "absolute",
+                    bottom: isNative ? "70px" : "50px", // Adjust as needed
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    zIndex: 999,
+                  }}
+                >
+                  <KeyboardArrowDownIcon />
+                </Fab>
+              )}
+
               {messages.map((msg, index) => {
                 const isLastUserMsg =
                   msg.sender === "user" && index === lastUserMsgIndex;
@@ -565,27 +597,11 @@ width: "50%", // ✅ Center 50%
             </Box>
           )}
         </Paper>
-        {!isSmallScreen && (
-          <Box
-            sx={{
-              width: "40%",
-              minWidth: "150px",
-              ml: 2,
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-              maxHeight: "calc(100vh - 80px)", // Adjust as needed
-              overflowY: "auto",
-            }}
-          >
-            {/* Dealer List */}
-            <DealerList />
-            {/* You can add more components here for the right sidebar */}
-          </Box>
-        )}
+        {!isSmallScreen && <DealerList />}
       </Box>
 
-  
+      {/* <div ref={bottomRef} /> */}
+    </>
   );
 };
 
