@@ -139,6 +139,13 @@ function createAxiosLike(
         statusText: response.statusText,
         data: errorData,
       };
+
+      // Redirect to home if 401 Unauthorized
+        if (response.status === 401) {
+          window.location.href = "/";
+        }
+
+
       throw error;
     }
 

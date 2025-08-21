@@ -52,17 +52,23 @@ export const ChatsProvider: React.FC<{ children: ReactNode }> = ({
 const handleBookmark = (car: any) => {
   setBookmark(car)
 }
+
+
+
+
   useEffect(() => {
-    if (cookies.selectedOption) {
-      const initialChat: Message = {
-        id: Date.now().toString(),
-        message: cookies.selectedOption,
-        sender: "user",
-        render: "text",
-      };
-      setMessages([initialChat]);
-    }
-  }, [cookies.selectedOption]);
+  const selected = cookies.selectedOption ?? "I know exactly what I want";
+
+  const initialChat: Message = {
+    id: Date.now().toString(),
+    message: selected,
+    sender: "user",
+    render: "text",
+  };
+
+  setMessages([initialChat]);
+}, [cookies.selectedOption]);
+
 
 
    const updateFilter = (name: string, value: number | string | string[]) => {
