@@ -39,6 +39,7 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import CircularProgress from "@mui/material/CircularProgress";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import { LightbulbOutline } from "@mui/icons-material";
+import CompareCarsDialog from "./CompareCarsDialog";
 
 type Props = {
   onClick?: () => void;
@@ -130,7 +131,9 @@ const TeslaCard: React.FC<CarCardProps> = ({
   const [loadingOverallRecommendations, setLoadingOverallRecommendations] =
     useState<boolean>(false); // New state
  
-const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
+  const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
+  const [compareDialogOpen, setCompareDialogOpen] = useState(false);
+  const [selectedCarForCompare, setSelectedCarForCompare] = useState<any>(null);
 
   const showSignUP = () => {
     setshowSignUpState(true);
@@ -324,6 +327,16 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
   const handleCloseTestDriveModal = () => {
     setTestDriveModalOpen(false);
     setSelectedCarForTestDrive(null);
+  };
+
+  const handleOpenCompareDialog = (car: any) => {
+    setSelectedCarForCompare(car);
+    setCompareDialogOpen(true);
+  };
+
+  const handleCloseCompareDialog = () => {
+    setCompareDialogOpen(false);
+    setSelectedCarForCompare(null);
   };
 
   // Custom Next Arrow Component (supports outside offset)
@@ -634,7 +647,24 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
                       justifyContent: "space-between",
                     }}
                   >
-                    {car.VariantName}
+                                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                       {car.VariantName}
+                       <img
+                         src="/assets/Compare Syambol.png"
+                         alt="Compare"
+                         width={20}
+                         height={20}
+                         style={{ cursor: "pointer" }}
+                         onClick={() => handleOpenCompareDialog(car)}
+                         onMouseEnter={(e) => {
+                           e.currentTarget.style.transform = 'scale(1.1)';
+                           e.currentTarget.style.transition = 'transform 0.2s ease';
+                         }}
+                         onMouseLeave={(e) => {
+                           e.currentTarget.style.transform = 'scale(1)';
+                         }}
+                       />
+                     </Box>
                     <IconButton
                       size="small"
                       sx={{ ml: 1, p: 0.5 }}
@@ -1061,6 +1091,15 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
         onClose={hideSignUP}
         onSuccess={() => {}}
       />
+      {selectedCarForCompare && (
+        <CompareCarsDialog
+          open={compareDialogOpen}
+          onClose={handleCloseCompareDialog}
+          variantId={selectedCarForCompare.VariantID}
+          carName={selectedCarForCompare.VariantName}
+          primaryCar={selectedCarForCompare}
+        />
+      )}
     </>
   );
 };
