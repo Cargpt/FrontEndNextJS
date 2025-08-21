@@ -591,15 +591,17 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                       if (val?.VariantID) {
                         try {
                           setLoadingAdd(true);
-                          const payload = { variants: [primary?.VariantID, val.VariantID].filter(Boolean) };
-                          const data: any = await axiosInstance1.post('/api/cargpt/compare_cars/', payload);
-                          if (data && (data.car1 || data.car2)) {
-                            const primaryId = primary?.VariantID;
-                            const right = data.car1?.VariantID === primaryId ? data.car2 : data.car1;
-                            setSelectedRightCar(right || val);
-                          } else {
-                            setSelectedRightCar(val);
+                          const payload = { car_ids: [primary?.VariantID, val.VariantID].filter(Boolean) };
+                          const resp: any = await axiosInstance1.post('/api/cargpt/compare/', payload);
+                          const arr = Array.isArray(resp?.data) ? resp.data : (Array.isArray(resp) ? resp : []);
+                          const primaryId = primary?.VariantID || primary?.CarID || primary?.id;
+                          let right: any = null;
+                          if (Array.isArray(arr) && arr.length > 0) {
+                            right = arr.find((c: any) => (c?.VariantID ?? c?.CarID ?? c?.id) !== primaryId) || arr[0];
+                          } else if (resp?.car1 || resp?.car2) {
+                            right = (resp.car1 && ((resp.car1?.VariantID ?? resp.car1?.CarID ?? resp.car1?.id) !== primaryId)) ? resp.car1 : resp.car2;
                           }
+                          setSelectedRightCar(right || val);
                           setIsAddingRightCar(false);
                         } catch (e) {
                           setSelectedRightCar(val);
