@@ -87,7 +87,13 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
         },
       }}
     >
-      <DialogTitle sx={{ background: mode === "dark" ? "" : "#eeeeef", pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))', minHeight: 56 }}>
+      <DialogTitle
+       sx={{ 
+
+                  bgcolor: theme.palette.primary.main,
+    color: mode === 'dark' ? '#2196f3' : '#ffffff', // Blue in dark mode, white in light mode
+
+        pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))', minHeight: 56 }}>
         <Button
           variant="outlined"
           onClick={onClose}
@@ -99,6 +105,9 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
             border: "none",
             minWidth: 0,
             p: 1,
+
+       color: mode === 'dark' ? '#2196f3' : '#ffffff', // Blue in dark mode, white in light mode
+
           }}
         >
           <KeyboardBackspaceSharp />
