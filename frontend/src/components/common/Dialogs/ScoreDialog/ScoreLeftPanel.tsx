@@ -197,7 +197,7 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                             },
                           }}
                         >
-                          ({activeFeatures}/{totalFeatures})
+                          {item === "Engine" ? `(${carDetails.engin_rating}/${carDetails.total_engin_rating})` : `(${activeFeatures}/${totalFeatures})`}
                         </Typography>
                       );
                     }
