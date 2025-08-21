@@ -69,7 +69,7 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
             lng: longitude,
           });
 
-          const cityName = res?.data?.city;
+          const cityName = res?.city;
           if (cityName) {
             setCity(cityName);
             setCookie('currentCity', cityName, {
