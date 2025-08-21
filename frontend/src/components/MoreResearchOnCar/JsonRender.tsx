@@ -96,6 +96,7 @@ const {mode}=useColorMode()
 allColumns.includes("Price") ||
   allColumns.includes("Ground Clearance") ||
   allColumns.includes("Power Transmission") ||
+  heading=="Top 5 Trending Brands" ||
   !!isDisabled // <-- Convert string to boolean
   
 }                      
