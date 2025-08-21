@@ -415,7 +415,7 @@ const ChatBox: React.FC = () => {
       >
         {!isSmallScreen && <Feeds />}
         <Paper
-          elevation={3}
+          elevation={1}
           sx={{
             p: 2,
 
