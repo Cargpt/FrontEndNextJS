@@ -83,7 +83,7 @@ const FeedDialog: React.FC<FeedDialogProps> = ({
             }}
           >
             <img
-              src={carData.image}
+              src={carData.image.CarImageURL}
               alt={`${carData.brandName} ${carData.modelName}`}
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />

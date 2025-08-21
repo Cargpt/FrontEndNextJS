@@ -34,15 +34,16 @@ const Feeds = () => {
   }, []);
 
   useEffect(() => {
-    Object.values(scrollRefs.current).forEach((scrollContainer) => {
+    Object.entries(scrollRefs.current).forEach(([tag, scrollContainer], index) => {
       if (!scrollContainer) return;
 
+      const delay = 3000 + index * 1000; 
       const scrollInterval = setInterval(() => {
         scrollContainer.scrollBy({
           left: scrollContainer.clientWidth,
           behavior: "smooth",
         });
-      }, 3000);
+      }, delay);
 
       return () => clearInterval(scrollInterval);
     });
@@ -116,7 +117,7 @@ const Feeds = () => {
               width: "100%",
               display: "flex",
               flexDirection: "column",
-              // marginBottom: index < Object.keys(groupedCarsData).length - 1 ? 2 : 0,
+              pt: index !== 0 ? 0 : undefined, 
             }}
             key={tag}
           >
@@ -198,7 +199,7 @@ const Feeds = () => {
                       }}
                     >
                       <img
-                        src={car?.image || ""}
+                        src={car?.image?.CarImageURL || ""}
                         alt=""
                         style={{
                           width: "100%",
