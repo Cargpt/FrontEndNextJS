@@ -27,7 +27,7 @@ const [cookies]=useCookies(['currentCity'])
     };
 
     fetchDealers();
-  }, []);
+  }, [cookies.currentCity]);
 
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
