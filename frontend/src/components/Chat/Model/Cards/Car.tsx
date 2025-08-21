@@ -483,7 +483,7 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
       {modelCars.length > 0 && (
         <Box
           sx={{
-            width: { xs: "100%", md: modelCars.length < 2 ? "50%" : "100%" },
+            width: { xs: "100%", md: modelCars.length < 2 ? "50%" : "99%" },
           }}
         >
           <Slider {...settings}>
