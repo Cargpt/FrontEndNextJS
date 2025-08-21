@@ -45,38 +45,32 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
     return hasData;
   });
 
-  const {mode}=useColorMode()
+  const { mode } = useColorMode();
 
-
-
-
-
-  const activeBgColor = (active:boolean)=>{
-    if(active && mode=="light"){
-      return "#e3f2fd"
-    }else if(active  && mode=="dark"){
-      return ""
-    }else if(!active && mode=="dark" ){
-      return "#000"
-    }else{
-      return "#f5f5f5"
+  const activeBgColor = (active: boolean) => {
+    if (active && mode == "light") {
+      return "#e3f2fd";
+    } else if (active && mode == "dark") {
+      return "";
+    } else if (!active && mode == "dark") {
+      return "#000";
+    } else {
+      return "#f5f5f5";
     }
+  };
 
+  const activeColor = (active: boolean) => {
+    if (active && mode == "light") {
+      return "#555";
+    } else if (active && mode == "dark") {
+      return "#fff";
+    } else if (!active && mode == "dark") {
+      return "#555";
+    } else {
+      return "#555";
     }
+  };
 
-     const activeColor = (active:boolean)=>{
-    if(active && mode=="light"){
-      return "#555"
-    }else if(active  && mode=="dark"){
-      return "#fff"
-    }else if(!active && mode=="dark" ){
-      return "#555"
-    }else{
-      return "#555"
-    }
-
-    }
- 
   return (
     <Box
       sx={{
@@ -85,7 +79,7 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
           sm: "40%",
           md: "30%",
         },
-        backgroundColor: mode==="dark" ? "#000": "#f5f5f5",
+        backgroundColor: mode === "dark" ? "#000" : "#f5f5f5",
         borderRight: {
           xs: "none",
           md: "1px solid #ddd",
@@ -130,13 +124,13 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                 onClick={() => setActiveItem(item)}
                 style={{
                   cursor: "pointer",
-                  color: activeColor(isActive) ,
+                  color: activeColor(isActive),
                   borderBottom: isActive
                     ? "1px solid #1976d2"
                     : "1px solid transparent",
                   transition: "all 0.3s ease",
                   fontSize: ".9rem",
-                  backgroundColor: activeBgColor(isActive) ,
+                  backgroundColor: activeBgColor(isActive),
                   display: "flex",
                   alignItems: "center",
                   flexDirection: isSmallScreen ? "column" : "row",
@@ -175,7 +169,10 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                         (v) => v === 1
                       ).length;
 
-                      if (item === "Interior" && typeof sectionData.Doors === 'number') {
+                      if (
+                        item === "Interior" &&
+                        typeof sectionData.Doors === "number"
+                      ) {
                         activeFeatures = Number(activeFeatures) + 1;
                       }
 
@@ -197,7 +194,9 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
                             },
                           }}
                         >
-                          ({activeFeatures}/{totalFeatures})
+                          {item === "Engine"
+                            ? `(${carDetails.engin_rating}/${carDetails.total_engin_rating})`
+                            : `(${activeFeatures}/${totalFeatures})`}
                         </Typography>
                       );
                     }

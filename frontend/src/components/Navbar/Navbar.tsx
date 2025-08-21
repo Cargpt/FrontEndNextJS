@@ -37,7 +37,7 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
   const router = useRouter();
   const theme = useTheme();
   const isNative = Capacitor.isNativePlatform();
-  const isAndroid = Capacitor.getPlatform() === 'android';
+  const isAndroid = Capacitor.getPlatform() === "android";
   const { mode } = useColorMode();
 
   const [enterCitydialogOpen, setEnterCityDialogOpen] = useState(false);
@@ -49,7 +49,7 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
 
   const handleBookmarkClick = () => {
     if (cookies.user) {
-      router.push('/bookmarks');
+      router.push("/bookmarks");
     }
   };
 
@@ -130,23 +130,23 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
       <CssBaseline />
       <AppBar
         sx={{
-          position: 'fixed',
+          position: "fixed",
           top: 0,
           left: 0,
           right: 0,
           zIndex: 1000,
           borderTop: `1px solid ${theme.palette.divider}`,
-          boxShadow: 'none',
+          boxShadow: "none",
           paddingTop: `env(safe-area-inset-bottom)`,
-          boxSizing: 'border-box',
+          boxSizing: "border-box",
         }}
         elevation={0}
       >
         <Toolbar
           sx={{
+            left: "calc(env(safe-area-inset-left, 0px) + 8px)",
             zIndex: 3,
-            border: 'none',
-            px: 2,
+            border: "none",
           }}
         >
           {/* Back Button */}
@@ -154,7 +154,7 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
             <KeyboardBackspaceSharp />
           </IconButton>
 
-          {/* Title */}
+          {/* Brand Name on the left, next to back button */}
           <Typography
             variant="h6"
             noWrap
@@ -162,13 +162,13 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
             sx={{
               fontWeight: 600,
               ml: 1,
-              color: mode === 'dark' ? '#2196f3' : '#ffffff',
+              color: mode === "dark" ? "#2196f3" : "#ffffff", // Blue in dark mode, white in light mode
             }}
           >
             AICarAdvisor
           </Typography>
 
-          {/* Spacer */}
+          {/* Spacer pushes bookmark icon to right */}
           <div style={{ flexGrow: 1 }} />
 
           {/* City Selector */}
