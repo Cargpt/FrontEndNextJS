@@ -3,6 +3,7 @@ import { Box, Paper, Typography, CircularProgress } from "@mui/material";
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import FeedDialog from "./FeedDialog";
+import { formatInternational } from "@/utils/services";
 
 interface typeProps {
   open: boolean;
@@ -221,7 +222,7 @@ const Feeds = () => {
                         color="text.secondary"
                         sx={{ fontSize: "14px" }}
                       >
-                        ₹ {car.price?.toLocaleString?.() ?? car.price}
+                        ₹ {formatInternational(car.price ?? car.price)}
                       </Typography>
                     </Box>
                   </Paper>
