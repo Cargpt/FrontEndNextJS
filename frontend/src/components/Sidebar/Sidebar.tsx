@@ -59,6 +59,7 @@ const router =useRouter()
 
   useEffect(() => {
     let isMounted = true;
+    if(!(cookies.user && cookies.token)) return
     const fetchHistories = async () => {
       try {
         setIsLoadingHistory(true);
@@ -125,6 +126,7 @@ const router =useRouter()
   };
 
   const handleDeleteHistory = async (h: HistoryItem) => {
+    if(cookies.token) return
     if (!h?.id) return;
     try {
       await axiosInstance1.delete(`/api/cargpt/history/${h.id}/`);

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import { Message } from "@/Context/ChatContext";
+import { useCookies } from "react-cookie";
 
 /**
  * Persists chat history whenever messages change.
@@ -17,8 +18,9 @@ export function usePersistHistory(
   }
 ) {
   const lastSignatureRef = useRef<string>("");
-
+const [cookies]=useCookies(['token', 'user'])
   useEffect(() => {
+    if(!cookies.token) return
     if (!messages || messages.length === 0) return;
     if (options?.isEnabled === false) return;
 
@@ -54,7 +56,7 @@ export function usePersistHistory(
       .catch(() => {
         /* ignore */
       });
-  }, [messages, options?.endpoint, options?.buildKey, options?.isEnabled]);
+  }, [messages, options?.endpoint, options?.buildKey, options?.isEnabled, cookies.token, cookies.user]);
 }
 
 
