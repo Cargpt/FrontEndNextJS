@@ -28,7 +28,6 @@ import { useAutoScroll } from "../hooks/useAutoScroll";
 import { usePersistHistory } from "../hooks/usePersistHistory";
 import DealerList from "./DealerList";
 import Feeds from "./Feeds";
-import { Message } from "@/Context/ChatContext"; // Import Message interface
 
 // This is a dummy comment to trigger linter re-evaluation
 const ChatBox: React.FC = () => {

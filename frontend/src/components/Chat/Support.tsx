@@ -10,7 +10,6 @@ import {
 } from "@mui/material";
 
 import AdviseSelectionCard from "./Model/AdviceSelectionCard";
-import { Message } from "@/Context/ChatContext";
 
 const CarOptions = () => (
   <Box sx={{ mt: 1, pl: 2 }}>

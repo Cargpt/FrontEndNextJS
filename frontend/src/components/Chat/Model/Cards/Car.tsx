@@ -15,7 +15,7 @@ import FaceIcon from "@mui/icons-material/Face";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 
-import { useChats, Message } from "@/Context/ChatContext";
+import { useChats } from "@/Context/ChatContext";
 import { useCookies } from "react-cookie";
 import Slider, { Settings } from "react-slick";
 import CarGallery from "@/components/common/Dialogs/CarGallery/CarGallery";

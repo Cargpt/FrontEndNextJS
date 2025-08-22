@@ -9,7 +9,6 @@ import OptionsCard from "../Model/AdviceSelectionCard/OptionCard";
 import CarResearchMenu from "../../MoreResearchOnCar/MoreResearchOnCar";
 import { Typography } from "@mui/material";
 import { capitalizeFirst } from "@/utils/services";
-import { Message } from "@/Context/ChatContext";
 
 type MessageRendererProps = {
   message: Message;

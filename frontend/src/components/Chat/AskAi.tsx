@@ -33,7 +33,6 @@ import {
 // import { useChats } from "@/Context/ChatContext";
 import { useSnackbar } from "@/Context/SnackbarContext";
 import { axiosInstance1 } from "@/utils/axiosInstance";
-import { Message } from "@/Context/ChatContext";
 import { useRouter } from "next/navigation";
 import { useCookies } from "react-cookie";
 import { Button } from "@mui/material";
@@ -843,7 +842,7 @@ const AskAIChat: React.FC = () => {
                       fontSize: "0.75rem",
                     }}
                   >
-                    {formatTime(message.timestamp)}
+                    {message.timestamp ?formatTime(message.timestamp) : ""}
                   </Typography>
                 )}
               </Box>
