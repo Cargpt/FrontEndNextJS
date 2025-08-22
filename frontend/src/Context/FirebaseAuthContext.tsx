@@ -15,6 +15,7 @@ import {
   GithubAuthProvider,
   TwitterAuthProvider,
   signInWithPopup,
+  signInWithCredential,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   User,
@@ -25,10 +26,13 @@ import {
   doc,
   getDoc,
   setDoc,
-  Firestore,
 } from "firebase/firestore";
+
 import { useCookies } from "react-cookie";
 import { usePathname } from "next/navigation";
+
+import { Capacitor } from "@capacitor/core";
+import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
 
 // Firebase Config (from .env)
 const firebaseConfig = {
@@ -73,7 +77,6 @@ const FirebaseContext = createContext<FirebaseContextType | undefined>(
   undefined
 );
 export const useFirebase = () => {
-
   const context = useContext(FirebaseContext);
   if (!context)
     throw new Error("useFirebase must be used within FirebaseProvider");
@@ -87,7 +90,8 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
   const [cookies, setCookie] = useCookies(["token", "user"]);
 
-   const pathname=usePathname()
+  const pathname = usePathname();
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     const storedUserRole = localStorage.getItem("userRole");
@@ -113,15 +117,16 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
           setUserRole(role);
           localStorage.setItem("user", JSON.stringify(authUser));
           setCookie("user", JSON.stringify(authUser), {
-      path: '/',
-      maxAge: 60 * 60 * 24 * 365,
-    })
-    console.log("here we are")
-          const token = await authUser.getIdToken();
-          setCookie('token', token, {
-            path: '/',
+            path: "/",
             maxAge: 60 * 60 * 24 * 365,
-          })
+          });
+
+          const token = await authUser.getIdToken();
+          setCookie("token", token, {
+            path: "/",
+            maxAge: 60 * 60 * 24 * 365,
+          });
+
           localStorage.setItem("userRole", role);
         } catch (err) {
           console.error(err);
@@ -160,15 +165,33 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
   const signInUserWithEmailAndPassword = (email: string, password: string) =>
     firebaseSignIn(firebaseAuth, email, password);
 
-  const signInWithGoogle = async () => {
-    const provider =       new GoogleAuthProvider()
+  const signInWithGoogle = async (): Promise<User> => {
+  try {
+    let user: User;
 
-    const result = await signInWithPopup(
-      firebaseAuth,
-      provider
-    );
-    const user = result.user;
+    if (Capacitor.isNativePlatform()) {
+      // ✅ Native mobile (Android/iOS)
 
+
+      await GoogleAuth.initialize(); // Required on Android
+
+      const googleUser = await GoogleAuth.signIn();
+    console.log("✅ Native Google User:", googleUser);
+
+      const idToken = googleUser.authentication?.idToken;
+      if (!idToken) throw new Error("No ID token from Google Auth");
+
+      const credential = GoogleAuthProvider.credential(idToken);
+      const result = await signInWithCredential(firebaseAuth, credential);
+      user = result.user;
+    } else {
+      // ✅ Web (browser)
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(firebaseAuth, provider);
+      user = result.user;
+    }
+
+    // ✅ Sync with Firestore
     const userDocRef = doc(firestore, "users", user.uid);
     const userDocSnap = await getDoc(userDocRef);
 
@@ -182,16 +205,31 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
       });
     }
 
+    // ✅ Persist
     localStorage.setItem("user", JSON.stringify(user));
-      setCookie("user", JSON.stringify(user), {
-      path: '/',
+    setCookie("user", JSON.stringify(user), {
+      path: "/",
       maxAge: 60 * 60 * 24 * 365,
-    })
-
-    
+    });
     localStorage.setItem("userRole", "user");
+
     return user;
-  };
+  } catch (error: any) {
+    console.error("❌ Google Sign-In Error", {
+      message: error?.message,
+      code: error?.code,
+      full: error,
+    });
+  console.log("❌ Google Sign-In Error:", JSON.stringify(error, null, 2));
+
+    // Developer error (code 10) hint
+    if (error?.code === 10) {
+      alert("Error Code 10: Check your SHA-1 and OAuth client config.");
+    }
+
+    throw error;
+  }
+};
 
   const signInWithFacebook = () =>
     signInWithPopup(firebaseAuth, new FacebookAuthProvider());

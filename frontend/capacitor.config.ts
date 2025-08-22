@@ -18,8 +18,14 @@ const config: CapacitorConfig = {
       backgroundColor: '#ffffff',
       style: 'DARK',
       overlaysWebView: false
-    }
+    },
+      GoogleAuth: {
+    scopes: ['profile', 'email'],
+    serverClientId: '431860020742-j9j18g9a4jmd2fsc55qo1gf2esajb5sa.apps.googleusercontent.com',
+    forceCodeForRefreshToken: true,
   }
-};
+
+  }
+}; 
 
 export default config;

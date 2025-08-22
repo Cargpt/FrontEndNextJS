@@ -22,6 +22,9 @@ import {
   Person,
 } from '@mui/icons-material';
 
+import { Capacitor } from '@capacitor/core';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
+
 import { axiosInstance } from '@/utils/axiosInstance';
 import { useCookies } from 'react-cookie';
 import { v4 as uuidv4 } from 'uuid';
@@ -102,41 +105,114 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      const googleUser = await firebase.signInWithGoogle();
-      if (!googleUser) return;
 
-      const idToken = await googleUser.getIdToken();
-      const uniqueUserId = googleUser.displayName || uuidv4();
+// const handleGoogleLogin = async () => {
+//   try {
+//     let idToken = '';
+//     let displayName = '';
 
-      const payload = {
-        username: uniqueUserId,
-        password: 'test@1234',
-      };
+//     const isNative = Capacitor.isNativePlatform();
 
-      const response = await axiosInstance.post('/api/cargpt/createUser/', payload, {
-        headers: { Authorization: `Bearer ${idToken}` },
+//     if (isNative) {
+//       // ✅ Native login (Android/iOS)
+//       const googleUser = await GoogleAuth.signIn();
+
+//       idToken = googleUser.authentication.idToken;
+//       displayName = googleUser.name || 'Guest';
+//     } else {
+//       // ✅ Web login using Firebase
+//       const googleUser = await firebase.signInWithGoogle();
+//       if (!googleUser) return;
+
+//       idToken = await googleUser.getIdToken();
+//       displayName = googleUser.displayName || 'Guest';
+//     }
+
+//     // ✅ Send token to backend to login or create account
+//     const payload = {
+//       username: displayName || uuidv4(),
+//       password: 'test@1234', // Or some generated default password
+//     };
+
+//     const response = await axiosInstance.post('/api/cargpt/createUser/', payload, {
+//       headers: { Authorization: `Bearer ${idToken}` },
+//     });
+
+//     if (response.token) {
+//       setCookie('token', response.token, {
+//         path: '/',
+//         maxAge: 60 * 60 * 24 * 365, // 1 year
+//       });
+
+//       setCookie('user', response.user, {
+//         path: '/',
+//         maxAge: 60 * 60 * 24 * 365,
+//       });
+
+//       showSnackbar(`${getRandomWelcomeMessage(displayName)}`, {
+//         vertical: 'top',
+//         horizontal: 'center',
+//       });
+
+//       hide();
+//     } else {
+//       showSnackbar('Login failed. Try again.', {
+//         vertical: 'top',
+//         horizontal: 'center',
+//       });
+//     }
+//   } catch (err) {
+//     console.error('Google Sign-In Error:', err);
+//     showSnackbar('Google Sign-In failed. Please try again later.', {
+//       vertical: 'top',
+//       horizontal: 'center',
+//     });
+//   }
+// };
+
+
+
+const handleGoogleLogin = async () => {
+
+  try {
+    const googleUser = await firebase.signInWithGoogle();
+    if (!googleUser) return;
+
+    const idToken = await googleUser.getIdToken();
+
+    const uniqueUserId = googleUser.displayName || uuidv4();
+
+    const payload = {
+      username: uniqueUserId,
+      password: "test@1234", // or better logic here
+    };
+
+    const response = await axiosInstance.post("/api/cargpt/createUser/", payload, {
+      headers: { Authorization: `Bearer ${idToken}` },
+    });
+
+    if (response.token) {
+      setCookie("token", response.token, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365,
       });
 
-      if (response.token) {
-        setCookie('token', response.token, {
-          path: '/',
-          maxAge: 60 * 60 * 24 * 365,
-        });
+      const displayName = googleUser.displayName || "";
+      // showSnackbar and hide should be your own UI functions
+      showSnackbar(`${getRandomWelcomeMessage(displayName)}`, {
+        vertical: "top",
+        horizontal: "center",
+      });
 
-        const displayName = googleUser?.displayName || '';
-        showSnackbar(`${getRandomWelcomeMessage(displayName)}`, {
-          vertical: 'top',
-          horizontal: 'center',
-        });
-
-        hide();
-      }
-    } catch (err) {
-      console.error('Google Sign-In Error:', err);
+      hide();
     }
-  };
+  } catch (err) {
+    console.error("Google Sign-In Error:", err);
+  }
+};
+
+
+
 
   const handleAppleLogin = () => {
     showSnackbar('This login method is available soon!', {
