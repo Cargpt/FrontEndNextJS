@@ -13,7 +13,6 @@ import AdviseSelectionCard from "./Model/AdviceSelectionCard";
 
 const CarOptions = () => (
   <Box sx={{ mt: 1, pl: 2 }}>
-    <Typography variant="body2">🚗 Sedan</Typography>
     <Typography variant="body2">🚙 SUV</Typography>
     <Typography variant="body2">🚘 Hatchback</Typography>
   </Box>
