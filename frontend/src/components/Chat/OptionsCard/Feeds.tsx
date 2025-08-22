@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState, useMemo } from "react";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import FeedDialog from "./FeedDialog";
 import { formatInternational } from "@/utils/services";
+import { useChats } from "@/Context/ChatContext";
 
 interface typeProps {
   open: boolean;
@@ -18,6 +19,7 @@ const Feeds = () => {
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const [dialog, setDialog] = useState<typeProps>({ open: false, type: null });
   const scrollRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+  const { setMessages } = useChats();
 
   useEffect(() => {
     const fetchDealers = async () => {
@@ -152,7 +154,42 @@ const Feeds = () => {
                   <Paper
                     key={`${tag}-${car.modelId}-${car.variantName}-${index}`}
                     elevation={2}
-                    onClick={() => setDialog({ open: true, type: "feed", carData: car })}
+                    onClick={async () => {
+                      if (tag === "Upcoming") {
+                        setDialog({ open: true, type: "feed", carData: car });
+                      } else {
+                        const userMessage = {
+                          id: String(Date.now()),
+                          message: "Show car that fit my references",
+                          sender: "user" as const,
+                          render: "text" as const,
+                        };
+                        setMessages((prevMessages) => [...prevMessages, userMessage]);
+
+                        const variantID = car.variantID;
+                        if (variantID) {
+                          try {
+                            const response = await axiosInstance1.post("/api/cargpt/compare/", { car_ids: [variantID] });
+                            console.log("Compare API Response:", response);
+                            setMessages((prevMessages) => [
+                              ...prevMessages,
+                              {
+                                id: String(Date.now() + 1),
+                                sender: "bot",
+                                render: "carComponent" as const, // New render type for Car.tsx
+                                data: { "comparedCars": response.data }, // Wrap the response data in an object
+                              },
+                            ]);
+                          } catch (error) {
+                            console.error("Error calling compare API:", error);
+                            setDialog({ open: true, type: "feed", carData: car });
+                          }
+                        } else {
+                          console.warn("variantID is undefined for car:", car);
+                          setDialog({ open: true, type: "feed", carData: car });
+                        }
+                      }
+                    }}
                     sx={{
                       p: 2,
                       minWidth: "280px",

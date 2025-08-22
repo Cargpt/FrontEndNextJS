@@ -80,29 +80,6 @@ interface CarDetails {
   CarImageDetails: CarImageDetail[];
 }
 
-interface Message {
-  id: string;
-  sender: "user" | "bot";
-  render:
-    | "brandModelSelect"
-    | "carOptions"
-    | "text"
-    | "selectOption"
-    | "flueOption"
-    | "bodyOption"
-    | "transmissionOption"
-    | "brandOption"
-    | "selectedFilter"
-    | "recommendationOption"
-    | "researchOncar"
-    |"BestCarOption";
-  message:  any ;
-  data?: any;
-  prompt?: boolean;
-  searchParam?:any;
-  bookmark?: boolean;
-}
-
 
 interface ObjectProps{
     key:string

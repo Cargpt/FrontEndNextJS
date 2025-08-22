@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { axiosInstance1 } from "@/utils/axiosInstance";
+import { Message } from "@/Context/ChatContext";
 
 /**
  * Persists chat history whenever messages change.

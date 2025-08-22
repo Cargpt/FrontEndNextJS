@@ -9,6 +9,7 @@ import OptionsCard from "../Model/AdviceSelectionCard/OptionCard";
 import CarResearchMenu from "../../MoreResearchOnCar/MoreResearchOnCar";
 import { Typography } from "@mui/material";
 import { capitalizeFirst } from "@/utils/services";
+import { Message } from "@/Context/ChatContext";
 
 type MessageRendererProps = {
   message: Message;
@@ -61,6 +62,15 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
         <TeslaCard
           onClick={onIknowExactly}
           selectedItem={message.message}
+          handleNeedAdviceSupport={onNeedAdviceSupport}
+          onTriggerOverallRecommendations={onCarRecommendation}
+        />
+      );
+    case "carComponent": // New case for rendering Car.tsx from Feeds.tsx
+      return (
+        <TeslaCard
+          onClick={onIknowExactly}
+          selectedItem={message.data} // Pass message.data to Car.tsx
           handleNeedAdviceSupport={onNeedAdviceSupport}
           onTriggerOverallRecommendations={onCarRecommendation}
         />

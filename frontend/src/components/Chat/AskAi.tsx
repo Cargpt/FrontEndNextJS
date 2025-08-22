@@ -33,18 +33,19 @@ import {
 // import { useChats } from "@/Context/ChatContext";
 import { useSnackbar } from "@/Context/SnackbarContext";
 import { axiosInstance1 } from "@/utils/axiosInstance";
+import { Message } from "@/Context/ChatContext";
 import { useRouter } from "next/navigation";
 import { useCookies } from "react-cookie";
 import { Button } from "@mui/material";
 import { useColorMode } from "@/Context/ColorModeContext";
 
-interface Message {
-  id: string;
-  message: any;
-  sender: "user" | "bot";
-  timestamp: Date;
-  render?: "carOptions" | "text";
-}
+// interface Message {
+//   id: string;
+//   message: any;
+//   sender: "user" | "bot";
+//   timestamp: Date;
+//   render?: "carOptions" | "text";
+// }
 
 const AskAIChat: React.FC = () => {
   const theme = useTheme();
