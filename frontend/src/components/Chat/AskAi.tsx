@@ -308,31 +308,12 @@ const AskAIChat: React.FC = () => {
   };
 
   const fetchFaqPrompts = async (): Promise<string[]> => {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_BASE_URL ||
-      "http://ec2-3-110-170-230.ap-south-1.compute.amazonaws.com";
-    const url = `${baseUrl}/api/cargpt/faqs/questions/`;
-    const token = getTokenFromCookies();
-    const headers: Record<string, string> = {};
-    if (token) headers["Authorization"] = `Bearer ${token}`;
-    const res = await fetch(url, {
-      method: "GET",
-      headers,
-      redirect: "follow" as any,
+  
+      const res = await axiosInstance1.get('/api/cargpt/faqs/questions/', {
+     
     });
-    if (!res.ok) throw new Error(`Failed to fetch FAQs (${res.status})`);
-    const contentType = res.headers.get("content-type") || "";
-    let data: any;
-    if (contentType.includes("application/json")) {
-      data = await res.json();
-    } else {
-      const text = await res.text();
-      try {
-        data = JSON.parse(text);
-      } catch {
-        data = text;
-      }
-    }
+    let data = res;
+    
     return normalizeQuestions(data);
   };
   // Hint mobile browsers to open camera first; users can still choose gallery within camera UI

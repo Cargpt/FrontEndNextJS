@@ -103,24 +103,15 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
   // Call external API to fetch full car details by id and return parsed JSON
   const fetchCarDetailsById = async (carId: number) => {
     if (!carId) throw new Error('Invalid car id');
-    const token =
-      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgyMjEzMTA0LCJpYXQiOjE3NTA2NzcxMDQsImp0aSI6IjZjYTA0M2M4YWY4NzQyYjRiMWNkNGM1YzRiZmY0ODQ5IiwidXNlcl9pZCI6NH0.1jDNN4jz5TA4eNvZI1RHDen6uD2e-AznkhyUv_ijlPE';
-    const headers = new Headers();
-    headers.append('Authorization', token);
-    headers.append('Content-Type', 'text/plain');
-    const raw = JSON.stringify({ car_id: carId });
-    const resp = await fetch(
-      'http://ec2-3-110-170-230.ap-south-1.compute.amazonaws.com/api/cargpt/car-details/',
-      {
-        method: 'POST',
-        headers,
-        body: raw,
-        redirect: 'follow' as RequestRedirect,
-      }
+    const raw = { car_id: carId }
+    const resp = await axiosInstance1.post('/api/cargpt/car-details/',
+      
+        raw,
+      
     );
-    const text = await resp.text();
+    const text = resp;
     try {
-      return JSON.parse(text);
+      return text;
     } catch (_e) {
       return text as any;
     }
