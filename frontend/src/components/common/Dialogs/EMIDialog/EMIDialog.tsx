@@ -169,7 +169,6 @@ const {mode}=useColorMode()
       {/* Fixed Header */}
       <DialogTitle
         sx={{
-          bgcolor: mode=="dark"? "dark":"grey.100",
           position: "sticky",
           top: 0,
           pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))',
@@ -177,6 +176,9 @@ const {mode}=useColorMode()
           zIndex: 2,
           textAlign: "center",
           fontWeight: 700,
+                    bgcolor: theme.palette.primary.main,
+    color: mode === 'dark' ? '#2196f3' : '#ffffff', // Blue in dark mode, white in light mode
+
         }}
       >
         <Button
@@ -190,6 +192,8 @@ const {mode}=useColorMode()
             border: "none",
             minWidth: 0,
             p: 1,
+    color: mode === 'dark' ? '#2196f3' : '#ffffff', // Blue in dark mode, white in light mode
+
           }}
         >
           <KeyboardBackspaceSharp />

@@ -15,15 +15,14 @@ import FaceIcon from "@mui/icons-material/Face";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import DirectionsCarIcon from "@mui/icons-material/DirectionsCar";
 
-import { useChats } from "@/Context/ChatContext"; // This brings in the Message type from ChatContext
+import { useChats, Message } from "@/Context/ChatContext";
 import { useCookies } from "react-cookie";
 import Slider, { Settings } from "react-slick";
 import CarGallery from "@/components/common/Dialogs/CarGallery/CarGallery";
 import ScoreDialog from "@/components/common/Dialogs/ScoreDialog/ScoreDialog";
 import EMIDialog from "@/components/common/Dialogs/EMIDialog/EMIDialog";
 import SentimentDialog from "@/components/common/Dialogs/SentimentDialog/SentimentDialog";
-// Ensure the casing here matches the actual filename on disk (e.g., BookTestDrive.tsx)
-import BookTestDrive from "@/components/common/Dialogs/TestDrivemodel/Booktestdrive"; // Corrected import path for casing
+import BookTestDrive from "@/components/common/Dialogs/TestDrivemodel/Booktestdrive"; 
 import { Avatar, IconButton, useTheme } from "@mui/material";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import LoginDialog from "@/components/common/Dialogs/LoginDialog";
@@ -39,10 +38,11 @@ import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import CircularProgress from "@mui/material/CircularProgress";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import { LightbulbOutline } from "@mui/icons-material";
+import CompareCarsDialog from "./CompareCarsDialog";
 
 type Props = {
   onClick?: () => void;
-  selectedItem: any; // Consider making this more specific if possible
+  selectedItem: any; 
   handleNeedAdviceSupport: () => void;
   variant?: "default" | "compact";
 };
@@ -52,34 +52,17 @@ interface typeProps {
   type: string | null;
 }
 
-// REMOVE or comment out this local Message interface definition.
-// The Message interface should be imported from ChatContext to ensure consistency.
-/*
-interface Message {
-  id: string;
-  message: string;
-  render: string; // This was 'string', causing the conflict
-  sender: "user" | "bot";
-}
-*/
-
 interface VariantColor {
   ColorHex: string;
-  // Add other properties of VariantColor if they exist
 }
-
-// Define a more specific interface for carDetails passed to BookTestDrive
-// This should match the CarDetailsForBooking interface in BookTestDrive.tsx
 interface CarDetailsForBooking {
   BrandID: number;
   ModelID: number;
   VariantID: number;
   BrandName: string;
   ModelName: string;
-  VariantName?: string; // Optional as per BookTestDrive's interface
+  VariantName?: string;
 }
-
-// Add new prop for triggering overall recommendations
 interface CarCardProps extends Props {
   onTriggerOverallRecommendations?: () => Promise<void | boolean>;
 }
@@ -89,7 +72,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
   selectedItem,
   handleNeedAdviceSupport,
   variant = "default",
-  onTriggerOverallRecommendations, // Destructure new prop
+  onTriggerOverallRecommendations,
 }) => {
 
 
@@ -97,29 +80,24 @@ const TeslaCard: React.FC<CarCardProps> = ({
 
   const { open, hide, show } = useLoginDialog();
 
-  const modelCars: any[] = Array.isArray(rawValues[0]) ? rawValues[0] : [];
+  const modelCars: any[] = selectedItem.comparedCars
+  ? selectedItem.comparedCars
+  : (Array.isArray(rawValues[0]) ? rawValues[0] : []);
 
   const theme = useTheme();
   const [carInfo, setCarInfo] = useState<any>(null);
   const [dialog, setDialog] = useState<typeProps>({ open: false, type: null });
-  // Heart (favorite) state for each car card
 
   const favouteStates = modelCars.reduce((acc, car, index) => {
-    acc[index] = car?.is_bookmarked; // Initialize all as not favorite
+    acc[index] = car?.is_bookmarked;
     return acc;
   }, {});
   const [favoriteStates, setFavoriteStates] = useState<{
     [key: number]: boolean;
   }>(favouteStates);
-  // Import Message from ChatContext if it's exported there, or ensure its definition matches.
-  // Assuming useChats is defined like: export const useChats = () => { ... return { messages, setMessages }; };
-  // And Message interface is also exported from ChatContext.
   const { messages, setMessages, cars, setCars } = useChats();
   const [cookies] = useCookies(["selectedOption", "user"]);
-
-  // State for the Book Test Drive dialog
   const [testDriveModalOpen, setTestDriveModalOpen] = useState(false);
-  // Use the specific interface for selectedCarForTestDrive
   const [selectedCarForTestDrive, setSelectedCarForTestDrive] =
     useState<CarDetailsForBooking | null>(null);
   const { showSnackbar } = useSnackbar();
@@ -128,9 +106,11 @@ const TeslaCard: React.FC<CarCardProps> = ({
   const [loadingRecommendations, setLoadingRecommendations] =
     useState<boolean>(false);
   const [loadingOverallRecommendations, setLoadingOverallRecommendations] =
-    useState<boolean>(false); // New state
+    useState<boolean>(false); 
  
-const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
+  const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
+  const [compareDialogOpen, setCompareDialogOpen] = useState(false);
+  const [selectedCarForCompare, setSelectedCarForCompare] = useState<any>(null);
 
   const showSignUP = () => {
     setshowSignUpState(true);
@@ -141,7 +121,7 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
   const hideSignUP = () => {
     setshowSignUpState(false);
   };
-  // Sorting menu (funnel icon) state
+ 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [currentSort, setCurrentSort] = useState<string>("none");
   const handleSelectSort = (value: "none" | "price" | "mileage") => {
@@ -156,13 +136,9 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
     variantId: number,
     index: number
   ) => {
-    // Example: send to API or log
-    // You can replace this with an API call or any other logic
-
     if (!cookies.user) {
       show();
 
-      // Indicate failure to set favorite
     } else {
       const paload = {
         variant_id: variantId,
@@ -202,7 +178,7 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
           color: "success",
         });
 
-        return true; // Indicate success
+        return true; 
       } catch (error: any) {
         console.error(error);
         let err = "Variant is discountinued";
@@ -240,15 +216,15 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
           id: String(Date.now()),
           message: `Show recommendations for ${modelName} at price ${formatInternational(
             price
-          )}`, // User-friendly message
+          )}`, 
           render: "text",
           sender: "user",
         };
 
         const botMessage: Message = {
           id: String(Date.now() + 1),
-          message: { [`${modelName}_Recommendations`]: recommendedCars }, // Group by model name
-          render: "carOptions", // Use 'carOptions' to display in carousel
+          message: { [`${modelName}_Recommendations`]: recommendedCars },
+          render: "carOptions", 
           sender: "bot",
         };
 
@@ -287,16 +263,15 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
   };
 
   const userMessage = {
-    // No need to explicitly type userMessage here if ChatContext's Message is used
     id: String(Date.now() + 1),
     message: cookies.selectedOption,
-    render: "text" as const, // Cast to 'text' literal type to match ChatContext's union type
-    sender: "user" as const, // Cast to 'user' literal type to match ChatContext's union type
+    render: "text" as const, 
+    sender: "user" as const,
   };
 
   const openDialog = (
     type: string,
-    data: any // Consider making this more specific if possible
+    data: any 
   ) => {
     setDialog({ open: true, type });
     if (
@@ -311,7 +286,6 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
   };
 
   const handleOpenTestDriveModal = (car: CarDetailsForBooking) => {
-    // Type 'car' here
 
     if (!cookies.user) {
       show();
@@ -326,7 +300,15 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
     setSelectedCarForTestDrive(null);
   };
 
-  // Custom Next Arrow Component (supports outside offset)
+  const handleOpenCompareDialog = (car: any) => {
+    setSelectedCarForCompare(car);
+    setCompareDialogOpen(true);
+  };
+
+  const handleCloseCompareDialog = () => {
+    setCompareDialogOpen(false);
+    setSelectedCarForCompare(null);
+  };
   const CustomNextArrow = (props: any & { outside?: boolean }) => {
     const { className, onClick, style, outside } = props;
     const { mode } = useColorMode();
@@ -349,8 +331,6 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
       />
     );
   };
-
-  // Custom Prev Arrow Component (supports outside offset)
   const CustomPrevArrow = (props: any & { outside?: boolean }) => {
     const { className, onClick, style, outside } = props;
     const { mode } = useColorMode();
@@ -399,11 +379,9 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
           centerPadding: "0px",
         },
       },
-      // other breakpoints
     ],
   };
   const backTOIntial = () => {
-    // The previous fix for Message interface should resolve this.
     setMessages((prev) => [...prev, userMessage]);
   };
 
@@ -483,7 +461,7 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
       {modelCars.length > 0 && (
         <Box
           sx={{
-            width: { xs: "100%", md: modelCars.length < 2 ? "50%" : "100%" },
+            width: { xs: "100%", md: modelCars.length < 2 ? "50%" : "100%", overflow: "hidden"  },
           }}
         >
           <Slider {...settings}>
@@ -634,7 +612,24 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
                       justifyContent: "space-between",
                     }}
                   >
-                    {car.VariantName}
+                                         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                       {car.VariantName}
+                       <img
+                         src="/assets/Compare Syambol.png"
+                         alt="Compare"
+                         width={20}
+                         height={20}
+                         style={{ cursor: "pointer" }}
+                         onClick={() => handleOpenCompareDialog(car)}
+                         onMouseEnter={(e) => {
+                           e.currentTarget.style.transform = 'scale(1.1)';
+                           e.currentTarget.style.transition = 'transform 0.2s ease';
+                         }}
+                         onMouseLeave={(e) => {
+                           e.currentTarget.style.transform = 'scale(1)';
+                         }}
+                       />
+                     </Box>
                     <IconButton
                       size="small"
                       sx={{ ml: 1, p: 0.5 }}
@@ -1061,6 +1056,15 @@ const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
         onClose={hideSignUP}
         onSuccess={() => {}}
       />
+      {selectedCarForCompare && (
+        <CompareCarsDialog
+          open={compareDialogOpen}
+          onClose={handleCloseCompareDialog}
+          variantId={selectedCarForCompare.VariantID}
+          carName={selectedCarForCompare.VariantName}
+          primaryCar={selectedCarForCompare}
+        />
+      )}
     </>
   );
 };

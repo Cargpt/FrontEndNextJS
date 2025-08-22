@@ -141,9 +141,10 @@ function createAxiosLike(
       };
 
       // Redirect to home if 401 Unauthorized
-        if (response.status === 401) {
-          window.location.href = "/";
-        }
+if (response.status === 401 && window.location.pathname !== "/") {
+  window.location.href = "/";
+}
+
 
 
       throw error;

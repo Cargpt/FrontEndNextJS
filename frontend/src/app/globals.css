@@ -179,13 +179,6 @@ html, body, .my-custom-scroll-container {
 }
 
 /* Arrow positioning */
-.slick-prev {
-  left: -24px !important;
-}
-
-.slick-next {
-  right: -24px !important;
-}
 
 /* Arrow icon styling */
 .slick-prev::before,
@@ -229,14 +222,7 @@ html, body, .my-custom-scroll-container {
   cursor: pointer;
 }
 
-/* Place arrows slightly outside the card */
-.slick-prev {
-  left: -20px !important;
-}
 
-.slick-next {
-  right: -20px !important;
-}
 .slick-list{
   background: transparent;
 }
@@ -373,7 +359,7 @@ html, body, .my-custom-scroll-container {
 .prompt {
   /* padding: 1rem; */
   display: flex;
-  justify-content: center;
+  justify-content: start;
   font-family: Arial, sans-serif;
 }
 
@@ -392,7 +378,7 @@ html, body, .my-custom-scroll-container {
 
 .prompt h3 {
   font-size: 1.1rem; /* Reduced from 1.3rem */
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
   color: #222;
 }
 
@@ -477,6 +463,6 @@ html, body, .my-custom-scroll-container {
     left: -5px !important;
   }
   .slick-next {
-    right: -15px !important;
+    right: -5px !important;
   }
 }

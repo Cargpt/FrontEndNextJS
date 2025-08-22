@@ -415,13 +415,15 @@ const ChatBox: React.FC = () => {
           justifyContent: "center",
           alignItems: "flex-start",
           ml: { xs: 0, sm: 0 },
+
         }}
       >
         {!isSmallScreen && <Feeds />}
         <Paper
-          elevation={3}
+          elevation={0}
           sx={{
             p: 2,
+
 
             width: isSmallScreen ? "100%" : "50%",
             display: "flex",
@@ -437,6 +439,7 @@ const ChatBox: React.FC = () => {
           {messages?.[messages?.length - 1]?.message !== "Ask AI" && (
             <Box
               sx={{
+              
                 minHeight: "80vh",
                 maxHeight: "calc(100vh - 120px)", // Adjust this value as needed
                 overflowY: "auto",

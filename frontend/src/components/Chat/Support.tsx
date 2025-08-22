@@ -10,11 +10,7 @@ import {
 } from "@mui/material";
 
 import AdviseSelectionCard from "./Model/AdviceSelectionCard";
-interface Message {
-  id: string;
-  text: string;
-  sender: "user" | "bot";
-}
+import { Message } from "@/Context/ChatContext";
 
 const CarOptions = () => (
   <Box sx={{ mt: 1, pl: 2 }}>
@@ -28,7 +24,7 @@ const Support: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "2",
-      text: "I need advisor support",
+      message: "I need advisor support",
       sender: "user",
     },
   ]);
@@ -44,7 +40,7 @@ const Support: React.FC = () => {
         setTimeout(() => {
           const botMessage: Message = {
             id: String(Date.now()),
-            text: "I am looking for",
+            message: "I am looking for",
             sender: "bot",
           };
           setMessages((prev) => [...prev, botMessage]);
@@ -102,9 +98,9 @@ const Support: React.FC = () => {
                 }}
               >
                 {msg.sender === "bot" ? (
-                  <AdviseSelectionCard options={[]} label={""} h1={""} />
+                  <AdviseSelectionCard options={[]} label={null} h1={undefined} />
                 ) : (
-                  <Typography variant="body2">{msg.text}</Typography>
+                  <Typography variant="body2">{msg.message}</Typography>
                 )}
               </Paper>
               {msg.sender === "user" && (
@@ -113,7 +109,7 @@ const Support: React.FC = () => {
             </Stack>
 
             {/* 🧠 Conditional Component Rendering */}
-            {msg.text.toLowerCase().includes("type of car") && <CarOptions />}
+            {msg.message.toLowerCase().includes("type of car") && <CarOptions />}
           </React.Fragment>
         ))}
 

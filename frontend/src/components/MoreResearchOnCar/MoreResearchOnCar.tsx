@@ -222,7 +222,9 @@ const CarResearchMenu: React.FC = () => {
 
       const newMessages = [userMessage, botMessage];
       setMessages((prev) => [...prev, ...newMessages]);
-    } else if (item && item?.Brand) {
+    } 
+    
+    else if (item && item?.Brand) {
       let fistItem = item?.Brand;
       const searchItem = CustomFilter.find((it) => fistItem?.includes(it));
 
@@ -317,7 +319,7 @@ const CarResearchMenu: React.FC = () => {
                   dangerouslySetInnerHTML={{ __html: answer?.text }}
                 />
                 {answer?.json && (
-                  <Box sx={{ marginBottom: 2 }}>
+                  <Box sx={{ marginBottom: 2 , pt:0}}>
                     <RenderJson
                       data={JSON.parse(answer.json)}
                       onCategoryClick={handleClick}
@@ -483,7 +485,6 @@ const CarResearchMenu: React.FC = () => {
           }
           .prompt h1, .prompt h2, .prompt h3, .prompt h4, .prompt h5, .prompt h6 {
             color: ${mode === "dark" ? "#fff" : "#1976d2"} !important; /* Blue for light, white for dark */
-            margin-top: 1.5em;
             margin-bottom: 0.8em;
             font-weight: 600;
             padding-left: 5px; /* Added padding to headings */

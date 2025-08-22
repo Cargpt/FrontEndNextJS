@@ -20,8 +20,8 @@ import { useSnackbar } from "@/Context/SnackbarContext";
 
 interface AdviceSelectionCardProps {
   options: string[];
-  label: string;
-  h1: string;
+  label: string | null | undefined;
+  h1: string | null | undefined;
   onBack?:()=>void;
   initialValue?: string | null;
   onPersistSelection?: (partial: any) => void;
@@ -54,26 +54,26 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
       if (upperLimit) {
         updateFilter(label, upperLimit);
       }
-    } else {
+    } else if (label) {
       updateFilter(label.toLowerCase().replace(/\s+/g, "_"), value);
     }
 
     // Persist selection into last bot message so history restores selected option
-    onPersistSelection?.({ selections: { [label]: value } });
+    onPersistSelection?.({ selections: { [label as string]: value } });
   };
 
 
   
   useEffect(() => {
     const chosen = initialValue ?? (label === "budget" ? '0-5L' : options?.[0]);
-    setSelections({ [label]: chosen });
+    setSelections({ [label as string]: chosen });
 
     if (label === "budget") {
       const upperLimit = getUpperLimitInRupees((initialValue ?? options?.[0])?.toString()) || 500000;
       if (upperLimit) {
         updateFilter(label, upperLimit);
       }
-    } else if (chosen) {
+    } else if (chosen && label) {
       updateFilter(label.toLowerCase().replace(/\s+/g, "_"), chosen);
     }
   }, [initialValue]);
@@ -93,7 +93,7 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
       ...prev,
       {
         id: String(Date.now()),
-        message: `${label} set to ${selections[label]}`,
+        message: `${label} set to ${selections[label as string]}`,
         render: "text",
         sender: "user",
         data:fx
@@ -197,12 +197,12 @@ const AdviceSelectionCard: FC<AdviceSelectionCardProps> = ({
           {options?.map((option, index) => (
             <Button
               key={index}
-              variant={option === selections[label] ? "contained" : "outlined"}
-              onClick={() => handleSelect(label, option)}
+              variant={option === selections[label as string] ? "contained" : "outlined"}
+              onClick={() => handleSelect(label as string || '', option)}
               sx={{
                 backgroundColor:
-                  selections[label] === option ? "#d3e3ff" : "inherit",
-                color: selections[label] === option ? "#000" : "inherit",
+                  selections[label as string] === option ? "#d3e3ff" : "inherit",
+                color: selections[label as string] === option ? "#000" : "inherit",
                 borderRadius: "5px",
                 textTransform: "none",
                 border: "none",

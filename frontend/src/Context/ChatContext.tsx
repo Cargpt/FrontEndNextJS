@@ -9,13 +9,15 @@ import React, {
 } from "react";
 import { useCookies } from "react-cookie";
 
-// export type ChatMessage = {
-//   id: string;
-//   message?: string; // optional if using a component
-//   sender: 'user' | 'bot';
-//   render?: 'brandModelSelect' | 'carOptions' | 'text' | 'selectOption' | 'flueOption' | 'bodyOption' |'transmissionOption' | 'brandOption'| 'selectedFilter' | 'recommendationOption';
-//   data?: any; // used to pass props to component renders
-// };
+export type Message = {
+  id: string;
+  message?: string | any; // optional if using a component
+  sender: 'user' | 'bot';
+  render?: 'brandModelSelect' | 'carOptions' | 'text' | 'selectOption' | 'flueOption' | 'bodyOption' |'transmissionOption' | 'brandOption'| 'selectedFilter' | 'recommendationOption' | 'researchOncar' | 'BestCarOption' | 'carComponent';
+  data?: any; // used to pass props to component renders
+  bookmark?: boolean;
+  prompt?: string | boolean;
+};
 
 type ChatsContextType = {
   chats: Message[];
