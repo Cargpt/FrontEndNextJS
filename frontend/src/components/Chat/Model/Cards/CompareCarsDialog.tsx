@@ -35,11 +35,15 @@ import EntertainmentIcon from '@mui/icons-material/Speaker';
 import InfoIcon from '@mui/icons-material/Info';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
 import { axiosInstance1 } from '@/utils/axiosInstance';
 import { formatInternational } from '@/utils/services';
 import { useColorMode } from '@/Context/ColorModeContext';
 import { useAndroidBackClose } from '@/hooks/useAndroidBackClose';
+import { useSnackbar } from '@/Context/SnackbarContext';
+import { useLoginDialog } from '@/Context/LoginDialogContextType';
 
 interface CompareCarsDialogProps {
   open: boolean;
@@ -47,6 +51,13 @@ interface CompareCarsDialogProps {
   variantId: number;
   carName: string;
   primaryCar: any; // full object of the selected car
+  // If provided, the dialog should open directly in pair comparison view
+  // using these two cars as the initial selection. We will fetch detailed
+  // data for each via api/cargpt/car-details/ before rendering the table.
+  initialData?: {
+    car1: any;
+    car2: any;
+  } | null;
 }
 
 type SuggestedComparisonResponse = {
@@ -57,6 +68,7 @@ type SuggestedComparisonResponse = {
 type PairComparisonResponse = {
   car1: any;
   car2: any;
+  additionalCars?: any[]; // Array of additional cars (car3, car4, car5, etc.)
   comparison?: {
     price_difference: number;
     mileage_difference: number;
@@ -74,6 +86,7 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
   variantId,
   carName,
   primaryCar,
+  initialData,
 }) => {
   const [comparisonData, setComparisonData] = useState<
     SuggestedComparisonResponse | PairComparisonResponse | null
@@ -84,10 +97,90 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
   const { mode } = useColorMode();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   useAndroidBackClose(open && isMobile, onClose);
+  const { showSnackbar } = useSnackbar();
+  const { show: showLogin } = useLoginDialog();
+
+  // Reusable soft pill Chip styles
+  const chipSoft = {
+    px: 1.25,
+    py: 0.25,
+    borderRadius: 9999,
+    backgroundColor: mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+    border: '1px solid',
+    borderColor: 'divider',
+    color: 'text.primary',
+    height: 'auto',
+    display: 'block',
+    mx: 'auto',
+    width: 'fit-content',
+    '& .MuiChip-label': {
+      px: 0,
+      whiteSpace: 'normal',
+      overflow: 'visible',
+      lineHeight: 1.2,
+    },
+  } as const;
+
+  const chipVariantSx = {
+    ...chipSoft,
+    fontWeight: 600,
+  } as const;
+
+  const chipInfoSx = {
+    ...chipSoft,
+  } as const;
+
+  // Helper to render AI score on two lines
+  const renderAIScoreLabel = (score: any) => (
+    <span>
+      AI Car Advisor Score:
+      <br />
+      {String(score)}
+    </span>
+  );
+
+  // Plain text styles for AI score and sentiments (no boxes)
+  const textLineSx = {
+    display: 'block',
+    textAlign: 'center',
+    color: 'text.primary',
+    fontSize: isMobile ? '10px' : '12px',
+    mb: isMobile ? 0.25 : 1,
+    mt: isMobile ? 0.5 : 1,
+    lineHeight: 1.3,
+  } as const;
+
+  // Lightweight token reader to check authentication state
+  const getTokenFromCookies = (): string | null => {
+    try {
+      const name = 'token=';
+      const decoded = decodeURIComponent(document.cookie || '');
+      const parts = decoded.split(';');
+      for (let cookie of parts) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name)) return cookie.substring(name.length);
+      }
+    } catch (_e) {}
+    return null;
+  };
+
+  const getUserFromCookies = (): string | null => {
+    try {
+      const name = 'user=';
+      const decoded = decodeURIComponent(document.cookie || '');
+      const parts = decoded.split(';');
+      for (let cookie of parts) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name)) return cookie.substring(name.length);
+      }
+    } catch (_e) {}
+    return null;
+  };
 
   // State to force full screen mode
   const [forceFullScreen, setForceFullScreen] = useState(false);
   const [isViewingPairComparison, setIsViewingPairComparison] = useState(false);
+  const [bookmarkStates, setBookmarkStates] = useState<Record<number, boolean>>({});
 
   // Right-side add-car selector state
   const [isAddingRightCar, setIsAddingRightCar] = useState<boolean>(false);
@@ -99,6 +192,16 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
   const [variantOptions, setVariantOptions] = useState<any[]>([]);
   const [selectedVariant, setSelectedVariant] = useState<any | null>(null);
   const [selectedRightCar, setSelectedRightCar] = useState<any | null>(null);
+
+  // Third car add via images-row '+'
+  const [addThirdOpen, setAddThirdOpen] = useState<boolean>(false);
+  const [thirdBrandOptions, setThirdBrandOptions] = useState<any[]>([]);
+  const [thirdModelOptions, setThirdModelOptions] = useState<any[]>([]);
+  const [thirdVariantOptions, setThirdVariantOptions] = useState<any[]>([]);
+  const [thirdSelectedBrand, setThirdSelectedBrand] = useState<any | null>(null);
+  const [thirdSelectedModel, setThirdSelectedModel] = useState<any | null>(null);
+  const [thirdSelectedVariant, setThirdSelectedVariant] = useState<any | null>(null);
+  const [thirdLoading, setThirdLoading] = useState<boolean>(false);
 
   // Call external API to fetch full car details by id and return parsed JSON
   const fetchCarDetailsById = async (carId: number) => {
@@ -134,23 +237,84 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
     // Ensure basic details are at the top level for consistent access
     const normalized = {
       ...carData,
-      BrandName: carData?.BrandName || carData?.Brand || carData?.data?.BrandName || carData?.data?.Brand || carData?.Car?.BrandName || carData?.Car?.Brand,
-      ModelName: carData?.ModelName || carData?.Model || carData?.data?.ModelName || carData?.data?.Model || carData?.Car?.ModelName || carData?.Car?.Model,
-      VariantName: carData?.VariantName || carData?.Variant || carData?.data?.VariantName || carData?.data?.Variant || carData?.Car?.VariantName || carData?.Car?.Variant,
-      Price: carData?.Price || carData?.data?.Price || carData?.Car?.Price,
+      BrandName: carData?.BrandName || carData?.Brand || carData?.data?.BrandName || carData?.data?.Brand || carData?.Car?.BrandName || carData?.Car?.Brand || carData?.data?.Brand,
+      ModelName: carData?.ModelName || carData?.Model || carData?.data?.ModelName || carData?.data?.Model || carData?.Car?.ModelName || carData?.Car?.Model || carData?.data?.Model,
+      VariantName: carData?.VariantName || carData?.Variant || carData?.data?.VariantName || carData?.data?.Variant || carData?.Car?.VariantName || carData?.Car?.Variant || carData?.data?.Variant,
+      Price: carData?.Price || carData?.data?.Price || carData?.Car?.Price || carData?.data?.car?.Price || carData?.car?.Price,
       CarImageDetails: carData?.CarImageDetails || carData?.data?.CarImageDetails || carData?.Car?.CarImageDetails,
       images: carData?.images || carData?.data?.images || carData?.Car?.images,
+      AIScore: carData?.AIScore || carData?.data?.AIScore || carData?.Car?.AIScore,
+      AISummary: carData?.AISummary || carData?.data?.AISummary || carData?.Car?.AISummary,
+      is_bookmarked: carData?.is_bookmarked || carData?.data?.is_bookmarked || carData?.Car?.is_bookmarked || false,
     };
     return normalized;
   };
 
   useEffect(() => {
-    if (open && variantId) {
+    const loadFromInitialPair = async () => {
+      try {
+        if (!initialData?.car1 || !initialData?.car2) return false;
+        setLoading(true);
+        setError(null);
+
+        const leftId = getCarId(initialData.car1);
+        const rightId = getCarId(initialData.car2);
+        if (!leftId || !rightId) return false;
+
+        const [leftDetails, rightDetails] = await Promise.all([
+          fetchCarDetailsById(leftId),
+          fetchCarDetailsById(rightId),
+        ]);
+
+        const normalizedLeft = {
+          ...normalizeCar(leftDetails),
+          AIScore: initialData.car1?.AIScore ?? leftDetails?.AIScore,
+          AISummary: initialData.car1?.AISummary ?? leftDetails?.AISummary,
+        };
+        const normalizedRight = {
+          ...normalizeCar(rightDetails),
+          AIScore: initialData.car2?.AIScore ?? rightDetails?.AIScore,
+          AISummary: initialData.car2?.AISummary ?? rightDetails?.AISummary,
+        };
+
+        setComparisonData({
+          car1: normalizedLeft,
+          car2: normalizedRight,
+          displayCar1: initialData.car1,
+          displayCar2: initialData.car2,
+          additionalCars: [],
+        } as any);
+
+        // Initialize bookmark states
+        const newBookmarkStates: Record<number, boolean> = {};
+        const leftVarId = getCarId(initialData.car1);
+        const rightVarId = getCarId(initialData.car2);
+        if (leftVarId) newBookmarkStates[leftVarId] = !!initialData.car1?.is_bookmarked;
+        if (rightVarId) newBookmarkStates[rightVarId] = !!initialData.car2?.is_bookmarked;
+        setBookmarkStates(newBookmarkStates);
+
+        setForceFullScreen(true);
+        setIsViewingPairComparison(true);
+        return true;
+      } catch (e: any) {
+        // fall back to suggested flow
+        return false;
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    (async () => {
+      if (!open) return;
       setSelectedRightCar(null);
-      fetchComparisonData();
-    }
+      // If initial pair provided, try to load pair view; otherwise default
+      const loaded = await loadFromInitialPair();
+      if (!loaded && variantId) {
+        fetchComparisonData();
+      }
+    })();
     // eslint-disable-next-line
-  }, [open, variantId]);
+  }, [open, variantId, initialData]);
 
   const fetchComparisonData = async () => {
     setLoading(true);
@@ -160,102 +324,91 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
     try {
       // New API contract expects an array of variant IDs under the key `variants`
       const payload = { variants: [variantId] };
-      const data = await axiosInstance1.post('/api/cargpt/compare_cars/', payload);
+      const response: SuggestedComparisonResponse | PairComparisonResponse = await axiosInstance1.post('/api/cargpt/compare_cars/', payload);
+      const data = response || {}; // Ensure data is an object, even if API returns null
 
-      if (data) {
+      if (data && Object.keys(data).length > 0) { // Check if data is not empty
         setComparisonData(data as any);
+        const newBookmarkStates: Record<number, boolean> = {};
+        // Initialize primary car's bookmark state
+        if (primaryCar?.VariantID) {
+          newBookmarkStates[primaryCar.VariantID] = primaryCar.is_bookmarked || false;
+        }
+        // Initialize suggested comparisons' bookmark states
+        if (data && typeof data === 'object' && 'comparisons' in data && Array.isArray((data as SuggestedComparisonResponse).comparisons)) {
+          const suggestedData = data as SuggestedComparisonResponse;
+          const validComparisons: any[] = suggestedData.comparisons || []; // Ensure it's an array
+          validComparisons.forEach((car: any) => {
+            if (car?.VariantID) {
+              newBookmarkStates[car.VariantID] = car.is_bookmarked || false;
+            }
+          });
+        } else if (data && typeof data === 'object' && ('car1' in data || 'car2' in data || 'additionalCars' in data)) {
+          const pairData = data as PairComparisonResponse;
+          if (pairData.car1?.VariantID) {
+            newBookmarkStates[pairData.car1.VariantID] = pairData.car1.is_bookmarked || false;
+          }
+          if (pairData.car2?.VariantID) {
+            newBookmarkStates[pairData.car2.VariantID] = pairData.car2.is_bookmarked || false;
+          }
+          if (pairData.additionalCars) {
+            pairData.additionalCars.forEach((item: {car: any}) => {
+              if (item.car?.VariantID) {
+                newBookmarkStates[item.car.VariantID] = item.car.is_bookmarked || false;
+              }
+            });
+          }
+        }
+        setBookmarkStates(newBookmarkStates);
       } else {
         setError('No comparison data available');
       }
     } catch (err: any) {
-      const apiMessage = err?.response?.data?.error || err?.message;
+      const apiMessage = err?.response?.data?.error || err?.message || 'Unknown error';
       setError(apiMessage || 'Failed to fetch comparison data. Please try again later.');
     } finally {
       setLoading(false);
     }
   };
 
-  // const renderCarCard = (car: any, title: string) => (
-  //   <Card
-  //     sx={{
-  //       height: '100%',
-  //       backgroundColor: mode === 'dark' ? theme.palette.background.paper : '#ffffff',
-  //       border: '1px solid',
-  //       borderColor: mode === 'dark' ? theme.palette.divider : 'grey.300',
-  //     }}
-  //   >
-  //     <CardContent>
-  //       <Typography variant="h6" gutterBottom fontWeight="bold">
-  //         {title}
-  //       </Typography>
+  const handleToggleBookmark = async (carId: number, isBookmarked: boolean) => {
+    // Block bookmarking for unauthenticated users and redirect to login/home
+    const token = getTokenFromCookies();
+    const userCookie = getUserFromCookies();
+    if (!token || !userCookie) {
+      showSnackbar('Please login to bookmark cars', {
+        vertical: 'top',
+        horizontal: 'center',
+        autoHideDuration: 5000,
+        color: 'error',
+      });
+      try { showLogin(); } catch (_e) {}
+      return;
+    }
+    try {
+      const payload = { variant_id: carId };
+      await axiosInstance1.post('/api/cargpt/bookmark/toggle/', payload);
 
-  //       {/* {(car?.CarImageDetails?.[0]?.CarImageURL || car?.images?.[0]?.CarImageURL) && (
-  //         <Box
-  //           sx={{
-  //             width: '100%',
-  //             height: 120,
-  //             display: 'flex',
-  //             justifyContent: 'center',
-  //             alignItems: 'center',
-  //             mb: 2,
-  //           }}
-  //         >
-  //           <img
-  //             src={car?.CarImageDetails?.[0]?.CarImageURL || car?.images?.[0]?.CarImageURL}
-  //             alt={car?.VariantName || car?.ModelName}
-  //             style={{
-  //               maxWidth: '100%',
-  //               maxHeight: '100%',
-  //               objectFit: 'contain',
-  //             }}
-  //           />
-  //         </Box>
-  //       )} */}
+      setBookmarkStates(prev => ({ ...prev, [carId]: !isBookmarked }));
 
-  //       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5, mb: 1 }}>
-  //         <Typography variant="h6" fontWeight="bold">
-  //           {(car?.BrandName || car?.Brand) as any} {car?.ModelName}
-  //         </Typography>
-  //         {car?.VariantName && (
-  //           <Chip label={car?.VariantName} size="small" sx={{ fontSize: '10px' }} />
-  //         )}
-  //       </Box>
-
-  //       <Typography variant="h6" fontWeight="bold" color="primary" gutterBottom>
-  //         ₹{formatInternational(car?.Price || 0)}
-  //       </Typography>
-
-  //       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-  //         {car?.FuelType && (
-  //           <Chip label={`${car?.FuelType}`} size="small" sx={{ fontSize: '10px' }} />
-  //         )}
-  //         {(car?.Trans_fullform || car?.Engine?.Transmission) && (
-  //           <Chip
-  //             label={`Transmission: ${car?.Trans_fullform || car?.Engine?.Transmission}`}
-  //             size="small"
-  //             sx={{ fontSize: '10px' }}
-  //           />
-  //         )}
-  //         {car?.Mileage && (
-  //           <Chip label={`${Number(car?.Mileage)} kmpl`} size="small" sx={{ fontSize: '10px' }} />
-  //         )}
-  //         {(car?.Seats || car?.Interior?.Doors) && (
-  //           <Chip
-  //             label={`${car?.Seats ? `${car?.Seats} Seater` : `${car?.Interior?.Doors} Doors`}`}
-  //             size="small"
-  //             sx={{ fontSize: '10px' }}
-  //           />
-  //         )}
-  //         {car?.Engine?.DriveType && (
-  //           <Chip label={`Drive: ${car?.Engine?.DriveType}`} size="small" sx={{ fontSize: '10px' }} />
-  //         )}
-  //         {car?.Safety?.AirbagCount && (
-  //           <Chip label={`${car?.Safety?.AirbagCount} Airbags`} size="small" sx={{ fontSize: '10px' }} />
-  //         )}
-  //       </Box>
-  //     </CardContent>
-  //   </Card>
-  // );
+      const msg = !isBookmarked ? "Car added to your bookmarks" : "Car removed from your bookmarks";
+      showSnackbar(msg, {
+        vertical: "top",
+        horizontal: "center",
+        autoHideDuration: 7000,
+        color: "success",
+      });
+    } catch (error: any) {
+      console.error("Failed to toggle bookmark:", error);
+      const err = error?.response?.data?.error || "Something went wrong! Please try again later.";
+      showSnackbar(err, {
+        vertical: "top",
+        horizontal: "center",
+        autoHideDuration: 7000,
+        color: "error",
+      });
+    }
+  };
 
   const formatPrice = (price: number) => {
     return `₹${formatInternational(price || 0)}`;
@@ -306,10 +459,226 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
   };
 
   // Helper to get car image consistently
-  const getCarImage = (car: any) =>
-    car?.CarImageDetails?.[0]?.CarImageURL ||
-    car?.images?.[0]?.CarImageURL ||
-    '/assets/card-img.png';
+  const getCarImage = (car: any) => {
+    // Check multiple possible image field structures
+    const imageUrl = 
+      car?.CarImageDetails?.[0]?.CarImageURL ||
+      car?.images?.[0]?.CarImageURL ||
+      car?.data?.CarImageDetails?.[0]?.CarImageURL ||
+      car?.data?.images?.[0]?.CarImageURL ||
+      car?.Car?.CarImageDetails?.[0]?.CarImageURL ||
+      car?.Car?.images?.[0]?.CarImageURL ||
+      car?.CarImageURL || // Direct image URL
+      car?.ImageURL || // Alternative direct image URL
+      car?.data?.CarImageURL ||
+      car?.data?.ImageURL ||
+      car?.Car?.CarImageURL ||
+      car?.Car?.ImageURL;
+    
+    return imageUrl || '/assets/card-img.png';
+  };
+
+  // Helper to get car price consistently
+  const getCarPrice = (car: any) => {
+    // Check multiple possible price field structures
+    const price = 
+      car?.Price ||
+      car?.data?.Price ||
+      car?.Car?.Price ||
+      car?.data?.car?.Price ||
+      car?.car?.Price;
+    
+    return price || 0;
+  };
+
+  // Helper to get car ID consistently (prioritizing CarID over VariantID)
+  const getCarId = (car: any) => {
+    return car?.CarID || car?.VariantID || car?.Car?.CarID || car?.Car?.VariantID || car?.data?.CarID || car?.data?.VariantID;
+  };
+
+  // Helper to get car brand name consistently
+  const getCarBrand = (car: any) => {
+    // Check multiple possible brand field structures
+    const brand = 
+      car?.BrandName ||
+      car?.Brand ||
+      car?.data?.BrandName ||
+      car?.data?.Brand ||
+      car?.Car?.BrandName ||
+      car?.Car?.Brand;
+    
+    return brand || '';
+  };
+
+  // Helper to get car model name consistently
+  const getCarModel = (car: any) => {
+    // Check multiple possible model field structures
+    const model = 
+      car?.ModelName ||
+      car?.Model ||
+      car?.data?.ModelName ||
+      car?.data?.Model ||
+      car?.Car?.ModelName ||
+      car?.Car?.Model;
+    
+    return model || '';
+  };
+
+  // Helper to get car variant name consistently
+  const getCarVariant = (car: any) => {
+    // Check multiple possible variant field structures
+    const variant = 
+      car?.VariantName ||
+      car?.Variant ||
+      car?.data?.VariantName ||
+      car?.data?.Variant ||
+      car?.Car?.VariantName ||
+      car?.Car?.Variant;
+    
+    return variant || '';
+  };
+
+  // Open handler for '+' button in images section
+  const openAddThird = async () => {
+    setAddThirdOpen(true);
+    if (thirdBrandOptions.length === 0) {
+      setThirdLoading(true);
+      try {
+        const resp = await axiosInstance1.get('/api/cargpt/brands/');
+        const brands = Array.isArray((resp as any)?.data) ? (resp as any).data : (Array.isArray(resp) ? resp : []);
+        setThirdBrandOptions(brands);
+      } catch (_e) {
+        setThirdBrandOptions([]);
+      } finally {
+        setThirdLoading(false);
+      }
+    }
+  };
+
+  const confirmThirdSelection = async () => {
+    if (!thirdSelectedVariant?.VariantID) return;
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Debug: Log current comparison data structure
+      console.log('Current comparison data before adding car:', comparisonData);
+      
+      // Get the car IDs for comparison - start with existing cars
+      const car1Id = getCarId((comparisonData as any)?.displayCar1) || getCarId((comparisonData as any)?.car1) || getCarId(primaryCar);
+      const car2Id = getCarId((comparisonData as any)?.displayCar2) || getCarId((comparisonData as any)?.car2);
+      
+      // Get existing additional cars if any - fix the data structure access
+      const existingAdditionalCars = (comparisonData as any)?.additionalCars || [];
+      console.log('Existing additional cars:', existingAdditionalCars);
+      
+      // Extract car IDs from the existing additional cars structure
+      const existingCarIds = existingAdditionalCars.map((carObj: any) => {
+        // The structure is { car: {...}, displayCar: {...} }
+        const carId = getCarId(carObj.car) || carObj.car?.VariantID;
+        console.log('Extracting car ID from:', carObj, 'Result:', carId);
+        return carId;
+      }).filter(Boolean); // Filter out any undefined IDs
+      
+      // Add the new car ID
+      const newCarId = thirdSelectedVariant?.CarID || thirdSelectedVariant?.VariantID;
+      
+      // Combine all car IDs - include existing additional cars
+      const allCarIds = [car1Id, car2Id, ...existingCarIds, newCarId].filter(Boolean);
+      
+      // Debug: Log the IDs being used for comparison
+      console.log('Car IDs for comparison:', {
+        car1Id,
+        car2Id,
+        existingCarIds,
+        newCarId,
+        allCarIds,
+        thirdSelectedVariant: {
+          CarID: thirdSelectedVariant?.CarID,
+          VariantID: thirdSelectedVariant?.VariantID,
+          fullObject: thirdSelectedVariant
+        }
+      });
+
+      // Call compare API with all car IDs
+      const resp: any = await axiosInstance1.post('/api/cargpt/compare/', { 
+        car_ids: allCarIds
+      });
+      
+      const cars = Array.isArray(resp?.data) ? resp.data : (Array.isArray(resp) ? resp : []);
+      
+      // Use the exact cars returned from compare API for display purposes
+      const [car1Data, car2Data, ...additionalCarsData] = cars;
+      
+      // Debug: Log the data structure from compare API
+      console.log('Compare API response cars:', {
+        car1: car1Data,
+        car2: car2Data,
+        additionalCars: additionalCarsData,
+        totalCars: cars.length
+      });
+      
+      // Fetch detailed car information for each car to get complete feature comparison data
+      const detailedCars = await Promise.all(
+        cars.map((car: any) => fetchCarDetailsById(car?.CarID || car?.VariantID))
+      );
+      
+      console.log('Detailed car data fetched:', {
+        detailedCars,
+        count: detailedCars.length
+      });
+      
+      const payload: any = {
+        car1: { ...normalizeCar(detailedCars[0]), AIScore: car1Data?.AIScore ?? detailedCars[0]?.AIScore, AISummary: car1Data?.AISummary ?? detailedCars[0]?.AISummary },
+        car2: { ...normalizeCar(detailedCars[1]), AIScore: car2Data?.AIScore ?? detailedCars[1]?.AIScore, AISummary: car2Data?.AISSummary ?? detailedCars[1]?.AISSummary },
+        displayCar1: car1Data, // Keep original compare API data for display
+        displayCar2: car2Data,
+        additionalCars: additionalCarsData.map((car: any, index: number) => ({
+          car: { ...normalizeCar(detailedCars[index + 2]), AIScore: car?.AIScore ?? detailedCars[index + 2]?.AIScore, AISummary: car?.AISummary ?? detailedCars[index + 2]?.AISummary },
+          displayCar: car
+        }))
+      };
+      
+      // Debug: Log the normalized additional cars data
+      console.log('Normalized additional cars data:', {
+        additionalCars: payload.additionalCars,
+        count: payload.additionalCars.length
+      });
+      
+      console.log('Final payload to set:', payload);
+      
+      setComparisonData(payload as PairComparisonResponse & { 
+        displayCar1: any; 
+        displayCar2: any;
+        additionalCars: Array<{car: any, displayCar: any}>;
+      });
+      setForceFullScreen(true);
+      setIsViewingPairComparison(true);
+      setAddThirdOpen(false);
+      
+      // Initialize bookmark states for all cars in the new comparison
+      const newBookmarkStates: Record<number, boolean> = {};
+      detailedCars.forEach((car: any) => {
+        if (car?.VariantID) {
+          newBookmarkStates[car.VariantID] = car.is_bookmarked || false;
+        }
+      });
+      setBookmarkStates(newBookmarkStates);
+      
+      // Reset all third car selection fields after successful comparison
+      setThirdSelectedBrand(null);
+      setThirdSelectedModel(null);
+      setThirdSelectedVariant(null);
+      setThirdBrandOptions([]);
+      setThirdModelOptions([]);
+      setThirdVariantOptions([]);
+    } catch (e: any) {
+      console.error('Error adding car:', e);
+      setError(e?.message || 'Failed to fetch car details');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const renderSuggestedList = (primary: any, suggestions: any[]) => {
     // Remove duplicates that exactly match the primary car by VariantID or Model+Brand
@@ -344,16 +713,53 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
               {/* Left car */}
               <Box sx={{ flex: 1, textAlign: 'center' }}>
-                <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                   <img
                     src={getCarImage(primary)}
                     alt={primary?.ModelName}
                     style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
                   />
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent parent Box onClick
+                      handleToggleBookmark(getCarId(primary), bookmarkStates[getCarId(primary)] || false);
+                    }}
+                    sx={{
+                      position: 'absolute',
+                      top: isMobile ? -14 : 8,
+                      right: 8,
+                      zIndex: 1,
+                      bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+                      '&:hover': {
+                        bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.2)',
+                      },
+                      borderRadius: '50%',
+                      p: isMobile ? 0.25 : 0.5,
+                      width: isMobile ? 24 : 32,
+                      height: isMobile ? 24 : 32,
+                    }}
+                    aria-label="toggle bookmark"
+                  >
+                    {bookmarkStates[getCarId(primary)] ? (
+                      <FavoriteIcon sx={{ fontSize: isMobile ? 16 : undefined }} color="error" />
+                    ) : (
+                      <FavoriteBorderIcon sx={{ fontSize: isMobile ? 16 : undefined, color: mode === 'dark' ? '#000' : undefined }} color="action" />
+                    )}
+                  </IconButton>
                 </Box>
                 <Typography variant="subtitle1" fontWeight="bold">{primary?.BrandName} {primary?.ModelName}</Typography>
                 {primary?.VariantName && (
-                  <Chip label={primary.VariantName} size="small" sx={{ fontSize: '10px', mt: 0.5 }} />
+                  <Chip label={primary.VariantName} size="small" sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mt: 0.5 }} />
+                )}
+                {primary?.AIScore && (
+                  <Typography component="div" sx={{ ...textLineSx }}>
+                    {renderAIScoreLabel(primary.AIScore)}
+                  </Typography>
+                )}
+                {primary?.AISummary && (
+                  <Typography component="div" sx={{ ...textLineSx }}>
+                    {`User Sentiments: ${primary.AISummary}`}
+                  </Typography>
                 )}
                 <Typography variant="body2" color="text.secondary">{formatPrice(primary?.Price || 0)}</Typography>
               </Box>
@@ -374,16 +780,53 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
 
               {/* Right car */}
               <Box sx={{ flex: 1, textAlign: 'center' }}>
-                <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                   <img
                     src={getCarImage(s)}
                     alt={s?.ModelName}
                     style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
                   />
+                  <IconButton
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent parent Box onClick
+                      handleToggleBookmark(getCarId(s), bookmarkStates[getCarId(s)] || false);
+                    }}
+                    sx={{
+                      position: 'absolute',
+                      top: isMobile ? -14 : 8,
+                      right: 8,
+                      zIndex: 1,
+                      bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+                      '&:hover': {
+                        bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.2)',
+                      },
+                      borderRadius: '50%',
+                      p: isMobile ? 0.25 : 0.5,
+                      width: isMobile ? 24 : 32,
+                      height: isMobile ? 24 : 32,
+                    }}
+                    aria-label="toggle bookmark"
+                  >
+                    {bookmarkStates[getCarId(s)] ? (
+                      <FavoriteIcon sx={{ fontSize: isMobile ? 16 : undefined }} color="error" />
+                    ) : (
+                      <FavoriteBorderIcon sx={{ fontSize: isMobile ? 16 : undefined, color: mode === 'dark' ? '#000' : undefined }} color="action" />
+                    )}
+                  </IconButton>
                 </Box>
                 <Typography variant="subtitle1" fontWeight="bold">{s?.BrandName} {s?.ModelName}</Typography>
                 {s?.VariantName && (
-                  <Chip label={s.VariantName} size="small" sx={{ fontSize: '10px', mt: 0.5 }} />
+                  <Chip label={s.VariantName} size="small" sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mt: 0.5 }} />
+                )}
+                {s?.AIScore && (
+                  <Typography component="div" sx={{ ...textLineSx }}>
+                    {renderAIScoreLabel(s.AIScore)}
+                  </Typography>
+                )}
+                {s?.AISummary && (
+                  <Typography component="div" sx={{ ...textLineSx }}>
+                    {`User Sentiments: ${s.AISummary}`}
+                  </Typography>
                 )}
                 <Typography variant="body2" color="text.secondary">{formatPrice(s?.Price || 0)}</Typography>
               </Box>
@@ -397,14 +840,14 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                 try {
                   setLoading(true);
                   setError(null);
-                  const leftId = primary?.CarID || primary?.VariantID || primary?.ModelID || primary?.id;
-                  const rightId = s?.CarID || s?.VariantID || s?.ModelID || s?.id;
+                  const leftId = getCarId(primary) || primary?.ModelID || primary?.id;
+                  const rightId = getCarId(s) || s?.ModelID || s?.id;
                   const [left, right] = await Promise.all([
                     fetchCarDetailsById(leftId),
                     fetchCarDetailsById(rightId),
                   ]);
-                  const normalizedLeft = normalizeCar(left);
-                  const normalizedRight = normalizeCar(right);
+                  const normalizedLeft = { ...normalizeCar(left), AIScore: primary?.AIScore ?? left?.AIScore, AISummary: primary?.AISummary ?? left?.AISummary };
+                  const normalizedRight = { ...normalizeCar(right), AIScore: s?.AIScore ?? right?.AIScore, AISummary: s?.AISummary ?? right?.AISummary };
                   setComparisonData({
                     car1: normalizedLeft,
                     car2: normalizedRight,
@@ -413,6 +856,12 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                   } as PairComparisonResponse & { displayCar1: any; displayCar2: any });
                   setForceFullScreen(true); // Force full screen when a pair comparison is loaded
                   setIsViewingPairComparison(true); // Set to true when viewing a pair comparison
+                  // Update bookmark states for the selected pair
+                  setBookmarkStates(prev => ({
+                    ...prev,
+                    [getCarId(primary)]: primary.is_bookmarked || false,
+                    [getCarId(s)]: s.is_bookmarked || false,
+                  }));
                 } catch (e: any) {
                   setError(e?.message || 'Failed to fetch car details');
                 } finally {
@@ -433,16 +882,53 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
             {/* Left car (primary) */}
             <Box sx={{ flex: 1, textAlign: 'center' }}>
-              <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                 <img
                   src={getCarImage(primary)}
                   alt={primary?.ModelName}
                   style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
                 />
+                <IconButton
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent parent Box onClick
+                    handleToggleBookmark(getCarId(primary), bookmarkStates[getCarId(primary)] || false);
+                  }}
+                  sx={{
+                    position: 'absolute',
+                    top: isMobile ? -14 : 8,
+                    right: 8,
+                    zIndex: 1,
+                    bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+                    '&:hover': {
+                      bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.2)',
+                    },
+                    borderRadius: '50%',
+                    p: isMobile ? 0.25 : 0.5,
+                    width: isMobile ? 24 : 32,
+                    height: isMobile ? 24 : 32,
+                  }}
+                  aria-label="toggle bookmark"
+                >
+                  {bookmarkStates[getCarId(primary)] ? (
+                    <FavoriteIcon sx={{ fontSize: isMobile ? 16 : undefined }} color="error" />
+                  ) : (
+                    <FavoriteBorderIcon sx={{ fontSize: isMobile ? 16 : undefined, color: mode === 'dark' ? '#000' : undefined }} color="action" />
+                  )}
+                </IconButton>
               </Box>
               <Typography variant="subtitle1" fontWeight="bold">{primary?.BrandName} {primary?.ModelName}</Typography>
               {primary?.VariantName && (
-                <Chip label={primary.VariantName} size="small" sx={{ fontSize: '10px', mt: 0.5 }} />
+                <Chip label={primary.VariantName} size="small" sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mt: 0.5 }} />
+              )}
+              {primary?.AIScore && (
+                <Typography component="div" sx={{ ...textLineSx }}>
+                  {renderAIScoreLabel(primary.AIScore)}
+                </Typography>
+              )}
+              {primary?.AISummary && (
+                <Typography component="div" sx={{ ...textLineSx }}>
+                  {`User Sentiments: ${primary.AISummary}`}
+                </Typography>
               )}
               <Typography variant="body2" color="text.secondary">{formatPrice(primary?.Price || 0)}</Typography>
             </Box>
@@ -488,7 +974,7 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                   </Box>
                   <Typography variant="subtitle1" fontWeight="bold">{selectedRightCar?.BrandName} {selectedRightCar?.ModelName}</Typography>
                   {selectedRightCar?.VariantName && (
-                    <Chip label={selectedRightCar.VariantName} size="small" sx={{ fontSize: '10px', mt: 0.5 }} />
+                    <Chip label={selectedRightCar.VariantName} size="small" sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mt: 0.5 }} />
                   )}
                   <Typography variant="body2" color="text.secondary">{formatPrice(selectedRightCar?.Price || 0)}</Typography>
 
@@ -621,18 +1107,20 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                     value={selectedVariant}
                     onChange={async (event, newValue) => {
                       setSelectedVariant(newValue);
-                      if (newValue?.VariantID) {
+                      if (newValue?.VariantID || newValue?.CarID) {
                         setLoadingAdd(true);
                         try {
-                          const payload = { car_ids: [primaryCar?.VariantID, newValue.VariantID].filter(Boolean) };
+                          // Use the new helper function to get consistent car IDs
+                          const primaryId = getCarId(primaryCar) || primaryCar?.id;
+                          const newCarId = getCarId(newValue) || newValue?.id;
+                          const payload = { car_ids: [primaryId, newCarId].filter(Boolean) };
                           const resp: any = await axiosInstance1.post('/api/cargpt/compare/', payload);
                           const arr = Array.isArray(resp?.data) ? resp.data : (Array.isArray(resp) ? resp : []);
-                          const primaryId = primaryCar?.VariantID || primaryCar?.CarID || primaryCar?.id;
                           let right: any = null;
                           if (Array.isArray(arr) && arr.length > 0) {
-                            right = arr.find((c: any) => (c?.VariantID ?? c?.CarID ?? c?.id) !== primaryId) || arr[0];
+                            right = arr.find((c: any) => getCarId(c) !== primaryId) || arr[0];
                           } else if (resp?.car1 || resp?.car2) {
-                            right = (resp.car1 && ((resp.car1?.VariantID ?? resp.car1?.CarID ?? resp.car1?.id) !== primaryId)) ? resp.car1 : resp.car2;
+                            right = (resp.car1 && (getCarId(resp.car1) !== primaryId)) ? resp.car1 : resp.car2;
                           }
                           setSelectedRightCar(right || newValue);
                           setIsAddingRightCar(false);
@@ -669,14 +1157,14 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                 try {
                   setLoading(true);
                   setError(null);
-                  const leftId = primary?.CarID || primary?.VariantID || primary?.ModelID || primary?.id;
-                  const rightId = selectedRightCar?.CarID || selectedRightCar?.VariantID || selectedRightCar?.ModelID || selectedRightCar?.id;
+                  const leftId = getCarId(primary) || primary?.ModelID || primary?.id;
+                  const rightId = getCarId(selectedRightCar) || selectedRightCar?.ModelID || selectedRightCar?.id;
                   const [left, right] = await Promise.all([
                     fetchCarDetailsById(leftId),
                     fetchCarDetailsById(rightId),
                   ]);
-                  const normalizedLeft = normalizeCar(left);
-                  const normalizedRight = normalizeCar(right);
+                  const normalizedLeft = { ...normalizeCar(left), AIScore: primary?.AIScore ?? left?.AIScore, AISummary: primary?.AISummary ?? left?.AISummary };
+                  const normalizedRight = { ...normalizeCar(right), AIScore: selectedRightCar?.AIScore ?? right?.AIScore, AISummary: selectedRightCar?.AISummary ?? right?.AISummary };
                   setComparisonData({
                     car1: normalizedLeft,
                     car2: normalizedRight,
@@ -924,6 +1412,12 @@ interface FeatureComparisonTableProps {
   car2: any;
   mode: 'light' | 'dark';
   theme: any;
+  onRequestAddThirdCar?: () => void;
+  additionalCars: Array<{car: any, displayCar: any}>;
+  isMobile: boolean;
+  // Add a function prop to update the bookmark status
+  onToggleBookmark: (carId: number, isBookmarked: boolean) => void;
+  bookmarkStates: Record<number, boolean>;
 }
 
 // Helper to robustly get all car images from any possible field
@@ -937,67 +1431,17 @@ const getAllCarImages = (car: any) => {
   return [];
 };
 
-const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ car1, car2, mode, theme }) => {
+const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ car1, car2, mode, theme, onRequestAddThirdCar, additionalCars, isMobile, onToggleBookmark, bookmarkStates }) => {
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
   // Make car1Images and car2Images available throughout the component
   const car1Images = getAllCarImages(car1);
   const car2Images = getAllCarImages(car2);
 
-  // Car Images Section logic as a variable
-  let carImagesSection = null;
-  const maxImages = 5;
-  if (car1Images.length > 0 || car2Images.length > 0) {
-    carImagesSection = (
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1, borderBottom: '1px solid', borderColor: 'divider', pb: 0.5 }}>
-          Car Images
-        </Typography>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 3,
-            alignItems: 'center',
-            py: 1,
-            borderBottom: '1px dotted',
-            borderColor: 'divider',
-            '&:last-child': { borderBottom: 'none' },
-          }}
-        >
-          {[...Array(maxImages)].map((_, idx) => (
-            <Box key={idx} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-              {/* Car 1 image */}
-              <Box sx={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fafafa', borderRadius: 2 }}>
-                {car1Images[idx] ? (
-                  <img
-                    src={car1Images[idx]?.CarImageURL || '/assets/card-img.png'}
-                    alt={`Car 1 Image ${idx + 1}`}
-                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-                  />
-                ) : (
-                  <Typography color="text.secondary">-</Typography>
-                )}
-              </Box>
-              {/* VS */}
-              <Box sx={{ width: 40, textAlign: 'center', fontWeight: 'bold', fontSize: 20, color: 'text.secondary' }}>VS</Box>
-              {/* Car 2 image */}
-              <Box sx={{ width: 150, height: 150, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#fafafa', borderRadius: 2 }}>
-                {car2Images[idx] ? (
-                  <img
-                    src={car2Images[idx]?.CarImageURL || '/assets/card-img.png'}
-                    alt={`Car 2 Image ${idx + 1}`}
-                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-                  />
-                ) : (
-                  <Typography color="text.secondary">-</Typography>
-                )}
-              </Box>
-            </Box>
-          ))}
-        </Box>
-      </Box>
-    );
-  }
+  // Get additional cars from the props - no need to extract from car1 anymore
+  console.log('FeatureComparisonTable - additionalCars from props:', additionalCars);
+
+  // All cars array for easier iteration
+  const allCars = [car1, car2, ...additionalCars.map(ac => ac.car)];
 
   const getFeatureValue = (car: any, category: string, feature: string) => {
     // For BasicDetails, check directly on the car object first, or common nested paths
@@ -1043,71 +1487,417 @@ const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ car1, c
     return String(value);
   };
 
+  // Helper to get car display name
+  const getCarDisplayName = (car: any, index: number) => {
+    if (index === 0) return 'Car 1';
+    if (index === 1) return 'Car 2';
+    return `Car ${index + 1}`;
+  };
+
+  // Helper to get car brand and model for header
+  const getCarHeader = (car: any, index: number) => {
+    if (index === 0) {
+      const brand = car?.BrandName || car?.Brand || car?.data?.BrandName || car?.data?.Brand || car?.Car?.BrandName || car?.Car?.Brand || '';
+      const model = car?.ModelName || car?.Model || car?.data?.ModelName || car?.data?.Model || car?.Car?.ModelName || car?.Car?.Model || '';
+      return `${brand} ${model}`.trim();
+    }
+    if (index === 1) {
+      const brand = car?.BrandName || car?.Brand || car?.data?.BrandName || car?.data?.Brand || car?.Car?.BrandName || car?.Car?.Brand || '';
+      const model = car?.ModelName || car?.Model || car?.data?.ModelName || car?.data?.Model || car?.Car?.ModelName || car?.Car?.Model || '';
+      return `${brand} ${model}`.trim();
+    }
+    // For additional cars
+    const additionalCar = additionalCars[index - 2];
+    if (additionalCar) {
+      const car = additionalCar.car;
+      const brand = car?.BrandName || car?.Brand || car?.data?.BrandName || car?.data?.Brand || car?.Car?.BrandName || car?.Car?.Brand || '';
+      const model = car?.ModelName || car?.Model || car?.data?.ModelName || car?.data?.Model || car?.Car?.ModelName || car?.Car?.Model || '';
+      return `${brand} ${model}`.trim();
+    }
+    return `Car ${index + 1}`;
+  };
+
+  // Car Images Section logic as a variable
+  let carImagesSection = null;
+  const maxImages = 5;
+  if (car1Images.length > 0 || car2Images.length > 0) {
+    carImagesSection = (
+      <Box sx={{ mb: 3 }}>
+        <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mt: 2, mb: 1, borderBottom: '1px solid', borderColor: 'divider', pb: 0.5 }}>
+          Car Images
+        </Typography>
+        
+        {/* Header row for car images - show only on mobile */}
+        {isMobile && (
+          <Box sx={{
+            display: 'flex',
+            alignItems: 'center',
+            py: 1,
+            borderBottom: '2px solid',
+            borderColor: 'divider',
+            mb: 2,
+            backgroundColor: mode === 'dark' ? 'grey.700' : 'grey.100',
+            borderRadius: 1,
+            minWidth: 'max-content',
+            overflowX: 'auto'
+          }}>
+            <Typography variant={isMobile ? "caption" : "body2"} sx={{ 
+              flex: isMobile ? '0 0 auto' : 1, 
+              fontWeight: 'bold', 
+              minWidth: isMobile ? 100 : 120, 
+              flexShrink: 0,
+              fontSize: isMobile ? '11px' : undefined,
+              pl: 1
+            }}>
+              Image #
+            </Typography>
+            
+            {/* Car header columns */}
+            {allCars.map((car: any, carIndex: number) => (
+              <Typography
+                key={carIndex}
+                variant={isMobile ? "caption" : "body2"}
+                sx={{
+                  flex: isMobile ? '0 0 auto' : 1,
+                  textAlign: 'center',
+                  fontWeight: 'bold',
+                  minWidth: isMobile ? 80 : 100,
+                  maxWidth: isMobile ? 80 : 100,
+                  flexShrink: 0,
+                  fontSize: isMobile ? '11px' : undefined,
+                  color: mode === 'dark' ? 'primary.light' : 'primary.main',
+                  px: isMobile ? 0.5 : 1,
+                  whiteSpace: 'normal',
+                  overflowWrap: 'break-word',
+                  wordBreak: 'break-word',
+                }}
+              >
+                {getCarHeader(car, carIndex)}
+              </Typography>
+            ))}
+          </Box>
+        )}
+
+        {/* Image rows */}
+        {[...Array(maxImages)].map((_, idx) => (
+          <Box key={idx} sx={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            py: 1,
+            borderBottom: '1px dotted',
+            borderColor: 'divider',
+            '&:last-child': { borderBottom: 'none' },
+            width: '100%',
+            // Mobile: Prevent shrinking and ensure proper column widths
+            ...(isMobile && {
+              minWidth: 'max-content',
+              overflowX: 'auto'
+            })
+          }}>
+            {/* Image number */}
+            <Typography variant={isMobile ? "caption" : "body2"} sx={{ 
+              flex: isMobile ? '0 0 auto' : 1, 
+              fontWeight: 'bold', 
+              minWidth: isMobile ? 100 : 120, 
+              flexShrink: 0,
+              fontSize: isMobile ? '11px' : undefined,
+              pl: 1
+            }}>
+              Image {idx + 1}
+            </Typography>
+            
+            {/* Car image columns */}
+            {allCars.map((car: any, carIndex: number) => {
+              const carImages = getAllCarImages(car);
+              return (
+                <Box
+                  key={carIndex}
+                  sx={{
+                    flex: isMobile ? '0 0 auto' : 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minWidth: isMobile ? 80 : 100,
+                    flexShrink: 0
+                  }}
+                >
+                  {carImages[idx] ? (
+                    <img
+                      src={carImages[idx]?.CarImageURL || '/assets/card-img.png'}
+                      alt={`Car ${carIndex + 1} Image ${idx + 1}`}
+                      style={{ 
+                        maxWidth: isMobile ? '40px' : '80px', 
+                        maxHeight: isMobile ? '40px' : '80px', 
+                        objectFit: 'contain' 
+                      }}
+                    />
+                  ) : (
+                    <Typography color="text.secondary" variant={isMobile ? "caption" : "body2"}>-</Typography>
+                  )}
+                </Box>
+              );
+            })}
+          </Box>
+        ))}
+      </Box>
+    );
+  }
+
   return (
-    <Box sx={{ mt: 3, p: 2, backgroundColor: mode === 'dark' ? 'grey.800' : '#ffffff', borderRadius: 2 }}>
-      <Typography variant="h6" gutterBottom fontWeight="bold" sx={{mb:2}}>
+    <Box sx={{ 
+      mt: 3, 
+      p: isMobile ? 1 : 2, 
+      backgroundColor: mode === 'dark' ? 'grey.800' : '#ffffff', 
+      borderRadius: 2,
+      // Mobile: Make the table horizontally scrollable and in one line
+      ...(isMobile && {
+        width: '100%',
+        overflowX: 'auto',
+        minWidth: 'max-content',
+      })
+    }}>
+      <Typography variant={isMobile ? "subtitle1" : "h6"} gutterBottom fontWeight="bold" sx={{mb: 2}}>
         Detailed Feature Comparison
       </Typography>
 
-      {Object.entries(FEATURES_TO_COMPARE).map(([category, features]) => {
-        const IconComponent = CATEGORY_ICONS[category] || InfoIcon; // Default to InfoIcon
-        const isExpanded = expandedCategories[category];
-        const displayedFeatures = isExpanded ? features : features.slice(0, 4);
+      {/* Header row showing car names */}
+      {isMobile && (
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
+          py: 1,
+          borderBottom: '2px solid',
+          borderColor: 'divider',
+          mb: 2,
+          backgroundColor: mode === 'dark' ? 'grey.700' : 'grey.100',
+          borderRadius: 1,
+          // Mobile: Prevent shrinking and ensure proper column widths
+          ...(isMobile && {
+            minWidth: 'max-content',
+            overflowX: 'auto',
+            flexWrap: 'nowrap',
+          })
+        }}>
+          {isMobile && (
+            <Typography variant={isMobile ? "caption" : "body2"} sx={{ 
+              flex: isMobile ? '0 0 auto' : 1, 
+              fontWeight: 'bold', 
+              minWidth: isMobile ? 120 : 150, 
+              flexShrink: 0,
+              fontSize: isMobile ? '11px' : undefined,
+              pl: 1
+            }}>
+              Features
+            </Typography>
+          )}
+          
+          {/* Car header columns */}
+          {allCars.map((car: any, carIndex: number) => (
+            <Typography
+              key={carIndex}
+              variant={isMobile ? "caption" : "body2"}
+              sx={{
+                flex: isMobile ? '0 0 auto' : 1,
+                textAlign: 'center',
+                fontWeight: 'bold',
+                minWidth: isMobile ? 80 : 100,
+                maxWidth: isMobile ? 80 : 100,
+                flexShrink: 0,
+                fontSize: isMobile ? '11px' : undefined,
+                color: mode === 'dark' ? 'primary.light' : 'primary.main',
+                px: isMobile ? 0.5 : 1,
+                whiteSpace: 'normal',
+                overflowWrap: 'break-word',
+                wordBreak: 'break-word',
+                
+                
+              }}
+            >
+              {getCarHeader(car, carIndex)}
+            </Typography>
+          ))}
+        </Box>
+      )}
 
-        return (
+      {/* Horizontally scrollable feature rows */}
+      <Box sx={{
+        ...(isMobile && {
+          overflowX: 'auto',
+          minWidth: 'max-content',
+        })
+      }}>
+      {isMobile && (
+        <>
+          {/* AI Car Advisor Score row (mobile, before Basic Details) */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              py: 0.5,
+              borderBottom: '1px dotted',
+              borderColor: 'divider',
+              width: '100%',
+              minWidth: 'max-content',
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                flex: '0 0 auto',
+                fontWeight: 'bold',
+                minWidth: 120,
+                maxWidth: 120,
+                flexShrink: 0,
+                fontSize: '11px',
+                pl: 1,
+              }}
+            >
+              AI Car Advisor Score
+            </Typography>
+            {allCars.map((car: any, carIndex: number) => (
+              <Typography
+                key={`ai-score-${carIndex}`}
+                variant="caption"
+                sx={{
+                  flex: '0 0 auto',
+                  textAlign: 'center',
+                  color: 'text.primary',
+                  minWidth: 80,
+                  maxWidth: 80,
+                  flexShrink: 0,
+                  fontSize: '11px',
+                  px: 0.5,
+                }}
+              >
+                {car?.AIScore ? String(car.AIScore) : '-'}
+              </Typography>
+            ))}
+          </Box>
+
+          {/* User Sentiments row (mobile, before Basic Details) */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              py: 0.5,
+              borderBottom: '1px dotted',
+              borderColor: 'divider',
+              width: '100%',
+              minWidth: 'max-content',
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                flex: '0 0 auto',
+                fontWeight: 'bold',
+                minWidth: 120,
+                maxWidth: 120,
+                flexShrink: 0,
+                fontSize: '11px',
+                pl: 1,
+              }}
+            >
+              User Sentiments
+            </Typography>
+            {allCars.map((car: any, carIndex: number) => (
+              <Typography
+                key={`ai-sent-${carIndex}`}
+                variant="caption"
+                sx={{
+                  flex: '0 0 auto',
+                  textAlign: 'center',
+                  color: 'text.primary',
+                  minWidth: 80,
+                  maxWidth: 80,
+                  flexShrink: 0,
+                  fontSize: '11px',
+                  px: 0.5,
+                }}
+              >
+                {car?.AISummary ? String(car.AISummary) : '-'}
+              </Typography>
+            ))}
+          </Box>
+        </>
+      )}
+       {Object.entries(FEATURES_TO_COMPARE).map(([category, features]) => {
+         const IconComponent = CATEGORY_ICONS[category] || InfoIcon; // Default to InfoIcon
+         const isExpanded = expandedCategories[category];
+         const displayedFeatures = isExpanded ? features : features.slice(0, 4);
+
+         return (
         <Box key={category} sx={{ mb: 3 }}>
-            <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 2, mb: 1, borderBottom: '1px solid', borderColor: 'divider', pb: 0.5, display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mt: 2, mb: 1, borderBottom: '1px solid', borderColor: 'divider', pb: 0.5, display: 'flex', alignItems: 'center', gap: 1 }}>
               <IconComponent fontSize="small" />
             {category.replace(/([A-Z])/g, ' $1').trim()}
           </Typography>
+          
             {displayedFeatures.map((feature) => {
-            const car1Value = getFeatureValue(car1, category, feature);
-            const car2Value = getFeatureValue(car2, category, feature);
-            const isDifferent = car1Value !== car2Value;
-
             return (
               <Box
                 key={feature}
                 sx={{
                   display: 'flex',
+                  flexDirection: 'row',
+                  flexWrap: 'nowrap',
                   alignItems: 'center',
-                  py: 1,
+                  py: isMobile ? 0.5 : 1,
                   borderBottom: '1px dotted',
                   borderColor: 'divider',
                   '&:last-child': { borderBottom: 'none' },
+                  width: '100%',
+                  // Mobile: Prevent shrinking and ensure proper column widths
+                  ...(isMobile && {
+                    minWidth: 'max-content',
+                    overflowX: 'auto',
+                  })
                 }}
               >
-                <Typography variant="body2" sx={{ flex: 1, fontWeight: 'bold' }}>
+                <Typography variant={isMobile ? "caption" : "body2"} sx={{ 
+                  flex: isMobile ? '0 0 auto' : 1, 
+                  fontWeight: 'bold', 
+                  minWidth: isMobile ? 120 : 150, 
+                  maxWidth: isMobile ? 120 : 150,
+                  flexShrink: 0,
+                  fontSize: isMobile ? '11px' : undefined,
+                  whiteSpace: 'normal',
+                  overflowWrap: 'break-word',
+                  wordBreak: 'break-word',
+                }}>
                   {feature.replace(/([A-Z])/g, ' $1').trim()}
                 </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    flex: 1,
-                    textAlign: 'center',
-                    color: isDifferent ? (mode === 'dark' ? theme.palette.info.light : theme.palette.info.dark) : 'text.primary',
-                  }}
-                >
-                  {car1Value}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  sx={{
-                    flex: 1,
-                    textAlign: 'center',
-                    color: isDifferent ? (mode === 'dark' ? theme.palette.info.light : theme.palette.info.dark) : 'text.primary',
-                  }}
-                >
-                  {car2Value}
-                </Typography>
+                
+                {/* Car columns */}
+                {allCars.map((car: any, carIndex: number) => (
+                  <Typography
+                    key={carIndex}
+                    variant={isMobile ? "caption" : "body2"}
+                    sx={{
+                      flex: isMobile ? '0 0 auto' : 1,
+                      textAlign: 'center',
+                      color: 'text.primary',
+                      minWidth: isMobile ? 80 : 100,
+                      flexShrink: 0,
+                      fontSize: isMobile ? '11px' : undefined,
+                      px: isMobile ? 0.5 : 1
+                    }}
+                  >
+                    {getFeatureValue(car, category, feature)}
+                  </Typography>
+                ))}
               </Box>
             );
           })}
             {features.length > 4 && (
               <Button
-                // fullWidth
                 variant="outlined"
-                sx={{ mt: 2, width: 'fit-content' }} // Added width: 'fit-content'
+                size={isMobile ? "small" : "medium"}
+                sx={{ 
+                  mt: 2, 
+                  width: 'fit-content',
+                  fontSize: isMobile ? '11px' : undefined
+                }}
                 onClick={() =>
                   setExpandedCategories((prev) => ({
                     ...prev,
@@ -1122,6 +1912,7 @@ const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ car1, c
         </Box>
         );
       })}
+      </Box>
 
       {/* Render Car Images Section here */}
       {carImagesSection}
@@ -1130,10 +1921,27 @@ const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ car1, c
 };
 
 // Pair details card for pair comparison view
-const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme }: { car1: any; car2: any; displayCar1?: any; displayCar2?: any; mode: string; theme: any }) => {
+const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, onRequestAddThirdCar, additionalCars, isMobile, onToggleBookmark, bookmarkStates }: { 
+  car1: any; 
+  car2: any; 
+  displayCar1?: any; 
+  displayCar2?: any; 
+  mode: string; 
+  theme: any; 
+  onRequestAddThirdCar?: () => void;
+  additionalCars: Array<{car: any, displayCar: any}>;
+  isMobile: boolean;
+  // Add a function prop to update the bookmark status
+  onToggleBookmark: (carId: number, isBookmarked: boolean) => void;
+  bookmarkStates: Record<number, boolean>;
+}) => {
   // Use displayCar1/displayCar2 for image/details if present, else fallback to car1/car2
   const left = displayCar1 || car1;
   const right = displayCar2 || car2;
+  
+  // Get additional cars from the props - no need to extract from car1 anymore
+  console.log('PairDetailsCard - additionalCars from props:', additionalCars);
+  
   // Helper to highlight differences
   const highlightIfDifferent = (val1: any, val2: any, children: React.ReactNode) => {
     const isDifferent = val1 !== val2;
@@ -1147,59 +1955,432 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme }: 
     );
   };
 
+  // Helper to get car image consistently
+  const getCarImage = (car: any) => {
+    const imageUrl = 
+      car?.CarImageDetails?.[0]?.CarImageURL ||
+      car?.images?.[0]?.CarImageURL ||
+      car?.data?.CarImageDetails?.[0]?.CarImageURL ||
+      car?.data?.images?.[0]?.CarImageURL ||
+      car?.Car?.CarImageDetails?.[0]?.CarImageURL ||
+      car?.Car?.images?.[0]?.CarImageURL ||
+      car?.CarImageURL ||
+      car?.ImageURL ||
+      car?.data?.CarImageURL ||
+      car?.data?.ImageURL ||
+      car?.Car?.CarImageURL ||
+      car?.Car?.ImageURL;
+    
+    return imageUrl || '/assets/card-img.png';
+  };
+
+  // Helper to get car price consistently
+  const getCarPrice = (car: any) => {
+    const price = 
+      car?.Price ||
+      car?.data?.Price ||
+      car?.Car?.Price ||
+      car?.data?.car?.Price ||
+      car?.car?.Price;
+    
+    return price || 0;
+  };
+
+  // Helper to get car brand name consistently
+  const getCarBrand = (car: any) => {
+    const brand = 
+      car?.BrandName ||
+      car?.Brand ||
+      car?.data?.BrandName ||
+      car?.data?.Brand ||
+      car?.Car?.BrandName ||
+      car?.Car?.Brand;
+    
+    return brand || '';
+  };
+
+  // Helper to get car model name consistently
+  const getCarModel = (car: any) => {
+    const model = 
+      car?.ModelName ||
+      car?.Model ||
+      car?.data?.ModelName ||
+      car?.data?.Model ||
+      car?.Car?.ModelName ||
+      car?.Car?.Model;
+    
+    return model || '';
+  };
+
+  // Helper to get car variant name consistently
+  const getCarVariant = (car: any) => {
+    const variant = 
+      car?.VariantName ||
+      car?.Variant ||
+      car?.data?.VariantName ||
+      car?.data?.Variant ||
+      car?.Car?.VariantName ||
+      car?.Car?.Variant;
+    
+    return variant || '';
+  };
+
+  // Helper to format price
+  const formatPrice = (price: number) => {
+    return `₹${formatInternational(price || 0)}`;
+  };
+
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4, mb: 3, mt: 2 }}>
-      {/* Left car */}
-      <Box sx={{ flex: 1, textAlign: 'center' }}>
-        <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <img
-            src={getCarImage(left)}
-            alt={left?.ModelName}
-            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-          />
-        </Box>
-        <Typography variant="subtitle1" fontWeight="bold">
-          {highlightIfDifferent(left?.BrandName, right?.BrandName, left?.BrandName)} {highlightIfDifferent(left?.ModelName, right?.ModelName, left?.ModelName)}
-        </Typography>
-        {left?.VariantName && (
-          <Chip label={left.VariantName} size="small" sx={{ fontSize: '10px', mt: 0.5 }} />
-        )}
-        <Typography variant="body2" color="text.secondary">
-          {highlightIfDifferent(left?.Price, right?.Price, `₹${formatInternational(left?.Price || 0)}`)}
-        </Typography>
-      </Box>
-      {/* VS */}
-      <Box sx={{
-        width: 36,
-        height: 36,
-        borderRadius: '50%',
-        backgroundColor: mode === 'dark' ? 'grey.700' : 'grey.200',
-        display: 'flex',
+    <Box sx={{ 
+      display: 'flex', 
+      alignItems: 'flex-start', 
+      justifyContent: 'flex-start', 
+      gap: isMobile ? 2 : 4, 
+      mb: 3, 
+      mt: isMobile ? 4 : 0,
+      width: '100%',
+      pb: 2,
+      // Mobile: Adjust layout for mobile - show images in row without boxes
+      ...(isMobile && {
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        fontWeight: 'bold',
-      }}>
-        VS
-      </Box>
-      {/* Right car */}
-      <Box sx={{ flex: 1, textAlign: 'center' }}>
-        <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <img
-            src={getCarImage(right)}
-            alt={right?.ModelName}
-            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-          />
+        gap: 1,
+        pb: 1,
+        overflowX: 'auto'
+      })
+    }}>
+      {/* Add third car column (first) - only show on desktop */}
+      {!isMobile && onRequestAddThirdCar && (
+        <Box sx={{ 
+          width: 200, 
+          textAlign: 'center', 
+          flexShrink: 0,
+          p: 2,
+          border: '2px dashed',
+          borderColor: 'divider',
+          borderRadius: 2,
+          background: mode === 'dark' ? 'transparent' : '#fafafa'
+        }}>
+          <Box
+            onClick={onRequestAddThirdCar}
+            sx={{
+              width: 80,
+              height: 80,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: '50%',
+              border: '2px dashed',
+              borderColor: 'divider',
+              background: mode === 'dark' ? 'transparent' : 'white',
+              color: 'text.disabled',
+              cursor: 'pointer',
+              mx: 'auto',
+              mb: 1
+            }}
+          >
+            <AddIcon sx={{ fontSize: 24 }} />
+          </Box>
+          <Typography variant="body2" color="text.secondary">Add Car</Typography>
         </Box>
-        <Typography variant="subtitle1" fontWeight="bold">
-          {highlightIfDifferent(right?.BrandName, left?.BrandName, right?.BrandName)} {highlightIfDifferent(right?.ModelName, left?.ModelName, right?.ModelName)}
-        </Typography>
-        {right?.VariantName && (
-          <Chip label={right.VariantName} size="small" sx={{ fontSize: '10px', mt: 0.5 }} />
+      )}
+
+      {/* Car 1 column */}
+      <Box sx={{ 
+        width: isMobile ? 'auto' : 200, 
+        textAlign: 'center', 
+        flexShrink: 0,
+        p: isMobile ? 0 : 2,
+        border: isMobile ? 'none' : '1px solid',
+        borderColor: 'divider',
+        borderRadius: isMobile ? 0 : 2,
+        background: isMobile ? 'transparent' : (mode === 'dark' ? 'grey.800' : 'white'),
+        ml: isMobile ? 2.5 : 0,
+        mt: isMobile ? 1 : 0
+      }}>
+        <Box sx={{ 
+          height: isMobile ? 50 : 100, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          background: 'transparent',
+          mb: isMobile ? 0.5 : 2,
+          pl: isMobile ? 2.5 : 0,
+          position: 'relative'
+        }}>
+          <img 
+            src={getCarImage(left)} 
+            alt={getCarModel(left)} 
+            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} 
+          />
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent parent Box onClick
+              onToggleBookmark(getCarId(left), bookmarkStates[getCarId(left)] || false);
+            }}
+            sx={{
+              position: 'absolute',
+              top: isMobile ? -14 : 8,
+              right: 8,
+              zIndex: 1,
+              bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+              '&:hover': {
+                bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.2)',
+              },
+              borderRadius: '50%',
+              p: isMobile ? 0.25 : 0.5,
+              width: isMobile ? 24 : 32,
+              height: isMobile ? 24 : 32,
+            }}
+            aria-label="toggle bookmark"
+          >
+            {bookmarkStates[getCarId(left)] ? (
+              <FavoriteIcon sx={{ fontSize: isMobile ? 16 : undefined }} color="error" />
+            ) : (
+              <FavoriteBorderIcon sx={{ fontSize: isMobile ? 16 : undefined, color: mode === 'dark' ? '#000' : undefined }} color="action" />
+            )}
+          </IconButton>
+        </Box>
+        {!isMobile && (
+          <>
+            <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mb: isMobile ? 0.25 : 1, fontSize: isMobile ? '12px' : undefined }}>
+              {getCarBrand(left)} {getCarModel(left)}
+            </Typography>
+            {getCarVariant(left) && (
+              <Chip 
+                label={getCarVariant(left)} 
+                size="small" 
+                sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mb: isMobile ? 0.5 : 1.5 }} 
+              />
+            )}
+            {left?.AIScore && (
+              <Typography component="div" sx={{ ...textLineSx }}>
+                {renderAIScoreLabel(left.AIScore)}
+              </Typography>
+            )}
+            {left?.AISummary && (
+              <Typography component="div" sx={{ ...textLineSx }}>
+                {`User Sentiments: ${left.AISummary}`}
+              </Typography>
+            )}
+            <Typography variant={isMobile ? "caption" : "body2"} color="text.secondary" fontWeight="bold" sx={{ fontSize: isMobile ? '10px' : undefined }}>
+              {formatPrice(getCarPrice(left))}
+            </Typography>
+          </>
         )}
-        <Typography variant="body2" color="text.secondary">
-          {highlightIfDifferent(right?.Price, left?.Price, `₹${formatInternational(right?.Price || 0)}`)}
-        </Typography>
       </Box>
+
+      {/* + button between Car 1 and Car 2 - only show on mobile */}
+      {isMobile && (
+        <Box sx={{
+          width: 28,
+          height: 28,
+          borderRadius: '50%',
+          background: 'transparent',
+          border: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontWeight: 'bold',
+          fontSize: '10px',
+          color: 'text.secondary',
+          flexShrink: 0,
+          cursor: 'pointer',
+          ml: isMobile ? 2.5 : 0
+        }}
+        onClick={onRequestAddThirdCar}
+        >
+          <AddIcon sx={{ fontSize: 16, color: '#000' }} />
+        </Box>
+      )}
+
+      {/* Car 2 column */}
+      <Box sx={{ 
+        width: isMobile ? 'auto' : 200, 
+        textAlign: 'center', 
+        flexShrink: 0,
+        p: isMobile ? 0 : 2,
+        border: isMobile ? 'none' : '1px solid',
+        borderColor: 'divider',
+        borderRadius: isMobile ? 0 : 2,
+        background: isMobile ? 'transparent' : (mode === 'dark' ? 'grey.800' : 'white'),
+        ml: 0,
+        mr: isMobile ? 3 : 4, // Add right margin for non-mobile view
+        mt: isMobile ? 1 : 0
+      }}>
+        <Box sx={{ 
+          height: isMobile ? 50 : 100, 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          background: 'transparent',
+          mb: isMobile ? 0.5 : 2,
+          pl: 0,
+          position: 'relative'
+        }}>
+          <img 
+            src={getCarImage(right)} 
+            alt={getCarModel(right)} 
+            style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} 
+          />
+          <IconButton
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent parent Box onClick
+              onToggleBookmark(getCarId(right), bookmarkStates[getCarId(right)] || false);
+            }}
+            sx={{
+              position: 'absolute',
+              top: isMobile ? -14 : 8,
+              right: 8,
+              zIndex: 1,
+              bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+              '&:hover': {
+                bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.2)',
+              },
+              borderRadius: '50%',
+              p: isMobile ? 0.25 : 0.5,
+              width: isMobile ? 24 : 32,
+              height: isMobile ? 24 : 32,
+            }}
+            aria-label="toggle bookmark"
+          >
+            {bookmarkStates[getCarId(right)] ? (
+              <FavoriteIcon sx={{ fontSize: isMobile ? 16 : undefined }} color="error" />
+            ) : (
+              <FavoriteBorderIcon sx={{ fontSize: isMobile ? 16 : undefined, color: mode === 'dark' ? '#000' : undefined }} color="action" />
+            )}
+          </IconButton>
+        </Box>
+        {!isMobile && (
+          <>
+            <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mb: isMobile ? 0.25 : 1, fontSize: isMobile ? '12px' : undefined }}>
+              {getCarBrand(right)} {getCarModel(right)}
+            </Typography>
+            {getCarVariant(right) && (
+              <Chip 
+                label={getCarVariant(right)} 
+                size="small" 
+                sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mb: isMobile ? 0.5 : 1.5 }} 
+              />
+            )}
+            {right?.AIScore && (
+              <Typography component="div" sx={{ ...textLineSx }}>
+                {renderAIScoreLabel(right.AIScore)}
+              </Typography>
+            )}
+            {right?.AISummary && (
+              <Typography component="div" sx={{ ...textLineSx }}>
+                {`User Sentiments: ${right.AISummary}`}
+              </Typography>
+            )}
+            <Typography variant={isMobile ? "caption" : "body2"} color="text.secondary" fontWeight="bold" sx={{ fontSize: isMobile ? '10px' : undefined }}>
+              {formatPrice(getCarPrice(right))}
+            </Typography>
+          </>
+        )}
+      </Box>
+
+      {/* Additional cars (Car 3, Car 4, Car 5, etc.) */}
+      {additionalCars.map((additionalCar: any, carIndex: number) => {
+        return (
+          <React.Fragment key={carIndex}>
+            
+            <Box sx={{ 
+              width: isMobile ? 'auto' : 200, 
+              textAlign: 'center', 
+              flexShrink: 0,
+              p: isMobile ? 0 : 2,
+              border: isMobile ? 'none' : '1px solid',
+              borderColor: 'divider',
+              borderRadius: isMobile ? 0 : 2,
+              background: isMobile ? 'transparent' : (mode === 'dark' ? 'grey.800' : 'white'),
+              ml: 0,
+              mt: isMobile ? 1 : 0
+            }}>
+              {(() => {
+                const car = additionalCar.car;
+                const displayCar = additionalCar.displayCar;
+                const carImage = getCarImage(displayCar || car);
+                
+                return (
+                  <>
+                    <Box sx={{ 
+                      height: isMobile ? 50 : 100, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      background: 'transparent',
+                      mb: isMobile ? 0.5 : 2,
+                      pl: 0,
+                      position: 'relative'
+                    }}>
+                      <img 
+                        src={carImage} 
+                        alt={getCarModel(car)} 
+                        style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} 
+                      />
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent parent Box onClick
+                          onToggleBookmark(getCarId(car), bookmarkStates[getCarId(car)] || false);
+                        }}
+                        sx={{
+                          position: 'absolute',
+                          top: isMobile ? -14 : 8,
+                          right: 8,
+                          zIndex: 1,
+                          bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+                          '&:hover': {
+                            bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.2)',
+                          },
+                          borderRadius: '50%',
+                          p: isMobile ? 0.25 : 0.5,
+                          width: isMobile ? 24 : 32,
+                          height: isMobile ? 24 : 32,
+                        }}
+                        aria-label="toggle bookmark"
+                      >
+                        {bookmarkStates[getCarId(car)] ? (
+                          <FavoriteIcon sx={{ fontSize: isMobile ? 16 : undefined }} color="error" />
+                        ) : (
+                          <FavoriteBorderIcon sx={{ fontSize: isMobile ? 16 : undefined, color: mode === 'dark' ? '#000' : undefined }} color="action" />
+                        )}
+                      </IconButton>
+                    </Box>
+                    {!isMobile && (
+                      <>
+                        <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mb: isMobile ? 0.25 : 1, fontSize: isMobile ? '12px' : undefined }}>
+                          {getCarBrand(car)} {getCarModel(car)}
+                        </Typography>
+                        {getCarVariant(car) && (
+                          <Chip 
+                            label={getCarVariant(car)} 
+                            size="small" 
+                            sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mb: isMobile ? 0.5 : 1.5 }} 
+                          />
+                        )}
+                        {car?.AIScore && (
+                          <Typography component="div" sx={{ ...textLineSx }}>
+                            {renderAIScoreLabel(car.AIScore)}
+                          </Typography>
+                        )}
+                        {car?.AISummary && (
+                          <Typography component="div" sx={{ ...textLineSx }}>
+                            {`User Sentiments: ${car.AISummary}`}
+                          </Typography>
+                        )}
+                        <Typography variant={isMobile ? "caption" : "body2"} color="text.secondary" fontWeight="bold" sx={{ fontSize: isMobile ? '10px' : undefined }}>
+                          {formatPrice(getCarPrice(car))}
+                        </Typography>
+                      </>
+                    )}
+                  </>
+                );
+              })()}
+            </Box>
+          </React.Fragment>
+        );
+      })}
     </Box>
   );
 };
@@ -1209,6 +2390,16 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme }: 
       open={open}
       onClose={() => {
         setForceFullScreen(false); // Reset when closing
+        
+        // Reset all third car selection fields when main dialog is closed
+        setThirdSelectedBrand(null);
+        setThirdSelectedModel(null);
+        setThirdSelectedVariant(null);
+        setThirdBrandOptions([]);
+        setThirdModelOptions([]);
+        setThirdVariantOptions([]);
+        setAddThirdOpen(false);
+        
         onClose();
       }}
       fullScreen={isMobile || forceFullScreen}
@@ -1246,6 +2437,15 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme }: 
                     setForceFullScreen(false); // Reset when navigating back to suggested list
                     fetchComparisonData(); // Re-fetch suggested comparisons
                     setIsViewingPairComparison(false);
+                    
+                    // Reset all third car selection fields when going back to suggested list
+                    setThirdSelectedBrand(null);
+                    setThirdSelectedModel(null);
+                    setThirdSelectedVariant(null);
+                    setThirdBrandOptions([]);
+                    setThirdModelOptions([]);
+                    setThirdVariantOptions([]);
+                    setAddThirdOpen(false);
                   } else {
                     onClose(); // Close dialog if on suggested list
                   }
@@ -1276,18 +2476,52 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme }: 
             <Typography color="error">{error}</Typography>
           </Box>
         ) : (comparisonData as SuggestedComparisonResponse)?.comparisons?.length ? (
-          renderSuggestedList(primaryCar, (comparisonData as SuggestedComparisonResponse).comparisons || [])
+          renderSuggestedList(normalizeCar(primaryCar), ((comparisonData as SuggestedComparisonResponse).comparisons || []).map(normalizeCar))
         ) : (comparisonData as PairComparisonResponse)?.car1 && (comparisonData as PairComparisonResponse)?.car2 ? (
-          <Box>
-            <PairDetailsCard
-              car1={(comparisonData as PairComparisonResponse).car1}
-              car2={(comparisonData as PairComparisonResponse).car2}
-              displayCar1={(comparisonData as any).displayCar1}
-              displayCar2={(comparisonData as any).displayCar2}
-              mode={mode}
-              theme={theme}
-            />
-            <FeatureComparisonTable car1={(comparisonData as PairComparisonResponse).car1} car2={(comparisonData as PairComparisonResponse).car2} mode={mode} theme={theme} />
+          <Box sx={{ 
+            overflowX: 'auto', 
+            width: '100%',
+            // Mobile: No horizontal scroll for 2 cars, only for 3+ cars
+            ...(isMobile && {
+              overflowX: ((comparisonData as any)?.additionalCars || []).length === 0 ? 'hidden' : 'auto'
+            })
+          }}>
+            <Box sx={{ 
+              minWidth: 'max-content', 
+              p: 2,
+              // Mobile: Center content when only 2 cars
+              ...(isMobile && {
+                minWidth: ((comparisonData as any)?.additionalCars || []).length === 0 ? '100%' : 'max-content',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: ((comparisonData as any)?.additionalCars || []).length === 0 ? 'center' : 'flex-start'
+              })
+            }}>
+              <PairDetailsCard
+                car1={(comparisonData as PairComparisonResponse).car1}
+                car2={(comparisonData as PairComparisonResponse).car2}
+                displayCar1={(comparisonData as any).displayCar1}
+                displayCar2={(comparisonData as any).displayCar2}
+                mode={mode}
+                theme={theme}
+                onRequestAddThirdCar={openAddThird}
+                additionalCars={(comparisonData as any).additionalCars || []}
+                isMobile={isMobile}
+                onToggleBookmark={handleToggleBookmark}
+                bookmarkStates={bookmarkStates}
+              />
+              <FeatureComparisonTable
+                car1={(comparisonData as PairComparisonResponse).car1}
+                car2={(comparisonData as PairComparisonResponse).car2}
+                mode={mode}
+                theme={theme}
+                onRequestAddThirdCar={openAddThird}
+                additionalCars={(comparisonData as any).additionalCars || []}
+                isMobile={isMobile}
+                onToggleBookmark={handleToggleBookmark}
+                bookmarkStates={bookmarkStates}
+              />
+            </Box>
           </Box>
         ) : (
           <Box display="flex" justifyContent="center" alignItems="center" minHeight={200}>
@@ -1296,6 +2530,94 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme }: 
         )}
       </DialogContent>
       {/* Remove DialogActions and close button entirely */}
+      {/* Small dialog to add third car for comparison */}
+      <Dialog open={addThirdOpen} onClose={() => {
+        setAddThirdOpen(false);
+        // Reset all third car selection fields when dialog is closed
+        setThirdSelectedBrand(null);
+        setThirdSelectedModel(null);
+        setThirdSelectedVariant(null);
+        setThirdBrandOptions([]);
+        setThirdModelOptions([]);
+        setThirdVariantOptions([]);
+      }} maxWidth="sm" fullWidth>
+        <DialogTitle>Select car to compare</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            <Autocomplete
+              options={thirdBrandOptions}
+              getOptionLabel={(o) => o?.BrandName || ''}
+              value={thirdSelectedBrand}
+              onChange={async (_e, newValue) => {
+                setThirdSelectedBrand(newValue);
+                setThirdSelectedModel(null);
+                setThirdSelectedVariant(null);
+                setThirdModelOptions([]);
+                setThirdVariantOptions([]);
+                if (newValue?.BrandID) {
+                  setThirdLoading(true);
+                  try {
+                    const data = await axiosInstance1.post('/api/cargpt/models/', { brand_id: newValue.BrandID });
+                    const models = Array.isArray((data as any)?.models) ? (data as any).models : (Array.isArray(data) ? data : []);
+                    setThirdModelOptions(models);
+                  } catch (_e) {
+                    setThirdModelOptions([]);
+                  } finally {
+                    setThirdLoading(false);
+                  }
+                }
+              }}
+              renderInput={(params) => <TextField {...params} label="Brand" size="small" />}
+              loading={thirdLoading}
+            />
+            <Autocomplete
+              options={thirdModelOptions}
+              getOptionLabel={(o) => o?.ModelName || ''}
+              value={thirdSelectedModel}
+              onChange={async (_e, newValue) => {
+                setThirdSelectedModel(newValue);
+                setThirdSelectedVariant(null);
+                setThirdVariantOptions([]);
+                if (newValue?.ModelID && thirdSelectedBrand?.BrandID) {
+                  setThirdLoading(true);
+                  try {
+                    const resp = await axiosInstance1.post('/api/cargpt/fetch-variants/', { BrandID: thirdSelectedBrand.BrandID, ModelID: newValue.ModelID });
+                    const variants = Array.isArray((resp as any)?.data) ? (resp as any).data : (Array.isArray(resp) ? resp : []);
+                    setThirdVariantOptions(variants);
+                  } catch (_e) {
+                    setThirdVariantOptions([]);
+                  } finally {
+                    setThirdLoading(false);
+                  }
+                }
+              }}
+              renderInput={(params) => <TextField {...params} label="Model" size="small" />}
+              loading={thirdLoading}
+            />
+            <Autocomplete
+              options={thirdVariantOptions}
+              getOptionLabel={(o) => o?.VariantName || ''}
+              value={thirdSelectedVariant}
+              onChange={(_e, newValue) => setThirdSelectedVariant(newValue)}
+              renderInput={(params) => <TextField {...params} label="Variant" size="small" />}
+              loading={thirdLoading}
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {
+            setAddThirdOpen(false);
+            // Reset all third car selection fields when cancelled
+            setThirdSelectedBrand(null);
+            setThirdSelectedModel(null);
+            setThirdSelectedVariant(null);
+            setThirdBrandOptions([]);
+            setThirdModelOptions([]);
+            setThirdVariantOptions([]);
+          }}>Cancel</Button>
+          <Button variant="contained" onClick={confirmThirdSelection} disabled={!thirdSelectedVariant}>Compare</Button>
+        </DialogActions>
+      </Dialog>
     </Dialog>
   );
 };

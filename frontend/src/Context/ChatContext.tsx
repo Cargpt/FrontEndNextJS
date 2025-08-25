@@ -10,7 +10,6 @@ import React, {
 import { useCookies } from "react-cookie";
 
 
-
 type ChatsContextType = {
   chats: Message[];
   addChat: (chat: Omit<Message, "id">) => void;

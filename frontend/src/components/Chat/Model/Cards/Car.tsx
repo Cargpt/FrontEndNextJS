@@ -39,6 +39,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import { LightbulbOutline } from "@mui/icons-material";
 import CompareCarsDialog from "./CompareCarsDialog";
+import CompareVsSelector from "./CompareVsSelector";
 
 type Props = {
   onClick?: () => void;
@@ -111,12 +112,14 @@ const TeslaCard: React.FC<CarCardProps> = ({
   const [moreRecDisabled, setMoreRecDisabled] = useState<boolean>(false);
   const [compareDialogOpen, setCompareDialogOpen] = useState(false);
   const [selectedCarForCompare, setSelectedCarForCompare] = useState<any>(null);
+  const [showCompareInline, setShowCompareInline] = useState(false);
 
   const showSignUP = () => {
     setshowSignUpState(true);
     hide();
   };
   const [chipsDisabled, setChipsDisabled] = useState(false);
+  const [compareChipDisabled, setCompareChipDisabled] = useState(false);
 
   const hideSignUP = () => {
     setshowSignUpState(false);
@@ -1012,6 +1015,43 @@ const TeslaCard: React.FC<CarCardProps> = ({
       }}
     />
   )}
+          {/* Compare Button - same size as Get More Recommendations */}
+          <Chip
+            label={"Compare"}
+            clickable
+            variant="filled"
+            size="small"
+            color="default"
+            icon={<img src="/assets/Compare Syambol.png" alt="Compare" width={20} height={20} style={{ marginRight: 4 }} />}
+            onClick={async () => {
+              setCompareChipDisabled(true);
+              const compareIntroMessage = {
+                id: String(Date.now()),
+                message: "Please select cars to compare.",
+                render: "text" as const,
+                sender: "user" as const,
+              };
+              const msgs :Message[]=  [
+                ...messages,
+                compareIntroMessage,
+                {
+                  id: String(Date.now() + 1),
+                  render: "compareVsSelector" as const,
+                  sender: "bot" as const,
+                  message: ""
+                }
+              ]
+              setMessages(msgs);
+            }}
+            disabled={compareChipDisabled}
+            sx={{
+              fontSize: 13,
+              textTransform: "capitalize",
+              borderWidth: 1,
+              flex: { xs: '1 1 100%', sm: '0 auto' },
+              maxWidth: { xs: '100%', sm: 'none' },
+            }}
+          />
         </Stack>
       )}
       {dialog.type === "gallery" && (
@@ -1065,6 +1105,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
           primaryCar={selectedCarForCompare}
         />
       )}
+      {/* Inline Compare UI */}
     </>
   );
 };

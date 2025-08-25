@@ -100,7 +100,7 @@ type Message = {
   id: string;
   message?: string | any; // optional if using a component
   sender: 'user' | 'bot';
-  render?: 'brandModelSelect' | 'carOptions' | 'text' | 'selectOption' | 'flueOption' | 'bodyOption' |'transmissionOption' | 'brandOption'| 'selectedFilter' | 'recommendationOption' | 'researchOncar' | 'BestCarOption' | 'carComponent';
+  render?: 'brandModelSelect' | 'carOptions' | 'text' | 'selectOption' | 'flueOption' | 'bodyOption' |'transmissionOption' | 'brandOption'| 'selectedFilter' | 'recommendationOption' | 'researchOncar' | 'BestCarOption' | 'carComponent' |  'compareVsSelector';
   data?: any; // used to pass props to component renders
   bookmark?: boolean;
   prompt?: string | boolean;

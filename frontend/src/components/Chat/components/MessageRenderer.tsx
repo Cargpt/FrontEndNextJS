@@ -9,6 +9,8 @@ import OptionsCard from "../Model/AdviceSelectionCard/OptionCard";
 import CarResearchMenu from "../../MoreResearchOnCar/MoreResearchOnCar";
 import { Typography } from "@mui/material";
 import { capitalizeFirst } from "@/utils/services";
+import CompareVsSelector from "../Model/Cards/CompareVsSelector";
+import { Message } from "@/Context/ChatContext";
 
 type MessageRendererProps = {
   message: Message;
@@ -170,6 +172,8 @@ const MessageRenderer: React.FC<MessageRendererProps> = ({
     }
     case "researchOncar":
       return <CarResearchMenu />;
+    case "compareVsSelector":
+      return <CompareVsSelector />;
     default:
       return null;
   }
