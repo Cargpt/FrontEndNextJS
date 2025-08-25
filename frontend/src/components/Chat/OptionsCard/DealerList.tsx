@@ -156,13 +156,13 @@ const [cookies]=useCookies(['currentCity'])
                 <Typography sx={{ fontWeight: "bold", fontSize: "16px" }}>
                   {dealer.name}
                 </Typography>
-                <Typography
+                {/* <Typography
                   variant="body2"
                   color="text.secondary"
                   sx={{ fontSize: "14px" }}
                 >
                   {dealer.address}
-                </Typography>
+                </Typography> */}
 
                 {dealer.phone && (
                   <Typography variant="body2" color="primary.main">
