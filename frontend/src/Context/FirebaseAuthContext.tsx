@@ -32,7 +32,6 @@ import { useCookies } from "react-cookie";
 import { usePathname } from "next/navigation";
 
 import { Capacitor } from "@capacitor/core";
-import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
 
 // Firebase Config (from .env)
 const firebaseConfig = {
@@ -169,27 +168,12 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
   try {
     let user: User;
 
-    if (Capacitor.isNativePlatform()) {
-      // ✅ Native mobile (Android/iOS)
-
-
-      await GoogleAuth.initialize(); // Required on Android
-
-      const googleUser = await GoogleAuth.signIn();
-    console.log("✅ Native Google User:", googleUser);
-
-      const idToken = googleUser.authentication?.idToken;
-      if (!idToken) throw new Error("No ID token from Google Auth");
-
-      const credential = GoogleAuthProvider.credential(idToken);
-      const result = await signInWithCredential(firebaseAuth, credential);
-      user = result.user;
-    } else {
+    
       // ✅ Web (browser)
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(firebaseAuth, provider);
       user = result.user;
-    }
+    
 
     // ✅ Sync with Firestore
     const userDocRef = doc(firestore, "users", user.uid);
