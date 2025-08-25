@@ -51,6 +51,13 @@ interface CompareCarsDialogProps {
   variantId: number;
   carName: string;
   primaryCar: any; // full object of the selected car
+  // If provided, the dialog should open directly in pair comparison view
+  // using these two cars as the initial selection. We will fetch detailed
+  // data for each via api/cargpt/car-details/ before rendering the table.
+  initialData?: {
+    car1: any;
+    car2: any;
+  } | null;
 }
 
 type SuggestedComparisonResponse = {
@@ -79,6 +86,7 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
   variantId,
   carName,
   primaryCar,
+  initialData,
 }) => {
   const [comparisonData, setComparisonData] = useState<
     SuggestedComparisonResponse | PairComparisonResponse | null
@@ -253,14 +261,70 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
   };
 
   useEffect(() => {
-    if (open && variantId) {
+    const loadFromInitialPair = async () => {
+      try {
+        if (!initialData?.car1 || !initialData?.car2) return false;
+        setLoading(true);
+        setError(null);
+
+        const leftId = getCarId(initialData.car1);
+        const rightId = getCarId(initialData.car2);
+        if (!leftId || !rightId) return false;
+
+        const [leftDetails, rightDetails] = await Promise.all([
+          fetchCarDetailsById(leftId),
+          fetchCarDetailsById(rightId),
+        ]);
+
+        const normalizedLeft = {
+          ...normalizeCar(leftDetails),
+          AIScore: initialData.car1?.AIScore ?? leftDetails?.AIScore,
+          AISummary: initialData.car1?.AISummary ?? leftDetails?.AISummary,
+        };
+        const normalizedRight = {
+          ...normalizeCar(rightDetails),
+          AIScore: initialData.car2?.AIScore ?? rightDetails?.AIScore,
+          AISummary: initialData.car2?.AISummary ?? rightDetails?.AISummary,
+        };
+
+        setComparisonData({
+          car1: normalizedLeft,
+          car2: normalizedRight,
+          displayCar1: initialData.car1,
+          displayCar2: initialData.car2,
+          additionalCars: [],
+        } as any);
+
+        // Initialize bookmark states
+        const newBookmarkStates: Record<number, boolean> = {};
+        const leftVarId = getCarId(initialData.car1);
+        const rightVarId = getCarId(initialData.car2);
+        if (leftVarId) newBookmarkStates[leftVarId] = !!initialData.car1?.is_bookmarked;
+        if (rightVarId) newBookmarkStates[rightVarId] = !!initialData.car2?.is_bookmarked;
+        setBookmarkStates(newBookmarkStates);
+
+        setForceFullScreen(true);
+        setIsViewingPairComparison(true);
+        return true;
+      } catch (e: any) {
+        // fall back to suggested flow
+        return false;
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    (async () => {
+      if (!open) return;
       setSelectedRightCar(null);
-      fetchComparisonData();
-      
-      
-    }
+      // If initial pair provided, try to load pair view; otherwise default
+      const loaded = await loadFromInitialPair();
+      if (!loaded && variantId) {
+        fetchComparisonData();
+      }
+    })();
     // eslint-disable-next-line
-  }, [open, variantId]); // Removed comparisonData from dependency array as it's now handled within fetchComparisonData
+  }, [open, variantId, initialData]);
 
   const fetchComparisonData = async () => {
     setLoading(true);

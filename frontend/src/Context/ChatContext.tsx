@@ -9,13 +9,27 @@ import React, {
 } from "react";
 import { useCookies } from "react-cookie";
 
-// export type ChatMessage = {
-//   id: string;
-//   message?: string; // optional if using a component
-//   sender: 'user' | 'bot';
-//   render?: 'brandModelSelect' | 'carOptions' | 'text' | 'selectOption' | 'flueOption' | 'bodyOption' |'transmissionOption' | 'brandOption'| 'selectedFilter' | 'recommendationOption';
-//   data?: any; // used to pass props to component renders
-// };
+// Add or update the Message type to include 'compareVsSelector' in render
+export type Message = {
+  id: string;
+  message: any;
+  sender: 'user' | 'bot';
+  render?:
+    | 'brandModelSelect'
+    | 'carOptions'
+    | 'text'
+    | 'selectOption'
+    | 'flueOption'
+    | 'bodyOption'
+    | 'transmissionOption'
+    | 'brandOption'
+    | 'selectedFilter'
+    | 'recommendationOption'
+    | 'researchOncar'
+    | 'BestCarOption'
+    | 'compareVsSelector';
+  data?: any;
+};
 
 type ChatsContextType = {
   chats: Message[];
