@@ -142,7 +142,7 @@ function createAxiosLike(
 
       // Redirect to home if 401 Unauthorized
         if (response.status === 401) {
-          window.location.href = "/";
+          window.location.href = "/auth/login";
         }
 
 
