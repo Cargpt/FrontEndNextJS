@@ -113,6 +113,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
   const [compareDialogOpen, setCompareDialogOpen] = useState(false);
   const [selectedCarForCompare, setSelectedCarForCompare] = useState<any>(null);
   const [showCompareInline, setShowCompareInline] = useState(false);
+  const [allButtonsDisabled, setAllButtonsDisabled] = useState(false);
 
   const showSignUP = () => {
     setshowSignUpState(true);
@@ -639,6 +640,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
                       onClick={() => {
                         handleFavoriteClick(car, car.VariantID, index);
                       }}
+                      disabled={allButtonsDisabled}
                     >
                       {favoriteStates[index] ? (
                         <FavoriteIcon sx={{ color: "#e53935", fontSize: 18 }} />
@@ -780,6 +782,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
                         width: "100%",
                       }}
                       onClick={() => openDialog("score", car)}
+                      disabled={allButtonsDisabled}
                     >
                       AI Car Advisor Score:
                       <Box
@@ -804,6 +807,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
                         width: "100%",
                       }}
                       onClick={() => openDialog("sentiment", car)}
+                      disabled={allButtonsDisabled}
                     >
                       User Sentiments: {car?.AISummary || "--"}
                     </Button>
@@ -829,6 +833,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
                           borderRadius: "6px",
                         }}
                         onClick={() => openDialog("emi", car)}
+                        disabled={allButtonsDisabled}
                       >
                         EMI
                       </Button>
@@ -844,6 +849,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
                           borderRadius: "6px",
                         }}
                         onClick={() => handleOpenTestDriveModal(car)}
+                        disabled={allButtonsDisabled}
                       >
                         Book Test Drive
                       </Button>
@@ -878,7 +884,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
               setChipsDisabled(true);
               onClick?.();
             }}
-            disabled={chipsDisabled}
+            disabled={allButtonsDisabled || chipsDisabled}
             sx={{
               fontSize: 13,
               textTransform: "capitalize",
@@ -898,7 +904,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
               setChipsDisabled(true);
               handleNeedAdviceSupport();
             }}
-            disabled={chipsDisabled}
+            disabled={allButtonsDisabled || chipsDisabled}
             sx={{
               fontSize: 13,
               textTransform: "capitalize",
@@ -914,7 +920,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
               variant="filled"
             size="small"
             color="default"
-            disabled={chipsDisabled}
+            disabled={allButtonsDisabled || chipsDisabled}
             
               icon={<DirectionsCarIcon />}
               onClick={backTOIntial}
@@ -1002,7 +1008,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
           setLoadingOverallRecommendations(false);
         }
       }}
-      disabled={loadingOverallRecommendations || moreRecDisabled || chipsDisabled}
+      disabled={allButtonsDisabled || loadingOverallRecommendations || moreRecDisabled || chipsDisabled}
               
 
       sx={{
@@ -1025,6 +1031,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
             icon={<img src="/assets/Compare Syambol.png" alt="Compare" width={20} height={20} style={{ marginRight: 4 }} />}
             onClick={async () => {
               setCompareChipDisabled(true);
+              setAllButtonsDisabled(true); // Disable all buttons
               const compareIntroMessage = {
                 id: String(Date.now()),
                 message: "Please select cars to compare.",
@@ -1043,7 +1050,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
               ]
               setMessages(msgs);
             }}
-            disabled={compareChipDisabled}
+            disabled={allButtonsDisabled || compareChipDisabled}
             sx={{
               fontSize: 13,
               textTransform: "capitalize",

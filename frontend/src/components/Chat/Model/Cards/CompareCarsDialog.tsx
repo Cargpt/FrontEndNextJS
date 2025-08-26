@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -2030,8 +2030,52 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
     return `₹${formatInternational(price || 0)}`;
   };
 
+  // Desktop-only: make all image boxes equal in height to the tallest one
+  const [imageBoxHeight, setImageBoxHeight] = useState<number>(100);
+  const [columnMinHeight, setColumnMinHeight] = useState<number>(0);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (isMobile) return; // only for desktop
+    if (typeof window === 'undefined') return;
+
+    const root = containerRef.current;
+    if (!root) return;
+    const imageNodeList = root.querySelectorAll<HTMLDivElement>('.pc-image-box');
+    const nodes = Array.from(imageNodeList);
+    if (!nodes || nodes.length === 0) return;
+    const columnNodeList = root.querySelectorAll<HTMLDivElement>('.pc-column');
+    const colNodes = Array.from(columnNodeList);
+
+    const compute = () => {
+      const maxH = nodes.reduce((max, n) => Math.max(max, n.getBoundingClientRect().height), 0);
+      if (maxH && Math.abs(maxH - imageBoxHeight) > 1) setImageBoxHeight(maxH);
+      const maxColH = colNodes.reduce((max, n) => Math.max(max, n.getBoundingClientRect().height), 0);
+      if (maxColH && Math.abs(maxColH - columnMinHeight) > 1) setColumnMinHeight(maxColH);
+    };
+
+    compute();
+
+    // Observe changes to keep it dynamic
+    const ResizeObs = (window as any).ResizeObserver;
+    const ro = ResizeObs ? new ResizeObs(compute) : null;
+    nodes.forEach((n) => ro?.observe(n));
+    colNodes.forEach((n) => ro?.observe(n));
+    window.addEventListener('load', compute);
+    window.addEventListener('resize', compute);
+
+    return () => {
+      nodes.forEach((n) => ro?.unobserve(n));
+      colNodes.forEach((n) => ro?.unobserve(n));
+      ro?.disconnect?.();
+      window.removeEventListener('load', compute);
+      window.removeEventListener('resize', compute);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isMobile, additionalCars, displayCar1, displayCar2]);
+
   return (
-    <Box sx={{ 
+    <Box ref={containerRef} sx={{ 
       display: 'flex', 
       alignItems: 'flex-start', 
       justifyContent: 'flex-start', 
@@ -2086,7 +2130,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
       )}
 
       {/* Car 1 column */}
-      <Box sx={{ 
+      <Box className={!isMobile ? 'pc-column' : undefined} sx={{ 
         width: isMobile ? 'auto' : 200, 
         textAlign: 'center', 
         flexShrink: 0,
@@ -2096,10 +2140,11 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
         borderRadius: isMobile ? 0 : 2,
         background: isMobile ? 'transparent' : (mode === 'dark' ? 'grey.800' : 'white'),
         ml: isMobile ? 2.5 : 0,
-        mt: isMobile ? 1 : 0
+        mt: isMobile ? 1 : 0,
+        ...(isMobile ? {} : { minHeight: columnMinHeight })
       }}>
-        <Box sx={{ 
-          height: isMobile ? 50 : 100, 
+        <Box className={!isMobile ? 'pc-image-box' : undefined} sx={{ 
+          height: isMobile ? 50 : imageBoxHeight, 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center', 
@@ -2195,7 +2240,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
       )}
 
       {/* Car 2 column */}
-      <Box sx={{ 
+      <Box className={!isMobile ? 'pc-column' : undefined} sx={{ 
         width: isMobile ? 'auto' : 200, 
         textAlign: 'center', 
         flexShrink: 0,
@@ -2206,10 +2251,11 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
         background: isMobile ? 'transparent' : (mode === 'dark' ? 'grey.800' : 'white'),
         ml: 0,
         mr: isMobile ? 3 : 4, // Add right margin for non-mobile view
-        mt: isMobile ? 1 : 0
+        mt: isMobile ? 1 : 0,
+        ...(isMobile ? {} : { minHeight: columnMinHeight })
       }}>
-        <Box sx={{ 
-          height: isMobile ? 50 : 100, 
+        <Box className={!isMobile ? 'pc-image-box' : undefined} sx={{ 
+          height: isMobile ? 50 : imageBoxHeight, 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center', 
@@ -2285,7 +2331,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
         return (
           <React.Fragment key={carIndex}>
             
-            <Box sx={{ 
+            <Box className={!isMobile ? 'pc-column' : undefined} sx={{ 
               width: isMobile ? 'auto' : 200, 
               textAlign: 'center', 
               flexShrink: 0,
@@ -2295,7 +2341,8 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
               borderRadius: isMobile ? 0 : 2,
               background: isMobile ? 'transparent' : (mode === 'dark' ? 'grey.800' : 'white'),
               ml: 0,
-              mt: isMobile ? 1 : 0
+              mt: isMobile ? 1 : 0,
+              ...(isMobile ? {} : { minHeight: columnMinHeight })
             }}>
               {(() => {
                 const car = additionalCar.car;
@@ -2304,8 +2351,8 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
                 
                 return (
                   <>
-                    <Box sx={{ 
-                      height: isMobile ? 50 : 100, 
+                    <Box className={!isMobile ? 'pc-image-box' : undefined} sx={{ 
+                      height: isMobile ? 50 : imageBoxHeight, 
                       display: 'flex', 
                       alignItems: 'center', 
                       justifyContent: 'center', 

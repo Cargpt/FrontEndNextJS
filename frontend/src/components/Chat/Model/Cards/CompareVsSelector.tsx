@@ -17,6 +17,12 @@ import { axiosInstance1 } from "@/utils/axiosInstance";
 import { useSnackbar } from "@/Context/SnackbarContext";
 import CompareCarsDialog from "./CompareCarsDialog";
 import { useColorMode } from "@/Context/ColorModeContext";
+import FaceIcon from "@mui/icons-material/Face";
+import SupportAgentIcon from "@mui/icons-material/SupportAgent";
+import LightbulbOutline from "@mui/icons-material/LightbulbOutline";
+import { Stack } from "@mui/material";
+import { useCookies } from "react-cookie";
+import { Message, useChats } from "@/Context/ChatContext";
 
 const getCarImage = (car: any) => {
   const imageUrl =
@@ -58,6 +64,10 @@ const CompareVsSelector: React.FC = () => {
   const [initialCompareData, setInitialCompareData] = useState<any | null>(null);
 
   const { showSnackbar } = useSnackbar();
+  const { messages, setMessages } = useChats();
+  const [cookies] = useCookies(["selectedOption", "user"]);
+  const [loadingOverallRecommendations, setLoadingOverallRecommendations] = useState<boolean>(false);
+  const [allButtonsDisabled, setAllButtonsDisabled] = useState(false);
 
   const loadBrands = async () => {
     setLoading(true);
@@ -212,6 +222,47 @@ const CompareVsSelector: React.FC = () => {
 
   const canCompare = Boolean(leftCar && rightCar);
 
+  const handleIknowWhatEaxactlyWhatIWant = () => {
+    const userMessage: Message = {
+      id: String(Date.now()),
+      message: "I know exactly what I want",
+      render: "text",
+      sender: "user",
+    };
+    setMessages((prev) => [...prev, userMessage]);
+  };
+
+  const handleNeedAdviceSupport = () => {
+    const userMessage: Message = {
+      id: String(Date.now()),
+      message: "I need advisor support",
+      render: "text",
+      sender: "user",
+    };
+    setMessages((prev) => [...prev, userMessage]);
+  };
+
+  const handleGetMoreRecommendations = async () => {
+    setLoadingOverallRecommendations(true);
+    const userMessage: Message = {
+      id: String(Date.now()),
+      message: "Get More Recommendations",
+      render: "text",
+      sender: "user",
+    };
+
+    // For simplicity, we'll just send a generic bot message. In a real scenario,
+    // you'd fetch recommendations based on the compared cars.
+    const botMessage: Message = {
+      id: String(Date.now() + 1),
+      message: { message: "Here are some more recommendations based on your comparison." },
+      render: "text", // Or a specific render type for recommendations
+      sender: "bot",
+    };
+    setMessages((prev) => [...prev, userMessage, botMessage]);
+    setLoadingOverallRecommendations(false);
+  };
+
   const openDetailedCompare = async () => {
     if (!canCompare) return;
     try {
@@ -240,8 +291,10 @@ const CompareVsSelector: React.FC = () => {
         <Button
           variant="contained"
           color="primary"
-          disabled={!canCompare}
-          onClick={openDetailedCompare}
+          onClick={() => {
+            setAllButtonsDisabled(true);
+            openDetailedCompare();
+          }}
           sx={{
             minWidth: 64,
             height: 64,
@@ -249,21 +302,76 @@ const CompareVsSelector: React.FC = () => {
             fontWeight: 700,
             boxShadow: 2,
           }}
+          disabled={allButtonsDisabled}
         >
           VS
         </Button>
         {renderSlot('right', rightCar)}
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-        <Button variant="contained" disabled={!canCompare} onClick={openDetailedCompare}>
+        <Button variant="contained" onClick={() => {
+          setAllButtonsDisabled(true);
+          openDetailedCompare();
+        }} disabled={allButtonsDisabled}>
           Compare
         </Button>
       </Box>
+      <Stack
+        direction="row"
+        gap={1.5}
+        mt={1}
+        flexWrap="wrap"
+        justifyContent={"center"}
+        sx={{
+          pb: "15px",
+          rowGap: 1,
+        }}
+      >
+        <Chip
+          label="I know exactly what I want"
+          variant="filled"
+          size="small"
+          icon={<FaceIcon />}
+          onClick={() => {
+            setAllButtonsDisabled(true);
+            handleIknowWhatEaxactlyWhatIWant();
+          }}
+          disabled={allButtonsDisabled}
+          sx={{
+            fontSize: 13,
+            textTransform: "capitalize",
+            borderWidth: 1,
+            flex: { xs: "1 1 calc(50% - 12px)", sm: "0 auto" },
+            maxWidth: { xs: "calc(50% - 12px)", sm: "none" },
+          }}
+        />
+        <Chip
+          label="I need advisor support"
+          variant="filled"
+          size="small"
+          color="default"
+          icon={<SupportAgentIcon />}
+          onClick={() => {
+            setAllButtonsDisabled(true);
+            handleNeedAdviceSupport();
+          }}
+          disabled={allButtonsDisabled}
+          sx={{
+            fontSize: 13,
+            textTransform: "capitalize",
+            borderWidth: 1,
+            flex: { xs: "1 1 calc(50% - 12px)", sm: "0 auto" },
+            maxWidth: { xs: "calc(50% - 12px)", sm: "none" },
+          }}
+        />
+      </Stack>
 
       <CompareCarsDialog
         open={compareDialogOpen}
-        onClose={() => setCompareDialogOpen(false)}
-        variantId={(leftCar?.VariantID ?? leftCar?.CarID) || 0}
+        onClose={() => {
+          setCompareDialogOpen(false);
+        }}
+        variantId={(leftCar?.CarID ?? leftCar?.VariantID) || 0}
         carName={leftCar?.VariantName || leftCar?.ModelName || ''}
         primaryCar={leftCar}
         initialData={initialCompareData}
