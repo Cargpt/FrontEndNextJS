@@ -25,7 +25,6 @@ const config: CapacitorConfig = {
       serverClientId: '431860020742-u437733vi42se2tk4e8hjrc6r4rbud4h.apps.googleusercontent.com', // Web Client ID for server auth  //for Dev
       forceCodeForRefreshToken: true,
     
-      
     }
 
   //     GoogleAuth: {
