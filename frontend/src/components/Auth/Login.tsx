@@ -31,7 +31,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useFirebase } from '@/Context/FirebaseAuthContext';
 import { useLoginDialog } from '@/Context/LoginDialogContextType';
 import { useSnackbar } from '@/Context/SnackbarContext';
-import { getRandomWelcomeMessage } from '@/utils/services';
+import { getRandomWelcomeMessage, transformFirebaseResponse } from '@/utils/services';
 import ForgotPasswordDialog from '@/components/Auth/ForgotPasswordDialog';
 
 import PhoneInput from 'react-phone-input-2';
@@ -39,7 +39,6 @@ import 'react-phone-input-2/lib/material.css';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { SocialLogin } from '@capgo/capacitor-social-login';
-import { getAuth, signInWithCredential, GoogleAuthProvider } from 'firebase/auth';
 
 interface LoginFormProps {
   showSignUp?: () => void;
@@ -122,19 +121,43 @@ const handleGoogleLogin = async () => {
       options: {}
     });
      idToken = (res.result as any)?.idToken;
+     const profile =  (res.result as any)?.profile
+
+         const fullName = profile.name || "";
+    const [firstName, ...lastNameParts] = fullName.split(" ");
 
     // accessToken =  (res.result as any)?.accessToken?.token;
+           const transformedResponse = {
+      id: profile.userID,
+      username: `user_${profile.userID}`,
+      email: profile.email || `user_${profile.userID}@example.com`,
+      first_name: firstName || "",
+      last_name: lastNameParts.join(" ") || "",
+      mobile_no: null, // SocialLogin doesn't return phone by default
+      photo: profile.imageURL || null
+    };
 
-
+    setCookie('user', transformedResponse, {
+      maxAge:  60 * 60 * 24 * 365, 
+    path: '/',})
     
-      displayName = (res.result as any)?.profile?.name || 'Guest';
+      displayName = profile?.name || 'Guest';
+
+
     } else {
       // ✅ Web login using Firebase
       const googleUser = await firebase.signInWithGoogle();
       if (!googleUser) return;
 
       idToken = await googleUser.getIdToken();
+        
       displayName = googleUser.displayName || 'Guest';
+
+      console.log("Firebase user:", googleUser);
+      setCookie('user', transformFirebaseResponse(googleUser), {
+        maxAge:  60 * 60 * 24 * 365, // 1 year
+        path: '/',
+      })
     }
 
     // ✅ Send token to backend to login or create account
@@ -153,10 +176,10 @@ const handleGoogleLogin = async () => {
         maxAge: 60 * 60 * 24 * 365, // 1 year
       });
 
-      setCookie('user', response.user, {
-        path: '/',
-        maxAge: 60 * 60 * 24 * 365,
-      });
+      // setCookie('user', response.user, {
+      //   path: '/',
+      //   maxAge: 60 * 60 * 24 * 365,
+      // });
 
       showSnackbar(`${getRandomWelcomeMessage(displayName)}`, {
         vertical: 'top',
@@ -223,7 +246,7 @@ const handleGoogleLogin = async () => {
 useEffect(() => {
 SocialLogin.initialize({
   google: {
-    webClientId:'573020465331-7ptc73n5ko9pndtab7fnppgn3k5l7fhi.apps.googleusercontent.com', //web clicentID
+    webClientId:process.env.NEXT_PUBLIC_GOOGLE_CLIENT_WEB_ID, //web clicentID
   }
 })
 , []})

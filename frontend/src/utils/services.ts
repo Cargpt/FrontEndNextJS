@@ -283,3 +283,18 @@ export function getRandomWelcomeMessage(userName:string) {
 
   return `${randomGreeting}, ${userName}!`;
 }
+
+export function transformFirebaseResponse(firebaseUser:any) {
+  const fullName = firebaseUser.displayName || "";
+  const [firstName, ...lastNameParts] = fullName.split(" ");
+  
+  return {
+    id: firebaseUser.uid,
+    username: `user_${firebaseUser.uid}`,
+    email: firebaseUser.email || `user_${firebaseUser.uid}@example.com`,
+    first_name: firstName || "",
+    last_name: lastNameParts.join(" ") || "",
+    mobile_no: firebaseUser.phoneNumber || null,
+    photo: firebaseUser.photoURL || null
+  };
+}
