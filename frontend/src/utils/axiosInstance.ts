@@ -140,10 +140,12 @@ function createAxiosLike(
         data: errorData,
       };
 
-      // Redirect to home if 401 Unauthorized
-if (response.status === 401 && window.location.pathname !== "/") {
-  window.location.href = "/";
-}
+//       // Redirect to home if 401 Unauthorized
+// if (response.status === 401 && window.location.pathname !== "/" 
+// ) {
+//   console.warn("Unauthorized - redirecting to home", url.includes("/api/cargpt/history/") );
+//   window.location.href = "/";
+// }
 
 
 

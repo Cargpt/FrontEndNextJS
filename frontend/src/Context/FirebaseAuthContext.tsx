@@ -92,14 +92,14 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedUserRole = localStorage.getItem("userRole");
+    // const storedUser = localStorage.getItem("user");
+    // const storedUserRole = localStorage.getItem("userRole");
 
-    if (storedUser && storedUserRole) {
-      setUser(JSON.parse(storedUser));
-      setUserRole(storedUserRole);
-      setLoading(false);
-    }
+    // if (storedUser && storedUserRole) {
+    //   setUser(JSON.parse(storedUser));
+    //   setUserRole(storedUserRole);
+    //   setLoading(false);
+    // }
 
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (authUser) => {
       if (authUser) {
@@ -114,7 +114,7 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
             await setDoc(userDoc, { role });
           }
           setUserRole(role);
-          localStorage.setItem("user", JSON.stringify(authUser));
+          // localStorage.setItem("user", JSON.stringify(authUser));
           setCookie("user", JSON.stringify(authUser), {
             path: "/",
             maxAge: 60 * 60 * 24 * 365,
@@ -126,7 +126,7 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
             maxAge: 60 * 60 * 24 * 365,
           });
 
-          localStorage.setItem("userRole", role);
+          // localStorage.setItem("userRole", role);
         } catch (err) {
           console.error(err);
           setUserRole("user");
@@ -134,8 +134,8 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
       } else {
         setUser(null);
         setUserRole(null);
-        localStorage.removeItem("user");
-        localStorage.removeItem("userRole");
+        // localStorage.removeItem("user");
+        // localStorage.removeItem("userRole");
       }
       setLoading(false);
     });
@@ -190,12 +190,12 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
     }
 
     // ✅ Persist
-    localStorage.setItem("user", JSON.stringify(user));
+    // localStorage.setItem("user", JSON.stringify(user));
     setCookie("user", JSON.stringify(user), {
       path: "/",
       maxAge: 60 * 60 * 24 * 365,
     });
-    localStorage.setItem("userRole", "user");
+    // localStorage.setItem("userRole", "user");
 
     return user;
   } catch (error: any) {
@@ -223,8 +223,8 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
     signInWithPopup(firebaseAuth, new TwitterAuthProvider());
 
   const signOut = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("userRole");
+    // localStorage.removeItem("user");
+    // localStorage.removeItem("userRole");
     return firebaseSignOut(firebaseAuth);
   };
 
