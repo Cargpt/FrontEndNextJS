@@ -19,6 +19,8 @@ import {
 import { ArrowForwardIosSharp, InfoOutline, InfoOutlined, NotificationAddOutlined, RestoreFromTrashOutlined } from "@mui/icons-material";
 import Link from "next/link";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import NotificationAddOutlinedIcon from "@mui/icons-material/NotificationAddOutlined";
+import { Badge } from "@mui/material";
 
 import { useCookies } from "react-cookie";
 import LoginOutlinedIcon from "@mui/icons-material/LoginOutlined";
@@ -37,6 +39,7 @@ import { Capacitor } from "@capacitor/core";
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useColorMode } from "@/Context/ColorModeContext";
+import { useNotifications } from "@/Context/NotificationContext";
 
 interface SidebarProps {
   open: boolean;
@@ -47,6 +50,13 @@ type HistoryItem = { id?: string; title: string; value: string };
 
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const [cookies, , removeCookie] = useCookies(["token", "user"]);
+
+  const { notifications, setNotifications } = useNotifications();
+    const unreadCount = notifications.filter(
+      (n: { read: boolean }) => !n.read
+    ).length;
+  
+    
 const {mode, toggleColorMode}=useColorMode()
 const router =useRouter()
   useEffect(() => {}, [cookies.token]);
@@ -592,27 +602,32 @@ const theme=useTheme()
                     }}
                   
                   >
-                    <Link href="/notifications" passHref legacyBehavior>
-                      <a
-                        onClick={onClose}
-                        style={{
-                          display: "flex",
-                          gap: 8,
-                          alignItems: "center",
-                          padding: "8px 10px",
-                          textDecoration: "none",
-                          color: theme.palette.text.primary,
-                          fontSize: 14,
-                          fontWeight: 500,
-                        }}
-                      >
-                        <span>
-                                                <NotificationAddOutlined sx={{width:15, height:15}}/>
+<Link href="/notifications" passHref legacyBehavior>
+  <a
+    onClick={onClose}
+    style={{
+      display: "flex",
+      gap: 8,
+      alignItems: "center",
+      padding: "8px 10px",
+      textDecoration: "none",
+      color: theme.palette.text.primary,
+      fontSize: 14,
+      fontWeight: 500,
+    }}
+  >
+    <Badge
+      badgeContent={unreadCount}       // Number inside the badge
+      color="error"
+      invisible={unreadCount === 0}    // Hide badge if 0
+      overlap="circular"               // Makes it wrap nicely around icon
+    >
+      <NotificationAddOutlinedIcon sx={{ width: 20, height: 20 }} />
+    </Badge>
+    <span>All Notification</span>
+  </a>
+</Link>
 
-                        </span>
-                        <span>All Notification</span>
-                      </a>
-                    </Link>
                   </li>
 
                   {cookies.user && (

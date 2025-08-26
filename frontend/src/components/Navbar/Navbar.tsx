@@ -20,6 +20,7 @@ import { useColorMode } from '@/Context/ColorModeContext';
 import { axiosInstance1 } from '@/utils/axiosInstance';
 import AskLocation from '../Header/AskLocation';
 import CityInputDialog from '../Header/CityInputForm';
+import { Geolocation } from '@capacitor/geolocation';
 
 type Props = {
   backToPrevious: () => void;
@@ -39,7 +40,7 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
   const isNative = Capacitor.isNativePlatform();
   const isAndroid = Capacitor.getPlatform() === "android";
   const { mode } = useColorMode();
-
+  
   const [enterCitydialogOpen, setEnterCityDialogOpen] = useState(false);
   const [locationDenied, setLocationDenied] = useState(false);
   const [city, setCity] = useState<string | null>(null);
@@ -53,52 +54,73 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
     }
   };
 
-  const handleLocation = (isClose: boolean) => {
-    if (!navigator.geolocation) {
-      console.warn('Geolocation is not supported');
-      return;
-    }
+  const getUserLocation = async (): Promise<{ latitude: number; longitude: number } | null> => {
+  try {
+    // Detect if running in Capacitor native app
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
+    if (isNative) {
+      // Capacitor mobile app
+      const permission = await Geolocation.requestPermissions();
+      if (permission.location !== 'granted') return null;
 
-        try {
-          const res = await axiosInstance1.post('/api/cargpt/coordinate-to-city/', {
-            lat: latitude,
-            lng: longitude,
-          });
-
-          const cityName = res?.city;
-          if (cityName) {
-            setCity(cityName);
-            setCookie('currentCity', cityName, {
-              path: '/',
-              maxAge: 60 * 60 * 24 * 365,
+      const position = await Geolocation.getCurrentPosition();
+      return {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      };
+    } else if (navigator.geolocation) {
+      // Web browser
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            resolve({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
             });
-            setCookie('locationPermissionAcknowledged', true, {
-              path: '/',
-              maxAge: 60 * 60 * 24 * 365,
-            });
-
-            if (isClose) toggleCity();
+          },
+          (err) => {
+            console.warn('Web location permission denied', err);
+            reject(null);
           }
-        } catch (error) {
-          console.error('Failed to fetch city from coordinates', error);
-        }
-      },
-      (error) => {
-        console.warn('Location permission denied', error);
-        removeCookie('currentCity');
-        setCookie('locationPermissionAcknowledged', true, {
-          path: '/',
-          maxAge: 60 * 60 * 24 * 365,
-        });
-        setLocationDenied(true);
-      }
-    );
-  };
+        );
+      });
+    } else {
+      console.warn("Geolocation not supported");
+      return null;
+    }
+  } catch (err) {
+    console.error("Error getting location", err);
+    return null;
+  }
+};
 
+  const handleLocation = async (isClose: boolean) => {
+  const coords = await getUserLocation();
+  if (!coords) {
+    setLocationDenied(true);
+    removeCookie("currentCity");
+    setCookie("locationPermissionAcknowledged", true, { path: "/", maxAge: 60 * 60 * 24 * 365 });
+    return;
+  }
+
+  const { latitude, longitude } = coords;
+
+  try {
+    const res = await axiosInstance1.post("/api/cargpt/coordinate-to-city/", {
+      lat: latitude,
+      lng: longitude,
+    });
+
+    if (res?.city) {
+      setCity(res.city);
+      setCookie("currentCity", res.city, { path: "/", maxAge: 60 * 60 * 24 * 365 });
+      if (isClose) toggleCity();
+      setCookie("locationPermissionAcknowledged", true, { path: "/", maxAge: 60 * 60 * 24 * 365 });
+    }
+  } catch (err) {
+    console.error("Failed to fetch city from coordinates", err);
+  }
+};
   const handleLocationAcknowledge = () => {
     setCookie('locationPermissionAcknowledged', true, {
       path: '/',

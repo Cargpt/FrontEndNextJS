@@ -38,7 +38,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/material.css';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { SocialLogin } from '@capgo/capacitor-social-login';
+import { GoogleAuth } from '@codetrix-studio/capacitor-google-auth';
 
 interface LoginFormProps {
   showSignUp?: () => void;
@@ -116,39 +116,58 @@ const handleGoogleLogin = async () => {
 
     if (isNative) {
       // ✅ Native login (Android/iOS)
-      const res = await SocialLogin.login({
-      provider: 'google',
-      options: {}
-    });
-     idToken = (res.result as any)?.idToken;
-     const profile =  (res.result as any)?.profile
+    //   const res = await SocialLogin.login({
+    //   provider: 'google',
+    //   options: {}
+    // });
 
-         const fullName = profile.name || "";
-    const [firstName, ...lastNameParts] = fullName.split(" ");
+    
+
+
+
+GoogleLogOut()
+
+      const googleUser = await GoogleAuth.signIn();
+
+     idToken = googleUser.authentication?.idToken;
+    //  const profile =  (res.result as any)?.profile
+
+    //      const fullName = profile.name || "";
+    // const [firstName, ...lastNameParts] = fullName.split(" ");
 
     // accessToken =  (res.result as any)?.accessToken?.token;
-           const transformedResponse = {
-      id: profile.userID,
-      username: `user_${profile.userID}`,
-      email: profile.email || `user_${profile.userID}@example.com`,
-      first_name: firstName || "",
-      last_name: lastNameParts.join(" ") || "",
-      mobile_no: null, // SocialLogin doesn't return phone by default
-      photo: profile.imageURL || null
+    //        const transformedResponse = {
+    //   id: profile.userID,
+    //   username: `user_${profile.userID}`,
+    //   email: profile.email || `user_${profile.userID}@example.com`,
+    //   first_name: firstName || "",
+    //   last_name: lastNameParts.join(" ") || "",
+    //   mobile_no: null, // SocialLogin doesn't return phone by default
+    //   photo: profile.imageURL || null
+    // };
+
+
+
+   const transformedResponse= {
+      email: googleUser.email,
+      first_name: googleUser.givenName,
+      last_name: googleUser.familyName,
+      photo: googleUser.imageUrl,
+      token: googleUser.authentication?.idToken, // send to backend if needed
     };
 
     setCookie('user', transformedResponse, {
       maxAge:  60 * 60 * 24 * 365, 
     path: '/',})
     
-      displayName = profile?.name || 'Guest';
+      displayName = googleUser.givenName || 'Guest';
 
 
     } else {
       // ✅ Web login using Firebase
       const googleUser = await firebase.signInWithGoogle();
       if (!googleUser) return;
-
+      
       idToken = await googleUser.getIdToken();
         
       displayName = googleUser.displayName || 'Guest';
@@ -243,12 +262,32 @@ const handleGoogleLogin = async () => {
 //   }
 // };
 
+
+const GoogleLogOut = async () => {
+  try {
+            await GoogleAuth.signOut(); // clear previous session
+
+      
+    } catch (error) {
+      
+    }
+}
 useEffect(() => {
-SocialLogin.initialize({
-  google: {
-    webClientId:process.env.NEXT_PUBLIC_GOOGLE_CLIENT_WEB_ID, //web clicentID
-  }
-})
+
+  
+  // GoogleAuth.initialize({
+  //   clientId
+  //     :'573020465331-7ptc73n5ko9pndtab7fnppgn3k5l7fhi.apps.googleusercontent.com', // ⚠️ Web Client ID, not Android
+  //     scopes: ["profile", "email"],
+  //     grantOfflineAccess: true,
+    
+  //   })
+   
+        GoogleAuth.initialize()
+
+
+  
+  
 , []})
 
 

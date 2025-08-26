@@ -13,6 +13,7 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Badge from "@mui/material/Badge";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import LocationOnIcon from "@mui/icons-material/LocationOn"; // Icon for city
+import { Geolocation } from '@capacitor/geolocation';
 
 import { useNotifications } from "../../Context/NotificationContext";
 import { Capacitor } from "@capacitor/core";
@@ -32,6 +33,11 @@ const Header: React.FC = () => {
   ]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { notifications, setNotifications } = useNotifications();
+  const unreadCount = notifications.filter(
+    (n: { read: boolean }) => !n.read
+  ).length;
+
+  
   const router = useRouter();
   const { mode } = useColorMode();
   const theme = useTheme();
@@ -39,9 +45,7 @@ const Header: React.FC = () => {
   const isNative = Capacitor.isNativePlatform();
   const isAndroid = Capacitor.getPlatform() === "android";
 
-  const unreadCount = notifications.filter(
-    (n: { read: boolean }) => !n.read
-  ).length;
+  
   const readCount = notifications.filter(
     (n: { read: boolean }) => n.read
   ).length;
@@ -51,6 +55,7 @@ const Header: React.FC = () => {
   const onCLoseLocationPopup = () => setLocationDenied(false);
   const handleDrawerOpen = () => setDrawerOpen(true);
   const handleDrawerClose = () => setDrawerOpen(false);
+
   const handleBookmarkClick = () => {
     if (cookies.user) {
       setCookie("selectedOption", "I know exactly what I want", { path: "/" });
@@ -60,49 +65,73 @@ const Header: React.FC = () => {
     }
   };
 
-  const handleLocation = (isClose: boolean) => {
-    if (!navigator.geolocation) {
-      console.warn("Geolocation is not supported");
-      return;
-    }
+  const getUserLocation = async (): Promise<{ latitude: number; longitude: number } | null> => {
+  try {
+    // Detect if running in Capacitor native app
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
+    if (isNative) {
+      // Capacitor mobile app
+      const permission = await Geolocation.requestPermissions();
+      if (permission.location !== 'granted') return null;
 
-        try {
-          const res = await axiosInstance1.post(
-            "/api/cargpt/coordinate-to-city/",
-            {
-              lat: latitude,
-              lng: longitude,
-            }
-          );
-
-          if (res?.city) {
-            setCity(res.city);
-            setCookie("currentCity", res?.city, {
-              path: "/",
-              maxAge: 60 * 60 * 24 * 365,
+      const position = await Geolocation.getCurrentPosition();
+      return {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude
+      };
+    } else if (navigator.geolocation) {
+      // Web browser
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            resolve({
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude
             });
-            if (isClose) {
-              toggleCity();
-            }
-            setCookie("locationPermissionAcknowledged", true, { path: "/", maxAge: 60 * 60 * 24 * 365 }); // Acknowledge location permission
+          },
+          (err) => {
+            console.warn('Web location permission denied', err);
+            reject(null);
           }
-        } catch (error) {
-          console.error("Failed to fetch city from coordinates", error);
-        }
-      },
-      (error) => {
-        removeCookie("currentCity");
-        setCookie("locationPermissionAcknowledged", true, { path: "/", maxAge: 60 * 60 * 24 * 365 }); // Acknowledge location permission
-        setLocationDenied(true); // Trigger dialog
+        );
+      });
+    } else {
+      console.warn("Geolocation not supported");
+      return null;
+    }
+  } catch (err) {
+    console.error("Error getting location", err);
+    return null;
+  }
+};
 
-        console.warn("Location permission denied", error);
-      }
-    );
-  };
+  const handleLocation = async (isClose: boolean) => {
+  const coords = await getUserLocation();
+  if (!coords) {
+    setLocationDenied(true);
+    removeCookie("currentCity");
+    setCookie("locationPermissionAcknowledged", true, { path: "/", maxAge: 60 * 60 * 24 * 365 });
+    return;
+  }
+
+  const { latitude, longitude } = coords;
+
+  try {
+    const res = await axiosInstance1.post("/api/cargpt/coordinate-to-city/", {
+      lat: latitude,
+      lng: longitude,
+    });
+
+    if (res?.city) {
+      setCity(res.city);
+      setCookie("currentCity", res.city, { path: "/", maxAge: 60 * 60 * 24 * 365 });
+      if (isClose) toggleCity();
+      setCookie("locationPermissionAcknowledged", true, { path: "/", maxAge: 60 * 60 * 24 * 365 });
+    }
+  } catch (err) {
+    console.error("Failed to fetch city from coordinates", err);
+  }
+};
 
   useEffect(() => {
     if (cookies.currentCity || cookies.locationPermissionAcknowledged || enterCitydialogOpen) return;
