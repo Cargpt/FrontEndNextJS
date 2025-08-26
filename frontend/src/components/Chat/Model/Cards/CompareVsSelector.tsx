@@ -22,7 +22,7 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import LightbulbOutline from "@mui/icons-material/LightbulbOutline";
 import { Stack } from "@mui/material";
 import { useCookies } from "react-cookie";
-import { Message, useChats } from "@/Context/ChatContext";
+import { useChats } from "@/Context/ChatContext";
 
 const getCarImage = (car: any) => {
   const imageUrl =
