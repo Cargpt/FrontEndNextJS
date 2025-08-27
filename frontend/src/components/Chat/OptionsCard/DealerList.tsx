@@ -131,7 +131,7 @@ const [cookies]=useCookies(['currentCity'])
             py: 1,
             px: 1,
             fontWeight: "bold",
-            fontSize: "1rem",
+            fontSize: "12px",
           }}
         >
           Local dealers around you
@@ -151,9 +151,10 @@ const [cookies]=useCookies(['currentCity'])
                   display: "flex",
                   flexDirection: "column",
                   gap: 0.5,
+                  height:"90px"
                 }}
               >
-                <Typography sx={{ fontWeight: "bold", fontSize: "16px" }}>
+                <Typography sx={{ color:"#333", fontSize: "12px" }}>
                   {dealer.name}
                 </Typography>
                 {/* <Typography
@@ -165,7 +166,7 @@ const [cookies]=useCookies(['currentCity'])
                 </Typography> */}
 
                 {dealer.phone && (
-                  <Typography variant="body2" color="primary.main">
+                  <Typography variant="body2" color="primary.main" sx={{ fontSize: "11px" }}>
                     📞 {dealer.phone}
                   </Typography>
                 )}
@@ -175,7 +176,8 @@ const [cookies]=useCookies(['currentCity'])
                     variant="body2"
                     sx={{
                       color: dealer.hours.includes("Open") ? "green" : "red",
-                      fontWeight: 500,
+                      fontWeight: 700,
+                      fontSize:"10px"
                     }}
                   >
                     🕒 {dealer.hours}
@@ -183,11 +185,15 @@ const [cookies]=useCookies(['currentCity'])
                 )}
 
                 {(dealer.rating || dealer.review_count) && (
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" color="text.secondary" 
+                   sx={{ fontSize: "10px",  }}
+                  >
                     ⭐ {dealer.rating ?? "N/A"}{" "}
                     {dealer.review_count
                       ? `(${dealer.review_count} reviews)`
                       : ""}
+
+                     
                   </Typography>
                 )}
               </Paper>
