@@ -140,7 +140,7 @@ const fetchDealers = async () => {
             py: 1,
             px: 1,
             fontWeight: "bold",
-            fontSize: "12px",
+            fontSize: "16px",
           }}
         >
           Local dealers around you

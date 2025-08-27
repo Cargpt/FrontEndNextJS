@@ -14,14 +14,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "573020465331-08dcjptjf46ignt5ngcd1ovlf5q5gr81.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.ai.aicaradvisor",
-            "certificate_hash": "5a675a2ba43545314df13a2f18171894cb8f0e05"
-          }
-        },
-        {
           "client_id": "573020465331-gvauontjb5cntuikrd9p2510sg58p4su.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
