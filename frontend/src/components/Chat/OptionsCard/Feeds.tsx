@@ -101,6 +101,22 @@ const Feeds = () => {
     );
   }
 
+  const categories = [
+  [1, "Upcoming"],
+  [10, "Latest"],
+
+  [2, "Most Searched"],
+  [3, "Best Mileage"],
+  [4, "Best Market Resale"],
+  [5, "Best Electric"],
+  [6, "Best Diesel"],
+  [7, "Best Resale"],
+  [8, "Popular"],
+  [9, "Trending"],
+  [11, "luxury"],
+] as const;
+
+  console.log("groupedCarsData", groupedCarsData)
   return (
     <>
       <Box
@@ -128,32 +144,37 @@ const Feeds = () => {
       
         }}
       >
-        {Object.entries(groupedCarsData).map(([tag, cars], index) => (
-          <Paper
+        {categories.map((tag, index) => {
+          const cars = groupedCarsData[tag[1]] || [];
+          if (cars.length === 0) return null; // Skip rendering if no cars in this category
+          return (
+                      <Paper
             elevation={0}
             sx={{
               p: 2,
               width: "100%",
               display: "flex",
               flexDirection: "column",
-              pt: index !== 0 ? 0 : "4.2rem", 
+              pt: tag[1] !== "Upcoming" ? 0 : "4.2rem", 
+              pb:0
             }}
-            key={tag}
+            key={tag[1]}
           >
             <Typography
               sx={{
                 py: 1,
                 px: 1,
-                fontWeight: "bold",
-                fontSize: "1rem",
+                fontSize:"12px",
+                fontWeight:"700",
+                color:"#333",
                 textTransform: "capitalize",
               }}
             >
-              {tag === "Latest" ? "News Feeds" : `${tag} ${tag.includes("Cars") ? "" : "Cars"}`}
+              {tag[1] === "Latest" ? "News Feeds" : `${[tag[1]]} Cars`}
             </Typography>
             <Box
               ref={(el: HTMLDivElement | null) => {
-                scrollRefs.current[tag] = el;
+                scrollRefs.current[tag[1]] = el;
               }}
               sx={{
                 display: "flex",
@@ -165,13 +186,13 @@ const Feeds = () => {
                 gap: "20px",
               }}
             >
-              {cars.length > 0 ? (
+              {cars.length > 0 &&(
                 [...cars, ...cars, ...cars].map((car, index) => (
                   <Paper
-                    key={`${tag}-${car.modelId}-${car.variantName}-${index}`}
+                    key={`${tag[1]}-${car.modelId}-${car.variantName}-${index}`}
                     elevation={2}
                     onClick={async () => {
-                      if (tag === "Upcoming") {
+                      if (tag[1] === "Upcoming") {
                         setDialog({ open: true, type: "feed", carData: car });
                       } else {
                         const userMessage = {
@@ -208,7 +229,7 @@ const Feeds = () => {
                     }}
                     sx={{
                       p: 2,
-                      minWidth: "280px",
+                      minWidth: "341px",
                       maxWidth: "341px",
                       flexShrink: 0,
                       borderRadius: 2,
@@ -219,11 +240,12 @@ const Feeds = () => {
                       position: "relative",
                       overflow: "hidden",
                       scrollSnapAlign: "start",
-                      cursor: "pointer"
+                      cursor: "pointer",
+                      height:"60px"
                     }}
                   >
                     {/* Ribbon */}
-                    {tag === "Latest" && (
+                    {tag[1] === "Latest" && (
                       <Box
                         sx={{
                           position: "absolute",
@@ -232,14 +254,14 @@ const Feeds = () => {
                           backgroundColor: "rgb(25, 118, 210)",
                           color: "#fff",
                           fontWeight: "bold",
-                          fontSize: "12px",
+                          fontSize: "10px",
                           padding: "6px 32px",
                           borderBottomLeftRadius: "8px",
                           transform: "rotate(45deg)",
                           transformOrigin: "bottom right",
                         }}
                       >
-                        {tag}
+                        { tag[1] }
                       </Box>
                     )}
 
@@ -269,22 +291,22 @@ const Feeds = () => {
                     >
 
                       {
-                        tag === "Upcoming" ? 
-                        <Typography sx={{fontSize: "14px", color:"#333"}}>
+                        tag[1] === "Upcoming" ? 
+                        <Typography sx={{fontSize: "12px", color:"#333", mt:1}}>
                         {car.brandName} {car.modelName} 
                       </Typography>
                       :
-                       <Typography sx={{ color:"#333", fontSize: "14px" }}>
+                       <Typography sx={{ color:"#333", fontSize: "12px",  }}>
                         {car.brandName} {car.modelName} {car.variantName}
                       </Typography>
                       }
 
                       {
-                        tag === "Upcoming" ? 
+                        tag[1] === "Upcoming" ? 
                         (<Typography
                         variant="body2"
                         color="#333"
-                        sx={{ fontSize: "12px", fontWeight:"700" }}
+                        sx={{ fontSize: "10px", fontWeight:"700" }}
                         >
                         ₹ {formatInternational(Number(car?.price_min) ?? Number(car?.price_min))} -  ₹ {formatInternational(Number(car?.price_max) ?? Number(car?.price_max))}
                         <span style={{color:"#484848", fontSize:"10px", paddingLeft:"13px"}}>Estimated Price</span>
@@ -297,20 +319,20 @@ const Feeds = () => {
                            <Typography
                         variant="body2"
                         color="#333"
-                        sx={{ fontSize: "12px", fontWeight:"700" }}
+                        sx={{ fontSize: "10px", fontWeight:"700" }}
                       >
                         ₹ {formatInternational(car.price ?? car?.price)}
                       </Typography>
                         )
                       }
 
-{tag === "Upcoming" && car.datetime && (
+{tag[1] === "Upcoming" && car.datetime && (
   <Chip
     label={formatExpectedLaunch(car.datetime)}
     size="small"
         variant="outlined"
     sx={{
-      fontSize: "10px",
+      fontSize: "9px",
       fontWeight: 500,
       bgcolor: "transparent",   // light gray background
       color: "#555",        // dark gray text
@@ -325,12 +347,11 @@ const Feeds = () => {
                     </Box>
                   </Paper>
                 ))
-              ) : (
-                <Typography>No cars found for {tag}.</Typography>
               )}
             </Box>
           </Paper>
-        ))}
+          )
+        })}
       </Box>
       {dialog.type === "feed" && (
         <FeedDialog
