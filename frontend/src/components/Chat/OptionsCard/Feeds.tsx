@@ -105,11 +105,27 @@ const Feeds = () => {
     <>
       <Box
         sx={{
-          width: "25%",
-          ml: 2,
-          display: "flex",
-          flexDirection: "column",
-          marginTop: "3.2rem",
+       width: "25%",
+        ml: 2,
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+        overflowY: "auto",
+        maxHeight: "95vh",
+
+        // Optional: Scrollbar styling
+        scrollbarWidth: "thin",
+        scrollbarColor: "transparent transparent",
+        "&::-webkit-scrollbar": {
+          width: "6px",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          backgroundColor: "rgba(0,0,0,0.1)",
+        },
+        "&::-webkit-scrollbar-track": {
+          backgroundColor: "transparent",
+        },
+      
         }}
       >
         {Object.entries(groupedCarsData).map(([tag, cars], index) => (
@@ -120,7 +136,7 @@ const Feeds = () => {
               width: "100%",
               display: "flex",
               flexDirection: "column",
-              pt: index !== 0 ? 0 : undefined, 
+              pt: index !== 0 ? 0 : "4.2rem", 
             }}
             key={tag}
           >
@@ -254,11 +270,11 @@ const Feeds = () => {
 
                       {
                         tag === "Upcoming" ? 
-                        <Typography sx={{ fontWeight: "bold", fontSize: "16px" }}>
+                        <Typography sx={{fontSize: "14px", color:"#333"}}>
                         {car.brandName} {car.modelName} 
                       </Typography>
                       :
-                       <Typography sx={{ fontWeight: "bold", fontSize: "16px" }}>
+                       <Typography sx={{ color:"#333", fontSize: "14px" }}>
                         {car.brandName} {car.modelName} {car.variantName}
                       </Typography>
                       }
@@ -267,10 +283,11 @@ const Feeds = () => {
                         tag === "Upcoming" ? 
                         (<Typography
                         variant="body2"
-                        color="text.secondary"
-                        sx={{ fontSize: "14px" }}
+                        color="#333"
+                        sx={{ fontSize: "12px", fontWeight:"700" }}
                         >
-                        ₹ {formatInternational(Number(car?.price_min) ?? Number(car?.price_min))} -  {formatInternational(Number(car?.price_max) ?? Number(car?.price_max))}
+                        ₹ {formatInternational(Number(car?.price_min) ?? Number(car?.price_min))} -  ₹ {formatInternational(Number(car?.price_max) ?? Number(car?.price_max))}
+                        <span style={{color:"#484848", fontSize:"10px", paddingLeft:"13px"}}>Estimated Price</span>
 
 
                         </Typography>)
@@ -279,8 +296,8 @@ const Feeds = () => {
                         (
                            <Typography
                         variant="body2"
-                        color="text.secondary"
-                        sx={{ fontSize: "14px" }}
+                        color="#333"
+                        sx={{ fontSize: "12px", fontWeight:"700" }}
                       >
                         ₹ {formatInternational(car.price ?? car?.price)}
                       </Typography>
@@ -295,9 +312,9 @@ const Feeds = () => {
     sx={{
       fontSize: "10px",
       fontWeight: 500,
-      bgcolor: "#f5f5f5",   // light gray background
+      bgcolor: "transparent",   // light gray background
       color: "#555",        // dark gray text
-      borderColor: "#ddd",  // subtle border
+      border:"none",  // subtle border
       marginTop:"4px"
     }}
 

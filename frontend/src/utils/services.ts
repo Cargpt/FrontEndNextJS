@@ -309,7 +309,7 @@ export function formatExpectedLaunch(dateStr: string | null | undefined): string
     const options: Intl.DateTimeFormatOptions = { month: "long", year: "numeric" };
     const formatted = date.toLocaleDateString("en-US", options);
 
-    return `Expected launch - ${formatted}`;
+    return `Expected launch - ${formatted} (tentative)`;
   } catch {
     return dateStr;
   }
