@@ -96,6 +96,10 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
   const theme = useTheme();
   const { mode } = useColorMode();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  // Keep a consistent column width across mobile header and table values
+  const mobileColumnWidth = 110;
+  // Keep desktop (>= sm) columns aligned with the car cards width
+  const desktopColumnWidth = 200;
   useAndroidBackClose(open && isMobile, onClose);
   const { showSnackbar } = useSnackbar();
   const { show: showLogin } = useLoginDialog();
@@ -206,15 +210,25 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
   // Call external API to fetch full car details by id and return parsed JSON
   const fetchCarDetailsById = async (carId: number) => {
     if (!carId) throw new Error('Invalid car id');
-    const raw = { car_id: carId }
-    const resp = await axiosInstance1.post('/api/cargpt/car-details/',
-      
-        raw,
-      
+    const token =
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzgyMjEzMTA0LCJpYXQiOjE3NTA2NzcxMDQsImp0aSI6IjZjYTA0M2M4YWY4NzQyYjRiMWNkNGM1YzRiZmY0ODQ5IiwidXNlcl9pZCI6NH0.1jDNN4jz5TA4eNvZI1RHDen6uD2e-AznkhyUv_ijlPE';
+    const headers = new Headers();
+    headers.append('Authorization', token);
+    headers.append('Content-Type', 'text/plain');
+    // The API expects car_id parameter, which can be either CarID or VariantID
+    const raw = JSON.stringify({ car_id: carId });
+    const resp = await fetch(
+      'http://ec2-3-110-170-230.ap-south-1.compute.amazonaws.com/api/cargpt/car-details/',
+      {
+        method: 'POST',
+        headers,
+        body: raw,
+        redirect: 'follow' as RequestRedirect,
+      }
     );
-    const text = resp;
+    const text = await resp.text();
     try {
-      return text;
+      return JSON.parse(text);
     } catch (_e) {
       return text as any;
     }
@@ -714,10 +728,11 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
               {/* Left car */}
               <Box sx={{ flex: 1, textAlign: 'center' }}>
                 <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                  {/* --- PATCH: Uniform image size for mobile --- */}
                   <img
                     src={getCarImage(primary)}
                     alt={primary?.ModelName}
-                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                    style={{ width: isMobile ? '100%' : '100%', height: isMobile ? '100%' : '100%', objectFit: 'contain', maxWidth: '100%', maxHeight: '100%' }}
                   />
                   <IconButton
                     onClick={(e) => {
@@ -748,8 +763,8 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                   </IconButton>
                 </Box>
                 <Typography variant="subtitle1" fontWeight="bold">{primary?.BrandName} {primary?.ModelName}</Typography>
-                {primary?.VariantName && (
-                  <Chip label={primary.VariantName} size="small" sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mt: 0.5 }} />
+                {!isMobile && primary?.VariantName && (
+                  <Chip label={primary.VariantName} size="small" sx={{ ...chipVariantSx, fontSize: '12px', mt: 0.5 }} />
                 )}
                 {primary?.AIScore && (
                   <Typography component="div" sx={{ ...textLineSx }}>
@@ -781,10 +796,11 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
               {/* Right car */}
               <Box sx={{ flex: 1, textAlign: 'center' }}>
                 <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                  {/* --- PATCH: Uniform image size for mobile --- */}
                   <img
                     src={getCarImage(s)}
                     alt={s?.ModelName}
-                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                    style={{ width: isMobile ? '100%' : '100%', height: isMobile ? '100%' : '100%', objectFit: 'contain', maxWidth: '100%', maxHeight: '100%' }}
                   />
                   <IconButton
                     onClick={(e) => {
@@ -815,8 +831,8 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                   </IconButton>
                 </Box>
                 <Typography variant="subtitle1" fontWeight="bold">{s?.BrandName} {s?.ModelName}</Typography>
-                {s?.VariantName && (
-                  <Chip label={s.VariantName} size="small" sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mt: 0.5 }} />
+                {!isMobile && s?.VariantName && (
+                  <Chip label={s.VariantName} size="small" sx={{ ...chipVariantSx, fontSize: '12px', mt: 0.5 }} />
                 )}
                 {s?.AIScore && (
                   <Typography component="div" sx={{ ...textLineSx }}>
@@ -883,10 +899,11 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
             {/* Left car (primary) */}
             <Box sx={{ flex: 1, textAlign: 'center' }}>
               <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                {/* --- PATCH: Uniform image size for mobile --- */}
                 <img
                   src={getCarImage(primary)}
                   alt={primary?.ModelName}
-                  style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                  style={{ width: isMobile ? '100%' : '100%', height: isMobile ? '100%' : '100%', objectFit: 'contain', maxWidth: '100%', maxHeight: '100%' }}
                 />
                 <IconButton
                   onClick={(e) => {
@@ -917,8 +934,8 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                 </IconButton>
               </Box>
               <Typography variant="subtitle1" fontWeight="bold">{primary?.BrandName} {primary?.ModelName}</Typography>
-              {primary?.VariantName && (
-                <Chip label={primary.VariantName} size="small" sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mt: 0.5 }} />
+              {!isMobile && primary?.VariantName && (
+                <Chip label={primary.VariantName} size="small" sx={{ ...chipVariantSx, fontSize: '12px', mt: 0.5 }} />
               )}
               {primary?.AIScore && (
                 <Typography component="div" sx={{ ...textLineSx }}>
@@ -973,8 +990,8 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                     </IconButton>
                   </Box>
                   <Typography variant="subtitle1" fontWeight="bold">{selectedRightCar?.BrandName} {selectedRightCar?.ModelName}</Typography>
-                  {selectedRightCar?.VariantName && (
-                    <Chip label={selectedRightCar.VariantName} size="small" sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mt: 0.5 }} />
+                  {!isMobile && selectedRightCar?.VariantName && (
+                    <Chip label={selectedRightCar.VariantName} size="small" sx={{ ...chipVariantSx, fontSize: '12px', mt: 0.5 }} />
                   )}
                   <Typography variant="body2" color="text.secondary">{formatPrice(selectedRightCar?.Price || 0)}</Typography>
 
@@ -1520,128 +1537,7 @@ const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ car1, c
   // Car Images Section logic as a variable
   let carImagesSection = null;
   const maxImages = 5;
-  if (car1Images.length > 0 || car2Images.length > 0) {
-    carImagesSection = (
-      <Box sx={{ mb: 3 }}>
-        <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mt: 2, mb: 1, borderBottom: '1px solid', borderColor: 'divider', pb: 0.5 }}>
-          Car Images
-        </Typography>
-        
-        {/* Header row for car images - show only on mobile */}
-        {isMobile && (
-          <Box sx={{
-            display: 'flex',
-            alignItems: 'center',
-            py: 1,
-            borderBottom: '2px solid',
-            borderColor: 'divider',
-            mb: 2,
-            backgroundColor: mode === 'dark' ? 'grey.700' : 'grey.100',
-            borderRadius: 1,
-            minWidth: 'max-content',
-            overflowX: 'auto'
-          }}>
-            <Typography variant={isMobile ? "caption" : "body2"} sx={{ 
-              flex: isMobile ? '0 0 auto' : 1, 
-              fontWeight: 'bold', 
-              minWidth: isMobile ? 100 : 120, 
-              flexShrink: 0,
-              fontSize: isMobile ? '11px' : undefined,
-              pl: 1
-            }}>
-              Image #
-            </Typography>
-            
-            {/* Car header columns */}
-            {allCars.map((car: any, carIndex: number) => (
-              <Typography
-                key={carIndex}
-                variant={isMobile ? "caption" : "body2"}
-                sx={{
-                  flex: isMobile ? '0 0 auto' : 1,
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                  minWidth: isMobile ? 80 : 100,
-                  maxWidth: isMobile ? 80 : 100,
-                  flexShrink: 0,
-                  fontSize: isMobile ? '11px' : undefined,
-                  color: mode === 'dark' ? 'primary.light' : 'primary.main',
-                  px: isMobile ? 0.5 : 1,
-                  whiteSpace: 'normal',
-                  overflowWrap: 'break-word',
-                  wordBreak: 'break-word',
-                }}
-              >
-                {getCarHeader(car, carIndex)}
-              </Typography>
-            ))}
-          </Box>
-        )}
-
-        {/* Image rows */}
-        {[...Array(maxImages)].map((_, idx) => (
-          <Box key={idx} sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            py: 1,
-            borderBottom: '1px dotted',
-            borderColor: 'divider',
-            '&:last-child': { borderBottom: 'none' },
-            width: '100%',
-            // Mobile: Prevent shrinking and ensure proper column widths
-            ...(isMobile && {
-              minWidth: 'max-content',
-              overflowX: 'auto'
-            })
-          }}>
-            {/* Image number */}
-            <Typography variant={isMobile ? "caption" : "body2"} sx={{ 
-              flex: isMobile ? '0 0 auto' : 1, 
-              fontWeight: 'bold', 
-              minWidth: isMobile ? 100 : 120, 
-              flexShrink: 0,
-              fontSize: isMobile ? '11px' : undefined,
-              pl: 1
-            }}>
-              Image {idx + 1}
-            </Typography>
-            
-            {/* Car image columns */}
-            {allCars.map((car: any, carIndex: number) => {
-              const carImages = getAllCarImages(car);
-              return (
-                <Box
-                  key={carIndex}
-                  sx={{
-                    flex: isMobile ? '0 0 auto' : 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minWidth: isMobile ? 80 : 100,
-                    flexShrink: 0
-                  }}
-                >
-                  {carImages[idx] ? (
-                    <img
-                      src={carImages[idx]?.CarImageURL || '/assets/card-img.png'}
-                      alt={`Car ${carIndex + 1} Image ${idx + 1}`}
-                      style={{ 
-                        maxWidth: isMobile ? '40px' : '80px', 
-                        maxHeight: isMobile ? '40px' : '80px', 
-                        objectFit: 'contain' 
-                      }}
-                    />
-                  ) : (
-                    <Typography color="text.secondary" variant={isMobile ? "caption" : "body2"}>-</Typography>
-                  )}
-                </Box>
-              );
-            })}
-          </Box>
-        ))}
-      </Box>
-    );
-  }
+  // Car images section intentionally disabled for both mobile and desktop per request.
 
   return (
     <Box sx={{ 
@@ -1660,262 +1556,245 @@ const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ car1, c
         Detailed Feature Comparison
       </Typography>
 
-      {/* Header row showing car names */}
-      {isMobile && (
+      {/* Header row showing car names (hidden on mobile as per request) */}
+      {false && isMobile && (
         <Box sx={{
           display: 'flex',
           alignItems: 'center',
           py: 1,
-          borderBottom: '2px solid',
-          borderColor: 'divider',
-          mb: 2,
-          backgroundColor: mode === 'dark' ? 'grey.700' : 'grey.100',
-          borderRadius: 1,
-          // Mobile: Prevent shrinking and ensure proper column widths
-          ...(isMobile && {
-            minWidth: 'max-content',
-            overflowX: 'auto',
-            flexWrap: 'nowrap',
-          })
+          mb: 1.5,
+          gap: 1,
+          minWidth: 'max-content',
+          overflowX: 'auto',
         }}>
-          {isMobile && (
-            <Typography variant={isMobile ? "caption" : "body2"} sx={{ 
-              flex: isMobile ? '0 0 auto' : 1, 
-              fontWeight: 'bold', 
-              minWidth: isMobile ? 120 : 150, 
-              flexShrink: 0,
-              fontSize: isMobile ? '11px' : undefined,
-              pl: 1
-            }}>
-              Features
-            </Typography>
-          )}
-          
-          {/* Car header columns */}
-          {allCars.map((car: any, carIndex: number) => (
-            <Typography
-              key={carIndex}
-              variant={isMobile ? "caption" : "body2"}
+          {/* '+' icon at left to add a car */}
+          {onRequestAddThirdCar && (
+            <Box
               sx={{
-                flex: isMobile ? '0 0 auto' : 1,
-                textAlign: 'center',
-                fontWeight: 'bold',
-                minWidth: isMobile ? 80 : 100,
-                maxWidth: isMobile ? 80 : 100,
-                flexShrink: 0,
-                fontSize: isMobile ? '11px' : undefined,
-                color: mode === 'dark' ? 'primary.light' : 'primary.main',
-                px: isMobile ? 0.5 : 1,
-                whiteSpace: 'normal',
-                overflowWrap: 'break-word',
-                wordBreak: 'break-word',
-                
-                
+                flex: '0 0 auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 28,
+                height: 28,
+                cursor: 'pointer',
+                ml: 1,
+                mr: 0.5,
               }}
+              onClick={onRequestAddThirdCar}
+              aria-label="add car"
             >
-              {getCarHeader(car, carIndex)}
-            </Typography>
+              <AddIcon sx={{ fontSize: 18 }} />
+            </Box>
+          )}
+          {allCars.map((car: any, carIndex: number) => (
+            <Box key={carIndex} sx={{ flex: '0 0 auto', position: 'relative', textAlign: 'center' }}>
+              <img
+                src={getCarImage(car)}
+                alt={getCarHeader(car, carIndex)}
+                style={{ maxWidth: '90px', maxHeight: '90px', objectFit: 'contain', margin: 0 }}
+              />
+              <IconButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleBookmark(getCarId(car), bookmarkStates[getCarId(car)] || false);
+                }}
+                sx={{
+                  position: 'absolute',
+                  top: -6,
+                  right: -6,
+                  zIndex: 1,
+                  bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
+                  '&:hover': {
+                    bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.2)',
+                  },
+                  borderRadius: '50%',
+                  p: 0.25,
+                  width: 24,
+                  height: 24,
+                }}
+                aria-label="toggle bookmark"
+              >
+                {bookmarkStates[getCarId(car)] ? (
+                  <FavoriteIcon sx={{ fontSize: 16 }} color="error" />
+                ) : (
+                  <FavoriteBorderIcon sx={{ fontSize: 16, color: mode === 'dark' ? '#000' : undefined }} color="action" />
+                )}
+              </IconButton>
+            </Box>
           ))}
         </Box>
       )}
 
-      {/* Horizontally scrollable feature rows */}
-      <Box sx={{
-        ...(isMobile && {
-          overflowX: 'auto',
-          minWidth: 'max-content',
-        })
-      }}>
+      {/* Feature rows: first column is feature name, then each car's value in its column */}
       {isMobile && (
-        <>
-          {/* AI Car Advisor Score row (mobile, before Basic Details) */}
-          <Box
-            sx={{
+        <Box sx={{
+          mb: 1.5,
+          borderTop: '1px solid',
+          borderColor: 'divider',
+          pt: 1,
+          minWidth: 'max-content',
+          overflowX: 'auto',
+          px: 1
+        }}>
+          {[{label: 'Brand', key: 'brand'}, {label: 'AI Car Advisor Score', key: 'score'}, {label: 'User Sentiments', key: 'sentiments'}].map((row) => (
+            <Box key={row.key} sx={{
               display: 'flex',
               alignItems: 'center',
               py: 0.5,
               borderBottom: '1px dotted',
               borderColor: 'divider',
-              width: '100%',
-              minWidth: 'max-content',
-            }}
-          >
-            <Typography
-              variant="caption"
-              sx={{
+              '&:last-child': { borderBottom: 'none' }
+            }}>
+              <Typography variant="caption" sx={{
                 flex: '0 0 auto',
-                fontWeight: 'bold',
-                minWidth: 120,
-                maxWidth: 120,
+                fontWeight: 700,
+                color: 'text.primary',
+                minWidth: 110,
+                maxWidth: 110,
                 flexShrink: 0,
-                fontSize: '11px',
-                pl: 1,
-              }}
-            >
-              AI Car Advisor Score
-            </Typography>
-            {allCars.map((car: any, carIndex: number) => (
-              <Typography
-                key={`ai-score-${carIndex}`}
-                variant="caption"
-                sx={{
+                pl: 1
+              }}>
+                {row.label}
+              </Typography>
+              {allCars.map((car: any, carIndex: number) => (
+                <Typography key={carIndex} variant="caption" sx={{
                   flex: '0 0 auto',
                   textAlign: 'center',
-                  color: 'text.primary',
-                  minWidth: 80,
-                  maxWidth: 80,
+                  minWidth: mobileColumnWidth,
+                  maxWidth: mobileColumnWidth,
                   flexShrink: 0,
-                  fontSize: '11px',
                   px: 0.5,
-                }}
-              >
-                {car?.AIScore ? String(car.AIScore) : '-'}
-              </Typography>
-            ))}
-          </Box>
-
-          {/* User Sentiments row (mobile, before Basic Details) */}
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              py: 0.5,
-              borderBottom: '1px dotted',
-              borderColor: 'divider',
-              width: '100%',
-              minWidth: 'max-content',
-            }}
-          >
-            <Typography
-              variant="caption"
-              sx={{
-                flex: '0 0 auto',
-                fontWeight: 'bold',
-                minWidth: 120,
-                maxWidth: 120,
-                flexShrink: 0,
-                fontSize: '11px',
-                pl: 1,
-              }}
-            >
-              User Sentiments
-            </Typography>
-            {allCars.map((car: any, carIndex: number) => (
-              <Typography
-                key={`ai-sent-${carIndex}`}
-                variant="caption"
-                sx={{
-                  flex: '0 0 auto',
-                  textAlign: 'center',
-                  color: 'text.primary',
-                  minWidth: 80,
-                  maxWidth: 80,
-                  flexShrink: 0,
-                  fontSize: '11px',
-                  px: 0.5,
-                }}
-              >
-                {car?.AISummary ? String(car.AISummary) : '-'}
-              </Typography>
-            ))}
-          </Box>
-        </>
-      )}
-       {Object.entries(FEATURES_TO_COMPARE).map(([category, features]) => {
-         const IconComponent = CATEGORY_ICONS[category] || InfoIcon; // Default to InfoIcon
-         const isExpanded = expandedCategories[category];
-         const displayedFeatures = isExpanded ? features : features.slice(0, 4);
-
-         return (
-        <Box key={category} sx={{ mb: 3 }}>
-            <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mt: 2, mb: 1, borderBottom: '1px solid', borderColor: 'divider', pb: 0.5, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <IconComponent fontSize="small" />
-            {category.replace(/([A-Z])/g, ' $1').trim()}
-          </Typography>
-          
-            {displayedFeatures.map((feature) => {
-            return (
-              <Box
-                key={feature}
-                sx={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  flexWrap: 'nowrap',
-                  alignItems: 'center',
-                  py: isMobile ? 0.5 : 1,
-                  borderBottom: '1px dotted',
-                  borderColor: 'divider',
-                  '&:last-child': { borderBottom: 'none' },
-                  width: '100%',
-                  // Mobile: Prevent shrinking and ensure proper column widths
-                  ...(isMobile && {
-                    minWidth: 'max-content',
-                    overflowX: 'auto',
-                  })
-                }}
-              >
-                <Typography variant={isMobile ? "caption" : "body2"} sx={{ 
-                  flex: isMobile ? '0 0 auto' : 1, 
-                  fontWeight: 'bold', 
-                  minWidth: isMobile ? 120 : 150, 
-                  maxWidth: isMobile ? 120 : 150,
-                  flexShrink: 0,
-                  fontSize: isMobile ? '11px' : undefined,
                   whiteSpace: 'normal',
-                  overflowWrap: 'break-word',
                   wordBreak: 'break-word',
+                  overflowWrap: 'anywhere'
                 }}>
-                  {feature.replace(/([A-Z])/g, ' $1').trim()}
+                  {row.key === 'brand' && (
+                    (car?.BrandName || car?.Brand || car?.data?.BrandName || car?.data?.Brand || car?.Car?.BrandName || car?.Car?.Brand || '')
+                  )}
+                  {row.key === 'score' && (
+                    <span style={{ fontWeight: 600 }}>{String(car?.AIScore ?? '-')}</span>
+                  )}
+                  {row.key === 'sentiments' && (() => {
+                    const summary = car?.AISummary || car?.data?.AISummary || car?.Car?.AISummary;
+                    return summary ? String(summary) : '-';
+                  })()}
                 </Typography>
-                
-                {/* Car columns */}
-                {allCars.map((car: any, carIndex: number) => (
-                  <Typography
-                    key={carIndex}
-                    variant={isMobile ? "caption" : "body2"}
-                    sx={{
-                      flex: isMobile ? '0 0 auto' : 1,
-                      textAlign: 'center',
-                      color: 'text.primary',
-                      minWidth: isMobile ? 80 : 100,
-                      flexShrink: 0,
-                      fontSize: isMobile ? '11px' : undefined,
-                      px: isMobile ? 0.5 : 1
-                    }}
-                  >
-                    {getFeatureValue(car, category, feature)}
-                  </Typography>
-                ))}
-              </Box>
-            );
-          })}
-            {features.length > 4 && (
-              <Button
-                variant="outlined"
-                size={isMobile ? "small" : "medium"}
-                sx={{ 
-                  mt: 2, 
-                  width: 'fit-content',
-                  fontSize: isMobile ? '11px' : undefined
-                }}
-                onClick={() =>
-                  setExpandedCategories((prev) => ({
-                    ...prev,
-                    [category]: !prev[category],
-                  }))
-                }
-                startIcon={isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-              >
-                {isExpanded ? 'View Less' : 'View More'}
-              </Button>
-            )}
+              ))}
+            </Box>
+          ))}
         </Box>
-        );
-      })}
+      )}
+      <Box sx={{ ...(isMobile && { overflowX: 'auto', minWidth: 'max-content' }) }}>
+        {Object.entries(FEATURES_TO_COMPARE).map(([category, features]) => {
+          const IconComponent = CATEGORY_ICONS[category] || InfoIcon;
+          const isExpanded = expandedCategories[category];
+
+          // Helper to get raw comparable value (no icons/JSX)
+          const getRawValue = (car: any, cat: string, feat: string): any => {
+            if (cat === 'BasicDetails') {
+              if (feat === 'Price') {
+                return car?.Price || car?.data?.Price || car?.Car?.Price || 0;
+              }
+              const val = car?.[feat] || car?.data?.[feat] || car?.Car?.[feat];
+              return val ?? '';
+            }
+            if (feat === 'CarImages') {
+              const imgs = car?.CarImageDetails || car?.images || car?.data?.CarImageDetails || car?.data?.images;
+              return Array.isArray(imgs) ? imgs.length : 0;
+            }
+            const value = car?.[cat]?.[feat] || car?.[feat] || car?.data?.[feat] || car?.Car?.[feat];
+            // Normalize booleans/numbers/strings
+            if (typeof value === 'boolean') return value ? 1 : 0;
+            if (value === null || value === undefined || value === '') return '';
+            return String(value);
+          };
+
+          // Show first 4 by default; View More expands on both mobile and desktop
+          const featuresToRender = isExpanded ? features : features.slice(0, 4);
+
+          if (isMobile && featuresToRender.length === 0) return null;
+
+          return (
+            <Box key={category} sx={{ mb: 3 }}>
+              <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mt: 2, mb: 1, borderBottom: '1px solid', borderColor: 'divider', pb: 0.5, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <IconComponent fontSize="small" />
+                {category.replace(/([A-Z])/g, ' $1').trim()}
+              </Typography>
+              {featuresToRender.map((feature) => (
+                <Box
+                  key={feature}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    flexWrap: 'nowrap',
+                    alignItems: 'center',
+                    py: isMobile ? 0.5 : 1,
+                    borderBottom: '1px dotted',
+                    borderColor: 'divider',
+                    '&:last-child': { borderBottom: 'none' },
+                    width: '100%',
+                    ...(isMobile && { minWidth: 'max-content', overflowX: 'auto' })
+                  }}
+                >
+                  {/* Feature name column */}
+                  <Typography variant={isMobile ? "caption" : "body2"} sx={{
+                    flex: isMobile ? '0 0 auto' : 1,
+                    fontWeight: 'bold',
+                    minWidth: isMobile ? 120 : 150,
+                    maxWidth: isMobile ? 120 : 150,
+                    flexShrink: 0,
+                    fontSize: isMobile ? '11px' : undefined,
+                    whiteSpace: 'normal',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-word',
+                  }}>
+                    {feature.replace(/([A-Z])/g, ' $1').trim()}
+                  </Typography>
+                  {/* Car value columns */}
+                  {allCars.map((car: any, carIndex: number) => (
+                    <Typography
+                      key={carIndex}
+                      variant={isMobile ? "caption" : "body2"}
+                      sx={{
+                        flex: '0 0 auto',
+                        textAlign: 'center',
+                        color: 'text.primary',
+                        minWidth: isMobile ? mobileColumnWidth : desktopColumnWidth,
+                        maxWidth: isMobile ? mobileColumnWidth : desktopColumnWidth,
+                        flexShrink: 0,
+                        fontSize: isMobile ? '11px' : undefined,
+                        px: isMobile ? 0.5 : 1
+                      }}
+                    >
+                      {getFeatureValue(car, category, feature)}
+                    </Typography>
+                  ))}
+                </Box>
+              ))}
+              {features.length > 4 && (
+                <Button
+                  variant="outlined"
+                  size={isMobile ? "small" : "medium"}
+                  sx={{ mt: 2, width: 'fit-content', fontSize: isMobile ? '11px' : undefined }}
+                  onClick={() =>
+                    setExpandedCategories((prev) => ({
+                      ...prev,
+                      [category]: !prev[category],
+                    }))
+                  }
+                  startIcon={isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                >
+                  {isExpanded ? 'View Less' : 'View More'}
+                </Button>
+              )}
+            </Box>
+          );
+        })}
       </Box>
 
       {/* Render Car Images Section here */}
-      {carImagesSection}
+      {/* Car images section removed */}
     </Box>
   );
 };
@@ -2079,7 +1958,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
       display: 'flex', 
       alignItems: 'flex-start', 
       justifyContent: 'flex-start', 
-      gap: isMobile ? 2 : 4, 
+      gap: isMobile ? 2 : 2, 
       mb: 3, 
       mt: isMobile ? 4 : 0,
       width: '100%',
@@ -2093,10 +1972,32 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
         overflowX: 'auto'
       })
     }}>
+      {isMobile && (
+        <Box sx={{
+          width: 28,
+          height: 28,
+          borderRadius: '50%',
+          background: 'transparent',
+          border: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontWeight: 'bold',
+          fontSize: '10px',
+          color: 'text.secondary',
+          flexShrink: 0,
+          cursor: 'pointer',
+          ml: 1
+        }}
+        onClick={onRequestAddThirdCar}
+        >
+          <AddIcon sx={{ fontSize: 16, color: '#000' }} />
+        </Box>
+      )}
       {/* Add third car column (first) - only show on desktop */}
       {!isMobile && onRequestAddThirdCar && (
         <Box sx={{ 
-          width: 200, 
+          width: desktopColumnWidth, 
           textAlign: 'center', 
           flexShrink: 0,
           p: 2,
@@ -2131,7 +2032,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
 
       {/* Car 1 column */}
       <Box className={!isMobile ? 'pc-column' : undefined} sx={{ 
-        width: isMobile ? 'auto' : 200, 
+        width: isMobile ? mobileColumnWidth : desktopColumnWidth, 
         textAlign: 'center', 
         flexShrink: 0,
         p: isMobile ? 0 : 2,
@@ -2144,7 +2045,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
         ...(isMobile ? {} : { minHeight: columnMinHeight })
       }}>
         <Box className={!isMobile ? 'pc-image-box' : undefined} sx={{ 
-          height: isMobile ? 50 : imageBoxHeight, 
+          height: isMobile ? 100 : imageBoxHeight, 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center', 
@@ -2186,62 +2087,36 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
             )}
           </IconButton>
         </Box>
-        {!isMobile && (
-          <>
-            <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mb: isMobile ? 0.25 : 1, fontSize: isMobile ? '12px' : undefined }}>
-              {getCarBrand(left)} {getCarModel(left)}
+        <>
+          <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mb: isMobile ? 0.25 : 1, fontSize: isMobile ? '12px' : undefined }}>
+            {getCarBrand(left)} {getCarModel(left)}
+          </Typography>
+          {getCarVariant(left) && (
+            <Chip 
+              label={getCarVariant(left)} 
+              size="small" 
+              sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mb: isMobile ? 0.5 : 1.5 }} 
+            />
+          )}
+          {!isMobile && left?.AIScore && (
+            <Typography component="div" sx={{ ...textLineSx }}>
+              {renderAIScoreLabel(left.AIScore)}
             </Typography>
-            {getCarVariant(left) && (
-              <Chip 
-                label={getCarVariant(left)} 
-                size="small" 
-                sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mb: isMobile ? 0.5 : 1.5 }} 
-              />
-            )}
-            {left?.AIScore && (
-              <Typography component="div" sx={{ ...textLineSx }}>
-                {renderAIScoreLabel(left.AIScore)}
-              </Typography>
-            )}
-            {left?.AISummary && (
-              <Typography component="div" sx={{ ...textLineSx }}>
-                {`User Sentiments: ${left.AISummary}`}
-              </Typography>
-            )}
-            <Typography variant={isMobile ? "caption" : "body2"} color="text.secondary" fontWeight="bold" sx={{ fontSize: isMobile ? '10px' : undefined }}>
-              {formatPrice(getCarPrice(left))}
+          )}
+          {!isMobile && left?.AISummary && (
+            <Typography component="div" sx={{ ...textLineSx }}>
+              {`User Sentiments: ${left.AISummary}`}
             </Typography>
-          </>
-        )}
+          )}
+          <Typography variant={isMobile ? "caption" : "body2"} color="text.secondary" fontWeight="bold" sx={{ fontSize: isMobile ? '10px' : undefined }}>
+            {formatPrice(getCarPrice(left))}
+          </Typography>
+        </>
       </Box>
-
-      {/* + button between Car 1 and Car 2 - only show on mobile */}
-      {isMobile && (
-        <Box sx={{
-          width: 28,
-          height: 28,
-          borderRadius: '50%',
-          background: 'transparent',
-          border: 'none',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontWeight: 'bold',
-          fontSize: '10px',
-          color: 'text.secondary',
-          flexShrink: 0,
-          cursor: 'pointer',
-          ml: isMobile ? 2.5 : 0
-        }}
-        onClick={onRequestAddThirdCar}
-        >
-          <AddIcon sx={{ fontSize: 16, color: '#000' }} />
-        </Box>
-      )}
 
       {/* Car 2 column */}
       <Box className={!isMobile ? 'pc-column' : undefined} sx={{ 
-        width: isMobile ? 'auto' : 200, 
+        width: isMobile ? mobileColumnWidth : desktopColumnWidth, 
         textAlign: 'center', 
         flexShrink: 0,
         p: isMobile ? 0 : 2,
@@ -2250,12 +2125,12 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
         borderRadius: isMobile ? 0 : 2,
         background: isMobile ? 'transparent' : (mode === 'dark' ? 'grey.800' : 'white'),
         ml: 0,
-        mr: isMobile ? 3 : 4, // Add right margin for non-mobile view
+        mr: 0,
         mt: isMobile ? 1 : 0,
         ...(isMobile ? {} : { minHeight: columnMinHeight })
       }}>
         <Box className={!isMobile ? 'pc-image-box' : undefined} sx={{ 
-          height: isMobile ? 50 : imageBoxHeight, 
+          height: isMobile ? 100 : imageBoxHeight, 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center', 
@@ -2297,33 +2172,31 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
             )}
           </IconButton>
         </Box>
-        {!isMobile && (
-          <>
-            <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mb: isMobile ? 0.25 : 1, fontSize: isMobile ? '12px' : undefined }}>
-              {getCarBrand(right)} {getCarModel(right)}
+        <>
+          <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mb: isMobile ? 0.25 : 1, fontSize: isMobile ? '12px' : undefined }}>
+            {getCarBrand(right)} {getCarModel(right)}
+          </Typography>
+          {getCarVariant(right) && (
+            <Chip 
+              label={getCarVariant(right)} 
+              size="small" 
+              sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mb: isMobile ? 0.5 : 1.5 }} 
+            />
+          )}
+          {!isMobile && right?.AIScore && (
+            <Typography component="div" sx={{ ...textLineSx }}>
+              {renderAIScoreLabel(right.AIScore)}
             </Typography>
-            {getCarVariant(right) && (
-              <Chip 
-                label={getCarVariant(right)} 
-                size="small" 
-                sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mb: isMobile ? 0.5 : 1.5 }} 
-              />
-            )}
-            {right?.AIScore && (
-              <Typography component="div" sx={{ ...textLineSx }}>
-                {renderAIScoreLabel(right.AIScore)}
-              </Typography>
-            )}
-            {right?.AISummary && (
-              <Typography component="div" sx={{ ...textLineSx }}>
-                {`User Sentiments: ${right.AISummary}`}
-              </Typography>
-            )}
-            <Typography variant={isMobile ? "caption" : "body2"} color="text.secondary" fontWeight="bold" sx={{ fontSize: isMobile ? '10px' : undefined }}>
-              {formatPrice(getCarPrice(right))}
+          )}
+          {!isMobile && right?.AISummary && (
+            <Typography component="div" sx={{ ...textLineSx }}>
+              {`User Sentiments: ${right.AISummary}`}
             </Typography>
-          </>
-        )}
+          )}
+          <Typography variant={isMobile ? "caption" : "body2"} color="text.secondary" fontWeight="bold" sx={{ fontSize: isMobile ? '10px' : undefined }}>
+            {formatPrice(getCarPrice(right))}
+          </Typography>
+        </>
       </Box>
 
       {/* Additional cars (Car 3, Car 4, Car 5, etc.) */}
@@ -2332,7 +2205,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
           <React.Fragment key={carIndex}>
             
             <Box className={!isMobile ? 'pc-column' : undefined} sx={{ 
-              width: isMobile ? 'auto' : 200, 
+              width: isMobile ? mobileColumnWidth : desktopColumnWidth, 
               textAlign: 'center', 
               flexShrink: 0,
               p: isMobile ? 0 : 2,
@@ -2352,7 +2225,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
                 return (
                   <>
                     <Box className={!isMobile ? 'pc-image-box' : undefined} sx={{ 
-                      height: isMobile ? 50 : imageBoxHeight, 
+                      height: isMobile ? 100 : imageBoxHeight, 
                       display: 'flex', 
                       alignItems: 'center', 
                       justifyContent: 'center', 
@@ -2394,33 +2267,31 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
                         )}
                       </IconButton>
                     </Box>
-                    {!isMobile && (
-                      <>
-                        <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mb: isMobile ? 0.25 : 1, fontSize: isMobile ? '12px' : undefined }}>
-                          {getCarBrand(car)} {getCarModel(car)}
+                    <>
+                      <Typography variant={isMobile ? "body2" : "subtitle1"} fontWeight="bold" sx={{ mb: isMobile ? 0.25 : 1, fontSize: isMobile ? '12px' : undefined }}>
+                        {getCarBrand(car)} {getCarModel(car)}
+                      </Typography>
+                      {getCarVariant(car) && (
+                        <Chip 
+                          label={getCarVariant(car)} 
+                          size="small" 
+                          sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mb: isMobile ? 0.5 : 1.5 }} 
+                        />
+                      )}
+                      {!isMobile && car?.AIScore && (
+                        <Typography component="div" sx={{ ...textLineSx }}>
+                          {renderAIScoreLabel(car.AIScore)}
                         </Typography>
-                        {getCarVariant(car) && (
-                          <Chip 
-                            label={getCarVariant(car)} 
-                            size="small" 
-                            sx={{ ...chipVariantSx, fontSize: isMobile ? '10px' : '12px', mb: isMobile ? 0.5 : 1.5 }} 
-                          />
-                        )}
-                        {car?.AIScore && (
-                          <Typography component="div" sx={{ ...textLineSx }}>
-                            {renderAIScoreLabel(car.AIScore)}
-                          </Typography>
-                        )}
-                        {car?.AISummary && (
-                          <Typography component="div" sx={{ ...textLineSx }}>
-                            {`User Sentiments: ${car.AISummary}`}
-                          </Typography>
-                        )}
-                        <Typography variant={isMobile ? "caption" : "body2"} color="text.secondary" fontWeight="bold" sx={{ fontSize: isMobile ? '10px' : undefined }}>
-                          {formatPrice(getCarPrice(car))}
+                      )}
+                      {!isMobile && car?.AISummary && (
+                        <Typography component="div" sx={{ ...textLineSx }}>
+                          {`User Sentiments: ${car.AISummary}`}
                         </Typography>
-                      </>
-                    )}
+                      )}
+                      <Typography variant={isMobile ? "caption" : "body2"} color="text.secondary" fontWeight="bold" sx={{ fontSize: isMobile ? '10px' : undefined }}>
+                        {formatPrice(getCarPrice(car))}
+                      </Typography>
+                    </>
                   </>
                 );
               })()}
@@ -2557,17 +2428,44 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
                 onToggleBookmark={handleToggleBookmark}
                 bookmarkStates={bookmarkStates}
               />
+              {/* --- PATCH START: Merge displayCar images with details for mobile --- */}
               <FeatureComparisonTable
-                car1={(comparisonData as PairComparisonResponse).car1}
-                car2={(comparisonData as PairComparisonResponse).car2}
+                car1={(() => {
+                  if (isMobile && (comparisonData as any).displayCar1) {
+                    const merged = { ...(comparisonData as PairComparisonResponse).car1, ...(comparisonData as any).displayCar1 };
+                    merged.images = merged.images || merged.data?.images || merged.CarImageDetails || merged.data?.CarImageDetails || [];
+                    return normalizeCar(merged);
+                  }
+                  return (comparisonData as PairComparisonResponse).car1;
+                })()}
+                car2={(() => {
+                  if (isMobile && (comparisonData as any).displayCar2) {
+                    const merged = { ...(comparisonData as PairComparisonResponse).car2, ...(comparisonData as any).displayCar2 };
+                    merged.images = merged.images || merged.data?.images || merged.CarImageDetails || merged.data?.CarImageDetails || [];
+                    return normalizeCar(merged);
+                  }
+                  return (comparisonData as PairComparisonResponse).car2;
+                })()}
                 mode={mode}
                 theme={theme}
                 onRequestAddThirdCar={openAddThird}
-                additionalCars={(comparisonData as any).additionalCars || []}
+                additionalCars={
+                  isMobile && (comparisonData as any).additionalCars
+                    ? (comparisonData as any).additionalCars.map((ac: any) => {
+                        const merged = { ...ac.car, ...(ac.displayCar || {}) };
+                        merged.images = merged.images || merged.data?.images || merged.CarImageDetails || merged.data?.CarImageDetails || [];
+                        return {
+                          car: normalizeCar(merged),
+                          displayCar: ac.displayCar,
+                        };
+                      })
+                    : (comparisonData as any).additionalCars || []
+                }
                 isMobile={isMobile}
                 onToggleBookmark={handleToggleBookmark}
                 bookmarkStates={bookmarkStates}
               />
+              {/* --- PATCH END --- */}
             </Box>
           </Box>
         ) : (
