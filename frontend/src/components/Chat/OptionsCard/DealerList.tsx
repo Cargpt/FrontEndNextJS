@@ -3,6 +3,7 @@ import { Box, Paper, Typography, CircularProgress } from "@mui/material";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import { useCookies } from "react-cookie";
+import { useRouter } from "next/navigation";
 
 const DealerList = () => {
   const [dealers, setDealers] = useState<any[]>([]);
@@ -11,21 +12,29 @@ const DealerList = () => {
   const [visibleCount, setVisibleCount] = useState(3);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 const [cookies]=useCookies(['currentCity'])
-  useEffect(() => {
-    const fetchDealers = async () => {
-      try {
-        const response = await axiosInstance1.post("/api/dealers/city-dealers/", {
-          city:cookies?.currentCity || "Noida",
-        });
-        console.log("API Response:", response.data);
-        setDealers(response || []);
-      } catch (err: any) {
-        setError(err);
-      } finally {
-        setLoading(false);
-      }
-    };
+const router =useRouter()
 
+const fetchDealers = async () => {
+    try {
+      const response = await axiosInstance1.post("/api/dealers/city-dealers/", {
+        city: cookies?.currentCity || "Noida",
+      });
+      console.log("API Response:", response.data);
+      setDealers(response || []);
+    } catch (err: any) {
+      console.error("Error fetching dealers:", err);
+      if (err?.status === 401) {
+        router.push("/"); // ✅ redirect to home
+      } else {
+        setError(err);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+   
     fetchDealers();
   }, [cookies.currentCity]);
 
