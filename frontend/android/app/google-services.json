@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "573020465331",
-    "project_id": "caradvisor-620f5",
-    "storage_bucket": "caradvisor-620f5.firebasestorage.app"
+    "project_number": "431860020742",
+    "project_id": "cargpt-4366c",
+    "storage_bucket": "cargpt-4366c.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:573020465331:android:519992fe15b00c412928c6",
+        "mobilesdk_app_id": "1:431860020742:android:754b62550788eb7a173587",
         "android_client_info": {
           "package_name": "com.ai.aicaradvisor"
         }
       },
       "oauth_client": [
         {
-          "client_id": "573020465331-08dcjptjf46ignt5ngcd1ovlf5q5gr81.apps.googleusercontent.com",
+          "client_id": "431860020742-j9i4k7tgd8gl89tuogo53v7ue5lpuqoq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ai.aicaradvisor",
-            "certificate_hash": "5a675a2ba43545314df13a2f18171894cb8f0e05"
+            "certificate_hash": "cedea12157e282aa6640fe576dd3834850e581d6"
           }
         },
         {
-          "client_id": "573020465331-7ptc73n5ko9pndtab7fnppgn3k5l7fhi.apps.googleusercontent.com",
+          "client_id": "431860020742-u437733vi42se2tk4e8hjrc6r4rbud4h.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBV-e8WX5OJykhqvbQlCYaromsCnI1BGe0"
+          "current_key": "AIzaSyBuZ4HKd1GzxxXNFZIXXlsG4fGHJysQlro"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "573020465331-7ptc73n5ko9pndtab7fnppgn3k5l7fhi.apps.googleusercontent.com",
+              "client_id": "431860020742-u437733vi42se2tk4e8hjrc6r4rbud4h.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

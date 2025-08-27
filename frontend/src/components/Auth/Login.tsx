@@ -214,10 +214,7 @@ GoogleLogOut()
     }
   } catch (err) {
     console.error('Google Sign-In Error:', err);
-    showSnackbar('Google Sign-In failed. Please try again later.', {
-      vertical: 'top',
-      horizontal: 'center',
-    });
+    setError(`${JSON.stringify(err)}`);
   }
 };
 
