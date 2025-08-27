@@ -1,9 +1,9 @@
 "use client";
-import { Box, Paper, Typography, CircularProgress } from "@mui/material";
+import { Box, Paper, Typography, CircularProgress, Chip } from "@mui/material";
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import FeedDialog from "./FeedDialog";
-import { formatInternational } from "@/utils/services";
+import { formatExpectedLaunch, formatInternational } from "@/utils/services";
 import { useChats } from "@/Context/ChatContext";
 
 interface typeProps {
@@ -133,7 +133,7 @@ const Feeds = () => {
                 textTransform: "capitalize",
               }}
             >
-              {tag === "Latest" ? "News Feeds" : `${tag} Cars`}
+              {tag === "Latest" ? "News Feeds" : `${tag} ${tag.includes("Cars") ? "" : "Cars"}`}
             </Typography>
             <Box
               ref={(el: HTMLDivElement | null) => {
@@ -251,16 +251,60 @@ const Feeds = () => {
                     <Box
                       sx={{ display: "flex", flexDirection: "column", ml: 1 }}
                     >
-                      <Typography sx={{ fontWeight: "bold", fontSize: "16px" }}>
+
+                      {
+                        tag === "Upcoming" ? 
+                        <Typography sx={{ fontWeight: "bold", fontSize: "16px" }}>
+                        {car.brandName} {car.modelName} 
+                      </Typography>
+                      :
+                       <Typography sx={{ fontWeight: "bold", fontSize: "16px" }}>
                         {car.brandName} {car.modelName} {car.variantName}
                       </Typography>
-                      <Typography
+                      }
+
+                      {
+                        tag === "Upcoming" ? 
+                        (<Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ fontSize: "14px" }}
+                        >
+                        ₹ {formatInternational(Number(car?.price_min) ?? Number(car?.price_min))} -  {formatInternational(Number(car?.price_max) ?? Number(car?.price_max))}
+
+
+                        </Typography>)
+
+                        :
+                        (
+                           <Typography
                         variant="body2"
                         color="text.secondary"
                         sx={{ fontSize: "14px" }}
                       >
-                        ₹ {formatInternational(car.price ?? car.price)}
+                        ₹ {formatInternational(car.price ?? car?.price)}
                       </Typography>
+                        )
+                      }
+
+{tag === "Upcoming" && car.datetime && (
+  <Chip
+    label={formatExpectedLaunch(car.datetime)}
+    size="small"
+        variant="outlined"
+    sx={{
+      fontSize: "10px",
+      fontWeight: 500,
+      bgcolor: "#f5f5f5",   // light gray background
+      color: "#555",        // dark gray text
+      borderColor: "#ddd",  // subtle border
+      marginTop:"4px"
+    }}
+
+  />
+)}
+                     
+                     
                     </Box>
                   </Paper>
                 ))

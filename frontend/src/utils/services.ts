@@ -298,3 +298,20 @@ export function transformFirebaseResponse(firebaseUser:any) {
     photo: firebaseUser.photoURL || null
   };
 }
+
+export function formatExpectedLaunch(dateStr: string | null | undefined): string {
+  if (!dateStr) return "";
+
+  try {
+    const date = new Date(dateStr.replace(" ", "T")); // ensure valid ISO format
+    if (isNaN(date.getTime())) return dateStr; // fallback if invalid date
+
+    const options: Intl.DateTimeFormatOptions = { month: "long", year: "numeric" };
+    const formatted = date.toLocaleDateString("en-US", options);
+
+    return `Expected launch - ${formatted}`;
+  } catch {
+    return dateStr;
+  }
+}
+
