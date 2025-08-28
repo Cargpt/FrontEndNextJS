@@ -310,9 +310,8 @@ const CompareVsSelector: React.FC = () => {
       </Box>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
         <Button variant="contained" onClick={() => {
-          setAllButtonsDisabled(true);
           openDetailedCompare();
-        }} disabled={allButtonsDisabled}>
+        }} disabled={false}>
           Compare
         </Button>
       </Box>
