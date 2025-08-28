@@ -1,11 +1,20 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 import { useRouter } from "next/navigation";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { ArrowBackIosNew, KeyboardBackspaceSharp } from "@mui/icons-material";
-import { Box, Breadcrumbs, IconButton } from "@mui/material";
-import { grey } from "@mui/material/colors";
+import {
+  Box,
+  Breadcrumbs,
+  IconButton,
+  Avatar,
+  Typography,
+  TextField,
+  Tooltip,
+  Badge,
+} from "@mui/material";
+import KeyboardBackspaceSharp from "@mui/icons-material/KeyboardBackspaceSharp";
+import { PhotoCamera } from "@mui/icons-material";
 
 interface ProfileData {
   firstName: string;
@@ -29,9 +38,9 @@ const ProfilePage: React.FC = () => {
   useEffect(() => {
     if (cookies.user) {
       const profile = {
-        firstName: cookies.user?.first_name,
-        lastName: cookies.user?.last_name,
-        mobile_no: cookies?.user?.mobile_no_read || cookies?.user?.mobile_no,
+        firstName: cookies.user?.first_name || "",
+        lastName: cookies.user?.last_name || "",
+        mobile_no: cookies?.user?.mobile_no_read || cookies?.user?.mobile_no || "",
         profilePic: cookies.user?.photo || "",
       };
       setProfile(profile);
@@ -59,136 +68,128 @@ const ProfilePage: React.FC = () => {
     }
   };
 
-  const handleBack = () => {
-    router.back(); // Go back to previous page
-  };
+  const handleBack = () => router.back();
 
   return (
     <>
-     <Box sx={{ p: 1, minWidth:"100%", mt:1,}}>
-      {/* Breadcrumb with just back icon */}
-      <Box sx={{ width: "100%",  }}>
+      {/* Top Breadcrumb / Back Button */}
+      <Box sx={{ p: 1, minWidth: "100%", mt: 1 }}>
         <Breadcrumbs aria-label="breadcrumb">
           <IconButton
-            onClick={() => router.back()}
+            onClick={handleBack}
             sx={{
               padding: 0.5,
               borderRadius: 1,
               backgroundColor: "transparent",
-              
             }}
           >
             <KeyboardBackspaceSharp fontSize="small" />
           </IconButton>
         </Breadcrumbs>
       </Box>
-      </Box>
-    <div style={styles.container}>
-      {/* Back Button */}
+
+      {/* Profile Form */}
+      <Box
+        sx={{
+          width: 300,
+          mx: "auto",
+          p: 2,
+          mt: 2,
+          border: "1px solid #ccc",
+          borderRadius: 2,
+          textAlign: "center",
+          fontFamily: "sans-serif",
+        }}
+      >
+        <Typography variant="h5" gutterBottom>
+          Profile Page
+        </Typography>
+
+        {/* Profile Picture */}
+{/* Profile Picture with Camera Icon */}
+<Box sx={{ mb: 2 }}>
+  <input
+    id="profilePicInput"
+    type="file"
+    accept="image/*"
+    onChange={handleProfilePicChange}
+    style={{ display: "none" }}
+  />
+  <label htmlFor="profilePicInput" style={{ cursor: "pointer" }}>
+    <Tooltip title="Click to change profile photo">
+      <Badge
+        overlap="circular"
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        badgeContent={
+          <PhotoCamera
+            sx={{
+              backgroundColor: "#fff",
+              borderRadius: "50%",
+              padding: "4px",
+              fontSize: "18px",
+              boxShadow: "0 0 3px rgba(0,0,0,0.2)",
+            }}
+          />
+        }
+      >
+        <Avatar
+          src={profile.profilePic}
+          sx={{
+            width: 72,
+            height: 72,
+            mx: "auto",
+            border: "2px solid #ccc",
+            "&:hover": { opacity: 0.85 },
+          }}
+        >
+          {!profile.profilePic && "👤"}
+        </Avatar>
+      </Badge>
+    </Tooltip>
+  </label>
+</Box>
 
 
-      <h2>Profile Page</h2>
-
-      <div style={styles.profilePicContainer}>
-        <label htmlFor="profilePicInput">
-          {profile.profilePic ? (
-            <img
-              src={profile.profilePic}
-              alt="Profile"
-              style={styles.profilePic}
-
-            />
-          ) : (
-            <div style={styles.placeholderIcon}>👤</div>
-          )}
-        </label>
-        <input
-          id="profilePicInput"
-          type="file"
-          accept="image/*"
-          onChange={handleProfilePicChange}
-          style={{ display: "none" }}
+        {/* First Name */}
+        <TextField
+          fullWidth
+          label="First Name"
+          name="firstName"
+          variant="outlined"
+          size="small"
+          sx={{ mb: 2 }}
+          value={profile.firstName}
+          onChange={handleInputChange}
         />
-      </div>
 
-      <input
-        type="text"
-        name="firstName"
-        placeholder="First Name"
-        value={profile.firstName}
-        onChange={handleInputChange}
-        style={styles.input}
-      />
+        {/* Last Name */}
+        <TextField
+          fullWidth
+          label="Last Name"
+          name="lastName"
+          variant="outlined"
+          size="small"
+          sx={{ mb: 2 }}
+          value={profile.lastName}
+          onChange={handleInputChange}
+        />
 
-      <input
-        type="text"
-        name="lastName"
-        placeholder="Last Name"
-        value={profile.lastName}
-        onChange={handleInputChange}
-        style={styles.input}
-      />
-
-      <input
-        type="tel"
-        name="mobile"
-        placeholder="Mobile Number"
-        value={profile.mobile_no}
-        onChange={handleInputChange}
-        style={styles.input}
-        readOnly
-      />
-    </div>
+        {/* Mobile Number (read-only) */}
+        <TextField
+          fullWidth
+          label="Mobile Number"
+          name="mobile_no"
+          variant="outlined"
+          size="small"
+          sx={{ mb: 2 }}
+          value={profile.mobile_no}
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+      </Box>
     </>
   );
-};
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    width: "300px",
-    margin: "2rem auto",
-    padding: "1rem",
-    border: "1px solid #ccc",
-    borderRadius: "8px",
-    textAlign: "center",
-    fontFamily: "sans-serif",
-    position: "relative",
-  },
-  backButton: {
-    position: "absolute",
-    top: 10,
-    left: 10,
-    background: "none",
-    border: "none",
-    color: "#0062ee",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    fontSize: 14,
-    fontWeight: 600,
-  },
-  profilePicContainer: {
-    marginBottom: "1rem",
-    cursor: "pointer",
-  },
-  profilePic: {
-    width: "62px",
-    height: "62px",
-    borderRadius: "50%",
-    objectFit: "cover",
-  },
-  placeholderIcon: {
-    fontSize: "64px",
-    color: "#888",
-  },
-  input: {
-    display: "block",
-    width: "100%",
-    padding: "0.5rem",
-    marginBottom: "0.75rem",
-    borderRadius: "4px",
-    border: "1px solid #ccc",
-  },
 };
 
 export default ProfilePage;

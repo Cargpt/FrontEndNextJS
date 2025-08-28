@@ -304,8 +304,8 @@ const theme=useTheme()
                       <img
                         src={cookies.user.photo}
                         alt="Profile"
-                        width={28}
-                        height={28}
+                        width={26}
+                        height={26}
                         style={{ borderRadius: "50%" }}
                       />
                     ) :                   <AccountCircleOutlinedIcon color="primary" sx={{fontSize:"2rem"}}/>
