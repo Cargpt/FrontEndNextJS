@@ -299,7 +299,18 @@ const theme=useTheme()
                     (e.currentTarget.style.background = "transparent")
                   }
                 >
-                  <AccountCircleOutlinedIcon color="primary" sx={{fontSize:"2rem"}}/>
+                  {
+                    cookies.user.photo ? (
+                      <img
+                        src={cookies.user.photo}
+                        alt="Profile"
+                        width={28}
+                        height={28}
+                        style={{ borderRadius: "50%" }}
+                      />
+                    ) :                   <AccountCircleOutlinedIcon color="primary" sx={{fontSize:"2rem"}}/>
+
+                  }
                   <Typography
                     component="span"
                     sx={{

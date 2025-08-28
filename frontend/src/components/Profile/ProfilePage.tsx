@@ -32,7 +32,7 @@ const ProfilePage: React.FC = () => {
         firstName: cookies.user?.first_name,
         lastName: cookies.user?.last_name,
         mobile_no: cookies?.user?.mobile_no_read || cookies?.user?.mobile_no,
-        profilePic: "",
+        profilePic: cookies.user?.photo || "",
       };
       setProfile(profile);
     }
@@ -96,6 +96,7 @@ const ProfilePage: React.FC = () => {
               src={profile.profilePic}
               alt="Profile"
               style={styles.profilePic}
+
             />
           ) : (
             <div style={styles.placeholderIcon}>👤</div>
@@ -171,8 +172,8 @@ const styles: { [key: string]: React.CSSProperties } = {
     cursor: "pointer",
   },
   profilePic: {
-    width: "80px",
-    height: "80px",
+    width: "62px",
+    height: "62px",
     borderRadius: "50%",
     objectFit: "cover",
   },
