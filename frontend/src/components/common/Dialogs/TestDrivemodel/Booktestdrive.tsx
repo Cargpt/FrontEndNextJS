@@ -156,10 +156,15 @@ const [cookies]=useCookies(['user'])
       pincode: pincode, // Add pincode to booking data
     };
     try {
-      // The custom fetch wrapper is assumed to return the JSON body directly on success.
-      // If it throws an error, the catch block will handle it.
-      const responseData = await axiosInstance1.post('/api/core/test-drive-booking/', bookingData);
-      setSuccess("Thanks for using AiCarAdvisor! Our representative will get connected with you.");
+      // The custom fetch wrapper returns the JSON body directly on success
+      const responseData: any = await axiosInstance1.post('/api/core/test-drive-booking/', bookingData);
+      const serverSuccessMessage =
+        responseData?.message ||
+        responseData?.detail ||
+        responseData?.success ||
+        responseData?.status ||
+        'Thanks for using AiCarAdvisor! Our representative will get connected with you.';
+      setSuccess(String(serverSuccessMessage));
       console.log('Test drive booking successful:', responseData);
       setTimeout(() => {
         onClose();
@@ -167,16 +172,33 @@ const [cookies]=useCookies(['user'])
       }, 3000);
     } catch (err: any) {
       console.log(err)
-      // Assuming the custom fetch wrapper throws an object with a 'data' property on error
-      if (err.data) {
-        const errorDetail = err.data?.preferred_datetime?.[0];
+      // The request helper throws an object with 'data' on error
+      if (err?.data) {
+        const data = err.data;
+        // Try common API error fields first
+        let serverErrorMessage =
+          data?.message ||
+          data?.detail ||
+          data?.error ||
+          data?.errors ||
+          data?.non_field_errors?.[0] ||
+          data?.preferred_datetime?.[0] ||
+          data?.mobile?.[0] ||
+          data?.pincode?.[0] ||
+          data?.city?.[0] ||
+          data?.state?.[0];
 
+        if (!serverErrorMessage && typeof data === 'object') {
+          // Fallback: get first string value from object
+          const firstValue = Object.values(data).find((v: any) => typeof v === 'string' || Array.isArray(v));
+          serverErrorMessage = Array.isArray(firstValue) ? firstValue?.[0] : firstValue;
+        }
 
-        setError(errorDetail.detail || errorDetail.message || errorDetail || 'Failed to book test drive.');
-        console.error('Test drive booking error (server response):', errorDetail);
+        setError(String(serverErrorMessage || 'Failed to book test drive.'));
+        console.error('Test drive booking error (server response):', data);
       } else {
-        setError(err.message || 'An unexpected error occurred during booking.');
-        console.error('Test drive booking error (request setup):', err.message);
+        setError(err?.message || 'An unexpected error occurred during booking.');
+        console.error('Test drive booking error (request setup):', err?.message);
       }
     } finally {
       setLoading(false);
