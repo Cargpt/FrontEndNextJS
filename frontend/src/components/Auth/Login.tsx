@@ -135,8 +135,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
           first_name: googleUser.givenName,
           last_name: googleUser.familyName,
           photo: googleUser.imageUrl,
-          token: googleUser.authentication?.idToken, // send to backend if needed,
           email: `${googleUser.id}@gs.com`,
+
+          token: googleUser.authentication?.idToken, // send to backend if needed,
         };
 
         setCookie("user", transformedResponse, {
@@ -153,12 +154,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
         idToken = await googleUser.getIdToken();
         email = `${googleUser?.uid}@gs.com`
         photo = googleUser.photoURL || ""
+        displayName = googleUser.displayName || "Guest";
+
         const [first_name1, ...rest] = displayName.split(" ");
         
         last_name = rest.join(" ");
         first_name = first_name1;
 
-        displayName = googleUser.displayName || "Guest";
 
         console.log("Firebase user:", googleUser);
         setCookie("user", transformFirebaseResponse(googleUser), {
@@ -169,17 +171,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
 
       // ✅ Send token to backend to login or create account
       const payload = {
-        username: displayName || uuidv4(),
-        password: "test@1234", // Or some generated default password,
-      
+        email: email,
+        first_name: first_name,
+        last_name: last_name,
+        photo: photo,
       };
-
+      
       const response = await axiosInstance.post(
-        "/api/cargpt/createUser/",
+        "/api/cargpt/third-party-register/",
         payload,
-        {
-          headers: { Authorization: `Bearer ${idToken}` },
-        }
+
       );
 
       if (response.token) {

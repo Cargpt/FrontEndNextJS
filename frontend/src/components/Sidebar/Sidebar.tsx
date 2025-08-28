@@ -30,7 +30,7 @@ import { useLoginDialog } from "@/Context/LoginDialogContextType";
 import SignupDialog from "../Auth/SignupDialog";
 import HomeIcon from "@mui/icons-material/Home";
 import { useRouter } from "next/navigation";
-import { axiosInstance1 } from "@/utils/axiosInstance";
+import { axiosInstance, axiosInstance1 } from "@/utils/axiosInstance";
 import { useChats } from "@/Context/ChatContext";
 import  { useMemo } from 'react';
 import { ThemeProvider, CssBaseline, createTheme, } from '@mui/material';
@@ -40,6 +40,7 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useColorMode } from "@/Context/ColorModeContext";
 import { useNotifications } from "@/Context/NotificationContext";
+import { v4 as uuidv4 } from "uuid"; // Import uuid for unique ID generation
 
 interface SidebarProps {
   open: boolean;
@@ -49,7 +50,7 @@ interface SidebarProps {
 type HistoryItem = { id?: string; title: string; value: string };
 
 const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
-  const [cookies, , removeCookie] = useCookies(["token", "user"]);
+  const [cookies,setCookie , removeCookie] = useCookies(["token", "user"]);
 
   const { notifications, setNotifications } = useNotifications();
     const unreadCount = notifications.filter(
@@ -173,8 +174,36 @@ const router =useRouter()
     setPendingDelete(null);
   };
 
-  const handleLogout = () => {
+
+
+
+  const handleGuestLogin = async () => {
+    const uniqueUserId = uuidv4();
+
+    const payload = {
+      userId: uniqueUserId, // Include unique user ID
+    };
+
+    const response = await axiosInstance.post(
+      `/api/cargpt/createUser/`,
+      payload,
+      {}
+    );
+
+    if (response.token) {
+      // localStorage.setItem("auth_token", response.token);
+
+      setCookie("token", response.token, { path: "/", maxAge: 365 * 60 * 60 }); // Store the token
+      // localStorage.setItem("auth_token", response.token);
+    } else {
+    }
+  };
+
+  const handleLogout = async() => {
     removeCookie("user", { path: "/" });
+
+     await handleGuestLogin()
+
     router.push("/")
     onClose();
     showSnackbar("Logged out successfully!", { vertical: "top", horizontal: "center", color: "info" });

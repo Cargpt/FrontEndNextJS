@@ -92,14 +92,7 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
 
   useEffect(() => {
-    // const storedUser = localStorage.getItem("user");
-    // const storedUserRole = localStorage.getItem("userRole");
-
-    // if (storedUser && storedUserRole) {
-    //   setUser(JSON.parse(storedUser));
-    //   setUserRole(storedUserRole);
-    //   setLoading(false);
-    // }
+   
 
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (authUser) => {
       if (authUser) {
@@ -115,16 +108,16 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
           }
           setUserRole(role);
           // localStorage.setItem("user", JSON.stringify(authUser));
-          setCookie("user", JSON.stringify(authUser), {
-            path: "/",
-            maxAge: 60 * 60 * 24 * 365,
-          });
+          // setCookie("user", JSON.stringify(authUser), {
+          //   path: "/",
+          //   maxAge: 60 * 60 * 24 * 365,
+          // });
 
-          const token = await authUser.getIdToken();
-          setCookie("token", token, {
-            path: "/",
-            maxAge: 60 * 60 * 24 * 365,
-          });
+          // const token = await authUser.getIdToken();
+          // setCookie("token", token, {
+          //   path: "/",
+          //   maxAge: 60 * 60 * 24 * 365,
+          // });
 
           // localStorage.setItem("userRole", role);
         } catch (err) {
