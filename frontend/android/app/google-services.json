@@ -1,20 +1,20 @@
 {
   "project_info": {
-    "project_number": "573020465331",
-    "project_id": "caradvisor-620f5",
-    "storage_bucket": "caradvisor-620f5.firebasestorage.app"
+    "project_number": "770291167384",
+    "project_id": "aicaradvisor-fbcfa",
+    "storage_bucket": "aicaradvisor-fbcfa.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:573020465331:android:519992fe15b00c412928c6",
+        "mobilesdk_app_id": "1:770291167384:android:2d32bc15622333625c60ed",
         "android_client_info": {
           "package_name": "com.ai.aicaradvisor"
         }
       },
       "oauth_client": [
         {
-          "client_id": "573020465331-gvauontjb5cntuikrd9p2510sg58p4su.apps.googleusercontent.com",
+          "client_id": "770291167384-b3s90ekprdk85pkijrn1pv7h8d9marum.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.ai.aicaradvisor",
@@ -22,20 +22,20 @@
           }
         },
         {
-          "client_id": "573020465331-7ptc73n5ko9pndtab7fnppgn3k5l7fhi.apps.googleusercontent.com",
+          "client_id": "770291167384-t41qq7bfttacufj6p3000e4aqimjhpgs.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBV-e8WX5OJykhqvbQlCYaromsCnI1BGe0"
+          "current_key": "AIzaSyA3otIa1Cil3YybV-X22Ea-UQSYwwxf-kM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "573020465331-7ptc73n5ko9pndtab7fnppgn3k5l7fhi.apps.googleusercontent.com",
+              "client_id": "770291167384-t41qq7bfttacufj6p3000e4aqimjhpgs.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
