@@ -199,6 +199,8 @@ const router =useRouter()
     }
   };
 
+  
+
   const handleLogout = async() => {
     removeCookie("user", { path: "/" });
 

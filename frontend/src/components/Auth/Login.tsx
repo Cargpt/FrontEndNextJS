@@ -114,7 +114,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
 
   const handleGoogleLogin = async () => {
     try {
-      let idToken = "";
       let displayName = "";
       let email="";
       let photo="";
@@ -128,7 +127,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
 
         const googleUser = await GoogleAuth.signIn();
 
-        idToken = googleUser.authentication?.idToken;
+        // idToken = googleUser.authentication?.idToken;
        
 
         const transformedResponse = {
@@ -137,7 +136,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
           photo: googleUser.imageUrl,
           email: `${googleUser.id}@gs.com`,
 
-          token: googleUser.authentication?.idToken, // send to backend if needed,
         };
 
         setCookie("user", transformedResponse, {
@@ -151,7 +149,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
         const googleUser = await firebase.signInWithGoogle();
         if (!googleUser) return;
 
-        idToken = await googleUser.getIdToken();
+        // idToken = await googleUser.getIdToken();
         email = `${googleUser?.uid}@gs.com`
         photo = googleUser.photoURL || ""
         displayName = googleUser.displayName || "Guest";
@@ -205,7 +203,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
       }
     } catch (err) {
       console.error("Google Sign-In Error:", err);
-      setError(`${JSON.stringify(err)}`);
+       showSnackbar("You didn't complete sign-in. Tap again to continue with Google.", {
+          vertical: "top",
+          horizontal: "center",
+        });
+     
     }
   };
 
