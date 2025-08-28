@@ -828,7 +828,23 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                     color: mode === "dark" ? "#ffffff" : "#0062ee",
                   }}
                 />
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ fontSize: { xs: "0.75rem", sm: "0.55rem" },
+
+
+fontWeight: 500,
+                  color:
+                    mode === "dark"
+                      ? "rgba(255, 255, 255, 0.9)"
+                      : "rgba(0, 0, 0, 0.8)",
+                  py: { xs: 0.5, sm: 0.75 },
+                
+                  
+              
+ }
+              
+              
+              
+              }>
                   Fuel Type
                 </Typography>
               </Box>
@@ -851,7 +867,23 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                     color: mode === "dark" ? "#ffffff" : "#0062ee",
                   }}
                 />
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ fontSize: { xs: "0.75rem", sm: "0.55rem" },
+
+
+fontWeight: 500,
+                  color:
+                    mode === "dark"
+                      ? "rgba(255, 255, 255, 0.9)"
+                      : "rgba(0, 0, 0, 0.8)",
+                  py: { xs: 0.5, sm: 0.75 },
+                
+                  
+              
+ }
+              
+              
+              
+              }>
                   Transmission Type
                 </Typography>
               </Box>
@@ -874,7 +906,23 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                     color: mode === "dark" ? "#ffffff" : "#0062ee",
                   }}
                 />
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ fontSize: { xs: "0.75rem", sm: "0.55rem" },
+
+
+fontWeight: 500,
+                  color:
+                    mode === "dark"
+                      ? "rgba(255, 255, 255, 0.9)"
+                      : "rgba(0, 0, 0, 0.8)",
+                  py: { xs: 0.5, sm: 0.75 },
+                
+                  
+              
+ }
+              
+              
+              
+              }>
                   Seating Capacity
                 </Typography>
               </Box>
@@ -910,7 +958,23 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                     color: mode === "dark" ? "#ffffff" : "#0062ee",
                   }}
                 />
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ fontSize: { xs: "0.75rem", sm: "0.55rem" },
+
+
+fontWeight: 500,
+                  color:
+                    mode === "dark"
+                      ? "rgba(255, 255, 255, 0.9)"
+                      : "rgba(0, 0, 0, 0.8)",
+                  py: { xs: 0.5, sm: 0.75 },
+                
+                  
+              
+ }
+              
+              
+              
+              }>
                   Body Type
                 </Typography>
               </Box>
@@ -933,7 +997,23 @@ const BrandModelSelectCard: React.FC<BrandModelSelectCardProps> = ({
                     color: mode === "dark" ? "#ffffff" : "#0062ee",
                   }}
                 />
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                <Typography variant="body2" sx={{ fontSize: { xs: "0.75rem", sm: "0.55rem" },
+
+
+fontWeight: 500,
+                  color:
+                    mode === "dark"
+                      ? "rgba(255, 255, 255, 0.9)"
+                      : "rgba(0, 0, 0, 0.8)",
+                  py: { xs: 0.5, sm: 0.75 },
+                
+                  
+              
+ }
+              
+              
+              
+              }>
                   Budget
                 </Typography>
               </Box>
