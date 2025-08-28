@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "770291167384-sr42sr3099p0c41gatnoh2th74oman5m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ai.aicaradvisor",
+            "certificate_hash": "b03c931324e177323e04d64b16ffc38054fe8b6f"
+          }
+        },
+        {
           "client_id": "770291167384-t41qq7bfttacufj6p3000e4aqimjhpgs.apps.googleusercontent.com",
           "client_type": 3
         }
