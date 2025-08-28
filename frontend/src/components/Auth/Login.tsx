@@ -116,6 +116,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
     try {
       let idToken = "";
       let displayName = "";
+      let email="";
+      let photo="";
+      let first_name="";
+      let last_name="";
 
       const isNative = Capacitor.isNativePlatform();
 
@@ -128,11 +132,11 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
        
 
         const transformedResponse = {
-          email: googleUser.email,
           first_name: googleUser.givenName,
           last_name: googleUser.familyName,
           photo: googleUser.imageUrl,
-          token: googleUser.authentication?.idToken, // send to backend if needed
+          token: googleUser.authentication?.idToken, // send to backend if needed,
+          email: `${googleUser.id}@gs.com`,
         };
 
         setCookie("user", transformedResponse, {
@@ -147,6 +151,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
         if (!googleUser) return;
 
         idToken = await googleUser.getIdToken();
+        email = `${googleUser?.uid}@gs.com`
+        photo = googleUser.photoURL || ""
+        const [first_name1, ...rest] = displayName.split(" ");
+        
+        last_name = rest.join(" ");
+        first_name = first_name1;
 
         displayName = googleUser.displayName || "Guest";
 
@@ -160,7 +170,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
       // ✅ Send token to backend to login or create account
       const payload = {
         username: displayName || uuidv4(),
-        password: "test@1234", // Or some generated default password
+        password: "test@1234", // Or some generated default password,
+      
       };
 
       const response = await axiosInstance.post(
@@ -177,10 +188,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
           maxAge: 60 * 60 * 24 * 365, // 1 year
         });
 
-        // setCookie('user', response.user, {
-        //   path: '/',
-        //   maxAge: 60 * 60 * 24 * 365,
-        // });
+       
 
         showSnackbar(`${getRandomWelcomeMessage(displayName)}`, {
           vertical: "top",
