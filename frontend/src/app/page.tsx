@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Main from "../components/Main";
-import Navigations from "./Navigations/Navigations";
+import Navigations from "../components/Navigations/Navigations";
 
 type Props = {};
 
