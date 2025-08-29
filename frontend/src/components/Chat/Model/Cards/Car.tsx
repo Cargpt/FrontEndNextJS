@@ -40,6 +40,7 @@ import LightbulbIcon from "@mui/icons-material/Lightbulb";
 import { LightbulbOutline } from "@mui/icons-material";
 import CompareCarsDialog from "./CompareCarsDialog";
 import CompareVsSelector from "./CompareVsSelector";
+import MobileNumberDialog from "@/components/Auth/MobileNumberDialog";
 
 type Props = {
   onClick?: () => void;
@@ -97,11 +98,24 @@ const TeslaCard: React.FC<CarCardProps> = ({
     [key: number]: boolean;
   }>(favouteStates);
   const { messages, setMessages, cars, setCars } = useChats();
-  const [cookies] = useCookies(["selectedOption", "user"]);
+  const [cookies, setCookie] = useCookies(["selectedOption", "user", "token"]);
   const [testDriveModalOpen, setTestDriveModalOpen] = useState(false);
   const [selectedCarForTestDrive, setSelectedCarForTestDrive] =
     useState<CarDetailsForBooking | null>(null);
   const { showSnackbar } = useSnackbar();
+
+  const handleMobileSuccess = (resp: any) => {
+    if (resp?.mobileNumber) {
+        setCookie("user", { ...cookies.user, mobile_no: resp.mobileNumber }, {
+            path: "/",
+            maxAge: 60 * 60 * 24 * 365,
+        });
+    }
+    setShowMobileDialog(false);
+    if (selectedCarForTestDrive) {
+        setTestDriveModalOpen(true);
+    }
+  };
 
   const [showSignUpState, setshowSignUpState] = useState<boolean>(false);
   const [loadingRecommendations, setLoadingRecommendations] =
@@ -114,6 +128,9 @@ const TeslaCard: React.FC<CarCardProps> = ({
   const [selectedCarForCompare, setSelectedCarForCompare] = useState<any>(null);
   const [showCompareInline, setShowCompareInline] = useState(false);
   const [allButtonsDisabled, setAllButtonsDisabled] = useState(false);
+
+  const [showMobileDialog, setShowMobileDialog] = useState(false);
+  const [mobileDialogUserData, setMobileDialogUserData] = useState<any>(null);
 
   const showSignUP = () => {
     setshowSignUpState(true);
@@ -290,12 +307,23 @@ const TeslaCard: React.FC<CarCardProps> = ({
   };
 
   const handleOpenTestDriveModal = (car: CarDetailsForBooking) => {
+    setSelectedCarForTestDrive(car);
 
     if (!cookies.user) {
       show();
       return false;
     }
-    setSelectedCarForTestDrive(car);
+    // Check for missing mobile number before opening booking
+    if (cookies.user && !(cookies.user.mobile_no || cookies.user.mobile_no_read)) {
+      setMobileDialogUserData({
+        email: cookies.user.email,
+        first_name: cookies.user.first_name,
+        last_name: cookies.user.last_name,
+        photo: cookies.user.photo || ""
+      });
+      setShowMobileDialog(true);
+      return false;
+    }
     setTestDriveModalOpen(true);
   };
 
@@ -1120,6 +1148,16 @@ const TeslaCard: React.FC<CarCardProps> = ({
         onClose={hideSignUP}
         onSuccess={() => {}}
       />
+      {showMobileDialog && (
+        <MobileNumberDialog
+          open={showMobileDialog}
+          onClose={() => setShowMobileDialog(false)}
+          onSuccess={handleMobileSuccess}
+          userData={mobileDialogUserData}
+          source="test-drive"
+          token={cookies.token}
+        />
+      )}
       {selectedCarForCompare && (
         <CompareCarsDialog
           open={compareDialogOpen}

@@ -26,6 +26,7 @@ import { useCookies } from 'react-cookie';
 import { KeyboardBackspaceSharp } from "@mui/icons-material";
 import { useColorMode } from "@/Context/ColorModeContext";
 import { Capacitor } from '@capacitor/core';
+import MobileNumberDialog from '@/components/Auth/MobileNumberDialog';
 
 // Define a more specific interface for carDetails passed to this component
 interface CarDetailsForBooking {
@@ -57,10 +58,23 @@ const BookTestDrive: React.FC<BookTestDriveProps> = ({ open, onClose, carDetails
   const [cities, setCities] = useState<string[]>([]);
   const [statesLoading, setStatesLoading] = useState(false);
   const [citiesLoading, setCitiesLoading] = useState(false);
+  const [showMobileDialog, setShowMobileDialog] = useState(false);
+  const [mobileDialogUserData, setMobileDialogUserData] = useState<any>(null);
   // Fetch states when the dialog opens
-const [cookies]=useCookies(['user'])
+const [cookies, setCookie]=useCookies(['user', 'token'])
 
   const {mode}=useColorMode()
+
+  const handleMobileSuccess = (resp: any) => {
+    if (resp?.mobileNumber) {
+      setCookie("user", { ...cookies.user, mobile_no: resp.mobileNumber }, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365,
+      });
+    }
+    setShowMobileDialog(false);
+  };
+
   useEffect(() => {
     const fetchStates = async () => {
       if (open) { // Only fetch when dialog is open
@@ -231,7 +245,32 @@ const [cookies]=useCookies(['user'])
   
    
   }, [cookies?.user])
- const isNative=Capacitor.isNativePlatform()
+
+  useEffect(() => {
+    if (open && cookies.user && !(cookies.user.mobile_no || cookies.user.mobile_no_read)) {
+      setMobileDialogUserData({
+        email: cookies.user.email,
+        first_name: cookies.user.first_name,
+        last_name: cookies.user.last_name,
+        photo: cookies.user.photo || ''
+      });
+      setShowMobileDialog(true);
+    }
+  }, [open, cookies.user]);
+
+  if (showMobileDialog) {
+    return (
+      <MobileNumberDialog
+        open={showMobileDialog}
+        onClose={() => setShowMobileDialog(false)}
+        onSuccess={handleMobileSuccess}
+        userData={mobileDialogUserData}
+        source="test-drive"
+        token={cookies.token}
+      />
+    );
+  }
+  const isNative=Capacitor.isNativePlatform()
   console.log("user", mobile)
   useAndroidBackClose(open, onClose);
   return (
