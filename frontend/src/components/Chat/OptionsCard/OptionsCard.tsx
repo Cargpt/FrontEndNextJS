@@ -151,6 +151,21 @@ const ChatBox: React.FC = () => {
         render: "BestCarOption",
         sender: "bot",
       };
+    } else if (lastMsg.sender === "user" &&  typeof lastMsg.message === "string" && lastMsg.message === "Compare Car.") {
+        console.log("lastMsg", messages);
+        const msgs :Message[]=  [
+          ...messages,
+        
+          {
+            id: String(Date.now() + 1),
+            render: "compareVsSelector" as const,
+            sender: "bot" as const,
+            message: ""
+          }
+        ]
+        setMessages(msgs);
+      
+
     }
 
     if (botMessage && brands.length > 0) {

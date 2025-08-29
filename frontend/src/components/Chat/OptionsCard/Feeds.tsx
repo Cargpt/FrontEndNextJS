@@ -166,7 +166,7 @@ const Feeds = () => {
                 px: 1,
                 fontSize:"12px",
                 fontWeight:"700",
-                color:"#333",
+                color:'text.primary',
                 textTransform: "capitalize",
               }}
             >
@@ -292,11 +292,11 @@ const Feeds = () => {
 
                       {
                         tag[1] === "Upcoming" ? 
-                        <Typography sx={{fontSize: "12px", color:"#333", mt:1}}>
+                        <Typography sx={{fontSize: "12px", color:'text.primary', mt:1}}>
                         {car.brandName} {car.modelName} 
                       </Typography>
                       :
-                       <Typography sx={{ color:"#333", fontSize: "12px",  }}>
+                       <Typography sx={{ color:'text.primary', fontSize: "12px",  }}>
                         {car.brandName} {car.modelName} {car.variantName}
                       </Typography>
                       }
@@ -305,7 +305,7 @@ const Feeds = () => {
                         tag[1] === "Upcoming" ? 
                         (<Typography
                         variant="body2"
-                        color="#333"
+                        color='text.primary'
                         sx={{ fontSize: "10px", fontWeight:"700" }}
                         >
                         ₹ {formatInternational(Number(car?.price_min) ?? Number(car?.price_min))} -  ₹ {formatInternational(Number(car?.price_max) ?? Number(car?.price_max))}
@@ -318,7 +318,7 @@ const Feeds = () => {
                         (
                            <Typography
                         variant="body2"
-                        color="#333"
+                        color='text.primary'
                         sx={{ fontSize: "10px", fontWeight:"700" }}
                       >
                         ₹ {formatInternational(car.price ?? car?.price)}

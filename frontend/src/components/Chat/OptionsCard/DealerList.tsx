@@ -141,6 +141,7 @@ const fetchDealers = async () => {
             px: 1,
             fontWeight: "bold",
             fontSize: "16px",
+            color: 'text.primary',
           }}
         >
           Local dealers around you
@@ -163,7 +164,7 @@ const fetchDealers = async () => {
                   height:"90px"
                 }}
               >
-                <Typography sx={{ color:"#333", fontSize: "12px" }}>
+                <Typography color="text.primary" sx={{ fontSize: "12px" }}>
                   {dealer.name}
                 </Typography>
                 {/* <Typography
@@ -184,7 +185,7 @@ const fetchDealers = async () => {
                   <Typography
                     variant="body2"
                     sx={{
-                      color: dealer.hours.includes("Open") ? "green" : "red",
+                      color: dealer.hours.includes("Open") ? "success.main" : "error.main",
                       fontWeight: 700,
                       fontSize:"10px"
                     }}
@@ -212,7 +213,7 @@ const fetchDealers = async () => {
             <div ref={sentinelRef} style={{ height: 1 }} />
           </>
         ) : (
-          <Typography>No dealers found for {cookies?.currentCity || "Noida"}.</Typography>
+          <Typography color="text.secondary">No dealers found for {cookies?.currentCity || "Noida"}.</Typography>
         )}
       </Paper>
     </Box>

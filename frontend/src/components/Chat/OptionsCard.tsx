@@ -155,7 +155,10 @@ const ChatBox: React.FC = () => {
         render: "BestCarOption",
         sender: "bot",
       };
-    }
+    } 
+    
+
+    
 
     if (botMessage && brands.length > 0) {
       setMessages((prev) => [...prev, botMessage!]);
