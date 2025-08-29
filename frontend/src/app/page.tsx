@@ -26,9 +26,8 @@ export default function Home() {
       
     } */}
     {
-      !isNativeApp ?
-      <HeroSection/>
-      :
+      
+      
             <Main />
 
 
