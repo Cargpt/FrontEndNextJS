@@ -1,6 +1,6 @@
 "use client"
 import React from "react";
-import { Box, Typography, Button, Rating } from "@mui/material";
+import { Box, Typography, Button, Rating, useScrollTrigger } from "@mui/material";
 import Slider,  { Settings } from "react-slick";
 import { motion } from "framer-motion";
 
@@ -15,6 +15,7 @@ const fadeIn = {
 };
 
 const HeroSection = () => {
+  const scrolled = useScrollTrigger({ disableHysteresis: true, threshold: 10 });
   return (
     <Box
       sx={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", background: "#ffffff" }}
@@ -22,18 +23,33 @@ const HeroSection = () => {
       initial="hidden"
       animate="visible"
     >
-      {/* Navbar */}
+      {/* Navbar (fixed + animated on scroll) */}
       <Box
         sx={{
-          width: "80%",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 4,
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          width: "100%",
+          background: scrolled ? "rgba(255,255,255,0.9)" : "transparent",
+          boxShadow: scrolled ? "0 4px 12px rgba(0,0,0,0.08)" : "none",
+          backdropFilter: scrolled ? "saturate(180%) blur(8px)" : "none",
+          transition: "all 220ms ease",
         }}
-        component={motion.div}
-        variants={fadeIn}
       >
+        <Box
+          component={motion.div}
+          variants={fadeIn}
+          sx={{
+            width: "80%",
+            mx: "auto",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            py: scrolled ? 1 : 2,
+          }}
+        >
         <Box sx={{ ml: { xs: 1, sm: 1.5, md: 2 }, width: { xs: 140, sm: 160, md: 220 } }}>
           <motion.img
             src={"/assets/AICarAdvisor_transparent.png"}
@@ -68,7 +84,11 @@ const HeroSection = () => {
             </Typography>
           ))}
         </Box>
+        </Box>
       </Box>
+
+      {/* Spacer to offset fixed header height */}
+      <Box sx={{ height: { xs: 56, sm: 64 }, width: '100%' }} />
 
       {/* Hero Section */}
       <Box
