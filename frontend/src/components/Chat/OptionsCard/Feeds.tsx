@@ -1,10 +1,11 @@
 "use client";
-import { Box, Paper, Typography, CircularProgress, Chip } from "@mui/material";
+import { Box, Paper, Typography, CircularProgress, Chip, Skeleton, Stack } from "@mui/material";
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import FeedDialog from "./FeedDialog";
 import { formatExpectedLaunch, formatInternational } from "@/utils/services";
 import { useChats } from "@/Context/ChatContext";
+import { useColorMode } from "@/Context/ColorModeContext";
 
 interface typeProps {
   open: boolean;
@@ -69,18 +70,23 @@ const Feeds = () => {
 
   if (loading) {
     return (
-      <Paper
-        sx={{
-          p: 2,
-          width: "100%",
-          height: "300px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <CircularProgress />
-      </Paper>
+      <Box sx={{ width: "25%", ml: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+        <Paper elevation={0} sx={{ p: 2 }}>
+          <Skeleton variant="text" width={160} height={26} />
+          <Stack spacing={1.5} sx={{ mt: 1 }}>
+            {Array.from({ length: 5 }).map((_, idx) => (
+              <Paper key={idx} elevation={1} sx={{ p: 1.5, borderRadius: 2, display: 'flex', gap: 1 }}>
+                <Skeleton variant="rectangular" width={120} height={60} sx={{ borderRadius: 1 }} />
+                <Box sx={{ flex: 1 }}>
+                  <Skeleton variant="text" width="70%" height={18} />
+                  <Skeleton variant="text" width="50%" height={14} />
+                  <Skeleton variant="text" width="40%" height={14} />
+                </Box>
+              </Paper>
+            ))}
+          </Stack>
+        </Paper>
+      </Box>
     );
   }
 
@@ -115,7 +121,7 @@ const Feeds = () => {
   [9, "Trending"],
   [11, "luxury"],
 ] as const;
-
+const {mode}=useColorMode()
   console.log("groupedCarsData", groupedCarsData)
   return (
     <>
@@ -309,7 +315,7 @@ const Feeds = () => {
                         sx={{ fontSize: "10px", fontWeight:"700" }}
                         >
                         ₹ {formatInternational(Number(car?.price_min) ?? Number(car?.price_min))} -  ₹ {formatInternational(Number(car?.price_max) ?? Number(car?.price_max))}
-                        <span style={{color:"#484848", fontSize:"10px", paddingLeft:"13px"}}>Estimated Price</span>
+                        <span style={{color: mode==="light"?"#484848":"#fff", fontSize:"10px", paddingLeft:"13px"}}>Estimated Price</span>
 
 
                         </Typography>)
@@ -335,7 +341,7 @@ const Feeds = () => {
       fontSize: "9px",
       fontWeight: 500,
       bgcolor: "transparent",   // light gray background
-      color: "#555",        // dark gray text
+      color: mode==="light"?"#555":"#fff",        // dark gray text
       border:"none",  // subtle border
       marginTop:"4px"
     }}

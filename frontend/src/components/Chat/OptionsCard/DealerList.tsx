@@ -1,5 +1,5 @@
 "use client";
-import { Box, Paper, Typography, CircularProgress } from "@mui/material";
+import { Box, Paper, Typography, CircularProgress, Skeleton, Stack } from "@mui/material";
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import { useCookies } from "react-cookie";
@@ -65,19 +65,20 @@ const fetchDealers = async () => {
 
   if (loading) {
     return (
-      <Paper
-        elevation={3}
-        sx={{
-          p: 2,
-          width: "100%",
-          height: "300px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <CircularProgress />
-      </Paper>
+      <Box sx={{ width: "25%", ml: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+        <Paper elevation={0} sx={{ p: 2 }}>
+          <Skeleton variant="text" width={180} height={28} />
+          <Stack spacing={1.5} sx={{ mt: 1 }}>
+            {Array.from({ length: 4 }).map((_, idx) => (
+              <Paper key={idx} elevation={1} sx={{ p: 1.5, borderRadius: 2 }}>
+                <Skeleton variant="text" width="60%" height={18} />
+                <Skeleton variant="text" width="40%" height={14} />
+                <Skeleton variant="text" width="35%" height={14} />
+              </Paper>
+            ))}
+          </Stack>
+        </Paper>
+      </Box>
     );
   }
 
