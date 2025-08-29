@@ -15,6 +15,18 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose, showSignUp }) 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   useAndroidBackClose(open, onClose);
 
+  React.useEffect(() => {
+    const handler = () => onClose();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('close-login-dialog', handler as any);
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('close-login-dialog', handler as any);
+      }
+    };
+  }, [onClose]);
+
   return (
     <Dialog
       open={open}

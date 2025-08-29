@@ -36,6 +36,8 @@ import {
   transformFirebaseResponse,
 } from "@/utils/services";
 import ForgotPasswordDialog from "@/components/Auth/ForgotPasswordDialog";
+import MobileNumberDialog from "@/components/Auth/MobileNumberDialog";
+import { useRouter } from "next/navigation";
 
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/material.css";
@@ -56,11 +58,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [forgotOpen, setForgotOpen] = useState(false);
+  const [mobileDialogOpen, setMobileDialogOpen] = useState(false);
+  const [pendingUserData, setPendingUserData] = useState<any>(null);
 
   const [cookies, setCookie] = useCookies(["token", "user"]);
   const firebase = useFirebase();
   const { hide } = useLoginDialog();
   const { showSnackbar } = useSnackbar();
+  const router = useRouter();
 
   const handleInputChange =
     (field: string) => (event: ChangeEvent<HTMLInputElement>) => {
@@ -178,16 +183,47 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
       const response = await axiosInstance.post(
         "/api/cargpt/third-party-register/",
         payload,
-
       );
+
+      // Check if mobile number is missing from response
+      if (!response?.user?.mobile_no) {
+        // Store user data from response and show mobile number dialog
+        setPendingUserData({
+          email: response.user.email,
+          first_name: response.user.first_name,
+          last_name: response.user.last_name,
+          photo: response.user.photo,
+        });
+        
+        // Set cookies with partial data
+        if (response.token) {
+            setCookie("token", response.token, {
+                path: "/",
+                maxAge: 60 * 60 * 24 * 365,
+            });
+        }
+        if (response.user) {
+            setCookie("user", response.user, {
+                path: "/",
+                maxAge: 60 * 60 * 24 * 365,
+            });
+        }
+
+        setMobileDialogOpen(true);
+        return;
+      }
 
       if (response.token) {
         setCookie("token", response.token, {
           path: "/",
           maxAge: 60 * 60 * 24 * 365, // 1 year
         });
-
-       
+        if (response.user) {
+          setCookie("user", response.user, {
+            path: "/",
+            maxAge: 60 * 60 * 24 * 365, // 1 year
+          });
+        }
 
         showSnackbar(`${getRandomWelcomeMessage(displayName)}`, {
           vertical: "top",
@@ -225,6 +261,33 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
       vertical: "top",
       horizontal: "center",
     });
+  };
+
+  const handleMobileNumberSuccess = (resp: any) => {
+    // Close the dialog and complete the login process
+    setMobileDialogOpen(false);
+    setPendingUserData(null);
+    
+    // Set cookies from backend response
+    if (resp?.token) {
+      setCookie("token", resp.token, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365,
+      });
+    }
+
+    if (resp?.mobileNumber) {
+      setCookie("user", { ...cookies.user, mobile_no: resp.mobileNumber }, {
+        path: "/",
+        maxAge: 60 * 60 * 24 * 365,
+      });
+    }
+
+    showSnackbar(`${getRandomWelcomeMessage((cookies?.user?.first_name || "User"))}`, {
+      vertical: "top",
+      horizontal: "center",
+    });
+    router.push("/");
   };
 
   return (
@@ -441,6 +504,16 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
           />
         )}
       </AnimatePresence>
+
+      <MobileNumberDialog
+        open={mobileDialogOpen}
+        onClose={() => setMobileDialogOpen(false)}
+        onSuccess={handleMobileNumberSuccess}
+        userData={pendingUserData || {}}
+        source="login"
+        token={cookies.token}
+        hide={hide}
+      />
 
       <style>
         {`
