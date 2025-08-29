@@ -75,6 +75,7 @@ const [cookies]=useCookies(['user'])
         } catch (err: any) {
           setError('Could not load states. Please try again.');
           console.error('Failed to fetch states:', err);
+          
         } finally {
           setStatesLoading(false);
         }

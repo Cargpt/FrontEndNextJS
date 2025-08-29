@@ -141,6 +141,7 @@ const fetchDealers = async () => {
             px: 1,
             fontWeight: "bold",
             fontSize: "16px",
+            color: "text.primary",
           }}
         >
           Local dealers around you
@@ -163,7 +164,7 @@ const fetchDealers = async () => {
                   height:"90px"
                 }}
               >
-                <Typography sx={{ color:"#333", fontSize: "12px" }}>
+                <Typography sx={{ color: "text.primary", fontSize: "12px" }}>
                   {dealer.name}
                 </Typography>
                 {/* <Typography
