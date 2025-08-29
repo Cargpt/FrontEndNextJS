@@ -218,7 +218,7 @@ const ChatBox: React.FC = () => {
       // Add user message before bot message
       const userMessage: Message = {
         id: String(Date.now()),
-        message: "Show me car models for the selected parameters.",
+        message: "Show cars that fit my preferences",
         render: "text",
         sender: "user",
       };
