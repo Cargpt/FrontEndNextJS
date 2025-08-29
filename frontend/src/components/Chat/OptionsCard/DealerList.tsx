@@ -161,7 +161,7 @@ const fetchDealers = async () => {
                   display: "flex",
                   flexDirection: "column",
                   gap: 0.5,
-                  height:"90px"
+                  height:"auto"
                 }}
               >
                 <Typography color="text.primary" sx={{ fontSize: "12px" }}>
