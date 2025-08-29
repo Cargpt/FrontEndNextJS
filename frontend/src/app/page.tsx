@@ -7,6 +7,8 @@ import Main from "../components/Main";
 import FixedBottomMessage from "@/components/common/FixedBottomMessage";
 import { Capacitor } from "@capacitor/core";
 import BottomNavigationBar from "@/components/Header/BottomNavigation";
+import { Desk } from "@mui/icons-material";
+import DesktopHomeScreen from "@/components/DesktopHomeScreen/DesktopHomeScreen";
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -24,8 +26,15 @@ export default function Home() {
         <Header />
       
     }
-    
+
+    {
+      isNativeApp?
       <Main />
+      :<DesktopHomeScreen />
+
+    }
+    
+      
         {
           !isNativeApp ?(
             <FixedBottomMessage  message="By messaging AiCarAdvisor, you agree to our Terms and have read our Privacy Policy. See Cookie Preferences.
