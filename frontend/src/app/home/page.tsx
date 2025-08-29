@@ -12,6 +12,8 @@ const HomePage = () => {
     <>
       {/* <AdvisorIntro showInitialExample={true} onBotClick={() => {}} /> */}
       <ChatBox />
+
+      
       <FixedBottomMessage message="AiCarAdvisor can make mistakes. Check important info. See Cookie Preferences."/>
     </>
   );
