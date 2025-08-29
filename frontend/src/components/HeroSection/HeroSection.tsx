@@ -1,6 +1,7 @@
 "use client"
 import React from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, Rating } from "@mui/material";
+import Slider,  { Settings } from "react-slick";
 import { motion } from "framer-motion";
 
 const fadeInUp = {
@@ -141,9 +142,9 @@ const HeroSection = () => {
         </Typography>
 
         <Box sx={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap" }}>
-          {[
-            { img: "/assets/search.png", title: "1. Tell Us Your Needs", desc: "Enter your budget, lifestyle, and preferences" },
-            { img: "/assets/ai.png", title: "2. AI Recommends", desc: "Our AI engine finds the best car matches for you" },
+          {[ 
+            { img: "/assets/search.png", title: "1. AI Search", desc: "Enter your budget, lifestyle, and preferences" },
+            { img: "/assets/AIRecommendedCar.png", title: "2. Recommendations", desc: "Our AI suggests the best cars for you", crop: true },
             { img: "/assets/test-drive.png", title: "3. Test & Buy", desc: "Book a test drive and get exclusive deals" },
           ].map((step, i) => (
             <Box
@@ -154,7 +155,13 @@ const HeroSection = () => {
               transition={{ delay: i * 0.14 }}
               whileHover={{ translateY: -6 }}
             >
-              <img src={step.img} alt={step.title} width={60} height={60} />
+              {step.crop ? (
+                <Box sx={{ width: 60, height: 60, overflow: 'hidden', borderRadius: 1, mx: 'auto' }}>
+                  <img src={step.img} alt={step.title} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top', display: 'block' }} />
+                </Box>
+              ) : (
+                <img src={step.img} alt={step.title} width={60} height={60} />
+              )}
               <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>{step.title}</Typography>
               <Typography variant="body2" sx={{ color: "rgba(0,0,0,0.7)" }}>{step.desc}</Typography>
             </Box>
@@ -162,31 +169,51 @@ const HeroSection = () => {
         </Box>
       </Box>
 
-      {/* New: Testimonials Section */}
+      {/* New: Testimonials Section (Slider) */}
       <Box sx={{ width: "80%", mt: 8, pb: 4, textAlign: "center" }}>
         <Typography variant="h4" sx={{ fontWeight: "bold", mb: 4 }} component={motion.h2} variants={fadeInUp}>
           What Our Users Say
         </Typography>
 
-        <Box sx={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap" }}>
-          {[
-            { img: "/assets/user1.png", name: "Rahul Sharma", review: "AI Car Advisor made car shopping stress-free and fun!" },
-            { img: "/assets/user2.png", name: "Priya Verma", review: "I saved 2 weeks of research, got my dream car instantly." },
-            { img: "/assets/user3.png", name: "Amit Patel", review: "Super accurate recommendations. Highly recommended!" },
-          ].map((user, i) => (
-            <Box
-              key={user.name}
-              sx={{ width: { xs: "100%", sm: "45%", md: "30%" }, mb: 4, p: 3, borderRadius: 2, background: "#fafafa", boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}
-              component={motion.div}
-              variants={fadeInUp}
-              transition={{ delay: i * 0.12 }}
-            >
-              <img src={user.img} alt={user.name} width={60} height={60} style={{ borderRadius: "50%" }} />
-              <Typography variant="h6" sx={{ mt: 2, fontWeight: "bold" }}>{user.name}</Typography>
-              <Typography variant="body2" sx={{ fontStyle: "italic", color: "rgba(0,0,0,0.7)" }}>{user.review}</Typography>
-            </Box>
-          ))}
-        </Box>
+        {(() => {
+          const reviews = [
+            { img: "/assets/user1.png", name: "Rahul Sharma", review: "AI Car Advisor made car shopping stress-free and fun!", rating: 5 },
+            { img: "/assets/user2.png", name: "Priya Verma", review: "I saved two weeks of research and found my dream car.", rating: 4.5 },
+            { img: "/assets/user3.png", name: "Amit Patel", review: "Super accurate recommendations. Highly recommended!", rating: 4.8 },
+            { img: "/assets/avatar.png", name: "Neha Gupta", review: "Loved the comparison and price insights – very helpful.", rating: 4.7 },
+            { img: "/assets/avator_main2.png", name: "Rohit Mehta", review: "Booking a test drive was seamless right from the app.", rating: 4.6 },
+            { img: "/assets/user1.png", name: "Ananya Rao", review: "Clean UI and great suggestions based on my budget.", rating: 4.4 },
+          ];
+          const settings:Settings = {
+            dots: true,
+            arrows: false,
+            infinite: true,
+            autoplay: true,
+            autoplaySpeed: 3500,
+            speed: 500,
+            slidesToShow: 3,
+            slidesToScroll: 1,
+            responsive: [
+              { breakpoint: 1200, settings: { slidesToShow: 3 } },
+              { breakpoint: 900, settings: { slidesToShow: 2 } },
+              { breakpoint: 600, settings: { slidesToShow: 1 } },
+            ],
+          } as const;
+          return (
+            <Slider {...settings}>
+              {reviews.map((user) => (
+                <Box key={user.name} sx={{ px: 1.5, outline: 'none' }}>
+                  <Box sx={{ p: 3, borderRadius: 2, background: "#fafafa", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", minHeight: 180, textAlign: 'center', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+                    <img src={user.img} alt={user.name} width={56} height={56} style={{ borderRadius: "50%", display: 'block' }} />
+                    <Typography variant="h6" sx={{ mt: 1.5, fontWeight: "bold" }}>{user.name}</Typography>
+                    <Rating value={user.rating} precision={0.5} readOnly size="small" sx={{ mt: 0.5 }} />
+                    <Typography variant="body2" sx={{ mt: 1, color: "rgba(0,0,0,0.7)" }}>{user.review}</Typography>
+                  </Box>
+                </Box>
+              ))}
+            </Slider>
+          );
+        })()}
       </Box>
 
       {/* New: Call to Action Section */}
