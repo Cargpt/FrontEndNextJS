@@ -659,7 +659,23 @@ const TeslaCard: React.FC<CarCardProps> = ({
                     {car.BrandName}
                   </Typography>
                   {/* Static color palette */}
-                  <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      mb: 1,
+                      width: "100%",
+                      maxWidth: "100%",
+                      overflowX: "auto",
+                      overflowY: "hidden",
+                      whiteSpace: "nowrap",
+                      py: 0.5,
+                      // Hide scrollbar but keep scrollability
+                      scrollbarWidth: "none", // Firefox
+                      msOverflowStyle: "none", // IE/Edge
+                      "&::-webkit-scrollbar": { display: "none" }, // Chrome/Safari
+                    }}
+                  >
                     {car?.Colors?.map((color: VariantColor, idx: number) => {
                       return (
                         <Box
@@ -670,6 +686,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
                             borderRadius: "50%",
                             border: "1px solid #ccc",
                             cursor: "pointer",
+                            flex: "0 0 auto",
                             background: color.ColorHex.includes(",")
                               ? `linear-gradient(to right, ${
                                   color.ColorHex.split(",")[0]
