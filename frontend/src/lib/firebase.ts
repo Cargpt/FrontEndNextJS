@@ -1,19 +1,74 @@
 // lib/firebase.ts
-import { initializeApp } from 'firebase/app';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
 
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+import { initializeApp,getApps, getApp } from 'firebase/app';
+import { getAuth } from "firebase/auth";
+
+import {
+  getMessaging,
+  onMessage,
+  getToken,
+  isSupported,
+  Messaging,
+  MessagePayload,
+} from 'firebase/messaging';
+
+import { DBSchema } from 'idb';
+
+interface MessageDB extends DBSchema {
+  messages: {
+    key: number;
+    value: MessagePayload;
+    indexes: { 'by-date': number };
+  };
+}
+
+// Firebase config
 const firebaseConfig = {
-  apiKey: "AIzaSyBlnXWFFmep3B4B7rpdzSOn_rJumhoMVHI",
-  authDomain: "cargpt-4366c.firebaseapp.com",
-  projectId: "cargpt-4366c",
-  storageBucket: "cargpt-4366c.firebasestorage.app",
-  messagingSenderId: "431860020742",
-  appId: "1:431860020742:web:676e2461ff4de4d8173587",
-  measurementId: "G-R21W0MRCMT"
+  apiKey: "AIzaSyA3otIa1Cil3YybV-X22Ea-UQSYwwxf-kM",
+  authDomain: "aicaradvisor-fbcfa.firebaseapp.com",
+  projectId: "aicaradvisor-fbcfa",
+  storageBucket: "aicaradvisor-fbcfa.firebasestorage.app",
+  messagingSenderId: "770291167384",
+  appId: "1:770291167384:android:2d32bc15622333625c60ed",
 };
 
+// Initialize default app only if it doesn't exist
 const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+export const auth = getAuth(app);
 
-export { messaging, getToken, onMessage };
+// Initialize Firebase app
+export let messaging: Messaging | null = null;
+
+isSupported().then((supported) => {
+  if (supported) {
+    messaging = getMessaging(app);
+  } else {
+    console.warn('FCM not supported in this browser.');
+  }
+});
+
+export async function requestFirebaseToken(vapidKey: string): Promise<string | null> {
+  if (!messaging) return null;
+  try {
+    return await getToken(messaging, { vapidKey });
+  } catch (error) {
+    console.error('Error getting FCM token:', error);
+    return null;
+  }
+}
+
+export function listenForMessages(): void {
+  if (!messaging) return;
+
+  onMessage(messaging, async (payload) => {
+
+    // Defer import and saving to client-side only
+    const { saveMessage } = await import('./fcm-storage');
+    await saveMessage(payload);
+    console.log('Foreground message received:', payload);
+
+    window.dispatchEvent(new Event('new-fcm-message'));
+  });
+}
+
+export default app;

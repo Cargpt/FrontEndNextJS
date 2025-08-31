@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 // Web FCM imports
-import { messaging, getToken, onMessage } from "@/lib/firebase";
+// import { messaging, getToken, onMessage } from "@/lib/firebase";
 
 // Capacitor imports
 import { Capacitor } from "@capacitor/core";
@@ -37,157 +37,157 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     return [];
   });
 
-  // Persist notifications in localStorage
-  useEffect(() => {
-    localStorage.setItem("notifications", JSON.stringify(notifications));
-  }, [notifications]);
+  // // Persist notifications in localStorage
+  // useEffect(() => {
+  //   localStorage.setItem("notifications", JSON.stringify(notifications));
+  // }, [notifications]);
 
-  // Unified setup for web and mobile
-  useEffect(() => {
-    let cleanupFunctions: (() => void)[] = [];
+  // // Unified setup for web and mobile
+  // useEffect(() => {
+  //   let cleanupFunctions: (() => void)[] = [];
 
-    const setupNotifications = async () => {
-      const isNative = Capacitor.isNativePlatform();
+  //   const setupNotifications = async () => {
+  //     const isNative = Capacitor.isNativePlatform();
 
-      if (isNative) {
-        // -------------------------------
-        // Mobile: Capacitor Push Notifications
-        // -------------------------------
-        const permission = await PushNotifications.requestPermissions();
-        if (permission.receive !== "granted") {
-          console.warn("Push notification permission denied");
-          return;
-        }
+  //     if (isNative) {
+  //       // -------------------------------
+  //       // Mobile: Capacitor Push Notifications
+  //       // -------------------------------
+  //       const permission = await PushNotifications.requestPermissions();
+  //       if (permission.receive !== "granted") {
+  //         console.warn("Push notification permission denied");
+  //         return;
+  //       }
 
-        await PushNotifications.register();
+  //       await PushNotifications.register();
 
-        const tokenListener = await PushNotifications.addListener(
-          "registration",
-          (token: Token) => {
-            console.log("Device push token:", token.value);
-            fetch(
-              `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cargpt/store-token/`,
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: token.value }),
-              }
-            );
-          }
-        );
+  //       const tokenListener = await PushNotifications.addListener(
+  //         "registration",
+  //         (token: Token) => {
+  //           console.log("Device push token:", token.value);
+  //           fetch(
+  //             `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cargpt/store-token/`,
+  //             {
+  //               method: "POST",
+  //               headers: { "Content-Type": "application/json" },
+  //               body: JSON.stringify({ token: token.value }),
+  //             }
+  //           );
+  //         }
+  //       );
 
-        const notificationListener = await PushNotifications.addListener(
-          "pushNotificationReceived",
-          (notification: PushNotificationSchema) => {
-            console.log("Push notification received:", notification);
-            setNotifications((prev) => [
-              {
-                title: notification.title ?? "Notification",
-                body: notification.body ?? "",
-                read: false,
-              },
-              ...prev,
-            ]);
-          }
-        );
+  //       const notificationListener = await PushNotifications.addListener(
+  //         "pushNotificationReceived",
+  //         (notification: PushNotificationSchema) => {
+  //           console.log("Push notification received:", notification);
+  //           setNotifications((prev) => [
+  //             {
+  //               title: notification.title ?? "Notification",
+  //               body: notification.body ?? "",
+  //               read: false,
+  //             },
+  //             ...prev,
+  //           ]);
+  //         }
+  //       );
 
-        const actionListener = await PushNotifications.addListener(
-          "pushNotificationActionPerformed",
-          (notification) => {
-            console.log("Notification action performed:", notification);
-          }
-        );
+  //       const actionListener = await PushNotifications.addListener(
+  //         "pushNotificationActionPerformed",
+  //         (notification) => {
+  //           console.log("Notification action performed:", notification);
+  //         }
+  //       );
 
-        cleanupFunctions = [
-          () => tokenListener.remove(),
-          () => notificationListener.remove(),
-          () => actionListener.remove(),
-        ];
-      } else if (
-        typeof window !== "undefined" &&
-        "Notification" in window &&
-        "serviceWorker" in navigator &&
-        "PushManager" in window
-      ) {
-        // -------------------------------
-        // Web: FCM
-        // -------------------------------
-        Notification.requestPermission().then((permission) => {
-          if (permission === "granted") {
-            getToken(messaging, {
-              vapidKey: process.env.NEXT_PUBLIC_VAPIDKEY,
-            })
-              .then((currentToken) => {
-                if (currentToken) {
-                  console.log("Web FCM Token:", currentToken);
-                  fetch(
-                    `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cargpt/store-token/`,
-                    {
-                      method: "POST",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ token: currentToken }),
-                    }
-                  );
-                } else {
-                  console.warn(
-                    "No registration token available. Request permission to generate one."
-                  );
-                }
-              })
-              .catch((err) => {
-                console.error("Error retrieving FCM token", err);
-              });
+  //       cleanupFunctions = [
+  //         () => tokenListener.remove(),
+  //         () => notificationListener.remove(),
+  //         () => actionListener.remove(),
+  //       ];
+  //     } else if (
+  //       typeof window !== "undefined" &&
+  //       "Notification" in window &&
+  //       "serviceWorker" in navigator &&
+  //       "PushManager" in window
+  //     ) {
+  //       // -------------------------------
+  //       // Web: FCM
+  //       // -------------------------------
+  //       Notification.requestPermission().then((permission) => {
+  //         if (permission === "granted") {
+  //           getToken(messaging, {
+  //             vapidKey: process.env.NEXT_PUBLIC_VAPIDKEY,
+  //           })
+  //             .then((currentToken) => {
+  //               if (currentToken) {
+  //                 console.log("Web FCM Token:", currentToken);
+  //                 fetch(
+  //                   `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/cargpt/store-token/`,
+  //                   {
+  //                     method: "POST",
+  //                     headers: { "Content-Type": "application/json" },
+  //                     body: JSON.stringify({ token: currentToken }),
+  //                   }
+  //                 );
+  //               } else {
+  //                 console.warn(
+  //                   "No registration token available. Request permission to generate one."
+  //                 );
+  //               }
+  //             })
+  //             .catch((err) => {
+  //               console.error("Error retrieving FCM token", err);
+  //             });
 
-            onMessage(messaging, (payload) => {
-              console.log("Message received in foreground:", payload);
-              setNotifications((prev) => [
-                {
-                  title: payload.notification?.title ?? "Notification",
-                  body: payload.notification?.body ?? "",
-                  read: false,
-                },
-                ...prev,
-              ]);
-            });
-          }
-        });
-      }
-    };
+  //           onMessage(messaging, (payload) => {
+  //             console.log("Message received in foreground:", payload);
+  //             setNotifications((prev) => [
+  //               {
+  //                 title: payload.notification?.title ?? "Notification",
+  //                 body: payload.notification?.body ?? "",
+  //                 read: false,
+  //               },
+  //               ...prev,
+  //             ]);
+  //           });
+  //         }
+  //       });
+  //     }
+  //   };
 
-    setupNotifications();
+  //   setupNotifications();
 
-    // Cleanup function
-    return () => {
-      cleanupFunctions.forEach((fn) => fn());
-    };
-  }, []);
+  //   // Cleanup function
+  //   return () => {
+  //     cleanupFunctions.forEach((fn) => fn());
+  //   };
+  // }, []);
 
-  // Handle service worker background messages and localStorage sync
-  useEffect(() => {
-    const syncNotifications = () => {
-      const saved = localStorage.getItem("notifications");
-      if (saved) setNotifications(JSON.parse(saved));
-    };
+  // // Handle service worker background messages and localStorage sync
+  // useEffect(() => {
+  //   const syncNotifications = () => {
+  //     const saved = localStorage.getItem("notifications");
+  //     if (saved) setNotifications(JSON.parse(saved));
+  //   };
 
-    const handleServiceWorkerMessage = (event: MessageEvent) => {
-      if (event.data && event.data.type === "BACKGROUND_NOTIFICATION") {
-        console.log("Received background notification from SW:", event.data.notification);
-        setNotifications((prev) => [event.data.notification, ...prev]);
-      }
-    };
+  //   const handleServiceWorkerMessage = (event: MessageEvent) => {
+  //     if (event.data && event.data.type === "BACKGROUND_NOTIFICATION") {
+  //       console.log("Received background notification from SW:", event.data.notification);
+  //       setNotifications((prev) => [event.data.notification, ...prev]);
+  //     }
+  //   };
 
-    if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
-      navigator.serviceWorker.addEventListener("message", handleServiceWorkerMessage);
-    }
-    window.addEventListener("storage", syncNotifications);
+  //   if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+  //     navigator.serviceWorker.addEventListener("message", handleServiceWorkerMessage);
+  //   }
+  //   window.addEventListener("storage", syncNotifications);
 
-    return () => {
-      if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
-        navigator.serviceWorker.removeEventListener("message", handleServiceWorkerMessage);
-      }
-      window.removeEventListener("storage", syncNotifications);
-    };
-  }, []);
+  //   return () => {
+  //     if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+  //       navigator.serviceWorker.removeEventListener("message", handleServiceWorkerMessage);
+  //     }
+  //     window.removeEventListener("storage", syncNotifications);
+  //   };
+  // }, []);
 
   return (
     <NotificationContext.Provider value={{ notifications, setNotifications }}>

@@ -138,7 +138,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
         const transformedResponse = {
           first_name: googleUser.givenName,
           last_name: googleUser.familyName,
-          photo: googleUser.imageUrl,
+          photo: googleUser.imageUrl ?? "https://www.aicaradvisor.com/assets/avatar.png",
           email: `${googleUser.id}@gs.com`,
 
         };
@@ -154,6 +154,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
         const googleUser = await firebase.signInWithGoogle();
         if (!googleUser) return;
 
+        console.log("Google user:", googleUser);
         // idToken = await googleUser.getIdToken();
         email = `${googleUser?.uid}@gs.com`
         photo = googleUser.photoURL || ""
@@ -238,7 +239,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
         });
       }
     } catch (err) {
-      console.error("Google Sign-In Error:", err);
+      console.error("Google Sign-In Error:", JSON.stringify(err, null, 2));
        showSnackbar("You didn't complete sign-in. Tap again to continue with Google.", {
           vertical: "top",
           horizontal: "center",

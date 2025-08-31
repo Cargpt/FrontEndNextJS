@@ -12,6 +12,7 @@ import CookiesClientProvider from "@/providers/CookiesClientProvider";
 import { NotificationProvider } from "../Context/NotificationContext";
 import SafeAreaInit from "@/components/SafeAreaInit";
 import ThemeColorMeta from "@/components/Theme/ThemeColorMeta";
+import BackExitHandler from "@/components/BackExitHandler";
 
 const roboto = Roboto({
   weight: ['400', '700'],
@@ -99,14 +100,17 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html className={roboto.className} lang="en">
       
       <body>
+         <BackExitHandler>
         <CookiesClientProvider>
           <NotificationProvider>
             <SafeAreaInit />
             <ThemeColorMeta />
+
             {children}
             
           </NotificationProvider>
         </CookiesClientProvider>
+        </BackExitHandler>
 
         {/* --- Google Analytics Scripts --- */}
         <Script

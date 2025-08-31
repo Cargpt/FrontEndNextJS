@@ -3,71 +3,39 @@ import React, {
   useContext,
   useState,
   useEffect,
-  ReactNode,
-} from "react";
-import { initializeApp } from "firebase/app";
+  useRef,
+  ReactNode
+} from 'react';
+import { initializeApp } from 'firebase/app';
 import {
   getAuth,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword as firebaseSignIn,
+  signInWithEmailAndPassword,
   GoogleAuthProvider,
-  FacebookAuthProvider,
-  GithubAuthProvider,
-  TwitterAuthProvider,
   signInWithPopup,
-  signInWithCredential,
   signOut as firebaseSignOut,
   onAuthStateChanged,
-  User,
-} from "firebase/auth";
-
+  signInWithCustomToken,
+  signInAnonymously,
+  User
+} from 'firebase/auth';
 import {
   getFirestore,
   doc,
   getDoc,
   setDoc,
-} from "firebase/firestore";
+  setLogLevel,
+  
+} from 'firebase/firestore';
+import app, { auth } from '@/lib/firebase';
 
-import { useCookies } from "react-cookie";
-import { usePathname } from "next/navigation";
 
-import { Capacitor } from "@capacitor/core";
-
-// Firebase Config (from .env)
-const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_apiKey,
-  authDomain: process.env.NEXT_PUBLIC_authDomain,
-  projectId: process.env.NEXT_PUBLIC_projectId,
-  storageBucket: process.env.NEXT_PUBLIC_storageBucket,
-  messagingSenderId: process.env.NEXT_PUBLIC_messagingSenderId,
-  appId: process.env.NEXT_PUBLIC_appId,
-  measurementId: process.env.NEXT_PUBLIC_measurementId,
-};
-
-// Firebase initialization
-const firebaseApp = initializeApp(firebaseConfig);
-const firebaseAuth = getAuth(firebaseApp);
-const firestore = getFirestore(firebaseApp);
-export { firestore };
-
-// --- Firebase Context Interface ---
 interface FirebaseContextType {
   user: User | null;
   userRole: string | null;
-  userEmail: string | null;
-  signupUserWithEmailAndPassword: (
-    email: string,
-    password: string,
-    isAdmin?: boolean
-  ) => Promise<any>;
-  signInUserWithEmailAndPassword: (
-    email: string,
-    password: string
-  ) => Promise<any>;
+
   signInWithGoogle: () => Promise<User>;
-  signInWithFacebook: () => Promise<any>;
-  signInWithGitHub: () => Promise<any>;
-  signInWithTwitter: () => Promise<any>;
+  
   signOut: () => Promise<void>;
 }
 
@@ -81,100 +49,108 @@ export const useFirebase = () => {
     throw new Error("useFirebase must be used within FirebaseProvider");
   return context;
 };
+// Custom hook to use the AuthContext
 
-// --- Provider Component ---
+// Auth Provider Component
 export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string> ("");
   const [loading, setLoading] = useState(true);
-  const [cookies, setCookie] = useCookies(["token", "user"]);
+  const [authInstance, setAuthInstance] = useState(null);
+  const [dbInstance, setDbInstance] = useState(null);
+  const isMounted = useRef(true);
 
-  const pathname = usePathname();
-
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+ 
   useEffect(() => {
    
 
-    const unsubscribe = onAuthStateChanged(firebaseAuth, async (authUser) => {
-      if (authUser) {
-        setUser(authUser);
-        const userDoc = doc(firestore, "users", authUser.uid);
-        try {
-          const docSnap = await getDoc(userDoc);
-          let role = "user";
-          if (docSnap.exists()) {
-            role = docSnap.data()?.role || "user";
-          } else {
-            await setDoc(userDoc, { role });
-          }
-          setUserRole(role);
-          // localStorage.setItem("user", JSON.stringify(authUser));
-          // setCookie("user", JSON.stringify(authUser), {
-          //   path: "/",
-          //   maxAge: 60 * 60 * 24 * 365,
-          // });
+    try {
+      setLogLevel('debug');
+      const db = getFirestore(app);
+    
+      setAuthInstance(auth);
+      if(db){
+      setDbInstance(db);
 
-          // const token = await authUser.getIdToken();
-          // setCookie("token", token, {
-          //   path: "/",
-          //   maxAge: 60 * 60 * 24 * 365,
-          // });
-
-          // localStorage.setItem("userRole", role);
-        } catch (err) {
-          console.error(err);
-          setUserRole("user");
-        }
-      } else {
-        setUser(null);
-        setUserRole(null);
-        // localStorage.removeItem("user");
-        // localStorage.removeItem("userRole");
       }
-      setLoading(false);
-    });
 
-    return () => unsubscribe();
+      const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+        if (authUser) {
+          try {
+            setUser(authUser);
+            const userDocRef = doc(db, `/artifacts/${appId}/users/${authUser.uid}`, 'profile');
+            const docSnap = await getDoc(userDocRef);
+            let role = 'user';
+            if (docSnap.exists()) {
+              role = docSnap.data().role || 'user';
+            } else {
+              await setDoc(userDocRef, { role, email: authUser.email, createdAt: new Date() });
+            }
+            setUserRole(role);
+          } catch (err) {
+            console.error('Error fetching user role:', err);
+            setUserRole('user');
+          }
+        } else {
+          setUser(null);
+          setUserRole("");
+        }
+        if (isMounted.current) {
+          setLoading(false);
+        }
+      });
+
+      return () => unsubscribe();
+    } catch (e) {
+      console.error('Failed to initialize Firebase:', e);
+      if (isMounted.current) {
+        setLoading(false);
+      }
+    }
   }, []);
 
-  // --- Auth Functions ---
+  useEffect(() => {
+    const autoSignIn = async () => {
+      if (authInstance && !user && app) {
+        try {
+          await signInWithCustomToken(authInstance, initialAuthToken);
+          console.log('Signed in with custom token successfully.');
+        } catch (error) {
+          console.error('Sign-in with custom token failed:', error);
+          if (error.code === 'auth/invalid-custom-token') {
+            console.warn('The custom token is invalid. Attempting to sign in anonymously.');
+            try {
+              await signInAnonymously(authInstance);
+              console.log('Signed in anonymously successfully.');
+            } catch (anonError) {
+              console.error('Anonymous sign-in failed:', anonError);
+            }
+          }
+        }
+      }
+    };
+    autoSignIn();
+  }, [authInstance, user, app]);
 
-  const signupUserWithEmailAndPassword = async (
-    email: string,
-    password: string,
-    isAdmin = false
-  ) => {
-    const userCredential = await createUserWithEmailAndPassword(
-      firebaseAuth,
-      email,
-      password
-    );
-    await setDoc(doc(firestore, "users", userCredential.user.uid), {
-      role: isAdmin ? "admin" : "user",
-    });
-    return userCredential;
-  };
+  
 
-  const signInUserWithEmailAndPassword = (email: string, password: string) =>
-    firebaseSignIn(firebaseAuth, email, password);
+  const signInWithGoogle = async () : Promise<User>  => {
+    if (!authInstance || !dbInstance) return;
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(authInstance, provider);
+    const user = result.user;
 
-  const signInWithGoogle = async (): Promise<User> => {
-  try {
-    let user: User;
-
-    
-      // ✅ Web (browser)
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(firebaseAuth, provider);
-      user = result.user;
-    
-
-    // ✅ Sync with Firestore
-    const userDocRef = doc(firestore, "users", user.uid);
+    const userDocRef = doc(dbInstance, `/artifacts/${process.env.NEXT_PUBLIC_appId}/users/${user.uid}`, 'profile');
     const userDocSnap = await getDoc(userDocRef);
 
     if (!userDocSnap.exists()) {
       await setDoc(userDocRef, {
-        role: "user",
+        role: 'user',
         displayName: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
@@ -182,61 +158,25 @@ export const FirebaseProvider = ({ children }: { children: ReactNode }) => {
       });
     }
 
-    // ✅ Persist
-    // localStorage.setItem("user", JSON.stringify(user));
-    setCookie("user", JSON.stringify(user), {
-      path: "/",
-      maxAge: 60 * 60 * 24 * 365,
-    });
-    // localStorage.setItem("userRole", "user");
-
     return user;
-  } catch (error: any) {
-    console.error("❌ Google Sign-In Error", {
-      message: error?.message,
-      code: error?.code,
-      full: error,
-    });
-  console.log("❌ Google Sign-In Error:", JSON.stringify(error, null, 2));
+  };
 
-    // Developer error (code 10) hint
-    if (error?.code === 10) {
-      alert("Error Code 10: Check your SHA-1 and OAuth client config.");
-    }
-
-    throw error;
-  }
-};
-
-  const signInWithFacebook = () =>
-    signInWithPopup(firebaseAuth, new FacebookAuthProvider());
-  const signInWithGitHub = () =>
-    signInWithPopup(firebaseAuth, new GithubAuthProvider());
-  const signInWithTwitter = () =>
-    signInWithPopup(firebaseAuth, new TwitterAuthProvider());
-
-  const signOut = () => {
+  
+const signOut = () => {
     // localStorage.removeItem("user");
     // localStorage.removeItem("userRole");
-    return firebaseSignOut(firebaseAuth);
+    return firebaseSignOut(auth);
   };
-
-  const value: FirebaseContextType = {
+  
+const value: FirebaseContextType = {
     user,
     userRole,
-    userEmail: user?.email || null,
-    signupUserWithEmailAndPassword,
-    signInUserWithEmailAndPassword,
-    signInWithGoogle,
-    signInWithFacebook,
-    signInWithGitHub,
-    signInWithTwitter,
+   signInWithGoogle,
     signOut,
   };
-
   return (
     <FirebaseContext.Provider value={value}>
-      {!loading && children}
+      {children}
     </FirebaseContext.Provider>
   );
 };

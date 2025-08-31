@@ -1,40 +1,27 @@
-// public/firebase-messaging-sw.js
-importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
-importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
+importScripts('https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.22.2/firebase-messaging-compat.js');
 
-firebase.initializeApp({
- apiKey: "AIzaSyBlnXWFFmep3B4B7rpdzSOn_rJumhoMVHI",
-  authDomain: "cargpt-4366c.firebaseapp.com",
-  projectId: "cargpt-4366c",
-  storageBucket: "cargpt-4366c.firebasestorage.app",
-  messagingSenderId: "431860020742",
-  appId: "1:431860020742:web:676e2461ff4de4d8173587",
-  measurementId: "G-R21W0MRCMT"
-});
+const firebaseConfig = {
+  apiKey: "AIzaSyA3otIa1Cil3YybV-X22Ea-UQSYwwxf-kM",
+  authDomain: "aicaradvisor-fbcfa.firebaseapp.com",
+  projectId: "aicaradvisor-fbcfa",
+  storageBucket: "aicaradvisor-fbcfa.firebasestorage.app",
+  messagingSenderId: "770291167384",
+  appId: "1:770291167384:android:2d32bc15622333625c60ed",
+};
+firebase.initializeApp(firebaseConfig);
+
 
 const messaging = firebase.messaging();
 
-messaging.onBackgroundMessage(function (payload) {
-  console.log('[firebase-messaging-sw.js] Received background message', payload);
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: '/assets/AICarAdvisor.png'
-  };
+messaging.onBackgroundMessage(function(payload) {
+  console.log('[firebase-messaging-sw.js] Background message received:', payload);
 
-  // Send the notification to all open clients so they can update their UI
-  self.clients.matchAll().then(clients => {
-    clients.forEach(client => {
-      client.postMessage({
-        type: 'BACKGROUND_NOTIFICATION',
-        notification: {
-          title: payload.notification.title,
-          body: payload.notification.body,
-          read: false,
-        },
-      });
-    });
-  });
+  const notificationTitle = payload.notification?.title || 'Background Notification';
+  const notificationOptions = {
+    body: payload.notification?.body || '',
+    icon: '/logo.png',
+  };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
 });
