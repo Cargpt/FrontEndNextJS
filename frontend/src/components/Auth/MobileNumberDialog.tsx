@@ -132,7 +132,8 @@ const MobileNumberDialog: React.FC<MobileNumberDialogProps> = ({
         setStep("otp");
         setResendTimer(60);
       } catch (err: any) {
-        const msg = err?.response?.data?.message || "Failed to send OTP";
+        
+        const msg = err?.data?.error || "Failed to send OTP";
         setError(msg);
       } finally {
         setIsLoading(false);
