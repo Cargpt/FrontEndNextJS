@@ -13,6 +13,8 @@ import NotificationsActiveOutlinedIcon from "@mui/icons-material/NotificationsAc
 import DeleteSweepOutlinedIcon from "@mui/icons-material/DeleteSweepOutlined";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { axiosInstance1 } from "@/utils/axiosInstance";
+import { Preferences } from '@capacitor/preferences';
 
 const VAPID_KEY =
   "BOjWpWNg2UbA9o33HTIKOAAdLkx6GiB5l4Q_4lOwEJOZxDKVuku7HXUOWimqnPdOjzngx1-5rumuKrJz33GpSZs";
@@ -26,6 +28,8 @@ type StoredMessage = {
   };
   data?: any;
 };
+const platform = Capacitor.getPlatform();
+
 export default function Home() {
   const [messages, setMessages] = useState<StoredMessage[]>([]);
   const [token, setToken] = useState<string>("");
@@ -35,6 +39,35 @@ export default function Home() {
   const [expanded, setExpanded] = useState<Record<number, boolean>>({});
   const toggleExpand = (index: number) =>
     setExpanded(prev => ({ ...prev, [index]: !prev[index] }));
+
+  const saveTokenIfNew = async (newToken: string) => {
+    try {
+      let saved: string | null = null;
+      if (isNative) {
+        try {
+           
+            const res = await Preferences.get({ key: "fcm_token_saved" });
+            saved = res?.value ?? null;
+          
+        } catch {}
+      } else {
+        saved = localStorage.getItem("fcm_token_saved");
+      }
+      if (saved === newToken) return;
+      await axiosInstance1.post("/api/cargpt/store-token/", { token: newToken, platform: platform });
+      if (isNative) {
+        try {
+            await Preferences.set({ key: "fcm_token_saved", value: newToken });
+            console.log("Token saved successfully");
+        
+        } catch {}
+      } else {
+        localStorage.setItem("fcm_token_saved", newToken);
+      }
+    } catch (e) {
+      console.error("Failed to store FCM token", JSON.stringify(e));
+    }
+  };
 
   const loadMessages = async () => {
     const { getSavedMessages } = await import("../../lib/fcm-storage");
@@ -59,7 +92,10 @@ export default function Home() {
         }
         await PushNotifications.register();
 
-        PushNotifications.addListener("registration", t => setToken(t.value));
+        PushNotifications.addListener("registration", async t => {
+          setToken(t.value);
+          await saveTokenIfNew(t.value);
+        });
         PushNotifications.addListener("pushNotificationReceived", async notification => {
           const { saveMessage } = await import("../../lib/fcm-storage");
           await saveMessage({
@@ -75,7 +111,10 @@ export default function Home() {
         }
         if (Notification.permission === "granted") {
           const webToken = await requestFirebaseToken(VAPID_KEY);
-          if (webToken) setToken(webToken);
+          if (webToken) {
+            setToken(webToken);
+            await saveTokenIfNew(webToken);
+          }
           listenForMessages();
           window.addEventListener("new-fcm-message", loadMessages);
         }
