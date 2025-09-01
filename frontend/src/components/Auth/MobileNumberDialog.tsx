@@ -222,7 +222,19 @@ const MobileNumberDialog: React.FC<MobileNumberDialogProps> = ({
         },
       }}
     >
-      <DialogContent sx={{ p: 3, pt: isMobile ? 6 : 3, position: "relative", overflow: "hidden" }}>
+      <DialogContent sx={{
+        p: 3,
+        pt: isMobile ? 6 : 3,
+        position: "relative",
+        overflow: "visible",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        flexGrow: 1,
+        minHeight: isMobile ? "100dvh" : undefined,
+        transform: isMobile ? "translateY(-58px)" : undefined,
+      }}>
         <IconButton
           aria-label="Back"
           onClick={() => {
@@ -241,15 +253,20 @@ const MobileNumberDialog: React.FC<MobileNumberDialogProps> = ({
               }
             }
           }}
-          sx={{ position: "absolute", top: 8, left: 8 }}
+          sx={{
+            position: isMobile ? "fixed" : "absolute",
+            top: isMobile ? 78 : 8,
+            left: isMobile ? 12 : 8,
+            zIndex: 2000,
+          }}
         >
           <KeyboardBackspaceSharp />
         </IconButton>
         <Box textAlign="center" mb={2}>
           <Box
             sx={{
-              width: 60,
-              height: 60,
+              width: isMobile ? 80 : 60,
+              height: isMobile ? 80 : 60,
               borderRadius: "50%",
               background: "linear-gradient(to right, #00c6ff, #0072ff)",
               display: "flex",
@@ -260,11 +277,11 @@ const MobileNumberDialog: React.FC<MobileNumberDialogProps> = ({
             }}
           >
             {step === "otp" ? (
-              <SvgIcon sx={{ color: "white", fontSize: 30 }} viewBox="0 0 24 24">
+              <SvgIcon sx={{ color: "white", fontSize: isMobile ? 40 : 30 }} viewBox="0 0 24 24">
                 <path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2"></path>
               </SvgIcon>
             ) : (
-              <Person sx={{ color: "white", fontSize: 30 }} />
+              <Person sx={{ color: "white", fontSize: isMobile ? 40 : 30 }} />
             )}
           </Box>
           <Typography
