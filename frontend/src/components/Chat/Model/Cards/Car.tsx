@@ -830,7 +830,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
                       onClick={() => openDialog("score", car)}
                       disabled={allButtonsDisabled}
                     >
-                      <BrandName /> Score:
+                            AiCarAdvisor Score:
                       <Box
                         component="span"
                         sx={{ fontWeight: "bold", ml: 0.5 }}
