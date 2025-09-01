@@ -33,9 +33,37 @@ export const ColorModeProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [cookies, setCookie] = useCookies(['color-mode']);
 
-  const [mode, setMode] = useState<PaletteMode>(
-    (cookies['color-mode'] as PaletteMode) || 'light'
-  );
+  // Initialize with light mode
+  const [mode, setMode] = useState<PaletteMode>('light');
+
+  // First render effect - set initial theme based on device
+  useEffect(() => {
+    const setInitialTheme = () => {
+      // Clear any existing theme preference
+      setCookie('color-mode', '', { path: '/', expires: new Date(0) });
+      
+      // Check if mobile device
+      const isMobile = typeof window !== 'undefined' && 
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+      // Force the appropriate mode
+      const newMode = isMobile ? 'dark' : 'light';
+      setMode(newMode);
+      
+      // Save the new mode
+      setCookie('color-mode', newMode, {
+        path: '/',
+        maxAge: 60 * 60 * 24 * 30, // 30 days
+      });
+
+      // Force apply the theme
+      if (typeof document !== 'undefined') {
+        document.documentElement.setAttribute('data-mui-color-scheme', newMode);
+      }
+    };
+
+    setInitialTheme();
+  }, []);
 
   useEffect(() => {
     setCookie('color-mode', mode, {
