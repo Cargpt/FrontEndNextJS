@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Box, Link, useTheme } from "@mui/material";
 import CookiePolicyDialog from "./CookiePolicyDialog";
 import PrivacyPolicyDialog from "./PrivacyPolicyDialog";
+import BrandName from "./BrandName";
 import { Capacitor } from "@capacitor/core";
 
 type Props = {
@@ -21,8 +22,32 @@ const FixedBottomMessage: React.FC<Props> = ({ message }) => {
   // Example message: 'By messaging CarGPT, you agree to our Terms and have read our Privacy Policy. See Cookie Preferences.'
   const privacyIndex = message.indexOf('Privacy Policy');
   const cookieIndex = message.indexOf('See Cookie Preferences');
-const theme =useTheme()
-const isNative =Capacitor.isNativePlatform()
+  const brandIndex = message.indexOf('AiCarAdvisor (TM)');
+  
+  const theme = useTheme();
+  const isNative = Capacitor.isNativePlatform();
+
+  // Helper function to render text with proper brand name
+  const renderTextWithBrand = (text: string) => {
+    if (brandIndex === -1) return text;
+    
+    const beforeBrand = text.slice(0, brandIndex);
+    const afterBrand = text.slice(brandIndex + 'AiCarAdvisor (TM)'.length);
+    
+    return (
+      <>
+        {beforeBrand}
+        <BrandName />
+        {afterBrand}
+      </>
+    );
+  };
+
+  // Helper function to render text without brand name (for segments that shouldn't have it)
+  const renderTextWithoutBrand = (text: string) => {
+    // Remove any "AiCarAdvisor (TM)" occurrences from the text
+    return text.replace(/AiCarAdvisor \(TM\)/g, 'AiCarAdvisor');
+  };
   return (
     <>
       <Box
@@ -46,7 +71,7 @@ const isNative =Capacitor.isNativePlatform()
         }}
       >
         {/* Before Privacy Policy link */}
-        {privacyIndex !== -1 ? message.slice(0, privacyIndex) : message}
+        {privacyIndex !== -1 ? renderTextWithBrand(message.slice(0, privacyIndex)) : renderTextWithBrand(message)}
         {/* Privacy Policy link */}
         {privacyIndex !== -1 && (
           <Link component="button" type="button" sx={{ ml: 0.5 }} underline="always" color="primary" onClick={handlePrivacyOpen}>
@@ -54,7 +79,7 @@ const isNative =Capacitor.isNativePlatform()
           </Link>
         )}
         {/* Between Privacy Policy and Cookie Preferences */}
-        {privacyIndex !== -1 && cookieIndex !== -1 && message.slice(privacyIndex + 'Privacy Policy'.length, cookieIndex)}
+        {privacyIndex !== -1 && cookieIndex !== -1 && renderTextWithoutBrand(message.slice(privacyIndex + 'Privacy Policy'.length, cookieIndex))}
         {/* Cookie Preferences link */}
         {cookieIndex !== -1 && (
           <Link component="button" type="button" sx={{ ml: 0.5 }} underline="always" color="primary" onClick={handleCookieOpen}>
@@ -62,7 +87,7 @@ const isNative =Capacitor.isNativePlatform()
           </Link>
         )}
         {/* After Cookie Preferences */}
-        {cookieIndex !== -1 && message.slice(cookieIndex + 'See Cookie Preferences'.length)}
+        {cookieIndex !== -1 && renderTextWithoutBrand(message.slice(cookieIndex + 'See Cookie Preferences'.length))}
       </Box>
       <CookiePolicyDialog open={cookieOpen} onClose={handleCookieClose} />
       <PrivacyPolicyDialog open={privacyOpen} onClose={handlePrivacyClose} />

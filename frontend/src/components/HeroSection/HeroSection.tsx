@@ -208,7 +208,7 @@ const {messages, setMessages} = useChats();
         >
         <Box sx={{ ml: { xs: 1, sm: 1.5, md: 2 }, width: { xs: 140, sm: 160, md: 220 } }}>
           <motion.img
-            src={"/assets/AICarAdvisor_transparent.png"}
+            src={"/assets/logo.jpeg"}
             alt="Logo"
             width={220}
             height={50}
