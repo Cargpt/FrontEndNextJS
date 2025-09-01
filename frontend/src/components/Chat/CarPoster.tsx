@@ -71,14 +71,14 @@ const CarPoster = () => {
         </Box>
       </Box>
 
-      {/* Why AI Car Advisor Section */}
+      {/* Why Advisor Section */}
       <Box sx={{
         width: "80%",
         mt: 8,
         pb: 4,
         textAlign: "center",
       }}>
-        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 4 }}>Why AI Car Advisor</Typography>
+        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 4 }}>Why Advisor</Typography>
         <Box sx={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap" }}>
           <Box sx={{ width: "30%", mb: 4 }}>
             <Image src="/assets/artificial-intelligence.png" alt="Smart Matching" width={60} height={60} />

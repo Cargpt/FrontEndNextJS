@@ -376,7 +376,7 @@ const theme=useTheme()
                     padding: "2px 8px",
                     borderRadius: 8,
                     transition: "background 0.2s",
-                    paddingTop:"0px"
+                    paddingTop: "0px",
                   }}
                   onMouseOver={(e) =>
                     (e.currentTarget.style.background = "#e3eaf6")
@@ -385,8 +385,8 @@ const theme=useTheme()
                     (e.currentTarget.style.background = "transparent")
                   }
                 >
-                  <img 
-                  loading="lazy"
+                  <img
+                    loading="lazy"
                     src="/assets/test-drive.png"
                     alt="Profile Icon"
                     width={32}
@@ -404,6 +404,44 @@ const theme=useTheme()
                   </Typography>
                 </a>
               </Link>
+            )}
+
+            {isSmallScreen && (
+              <Box
+                sx={{
+                  mt: 2,
+                  px: 1,
+                  py: 1,
+                  borderTop: `1px solid ${theme.palette.divider}`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: theme.palette.text.primary,
+                  }}
+                >
+                  Theme Mode
+                </Typography>
+                <Button
+                  onClick={toggleColorMode}
+                  size="small"
+                  variant="outlined"
+                  startIcon={
+                    mode === "light" ? (
+                      <Brightness7Icon />
+                    ) : (
+                      <Brightness4Icon />
+                    )
+                  }
+                >
+                  {mode === "light" ? "Light" : "Dark"}
+                </Button>
+              </Box>
             )}
 
             {/* Histories Section (only for logged-in users) */}
@@ -536,37 +574,6 @@ const theme=useTheme()
                     gap: "8px",
                   }}
                 >
-
-{isSmallScreen && (
-
-                  <li>
-  <Box
-    sx={{
-      mt: 2,
-      px: 1,
-      py: 1,
-      borderTop: `1px solid ${theme.palette.grey[100]}`,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    }}
-  >
-    <Typography sx={{ fontSize: 14, fontWeight: 600 }}>
-      Theme Mode
-    </Typography>
-    <Button
-      onClick={toggleColorMode}
-      size="small"
-      variant="outlined"
-      startIcon={mode === 'light' ? <Brightness7Icon /> : <Brightness4Icon />}
-    >
-      {mode === 'light' ? 'Light' : 'Dark'}
-    </Button>
-  </Box>
-
-
-                  </li>
-                  )}
 
                 
                     { cookies.user && isSmallScreen &&
