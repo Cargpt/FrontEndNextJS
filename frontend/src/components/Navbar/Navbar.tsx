@@ -157,9 +157,11 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
           left: 0,
           right: 0,
           zIndex: 1000,
-          borderTop: `1px solid ${theme.palette.divider}`,
+          borderBottom: `1px solid ${theme.palette.divider}`,
           boxShadow: "none",
-          paddingTop: `env(safe-area-inset-bottom)`,
+          paddingTop: isNative && isAndroid
+            ? 'max(env(safe-area-inset-top, 0px), 2.5vh)'
+            : 'env(safe-area-inset-top, 0px)',
           boxSizing: "border-box",
         }}
         elevation={0}

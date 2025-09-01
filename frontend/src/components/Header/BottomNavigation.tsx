@@ -96,7 +96,9 @@ const BottomNavigationBar = () => {
       ? theme.palette.background.paper
       : "#f5f5f5",
     boxShadow: "none",
-    paddingBottom: `env(safe-area-inset-bottom)`,
+    paddingBottom: isNative && isAndroid
+      ? 'max(env(safe-area-inset-bottom, 0px), 2vh)'
+      : 'env(safe-area-inset-bottom, 0px)',
     boxSizing: "border-box",
   }}
 
@@ -138,8 +140,7 @@ const BottomNavigationBar = () => {
             icon={<MenuOutlinedIcon sx={{ color: mode=="dark"? 'white' :'black'}} />}
           
           />
-
-        l
+        
       
       </BottomNavigation>
 

@@ -133,7 +133,7 @@ export default function Home() {
   return (
     <Box component="main" sx={{ minHeight: "100vh", bgcolor: 'background.default' }}>
       <Navbar backToPrevious={handleBack} />
-      <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: 1200, mx: 'auto' }}>
+      <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: 1200, mx: 'auto', mt: { xs: 7, sm: 8 }, pt: 'env(safe-area-inset-top, 0px)' }}>
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 1.25, mb: 3 }}>
           <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: 16, sm: 22, md: 28 }, display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box component="span" sx={{ fontSize: { xs: 18, sm: 24, md: 28 } }}>📩</Box>
