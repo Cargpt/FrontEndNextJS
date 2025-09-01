@@ -157,7 +157,7 @@ const {mode}=useColorMode()
                       <Paper
             elevation={0}
             sx={{
-              p: 2,
+             p:1,
               width: "100%",
               display: "flex",
               flexDirection: "column",
