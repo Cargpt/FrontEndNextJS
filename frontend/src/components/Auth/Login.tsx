@@ -133,14 +133,18 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
 
         // idToken = googleUser.authentication?.idToken;
        
-
         const transformedResponse = {
           first_name: googleUser.givenName,
           last_name: googleUser.familyName,
-          photo: googleUser.imageUrl ?? "https://www.aicaradvisor.com/assets/avatar.png",
-          email: `${googleUser.id}@gs.com`,
+          photo: googleUser.imageUrl,
+          email:  googleUser.email ?? `${googleUser.id}@gs.com`,
 
         };
+        first_name= googleUser.givenName,
+        last_name=googleUser.familyName,
+        photo=googleUser.imageUrl,
+        email=googleUser.email ?? `${googleUser.id}@gs.com`,
+
 
         setCookie("user", transformedResponse, {
           maxAge: 60 * 60 * 24 * 365,
@@ -179,12 +183,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
         last_name: last_name,
         photo: photo,
       };
-      
       const response = await axiosInstance.post(
         "/api/cargpt/third-party-register/",
         payload,
       );
-
       // Check if mobile number is missing from response
       if (!response?.user?.mobile_no) {
         // Store user data from response and show mobile number dialog

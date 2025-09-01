@@ -179,7 +179,7 @@ export default function Home() {
           ))}
         </Box>
 
-        {token && (
+        {/* {token && (
           <Box sx={{ mt: 4 }}>
             <Typography variant="h6" sx={{ mb: 1 }}>Registration Token</Typography>
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems={{ xs: 'stretch', sm: 'center' }}>
@@ -187,7 +187,7 @@ export default function Home() {
               <Button variant="outlined" startIcon={<ContentCopyIcon />} onClick={() => navigator.clipboard.writeText(token)}>Copy</Button>
             </Stack>
           </Box>
-        )}
+        )} */}
       </Box>
     </Box>
   );
