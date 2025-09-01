@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Container,
   CssBaseline,
@@ -9,18 +9,46 @@ import {
 } from "@mui/material";
 
 import { useCookies } from "react-cookie";
-
+import { v4 as uuidv4 } from "uuid";
 import { Token } from "@mui/icons-material";
 import AdvisorIntro from "./AdvisorIntro/AdvisorIntro";
 import HeroSection from "./HeroSection/HeroSection";
+import { axiosInstance } from "@/utils/axiosInstance";
 
 
 const Main: React.FC = () => {
-  const [cookies] = useCookies(["token"]);
     const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up("md")); 
 
   const onClick = () => {};
+
+    const [cookies, setCookie] = useCookies(["selectedOption", "token"]);
+
+  const handleGuestLogin = async () => {
+    const uniqueUserId = uuidv4();
+
+    const payload = {
+      userId: uniqueUserId, // Include unique user ID
+    };
+
+    const response = await axiosInstance.post(
+      `/api/cargpt/createUser/`,
+      payload,
+      {}
+    );
+
+    if (response.token) {
+      // localStorage.setItem("auth_token", response.token);
+
+      setCookie("token", response.token, { path: "/", maxAge: 365 * 60 * 60 }); // Store the token
+      // localStorage.setItem("auth_token", response.token);
+    } else {
+    }
+  };
+
+  useEffect(() => {
+    if (!cookies.token) handleGuestLogin();
+  }, []);
   return (
     <>
       <CssBaseline />
