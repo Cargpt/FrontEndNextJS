@@ -1,7 +1,7 @@
 // lib/firebase.ts
 
 import { initializeApp,getApps, getApp } from 'firebase/app';
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 import {
   getMessaging,
@@ -70,5 +70,21 @@ export function listenForMessages(): void {
     window.dispatchEvent(new Event('new-fcm-message'));
   });
 }
+
+export const googleProvider = new GoogleAuthProvider();
+
+export const signInWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+    console.log("User Info:", user);
+    return user;
+  } catch (error) {
+    console.error("Google Sign-In Error:", error);
+    return null;
+  }
+};
+
+
 
 export default app;

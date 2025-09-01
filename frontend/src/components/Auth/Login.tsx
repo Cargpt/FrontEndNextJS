@@ -28,7 +28,6 @@ import { Capacitor } from "@capacitor/core";
 import { axiosInstance } from "@/utils/axiosInstance";
 import { useCookies } from "react-cookie";
 import { v4 as uuidv4 } from "uuid";
-import { useFirebase } from "@/Context/FirebaseAuthContext";
 import { useLoginDialog } from "@/Context/LoginDialogContextType";
 import { useSnackbar } from "@/Context/SnackbarContext";
 import {
@@ -44,6 +43,7 @@ import "react-phone-input-2/lib/material.css";
 
 import { motion, AnimatePresence } from "framer-motion";
 import { GoogleAuth } from "@codetrix-studio/capacitor-google-auth";
+import { signInWithGoogle } from "@/lib/firebase";
 
 interface LoginFormProps {
   showSignUp?: () => void;
@@ -62,7 +62,6 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
   const [pendingUserData, setPendingUserData] = useState<any>(null);
 
   const [cookies, setCookie] = useCookies(["token", "user"]);
-  const firebase = useFirebase();
   const { hide } = useLoginDialog();
   const { showSnackbar } = useSnackbar();
   const router = useRouter();
@@ -151,7 +150,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ showSignUp }) => {
         displayName = googleUser.givenName || "Guest";
       } else {
         // ✅ Web login using Firebase
-        const googleUser = await firebase.signInWithGoogle();
+        const googleUser = await signInWithGoogle();
         if (!googleUser) return;
 
         console.log("Google user:", googleUser);

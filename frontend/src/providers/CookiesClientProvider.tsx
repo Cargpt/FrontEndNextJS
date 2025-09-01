@@ -3,7 +3,6 @@
 
 import { CookiesProvider } from "react-cookie";
 import React, { useEffect } from "react";
-import { FirebaseProvider } from "../Context/FirebaseAuthContext";
 import { BotTypeProvider } from "../Context/BotTypeContext";
 import { ChatsProvider } from "@/Context/ChatContext";
 import SnackbarProvider from "@/Context/SnackbarContext";
@@ -27,7 +26,6 @@ export default function CookiesClientProvider({
 
     <CookiesProvider>
       <ColorModeProvider>
-      <FirebaseProvider>
         <LoginDialogProvider>
         <ChatsProvider>
           <BotTypeProvider>
@@ -35,7 +33,6 @@ export default function CookiesClientProvider({
           </BotTypeProvider>
         </ChatsProvider>
         </LoginDialogProvider>
-      </FirebaseProvider>
       </ColorModeProvider>
     </CookiesProvider>
   );
