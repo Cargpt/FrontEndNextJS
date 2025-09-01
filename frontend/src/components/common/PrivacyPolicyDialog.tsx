@@ -62,7 +62,7 @@ const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({ open, onClose
         } : {}}
       >
         <Typography gutterBottom>
-          This is the Privacy Policy for AiCarAdvisor. We value your privacy and are committed to protecting your personal information. This dialog summarizes our practices regarding data collection, usage, and protection.
+          This is the Privacy Policy for AiCarAdvisor (TM). We value your privacy and are committed to protecting your personal information. This dialog summarizes our practices regarding data collection, usage, and protection.
         </Typography>
         <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 'bold' }}>What We Collect:</Typography>
         <ul>
@@ -73,7 +73,7 @@ const PrivacyPolicyDialog: React.FC<PrivacyPolicyDialogProps> = ({ open, onClose
         </ul>
         <Typography variant="subtitle1" sx={{ mt: 2, fontWeight: 'bold' }}>How We Use Your Data:</Typography>
         <ul>
-          <li>To provide and improve AiCarAdvisor services.</li>
+          <li>To provide and improve AiCarAdvisor (TM) services.</li>
           <li>To personalize your experience and recommendations.</li>
           <li>To communicate important updates and offers.</li>
         </ul>

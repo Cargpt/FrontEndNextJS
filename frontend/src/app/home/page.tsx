@@ -14,7 +14,7 @@ const HomePage = () => {
       <ChatBox />
 
       
-      <FixedBottomMessage message="AiCarAdvisor can make mistakes. Check important info. See Cookie Preferences."/>
+      <FixedBottomMessage message="AiCarAdvisor (TM) can make mistakes. Check important info. See Cookie Preferences."/>
     </>
   );
 };

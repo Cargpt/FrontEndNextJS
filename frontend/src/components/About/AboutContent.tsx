@@ -23,6 +23,7 @@ import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import { useRouter } from "next/navigation";
 import { useColorMode } from "@/Context/ColorModeContext";
 import { motion } from "framer-motion";
+import BrandName from "@/components/common/BrandName";
 import CountUp from "react-countup";
 
 const fadeInUp = {
@@ -49,7 +50,7 @@ export default function AboutContent(): React.ReactElement {
             <ArrowBackIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            About AICarAdvisor
+            About <BrandName />
           </Typography>
         </Toolbar>
       </AppBar>
@@ -65,7 +66,7 @@ export default function AboutContent(): React.ReactElement {
             transition={{ duration: 0.5 }}
           >
             <Chip
-              label="About AICarAdvisor"
+              label="About AiCarAdvisor (TM)"
               color="primary"
               variant={mode === "dark" ? "filled" : "outlined"}
               sx={{ fontWeight: 700 }}
@@ -96,7 +97,7 @@ export default function AboutContent(): React.ReactElement {
               color="text.secondary"
               sx={{ maxWidth: 900, textAlign: "center" }}
             >
-              AICarAdvisor is your intelligent automotive companion. We leverage
+              AiCarAdvisor (TM) is your intelligent automotive companion. We leverage
               advanced AI to help you discover the perfect car tailored to your
               needs and budget. From personalized recommendations and detailed
               comparisons to up-to-date market insights, we make car shopping

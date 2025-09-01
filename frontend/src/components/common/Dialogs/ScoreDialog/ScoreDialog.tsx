@@ -10,6 +10,7 @@ import {
   useTheme,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import BrandName from "@/components/common/BrandName";
 import { useAndroidBackClose } from "@/hooks/useAndroidBackClose";
 import ScoreLeftPanel from "./ScoreLeftPanel";
 import ScoreRightPanel from "./ScoreRightPanel";
@@ -115,7 +116,7 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
         <Typography
           sx={{ position: "relative", textAlign: "center", fontWeight: 700, mt: 2 }}
         >
-          AI Car Advisor Score
+          <BrandName /> Score
         </Typography>
       </DialogTitle>
 

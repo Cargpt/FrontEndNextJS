@@ -1,6 +1,7 @@
 "use client"
 import React from 'react'
 import { Box, Typography, Button } from "@mui/material";
+import BrandName from "@/components/common/BrandName";
 
 const DesktopHomeScreen = () => {
   return (
@@ -73,14 +74,14 @@ const DesktopHomeScreen = () => {
         </Box>
       </Box>
 
-      {/* Why AI Car Advisor Section */}
+      {/* Why AiCarAdvisor™ Section */}
       <Box sx={{
         width: "80%",
         mt: 8,
         pb: 4,
         textAlign: "center",
       }}>
-        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 4 }}>Why AI Car Advisor</Typography>
+        <Typography variant="h4" sx={{ fontWeight: "bold", mb: 4 }}>Why <BrandName /></Typography>
         <Box sx={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap" }}>
           <Box sx={{ width: "30%", mb: 4 }}>
             <img src="/assets/artificial-intelligence.png" alt="Smart Matching" width={60} height={60} />

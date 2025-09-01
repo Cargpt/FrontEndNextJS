@@ -10,6 +10,7 @@ import {
   useTheme,
   Box,
 } from '@mui/material';
+import BrandName from '@/components/common/BrandName';
 import { KeyboardBackspaceSharp } from '@mui/icons-material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
@@ -185,9 +186,12 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
               fontWeight: 600,
               ml: 1,
               color: mode === "dark" ? "#2196f3" : "#ffffff", // Blue in dark mode, white in light mode
+              display: 'flex',
+              alignItems: 'baseline',
+              gap: 0.5,
             }}
           >
-            AICarAdvisor
+            <BrandName />
           </Typography>
 
           {/* Spacer pushes bookmark icon to right */}

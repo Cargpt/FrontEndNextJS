@@ -4,6 +4,7 @@ import { Box, Typography, Button, Rating, useScrollTrigger, IconButton, Badge, M
 import Slider,  { Settings } from "react-slick";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import BrandName from "@/components/common/BrandName";
 import { useCookies } from "react-cookie";
 import ThemeToggle from "@/components/Theme/ThemeToggle";
 import { useColorMode } from "@/Context/ColorModeContext";
@@ -345,10 +346,10 @@ const {messages, setMessages} = useChats();
         </Box>
       </Box>
 
-      {/* Why AI Car Advisor Section */}
+      {/* Why AiCarAdvisor™ Section */}
       <Box sx={{ width: "80%", mt: 8, pb: 4, textAlign: "center" }}>
         <Typography variant="h4" sx={{ fontWeight: "bold", mb: 4 }} component={motion.h2} variants={fadeInUp}>
-          Why AI Car Advisor
+          Why <BrandName />
         </Typography>
 
         <Box sx={{ display: "flex", justifyContent: "space-around", flexWrap: "wrap" }}>
@@ -415,7 +416,7 @@ const {messages, setMessages} = useChats();
 
         {(() => {
           const reviews = [
-            { img: "/assets/user1.png", name: "Rahul Sharma", review: "AI Car Advisor made car shopping stress-free and fun!", rating: 5 },
+            { img: "/assets/user1.png", name: "Rahul Sharma", review: "AiCarAdvisor (TM) made car shopping stress-free and fun!", rating: 5 },
             { img: "/assets/user2.png", name: "Priya Verma", review: "I saved two weeks of research and found my dream car.", rating: 4.5 },
             { img: "/assets/user3.png", name: "Amit Patel", review: "Super accurate recommendations. Highly recommended!", rating: 4.8 },
             { img: "/assets/avatar.png", name: "Neha Gupta", review: "Loved the comparison and price insights – very helpful.", rating: 4.7 },
