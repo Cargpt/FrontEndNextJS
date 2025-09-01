@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import BrandName from "@/components/common/BrandName";
 import { Box, Typography, Link as MuiLink } from "@mui/material";
 import Link from "next/link";
 
@@ -25,7 +26,7 @@ const Footer: React.FC = () => {
         }}
       >
         <Typography variant="body2" color="text.secondary">
-          &copy; {new Date().getFullYear()} AICarAdvisor. All Rights Reserved.
+          &copy; {new Date().getFullYear()} <BrandName />. All Rights Reserved.
         </Typography>
         <Box sx={{ mt: 1 }}>
           <MuiLink component={Link} href="/about" sx={{ mx: 2 }}>

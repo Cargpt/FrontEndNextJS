@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Drawer from "@mui/material/Drawer";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import BrandName from "@/components/common/BrandName";
 import {
   Accordion,
   AccordionDetails,
@@ -264,7 +265,7 @@ const theme=useTheme()
                   letterSpacing: 1,
                 }}
               >
-                AICarAdvisor
+                <BrandName />
               </Typography>
               <Link href="/" passHref legacyBehavior>
                 <a

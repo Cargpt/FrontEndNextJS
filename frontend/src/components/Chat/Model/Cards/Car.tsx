@@ -24,6 +24,7 @@ import EMIDialog from "@/components/common/Dialogs/EMIDialog/EMIDialog";
 import SentimentDialog from "@/components/common/Dialogs/SentimentDialog/SentimentDialog";
 import BookTestDrive from "@/components/common/Dialogs/TestDrivemodel/Booktestdrive"; 
 import { Avatar, IconButton, useTheme } from "@mui/material";
+import BrandName from "@/components/common/BrandName";
 import CollectionsIcon from "@mui/icons-material/Collections";
 import LoginDialog from "@/components/common/Dialogs/LoginDialog";
 import { useLoginDialog } from "@/Context/LoginDialogContextType";
@@ -813,7 +814,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
                       },
                     }}
                   >
-                    {/* AI Car Advisor Score Button */}
+                    {/* AiCarAdvisor (TM) Score Button */}
                     <Button
                       variant="outlined"
                       size="small"
@@ -829,7 +830,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
                       onClick={() => openDialog("score", car)}
                       disabled={allButtonsDisabled}
                     >
-                      AI Car Advisor Score:
+                      <BrandName /> Score:
                       <Box
                         component="span"
                         sx={{ fontWeight: "bold", ml: 0.5 }}

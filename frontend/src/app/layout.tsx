@@ -22,12 +22,12 @@ const roboto = Roboto({
 
 export const metadata: Metadata = {
   title: {
-    default: 'AiCarAdvisor – Find Your Perfect Car with AI',
-    template: '%s | AiCarAdvisor'
+    default: 'AiCarAdvisor (TM) – Find Your Perfect Car with AI',
+    template: '%s | AiCarAdvisor (TM)'
   },
   description:
-    'Get personalized car recommendations, compare specs & prices, and book test drives. AiCarAdvisor helps you find the right car faster with AI.',
-  applicationName: 'AiCarAdvisor',
+    'Get personalized car recommendations, compare specs & prices, and book test drives. AiCarAdvisor (TM) helps you find the right car faster with AI.',
+  applicationName: 'AiCarAdvisor (TM)',
   keywords: [
     'AI car advisor',
     'car recommendations',
@@ -36,9 +36,9 @@ export const metadata: Metadata = {
     'test drive booking',
     'automotive AI',
   ],
-  authors: [{ name: 'AiCarAdvisor' }],
-  creator: 'AiCarAdvisor',
-  publisher: 'AiCarAdvisor',
+  authors: [{ name: 'AiCarAdvisor (TM)' }],
+  creator: 'AiCarAdvisor (TM)',
+  publisher: 'AiCarAdvisor (TM)',
   robots: {
     index: true,
     follow: true,
@@ -56,16 +56,16 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    title: 'AiCarAdvisor – Find Your Perfect Car with AI',
+    title: 'AiCarAdvisor (TM) – Find Your Perfect Car with AI',
     description:
       'Personalized car recommendations powered by AI. Compare specs, prices, reviews, and book test drives – all in one place.',
     images: [
-      { url: '/assets/AICarAdvisor.png', width: 1200, height: 630, alt: 'AiCarAdvisor' },
+      { url: '/assets/AICarAdvisor.png', width: 1200, height: 630, alt: 'AiCarAdvisor (TM)' },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AiCarAdvisor – Find Your Perfect Car with AI',
+    title: 'AiCarAdvisor (TM) – Find Your Perfect Car with AI',
     description:
       'Let AI match you with the best cars based on your budget and lifestyle.',
     images: ['/assets/AICarAdvisor.png'],

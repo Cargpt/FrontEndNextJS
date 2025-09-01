@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import BrandName from '@/components/common/BrandName';
 import {
   Dialog,
   DialogTitle,
@@ -137,7 +138,7 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
   // Helper to render AI score on two lines
   const renderAIScoreLabel = (score: any) => (
     <span>
-      AI Car Advisor Score:
+      <BrandName /> Score:
       <br />
       {String(score)}
     </span>
@@ -1625,7 +1626,7 @@ const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ car1, c
           overflowX: 'auto',
           px: 1
         }}>
-          {[{label: 'Brand', key: 'brand'}, {label: 'AI Car Advisor Score', key: 'score'}, {label: 'User Sentiments', key: 'sentiments'}].map((row) => (
+          {[{label: 'Brand', key: 'brand'}, {label: 'AiCarAdvisor (TM) Score', key: 'score'}, {label: 'User Sentiments', key: 'sentiments'}].map((row) => (
             <Box key={row.key} sx={{
               display: 'flex',
               alignItems: 'center',
