@@ -11,6 +11,8 @@ import {
   Toolbar,
   IconButton,
   BottomNavigationAction,
+  Skeleton,
+  CircularProgress,
 } from "@mui/material";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import KeyboardBackspaceSharpIcon from "@mui/icons-material/KeyboardBackspaceSharp";
@@ -26,6 +28,7 @@ import { useTheme } from "@mui/material/styles";
 import { Capacitor } from "@capacitor/core";
 import VolumeUpOutlinedIcon from '@mui/icons-material/VolumeUpOutlined';
 import VolumeOffOutlinedIcon from '@mui/icons-material/VolumeOffOutlined';
+
 type Car = {
   id: number;
   image: string;
@@ -34,6 +37,11 @@ type Car = {
   price: string;
   CarAudioURL?: string;
   CarID: number;
+  BrandName?: string;
+  ModelName?: string;
+  VariantName?: string;
+  Price?: number;
+  CarImageDetails?: Array<{ CarImageURL: string }>;
 };
 
 type Props = {
@@ -44,6 +52,8 @@ const Variants: React.FC<Props> = () => {
   const [bookmarks, setBookmarks] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isInitialLoading, setIsInitialLoading] = useState(false);
+  const [ttsLoadingCards, setTtsLoadingCards] = useState<Set<number>>(new Set());
 
   const router = useRouter();
   const [cookies] = useCookies(["selectedOption", "user"]);
@@ -53,8 +63,7 @@ const Variants: React.FC<Props> = () => {
   const [isPlayingIndex, setIsPlayingIndex] = useState<number | null>(null);
   const { handleBookmark, setCars, cars } = useChats();
   const [isAutoplayPaused, setIsAutoplayPaused] = useState<boolean>(false);
-  const [isPlaying, setIsPlaying] = useState<boolean>(false); // play/pause toggle
-
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
   const onBack = () => router.back();
 
@@ -64,8 +73,20 @@ const Variants: React.FC<Props> = () => {
   };
 
   const fetchBookmarks = async () => {
-    const response = await axiosInstance1.get("/api/cargpt/bookmark/detailed/");
-    setBookmarks(response);
+    try {
+      setIsInitialLoading(true);
+      
+      const response = await axiosInstance1.get("/api/cargpt/bookmark/detailed/");
+      
+      if (response && Array.isArray(response)) {
+        setBookmarks(response);
+      }
+    } catch (error) {
+      console.error("Error fetching bookmarks:", error);
+      setBookmarks([]);
+    } finally {
+      setIsInitialLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -74,20 +95,39 @@ const Variants: React.FC<Props> = () => {
     }
   }, [cookies.user]);
 
-  const getAudioUrl = async (car: Car) => {
+  const getAudioUrl = async (car: Car, index: number) => {
     console.log("car", car);
     try {
+      // Set loading state for this specific car
+      setTtsLoadingCards(prev => new Set(prev).add(index));
+      
       const response = await axiosInstance1.get(
         `/api/cargpt/cars/${car.CarID}/tts/`
       );
+      
+      // Remove loading state after successful fetch
+      setTtsLoadingCards(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(index);
+        return newSet;
+      });
+      
       return response.tts_file;
     } catch (error) {
       console.error("Error fetching audio URL:", error);
+      
+      // Remove loading state on error
+      setTtsLoadingCards(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(index);
+        return newSet;
+      });
+      
       return "";
     }
   };
 
-  // 🔊 Auto-play bookmarks audio sequentially
+  // Auto-play bookmarks audio sequentially
   useEffect(() => {
     if (bookmarks.length === 0) return;
 
@@ -98,7 +138,7 @@ const Variants: React.FC<Props> = () => {
 
     const playAudio = async () => {
       try {
-        const audioUrl = await getAudioUrl(currentCar);
+        const audioUrl = await getAudioUrl(currentCar, currentIndex);
         if (!audioUrl || isCancelled) return;
 
         if (audioRef.current) {
@@ -117,7 +157,6 @@ const Variants: React.FC<Props> = () => {
 
           audioRef.current.addEventListener("ended", handleEnded);
 
-          // cleanup
           return () => {
             audioRef.current?.removeEventListener("ended", handleEnded);
             isCancelled = true;
@@ -131,41 +170,34 @@ const Variants: React.FC<Props> = () => {
     playAudio();
   }, [bookmarks, currentIndex]);
 
-
-
-
-   // 🔊 Autoplay from 0 on mount, then sequentially
-   useEffect(() => {
+  // Autoplay from 0 on mount, then sequentially
+  useEffect(() => {
     if (bookmarks.length === 0) return;
     playAudioAtIndex(currentIndex);
 
-    // cleanup
     return () => {
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = "";
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex, bookmarks]);
 
-  // Core play function
   // Core play function
   const playAudioAtIndex = async (index: number) => {
     const car = bookmarks[index];
     if (!car) return;
 
-    const audioUrl = await getAudioUrl(car);
+    const audioUrl = await getAudioUrl(car, index);
     if (!audioUrl) return;
 
     if (!audioRef.current) {
       audioRef.current = new Audio();
     }
 
-    // if switching audio, stop current
     audioRef.current.pause();
-
     audioRef.current.src = audioUrl;
+    
     try {
       await audioRef.current.play();
       setIsPlayingIndex(car.CarID);
@@ -191,14 +223,13 @@ const Variants: React.FC<Props> = () => {
 
   // Toggle play/pause when user clicks
   const handlePlayClick = async (car: Car, index: number) => {
-    // If clicked same playing car
     if (isPlayingIndex === car.CarID) {
       if (isPlaying) {
-        audioRef.current?.pause(); // pause
+        audioRef.current?.pause();
         setIsPlaying(false);
       } else {
         try {
-          await audioRef.current?.play(); // resume
+          await audioRef.current?.play();
           setIsPlaying(true);
         } catch (err) {
           console.warn("Resume failed:", err);
@@ -207,10 +238,161 @@ const Variants: React.FC<Props> = () => {
       return;
     }
 
-    // else: play new one
     await playAudioAtIndex(index);
   };
 
+  // Render skeleton card for loading state
+  const renderSkeletonCard = (key: string | number) => (
+    <Box
+      key={key}
+      sx={{
+        flex: {
+          xs: "1 1 48%",
+          sm: "1 1 48%",
+          md: "1 1 48%",
+          lg: "1 1 31%",
+        },
+        maxWidth: 380,
+        minWidth: 200,
+      }}
+    >
+      <Card
+        sx={{
+          borderRadius: 3,
+          bgcolor: mode === "dark" ? "#444" : "#fff",
+          overflow: "hidden",
+        }}
+      >
+        <Skeleton 
+          variant="rectangular" 
+          height={160}
+          sx={{
+            borderTopLeftRadius: 12,
+            borderTopRightRadius: 12,
+          }}
+        />
+        <CardContent>
+          <Stack direction="row" alignItems="center" justifyContent="space-between" mb={1}>
+            <Skeleton variant="text" width="60%" height={24} />
+            <Skeleton variant="circular" width={36} height={36} />
+          </Stack>
+          <Skeleton variant="text" width="40%" height={20} sx={{ mb: 0.5 }} />
+          <Skeleton variant="text" width="30%" height={20} />
+        </CardContent>
+      </Card>
+    </Box>
+  );
+
+  // Render actual car card
+  const renderCarCard = (car: Car, index: number) => (
+    <Box
+      key={car.id}
+      sx={{
+        flex: {
+          xs: "1 1 48%",
+          sm: "1 1 48%",
+          md: "1 1 48%",
+          lg: "1 1 31%",
+        },
+        maxWidth: 380,
+        minWidth: 200,
+        cursor: "pointer",
+      }}
+      onClick={() => onclick(car)}
+    >
+                    <Card
+         sx={{
+           borderRadius: 3,
+           boxShadow: "0 4px 16px rgba(25, 118, 210, 0.08)",
+           position: "relative",
+           transition: "box-shadow 0.2s",
+           "&:hover": {
+             boxShadow: "0 8px 24px rgba(25, 118, 210, 0.18)",
+           },
+           bgcolor: mode === "dark" ? "#444" : "#fff",
+         }}
+       >
+         {/* Remove (Cross) Button */}
+         <IconButton
+           onClick={(e) => {
+             e.stopPropagation();
+             // TODO: remove bookmark logic here
+           }}
+           sx={{
+             position: "absolute",
+             top: 8,
+             right: 8,
+             zIndex: 1,
+             color: mode === "dark" ? "primary.main" : "primary.main",
+           }}
+           aria-label="remove bookmark"
+         >
+           <CloseIcon fontSize="small" />
+         </IconButton>
+
+         <CardMedia
+           component="img"
+           height="160"
+           image={
+             car?.CarImageDetails?.[0]?.CarImageURL ||
+             "/assets/card-img.png"
+           }
+           alt={car.name}
+           sx={{
+             borderTopLeftRadius: 12,
+             borderTopRightRadius: 12,
+             objectFit: "cover",
+           }}
+         />
+         <CardContent>
+           <Stack
+             direction="row"
+             alignItems="center"
+             justifyContent="space-between"
+             mb={1}
+           >
+             {/* Car Name */}
+             <Typography
+               variant="h6"
+               fontWeight="bold"
+               sx={{ color: mode === "dark" ? "#fff" : "inherit" }}
+             >
+               {car?.BrandName} {car?.ModelName}
+             </Typography>
+
+             {/* Small Play Button inline with car name */}
+             <IconButton
+               onClick={async (e) => {
+                 e.stopPropagation();
+                 handlePlayClick(car, index);
+               }}
+               sx={{ width: 36, height: 36 }}
+               aria-label="play audio"
+               disabled={ttsLoadingCards.has(index)}
+             >
+               {ttsLoadingCards.has(index) ? (
+                 <CircularProgress size={20} />
+               ) : isPlayingIndex === car.CarID && isPlaying ? (
+                 <VolumeUpOutlinedIcon fontSize="small" />
+               ) : (
+                 <VolumeOffOutlinedIcon fontSize="small" />
+               )}
+             </IconButton>
+           </Stack>
+
+           {/* Variant */}
+           <Typography variant="body2" color="text.secondary" mb={0.5}>
+             {car?.VariantName}
+           </Typography>
+
+           {/* Price */}
+           <Typography variant="body2" color="primary" fontWeight="bold">
+             ₹{formatInternational(car.Price || 0)}
+           </Typography>
+         </CardContent>
+       </Card>
+    </Box>
+  );
 
   return (
     <Box
@@ -246,6 +428,7 @@ const Variants: React.FC<Props> = () => {
             Bookmarked Cars
           </Typography>
         </Stack>
+        
         <Box
           sx={{
             display: "flex",
@@ -254,117 +437,30 @@ const Variants: React.FC<Props> = () => {
             justifyContent: { xs: "center", md: "flex-start" },
           }}
         >
-          {bookmarks?.map((car, index:number) => (
+          {isInitialLoading ? (
+            // Show skeleton cards while initially loading
+            Array.from({ length: 6 }).map((_, index) => renderSkeletonCard(`skeleton-${index}`))
+          ) : bookmarks?.length > 0 ? (
+            bookmarks.map((car, index) => renderCarCard(car, index))
+          ) : (
+            // Empty state when no bookmarks
             <Box
-              key={car.id}
               sx={{
-                flex: {
-                  xs: "1 1 48%",
-                  sm: "1 1 48%",
-                  md: "1 1 48%",
-                  lg: "1 1 31%",
-                },
-                maxWidth: 380,
-                minWidth: 200,
-                cursor: "pointer",
+                width: "100%",
+                textAlign: "center",
+                py: 8,
+                color: mode === "dark" ? "text.secondary" : "text.primary",
               }}
-              onClick={() => onclick(car)}
             >
-              <Card
-                sx={{
-                  borderRadius: 3,
-                  boxShadow: "0 4px 16px rgba(25, 118, 210, 0.08)",
-                  position: "relative",
-                  transition: "box-shadow 0.2s",
-                  "&:hover": {
-                    boxShadow: "0 8px 24px rgba(25, 118, 210, 0.18)",
-                  },
-                  bgcolor: mode === "dark" ? "#444" : "#fff",
-                }}
-              >
-                {/* Remove (Cross) Button */}
-                <IconButton
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    // TODO: remove bookmark logic here
-                  }}
-                  sx={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    zIndex: 1,
-                    color: mode === "dark" ? "primary.main" : "primary.main",
-                  }}
-                  aria-label="remove bookmark"
-                >
-                  <CloseIcon fontSize="small" />
-                </IconButton>
-
-                
-
-                <CardMedia
-                  component="img"
-                  height="160"
-                  image={
-                    car?.CarImageDetails?.[0]?.CarImageURL ||
-                    "/assets/card-img.png"
-                  }
-                  alt={car.name}
-                  sx={{
-                    borderTopLeftRadius: 12,
-                    borderTopRightRadius: 12,
-                    objectFit: "cover",
-                  }}
-                />
-                <CardContent>
-  <Stack
-    direction="row"
-    alignItems="center"
-    justifyContent="space-between"
-    mb={1}
-  >
-    {/* Car Name */}
-    <Typography
-      variant="h6"
-      fontWeight="bold"
-      sx={{ color: mode === "dark" ? "#fff" : "inherit" }}
-    >
-      {car?.BrandName} {car?.ModelName}
-    </Typography>
-
-    {/* Small Play Button inline with car name */}
-    <IconButton
-      onClick={async (e) => {
-        e.stopPropagation();
-        handlePlayClick(car, index);
-      }}
-      sx={{ width: 36, height: 36 }}
-      aria-label="play audio"
-    >
-      
-      {isPlayingIndex === car.CarID && isPlaying ? (
-                <VolumeUpOutlinedIcon fontSize="small" />
-              ) : (
-                <VolumeOffOutlinedIcon fontSize="small" />
-              )}
-
-    </IconButton>
-  </Stack>
-
-  {/* Variant */}
-  <Typography variant="body2" color="text.secondary" mb={0.5}>
-    {car?.VariantName}
-  </Typography>
-
-  {/* Price */}
-  <Typography variant="body2" color="primary" fontWeight="bold">
-    ₹{formatInternational(car.Price)}
-  </Typography>
-</CardContent>
-
-              </Card>
+              <BookmarkBorderIcon sx={{ fontSize: 64, mb: 2, opacity: 0.5 }} />
+              <Typography variant="h6" gutterBottom>
+                No bookmarks yet
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Start bookmarking cars to see them here
+              </Typography>
             </Box>
-          ))}
+          )}
         </Box>
       </Box>
 
