@@ -25,7 +25,7 @@ export const useBrands = () => {
     };
   }, []);
 
-  return { brands, isLoadingBrands };
+  return { brands, isLoadingBrands, setBrands };
 };
 
 

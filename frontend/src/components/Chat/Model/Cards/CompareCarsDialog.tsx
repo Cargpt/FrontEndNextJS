@@ -45,6 +45,7 @@ import { useColorMode } from '@/Context/ColorModeContext';
 import { useAndroidBackClose } from '@/hooks/useAndroidBackClose';
 import { useSnackbar } from '@/Context/SnackbarContext';
 import { useLoginDialog } from '@/Context/LoginDialogContextType';
+import ShareButtons from '@/components/common/ShareButtons';
 
 interface CompareCarsDialogProps {
   open: boolean;
@@ -2370,6 +2371,14 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
                 <Typography variant="body2" sx={{ opacity: 0.9 }}>
                   Comparing {carName} with similar cars
                 </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 1 }}>
+                  <ShareButtons 
+                    title={`Check out this ${carName} comparison on AiCarAdvisor!`}
+                    description="AI-powered car comparison with detailed specs and analysis"
+                    size="small"
+                    variant="dropdown"
+                  />
+                </Box>
               </Box>
             </Toolbar>
           </AppBar>

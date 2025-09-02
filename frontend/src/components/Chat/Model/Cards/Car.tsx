@@ -42,6 +42,7 @@ import { LightbulbOutline } from "@mui/icons-material";
 import CompareCarsDialog from "./CompareCarsDialog";
 import CompareVsSelector from "./CompareVsSelector";
 import MobileNumberDialog from "@/components/Auth/MobileNumberDialog";
+import ShareButtons from "@/components/common/ShareButtons";
 
 type Props = {
   onClick?: () => void;
@@ -916,6 +917,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
           mt={1}
           flexWrap="wrap" // ✅ allow wrapping
           justifyContent={{ xs: "center", sm: "flex-start" }} // center on mobile, start on larger
+          alignItems="center"
           sx={{
             pb: "15px",
             rowGap: 1, // optional: vertical gap between rows
@@ -1101,10 +1103,20 @@ const TeslaCard: React.FC<CarCardProps> = ({
               fontSize: 13,
               textTransform: "capitalize",
               borderWidth: 1,
-              flex: { xs: '1 1 100%', sm: '0 auto' },
-              maxWidth: { xs: '100%', sm: 'none' },
+              flex: { xs: '0 0 auto', sm: '0 auto' },
+              maxWidth: { xs: 'none', sm: 'none' },
             }}
           />
+          
+          {/* Share Button */}
+          <Box sx={{ display: 'flex', alignItems: 'center', flex: { xs: '0 0 auto', sm: '0 auto' } }}>
+            <ShareButtons 
+              title={`Check out this ${carInfo?.BrandName || 'car'} ${carInfo?.ModelName || ''} on AiCarAdvisor!`}
+              description="AI-powered car comparison and recommendations"
+              size="small"
+              variant="dropdown"
+            />
+          </Box>
         </Stack>
       )}
       {dialog.type === "gallery" && (

@@ -16,6 +16,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import { useSnackbar } from "@/Context/SnackbarContext";
 import { useCookies } from "react-cookie";
+import { v4 as uuidv4 } from "uuid"; // Import uuidv4
 import { useRouter } from "next/navigation";
 import FixedHeaderWithBack from "../../Navbar/Navbar";
 import AskAIChat from "../AskAi";
@@ -36,9 +37,33 @@ const ChatBox: React.FC = () => {
 
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const [loading, setLoading] = useState(false);
-  const { brands } = useBrands();
-  const [cookies, , removeCookie] = useCookies(["selectedOption", "user"]);
+  const { brands, setBrands } = useBrands(); // Destructure setBrands from useBrands
+  const [cookies, setCookie, removeCookie] = useCookies(["selectedOption", "user", "token"]);
   const [showScrollToBottom, setShowScrollToBottom] = useState(false);
+
+  const handleGuestLogin = async () => {
+    const uniqueUserId = uuidv4();
+
+    const payload = {
+      userId: uniqueUserId, // Include unique user ID
+    };
+
+    try {
+      const response = await axiosInstance1.post(
+        `/api/cargpt/createUser/`,
+        payload,
+        {}
+      );
+      if (response.data.token) {
+        setCookie("token", response.data.token, { path: "/", maxAge: 365 * 24 * 60 * 60 }); // Store the token for 1 year
+        console.log("Guest token generated:", response.data.token);
+      } else {
+        console.error("Token not received from createUser API");
+      }
+    } catch (error) {
+      console.error("Error creating guest user:", error);
+    }
+  };
 
   useEffect(() => {
     if (messages.length === 0) return;
@@ -181,6 +206,37 @@ const ChatBox: React.FC = () => {
       // return () => clearTimeout(timer);
     }
   }, [messages, brands]);
+
+  // New useEffect for token check and API calls
+  useEffect(() => {
+    const checkTokenAndFetchData = async () => {
+      if (!cookies.token) {
+        await handleGuestLogin();
+      }
+
+      // After token is available (either existed or newly generated)
+      if (cookies.token) {
+        try {
+          // Fetch city dealers
+          const dealersResponse = await axiosInstance1.get("/api/dealers/city-dealers/");
+          // Assuming there's a way to set dealer list, e.g., via context or local state
+          // setDealerList(dealersResponse.data);
+          console.log("City dealers fetched:", dealersResponse.data);
+
+          // Fetch brands
+          const brandsResponse = await axiosInstance1.get("/api/cargpt/brands/");
+          // Assuming setBrands is available in context or passed as prop
+          setBrands(brandsResponse.data); // Update brands using setBrands from useBrands
+          console.log("Brands fetched:", brandsResponse.data);
+        } catch (error) {
+          console.error("Error fetching initial data:", error);
+        }
+      }
+    };
+
+    checkTokenAndFetchData();
+  }, [cookies.token]); // Rerun when token changes
+
 
   const handleIknowWhatEaxactlyWhatIWant = () => {
     // const lastItem = messages[messages.length - 1];

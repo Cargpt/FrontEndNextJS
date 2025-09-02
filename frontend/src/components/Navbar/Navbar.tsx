@@ -15,7 +15,7 @@ import { KeyboardBackspaceSharp } from '@mui/icons-material';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import { useCookies } from 'react-cookie';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Capacitor } from '@capacitor/core';
 import { useColorMode } from '@/Context/ColorModeContext';
 import { axiosInstance1 } from '@/utils/axiosInstance';
@@ -37,6 +37,7 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
   ]);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
   const theme = useTheme();
   const isNative = Capacitor.isNativePlatform();
   const isAndroid = Capacitor.getPlatform() === "android";
@@ -139,14 +140,23 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
   };
 
   useEffect(() => {
+    const locationFromShare = searchParams.get('share') === 'location';
+
     if (
-      cookies.currentCity ||
-      cookies.locationPermissionAcknowledged ||
-      enterCitydialogOpen
-    )
-      return;
-    handleLocation(false);
-  }, [cookies.currentCity, cookies.locationPermissionAcknowledged, enterCitydialogOpen]);
+      !cookies.currentCity &&
+      !cookies.locationPermissionAcknowledged &&
+      locationFromShare
+    ) {
+      setEnterCityDialogOpen(true);
+    } else if (
+      !cookies.currentCity &&
+      !cookies.locationPermissionAcknowledged &&
+      !enterCitydialogOpen &&
+      !locationFromShare
+    ) {
+      handleLocation(false);
+    }
+  }, [cookies.currentCity, cookies.locationPermissionAcknowledged, searchParams]);
 
   return (
     <>
