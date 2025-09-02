@@ -22,6 +22,7 @@ import { useRouter } from "next/navigation";
 import { useChats } from "@/Context/ChatContext";
 import { useCookies } from "react-cookie";
 import { axiosInstance1 } from "@/utils/axiosInstance";
+import { useSnackbar } from "@/Context/SnackbarContext";
 import { formatInternational } from "@/utils/services";
 import { useColorMode } from "../../Context/ColorModeContext";
 import { useTheme } from "@mui/material/styles";
@@ -62,6 +63,7 @@ const Variants: React.FC<Props> = () => {
   const isNative = Capacitor.isNativePlatform();
   const [isPlayingIndex, setIsPlayingIndex] = useState<number | null>(null);
   const { handleBookmark, setCars, cars } = useChats();
+  const { showSnackbar } = useSnackbar();
   const [isAutoplayPaused, setIsAutoplayPaused] = useState<boolean>(false);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
 
@@ -316,14 +318,19 @@ const Variants: React.FC<Props> = () => {
          <IconButton
            onClick={(e) => {
              e.stopPropagation();
-             // TODO: remove bookmark logic here
+             handleRemove(car);
            }}
            sx={{
              position: "absolute",
              top: 8,
              right: 8,
              zIndex: 1,
-             color: mode === "dark" ? "primary.main" : "primary.main",
+             color: '#d32f2f',
+             backgroundColor: 'rgba(255, 255, 255, 0.9)',
+             '&:hover': {
+               backgroundColor: 'rgba(255, 255, 255, 1)',
+               color: '#b71c1c',
+             },
            }}
            aria-label="remove bookmark"
          >
@@ -394,6 +401,40 @@ const Variants: React.FC<Props> = () => {
     </Box>
   );
 
+  const handleRemove = async (car: any) => {
+    try {
+      const payload = {
+       "variant_id": car?.VariantID
+  }
+      await axiosInstance1.post(`/api/cargpt/bookmark/toggle/`, payload); // Adjust endpoint
+      setBookmarks((prev) => prev.filter((bookmark) => bookmark.VariantID !== car?.VariantID));
+  
+      const update =updateBookmarkByVariantID(cars, car?.VariantID, false);
+        setCars((prev) => [
+          ...prev,
+          { [`${car?.BrandName}_${car?.ModelName}`]: update }, // Update the specific car's variants
+        ])
+      
+    } catch (error) {
+      console.error("Failed to remove bookmark:", error);
+    }
+  };
+
+  function updateBookmarkByVariantID(data:any, variantId:number, newState:boolean) {
+    for (const modelGroup of data) {
+      for (const modelName in modelGroup) {
+        const variants = modelGroup[modelName];
+        for (const variant of variants) {
+          if (variant.VariantID === variantId) {
+            variant.is_bookmarked = newState;
+            return variant; // Return updated variant
+          }
+        }
+      }
+    }
+    return null; // VariantID not found
+  }
+  
   return (
     <Box
       sx={{
