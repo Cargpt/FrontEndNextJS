@@ -47,7 +47,7 @@ type Car = {
 type Props = {
   bookmarks?: Car[];
 };
-
+// Bookmar
 const Variants: React.FC<Props> = () => {
   const [bookmarks, setBookmarks] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
