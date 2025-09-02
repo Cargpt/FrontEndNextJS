@@ -168,7 +168,7 @@ const Variants: React.FC<Props> = () => {
     };
 
     playAudio();
-  }, [bookmarks, currentIndex]);
+  }, [bookmarks]);
 
   // Autoplay from 0 on mount, then sequentially
   useEffect(() => {
@@ -181,7 +181,7 @@ const Variants: React.FC<Props> = () => {
         audioRef.current.src = "";
       }
     };
-  }, [currentIndex, bookmarks]);
+  }, [bookmarks]);
 
   // Core play function
   const playAudioAtIndex = async (index: number) => {
