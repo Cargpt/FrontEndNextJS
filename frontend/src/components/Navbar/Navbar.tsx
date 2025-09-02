@@ -26,6 +26,8 @@ import {
   DialogActions,
   CircularProgress,
   Tooltip,
+  Menu,
+  MenuItem,
 } from '@mui/material';
 import BrandName from '@/components/common/BrandName';
 import { KeyboardBackspaceSharp } from '@mui/icons-material';
@@ -36,6 +38,13 @@ import ChatIcon from '@mui/icons-material/Chat';
 import SearchIcon from '@mui/icons-material/Search';
 import RestoreFromTrashOutlined from '@mui/icons-material/RestoreFromTrashOutlined';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import PersonIcon from '@mui/icons-material/Person';
+import DirectionsCarIcon from '@mui/icons-material/DirectionsCar';
+import LogoutIcon from '@mui/icons-material/Logout';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/navigation';
 import { Capacitor } from '@capacitor/core';
@@ -66,7 +75,7 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
   const theme = useTheme();
   const isNative = Capacitor.isNativePlatform();
   const isAndroid = Capacitor.getPlatform() === "android";
-  const { mode } = useColorMode();
+  const { mode, toggleColorMode } = useColorMode();
   const { setMessages } = useChats();
   const { showSnackbar } = useSnackbar();
   
@@ -79,15 +88,48 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
   const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
   const [confirmOpen, setConfirmOpen] = useState<boolean>(false);
   const [pendingDelete, setPendingDelete] = useState<HistoryItem | null>(null);
+  const [dropdownAnchorEl, setDropdownAnchorEl] = useState<null | HTMLElement>(null);
 
   const toggleCity = () => setEnterCityDialogOpen((prev) => !prev);
   const onCloseLocationPopup = () => setLocationDenied(false);
   const toggleHistoryDrawer = () => setHistoryDrawerOpen((prev) => !prev);
+  
+  const handleDropdownOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setDropdownAnchorEl(event.currentTarget);
+  };
+
+  const handleDropdownClose = () => {
+    setDropdownAnchorEl(null);
+  };
 
   const handleBookmarkClick = () => {
     if (cookies.user) {
       router.push("/bookmarks");
     }
+    handleDropdownClose();
+  };
+
+  const handleNotificationsClick = () => {
+    router.push("/notifications");
+    handleDropdownClose();
+  };
+
+  const handleProfileClick = () => {
+    router.push("/profile");
+    handleDropdownClose();
+  };
+
+  const handleBookedTestDriveClick = () => {
+    router.push("/booked-test-drive");
+    handleDropdownClose();
+  };
+
+  const handleLogout = () => {
+    removeCookie("user", { path: "/" });
+    removeCookie("token", { path: "/" });
+    removeCookie("selectedOption", { path: "/" });
+    router.push("/");
+    handleDropdownClose();
   };
 
   // Fetch history data
@@ -401,7 +443,7 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
             <BrandName />
           </Typography>
 
-          {/* Spacer pushes bookmark icon to right */}
+          {/* Spacer pushes location and menu to right */}
           <div style={{ flexGrow: 1 }} />
 
           {/* City Selector */}
@@ -414,33 +456,150 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
               cursor: 'pointer',
               mr: 2,
               backgroundColor: 'transparent',
+              padding: '4px 8px',
+              borderRadius: '16px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              '&:hover': {
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+              },
             }}
           >
-            <LocationOnOutlinedIcon sx={{ fontSize: 20, color: '#fff' }} />
-            <Typography variant="body2" sx={{ color: '#fff', fontSize: 14 }}>
+            <LocationOnOutlinedIcon sx={{ fontSize: 18, color: '#fff' }} />
+            <Typography variant="body2" sx={{ color: '#fff', fontSize: 13, fontWeight: 500 }}>
               {cookies.currentCity ?? 'Select City'}
             </Typography>
           </Box>
 
-          {/* Bookmark Icon (if logged in) */}
-          {cookies.user && (
-            <Tooltip title="View Bookmarks" placement="bottom" arrow>
-              <IconButton onClick={handleBookmarkClick} edge="end" aria-label="favorite" sx={{ mr: 1 }}>
-                <FavoriteBorderIcon sx={{ color: '#fff' }} />
-              </IconButton>
-            </Tooltip>
-          )}
-
-          {/* History Icon */}
-          <Tooltip title="Chat History" placement="bottom" arrow>
-            <IconButton onClick={toggleHistoryDrawer} edge="end" aria-label="history">
-              <HistoryIcon sx={{ color: '#fff' }} />
+          {/* 3-Dots Menu */}
+          <Tooltip title="More options" placement="bottom" arrow>
+            <IconButton
+              onClick={handleDropdownOpen}
+              edge="end"
+              aria-label="more options"
+              sx={{ color: '#fff' }}
+            >
+              <MoreVertIcon />
             </IconButton>
           </Tooltip>
         </Toolbar>
       </AppBar>
 
       <Toolbar /> {/* spacer for fixed header */}
+      
+      {/* 3-Dots Dropdown Menu */}
+      <Menu
+        anchorEl={dropdownAnchorEl}
+        open={Boolean(dropdownAnchorEl)}
+        onClose={handleDropdownClose}
+        PaperProps={{
+          sx: {
+            mt: 1,
+            minWidth: 200,
+            backgroundColor: mode === "dark" ? "#1a1a1a" : "#ffffff",
+            color: mode === "dark" ? "#ffffff" : "#000000",
+            border: `1px solid ${theme.palette.divider}`,
+            boxShadow: "0 4px 20px rgba(0, 0, 0, 0.15)",
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        {/* Chat History */}
+        <MenuItem onClick={toggleHistoryDrawer} sx={{ py: 1.5 }}>
+          <ListItemIcon>
+            <HistoryIcon sx={{ fontSize: 20, color: 'primary.main' }} />
+          </ListItemIcon>
+          <ListItemText 
+            primary="Chat History" 
+            primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+          />
+        </MenuItem>
+
+        {/* Bookmarks */}
+        {cookies.user && (
+          <MenuItem onClick={handleBookmarkClick} sx={{ py: 1.5 }}>
+            <ListItemIcon>
+              <FavoriteBorderIcon sx={{ fontSize: 20, color: 'primary.main' }} />
+            </ListItemIcon>
+            <ListItemText 
+              primary="Bookmarks" 
+              primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+            />
+          </MenuItem>
+        )}
+
+        {/* Notifications */}
+        {cookies.user && (
+          <MenuItem onClick={handleNotificationsClick} sx={{ py: 1.5 }}>
+            <ListItemIcon>
+              <NotificationsIcon sx={{ fontSize: 20, color: 'primary.main' }} />
+            </ListItemIcon>
+            <ListItemText 
+              primary="Notifications" 
+              primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+            />
+          </MenuItem>
+        )}
+
+        <Divider />
+
+        {/* Profile */}
+        {cookies.user && (
+          <MenuItem onClick={handleProfileClick} sx={{ py: 1.5 }}>
+            <ListItemIcon>
+              <PersonIcon sx={{ fontSize: 20, color: 'primary.main' }} />
+            </ListItemIcon>
+            <ListItemText 
+              primary="Profile" 
+              primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+            />
+          </MenuItem>
+        )}
+
+        {/* Booked Test Drive */}
+        {cookies.user && (
+          <MenuItem onClick={handleBookedTestDriveClick} sx={{ py: 1.5 }}>
+            <ListItemIcon>
+              <DirectionsCarIcon sx={{ fontSize: 20, color: 'primary.main' }} />
+            </ListItemIcon>
+            <ListItemText 
+              primary="Booked Test Drive" 
+              primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+            />
+          </MenuItem>
+        )}
+
+        <Divider />
+
+        {/* Theme Toggle */}
+        <MenuItem onClick={toggleColorMode} sx={{ py: 1.5 }}>
+          <ListItemIcon>
+            {mode === 'dark' ? (
+              <Brightness7Icon sx={{ fontSize: 20, color: 'primary.main' }} />
+            ) : (
+              <Brightness4Icon sx={{ fontSize: 20, color: 'primary.main' }} />
+            )}
+          </ListItemIcon>
+          <ListItemText 
+            primary={mode === 'dark' ? 'Light Mode' : 'Dark Mode'} 
+            primaryTypographyProps={{ fontSize: 14, fontWeight: 500 }}
+          />
+        </MenuItem>
+
+        {/* Logout */}
+        {cookies.user && (
+          <MenuItem onClick={handleLogout} sx={{ py: 1.5 }}>
+            <ListItemIcon>
+              <LogoutIcon sx={{ fontSize: 20, color: '#d32f2f' }} />
+            </ListItemIcon>
+            <ListItemText 
+              primary="Logout" 
+              primaryTypographyProps={{ fontSize: 14, fontWeight: 500, color: '#d32f2f' }}
+            />
+          </MenuItem>
+        )}
+      </Menu>
+
       {/* Dialogs */}
       <CityInputDialog
         open={enterCitydialogOpen}
