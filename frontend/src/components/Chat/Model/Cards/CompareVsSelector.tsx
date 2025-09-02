@@ -23,6 +23,7 @@ import LightbulbOutline from "@mui/icons-material/LightbulbOutline";
 import { Stack } from "@mui/material";
 import { useCookies } from "react-cookie";
 import { useChats } from "@/Context/ChatContext";
+import ShareButtons from "@/components/common/ShareButtons";
 
 const getCarImage = (car: any) => {
   const imageUrl =
@@ -308,13 +309,21 @@ const CompareVsSelector: React.FC = () => {
         </Button>
         {renderSlot('right', rightCar)}
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-        <Button variant="contained" onClick={() => {
-          openDetailedCompare();
-        }} disabled={false}>
-          Compare
-        </Button>
-      </Box>
+              {/* Compare and Share buttons in same row */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, mb: 2, flexWrap: 'wrap' }}>
+          <Button variant="contained" onClick={() => {
+            openDetailedCompare();
+          }} disabled={false}>
+            Compare
+          </Button>
+          
+          <ShareButtons 
+            title="Check out this car comparison on AiCarAdvisor!"
+            description="AI-powered car comparison and recommendations"
+            size="small"
+            variant="dropdown"
+          />
+        </Box>
       <Stack
         direction="row"
         gap={1.5}

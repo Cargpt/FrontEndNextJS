@@ -8,7 +8,7 @@ import Sidebar from "../Sidebar/Sidebar";
 import { useCookies } from "react-cookie";
 import { useColorMode } from "@/Context/ColorModeContext";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import Badge from "@mui/material/Badge";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
@@ -39,6 +39,7 @@ const Header: React.FC = () => {
 
   
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { mode } = useColorMode();
   const theme = useTheme();
 
@@ -134,9 +135,16 @@ const Header: React.FC = () => {
 };
 
   useEffect(() => {
-    if (cookies.currentCity || cookies.locationPermissionAcknowledged || enterCitydialogOpen) return;
+    const locationFromShare = searchParams.get('share') === 'location';
+
+    if (
+      cookies.currentCity ||
+      cookies.locationPermissionAcknowledged ||
+      enterCitydialogOpen ||
+      locationFromShare
+    ) return;
     handleLocation(false);
-  }, [cookies.currentCity, cookies.locationPermissionAcknowledged, enterCitydialogOpen]);
+  }, [cookies.currentCity, cookies.locationPermissionAcknowledged, searchParams]);
 
   const toggleCity = () => setEnterCityDialogOpen(!enterCitydialogOpen);
 
