@@ -66,7 +66,11 @@ export default function AboutContent(): React.ReactElement {
             transition={{ duration: 0.5 }}
           >
             <Chip
-              label="About AiCarAdvisor (TM)"
+              label={
+                <span>
+                  About <BrandName />
+                </span>
+              }
               color="primary"
               variant={mode === "dark" ? "filled" : "outlined"}
               sx={{ fontWeight: 700 }}
@@ -97,7 +101,7 @@ export default function AboutContent(): React.ReactElement {
               color="text.secondary"
               sx={{ maxWidth: 900, textAlign: "center" }}
             >
-              AiCarAdvisor (TM) is your intelligent automotive companion. We leverage
+              <BrandName /> is your intelligent automotive companion. We leverage
               advanced AI to help you discover the perfect car tailored to your
               needs and budget. From personalized recommendations and detailed
               comparisons to up-to-date market insights, we make car shopping

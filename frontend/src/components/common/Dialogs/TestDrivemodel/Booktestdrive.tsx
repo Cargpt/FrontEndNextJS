@@ -177,7 +177,7 @@ const [cookies, setCookie]=useCookies(['user', 'token'])
         responseData?.detail ||
         responseData?.success ||
         responseData?.status ||
-        'Thanks for using AiCarAdvisor™! Our representative will get connected with you.';
+        'Thanks for using AiCarAdvisor! Our representative will get connected with you.';
       setSuccess(String(serverSuccessMessage));
       console.log('Test drive booking successful:', responseData);
       setTimeout(() => {

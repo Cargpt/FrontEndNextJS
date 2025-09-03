@@ -8,7 +8,7 @@ type BrandNameProps = {
 };
 
 /**
- * Renders the brand name "AiCarAdvisor" with a small superscript TM.
+ * Renders the brand name "AiCarAdvisor" with a small superscript TM in a circle.
  * Use this component anywhere the brand is displayed in UI text.
  */
 const BrandName: React.FC<BrandNameProps> = ({ className, style }) => {
@@ -17,16 +17,27 @@ const BrandName: React.FC<BrandNameProps> = ({ className, style }) => {
       AiCarAdvisor
       <sup
         style={{
-          fontSize: "0.5em",
+          fontSize: "0.35em",
           lineHeight: 1,
           verticalAlign: "super",
-          marginLeft: 2,
+          marginLeft: 4,
           position: "relative",
-          top: -1,
+          top: -2,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "1.2em",
+          height: "1.2em",
+          borderRadius: "50%",
+          backgroundColor: "currentColor",
+          color: "white",
+          fontWeight: "bold",
+          textTransform: "uppercase",
+          letterSpacing: "0.5px",
         }}
         aria-hidden="true"
       >
-        (TM)
+        TM
       </sup>
     </span>
   );

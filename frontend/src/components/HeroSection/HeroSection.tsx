@@ -416,7 +416,7 @@ const {messages, setMessages} = useChats();
 
         {(() => {
           const reviews = [
-            { img: "/assets/user1.png", name: "Rahul Sharma", review: "AiCarAdvisor (TM) made car shopping stress-free and fun!", rating: 5 },
+            { img: "/assets/user1.png", name: "Rahul Sharma", review: "AiCarAdvisor made car shopping stress-free and fun!", rating: 5 },
             { img: "/assets/user2.png", name: "Priya Verma", review: "I saved two weeks of research and found my dream car.", rating: 4.5 },
             { img: "/assets/user3.png", name: "Amit Patel", review: "Super accurate recommendations. Highly recommended!", rating: 4.8 },
             { img: "/assets/avatar.png", name: "Neha Gupta", review: "Loved the comparison and price insights – very helpful.", rating: 4.7 },

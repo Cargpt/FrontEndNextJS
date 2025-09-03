@@ -1627,7 +1627,7 @@ const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ car1, c
           overflowX: 'auto',
           px: 1
         }}>
-          {[{label: 'Brand', key: 'brand'}, {label: 'AiCarAdvisor (TM) Score', key: 'score'}, {label: 'User Sentiments', key: 'sentiments'}].map((row) => (
+          {[{label: 'Brand', key: 'brand'}, {label: 'AiCarAdvisor Score', key: 'score'}, {label: 'User Sentiments', key: 'sentiments'}].map((row) => (
             <Box key={row.key} sx={{
               display: 'flex',
               alignItems: 'center',
