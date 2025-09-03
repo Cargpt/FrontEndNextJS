@@ -29,7 +29,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({
   title = 'Check out this car comparison on AiCarAdvisor!',
   description = 'AI-powered car comparison and recommendations',
   url,
-  image = 'https://uat.aicaradvisor.com/assets/AICarAdvisor.png',
+  image = 'https://aicaradvisor.com/assets/AICarAdvisor.png',
   size = 'medium',
   variant = 'icon'
 }) => {
