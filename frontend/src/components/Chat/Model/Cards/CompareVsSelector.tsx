@@ -320,6 +320,7 @@ const CompareVsSelector: React.FC = () => {
           <ShareButtons 
             title="Check out this car comparison on AiCarAdvisor!"
             description="AI-powered car comparison and recommendations"
+            image="https://uat.aicaradvisor.com/assets/AICarAdvisor.png"
             size="small"
             variant="dropdown"
           />

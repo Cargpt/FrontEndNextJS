@@ -20,6 +20,7 @@ interface ShareButtonsProps {
   title?: string;
   description?: string;
   url?: string;
+  image?: string;
   size?: 'small' | 'medium' | 'large';
   variant?: 'icon' | 'button' | 'dropdown';
 }
@@ -28,6 +29,7 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({
   title = 'Check out this car comparison on AiCarAdvisor!',
   description = 'AI-powered car comparison and recommendations',
   url,
+  image = 'https://uat.aicaradvisor.com/assets/AICarAdvisor.png',
   size = 'medium',
   variant = 'icon'
 }) => {
@@ -37,6 +39,9 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({
   
   // Get current page URL if not provided
   const currentUrl = url || (typeof window !== 'undefined' ? window.location.href : '');
+  
+  // Note: For localhost URLs, we include the image URL with emojis to make it more visible
+  // For production URLs, rich link previews will use Open Graph meta tags
   
   const open = Boolean(anchorEl);
   
@@ -50,7 +55,21 @@ const ShareButtons: React.FC<ShareButtonsProps> = ({
   
   // WhatsApp share function
   const shareOnWhatsApp = () => {
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(`${title}\n\n${description}\n\n${currentUrl}`)}`;
+    // For localhost URLs, we need to include the image in a special way
+    // For production URLs, WhatsApp will create rich link previews automatically
+    const isLocalhost = currentUrl.includes('localhost') || currentUrl.includes('127.0.0.1');
+    
+    let shareText = title;
+    if (isLocalhost) {
+      // For localhost, include the image URL and make it more prominent
+      // WhatsApp will treat this as a clickable link that shows the image
+      shareText = `${title}\n\n${description}\n\n🖼️ View Image: ${image}\n\n🌐 Visit: ${currentUrl}`;
+    } else {
+      // For production URLs, let WhatsApp handle rich previews
+      shareText = `${title}\n\n${description}\n\n${currentUrl}`;
+    }
+    
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
     window.open(whatsappUrl, '_blank');
     handleClose();
   };

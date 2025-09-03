@@ -1110,12 +1110,13 @@ const TeslaCard: React.FC<CarCardProps> = ({
           
           {/* Share Button */}
           <Box sx={{ display: 'flex', alignItems: 'center', flex: { xs: '0 0 auto', sm: '0 auto' } }}>
-            <ShareButtons 
-              title={`Check out this ${carInfo?.BrandName || 'car'} ${carInfo?.ModelName || ''} on AiCarAdvisor!`}
-              description="AI-powered car comparison and recommendations"
-              size="small"
-              variant="dropdown"
-            />
+                      <ShareButtons 
+            title={`Check out this ${carInfo?.BrandName || 'car'} ${carInfo?.ModelName || ''} on AiCarAdvisor!`}
+            description="AI-powered car comparison and recommendations"
+            image="https://uat.aicaradvisor.com/assets/AICarAdvisor.png"
+            size="small"
+            variant="dropdown"
+          />
           </Box>
         </Stack>
       )}
