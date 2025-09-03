@@ -2,6 +2,7 @@
 
 
 import "./globals.css";
+import "@/styles/statusBar.css";
 import { type ReactNode } from 'react'; // <--- Import useEffect
 import { Roboto } from 'next/font/google';
 import Script from "next/script";
@@ -13,6 +14,7 @@ import { NotificationProvider } from "../Context/NotificationContext";
 import SafeAreaInit from "@/components/SafeAreaInit";
 import ThemeColorMeta from "@/components/Theme/ThemeColorMeta";
 import BackExitHandler from "@/components/BackExitHandler";
+import StatusBar from "@/components/common/StatusBar";
 
 const roboto = Roboto({
   weight: ['400', '700'],
@@ -105,6 +107,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           <NotificationProvider>
             <SafeAreaInit />
             <ThemeColorMeta />
+            <StatusBar />
 
             {children}
             

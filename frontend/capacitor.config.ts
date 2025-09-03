@@ -17,7 +17,7 @@ const config: CapacitorConfig = {
     StatusBar: {
       backgroundColor: '#ffffff',
       style: 'DARK',
-      overlaysWebView: false
+      overlaysWebView: true
     },
     GoogleAuth: {
       scopes: ["profile", "email" ],

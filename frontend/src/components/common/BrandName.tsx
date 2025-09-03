@@ -1,5 +1,6 @@
 "use client";
 
+import { useColorMode } from "@/Context/ColorModeContext";
 import React from "react";
 
 type BrandNameProps = {
@@ -12,32 +13,34 @@ type BrandNameProps = {
  * Use this component anywhere the brand is displayed in UI text.
  */
 const BrandName: React.FC<BrandNameProps> = ({ className, style }) => {
+  const {mode} = useColorMode()
+
   return (
-    <span className={className} style={style}>
-      AiCarAdvisor
+    <span className={className} style={{top:115}}>
+AiCarAdvisor
       <sup
         style={{
           fontSize: "0.35em",
           lineHeight: 1,
           verticalAlign: "super",
-          marginLeft: 4,
+          marginLeft: 2,
           position: "relative",
-          top: -2,
+          top:4,
           display: "inline-flex",
           alignItems: "center",
           justifyContent: "center",
-          width: "1.2em",
-          height: "1.2em",
+          width: "15px",
+          height: "15px",
           borderRadius: "50%",
-          backgroundColor: "currentColor",
-          color: "white",
+          color: mode=="dark" ? "white" : "#333",
           fontWeight: "bold",
           textTransform: "uppercase",
           letterSpacing: "0.5px",
+          border: "2px solid " + (mode=="dark" ? "white" : "#333"),
         }}
         aria-hidden="true"
       >
-        TM
+<span style={{marginTop:10, fontSize:"18px"}}>        &#8482;</span>
       </sup>
     </span>
   );

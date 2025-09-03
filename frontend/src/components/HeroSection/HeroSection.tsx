@@ -192,7 +192,10 @@ const {messages, setMessages} = useChats();
           boxShadow: scrolled ? "0 4px 12px rgba(0,0,0,0.08)" : "none",
           backdropFilter: scrolled ? "saturate(180%) blur(8px)" : "none",
           transition: "all 220ms ease",
+          paddingTop: 'env(safe-area-inset-top)', // Add padding for status bar
         }}
+        data-testid="navbar"
+        className="navbar-fixed"
       >
         <Box
           component={motion.div}

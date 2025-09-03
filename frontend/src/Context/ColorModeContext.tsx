@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { useCookies } from 'react-cookie';
 import { grey } from '@mui/material/colors';
+import { statusBarManager } from '@/utils/statusBarManager';
 
 interface ColorModeContextType {
   toggleColorMode: () => void;
@@ -38,7 +39,10 @@ export const ColorModeProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // First render effect - set initial theme based on device
   useEffect(() => {
-    const setInitialTheme = () => {
+    const setInitialTheme = async () => {
+      // Initialize status bar manager
+      await statusBarManager.initialize();
+      
       // Clear any existing theme preference
       setCookie('color-mode', '', { path: '/', expires: new Date(0) });
       
@@ -60,6 +64,9 @@ export const ColorModeProvider: React.FC<{ children: React.ReactNode }> = ({
       if (typeof document !== 'undefined') {
         document.documentElement.setAttribute('data-mui-color-scheme', newMode);
       }
+
+      // Apply status bar theme
+      await statusBarManager.setTheme(newMode);
     };
 
     setInitialTheme();
@@ -77,25 +84,12 @@ export const ColorModeProvider: React.FC<{ children: React.ReactNode }> = ({
       document.documentElement.setAttribute('data-mui-color-scheme', mode);
     }
 
-    const applyStatusBar = async () => {
-      if (typeof window === 'undefined') return;
-
-      try {
-        const { StatusBar, Style } = await import('@capacitor/status-bar');
-
-        if (mode === 'dark') {
-          await StatusBar.setStyle({ style: Style.Dark });
-          await StatusBar.setBackgroundColor({ color: '#000000' });
-        } else {
-          await StatusBar.setStyle({ style: Style.Light });
-          await StatusBar.setBackgroundColor({ color: '#ffffff' });
-        }
-      } catch (error) {
-        console.warn('Capacitor StatusBar error:', error);
-      }
+    // Apply status bar theme changes
+    const applyStatusBarTheme = async () => {
+      await statusBarManager.setTheme(mode);
     };
 
-    applyStatusBar();
+    applyStatusBarTheme();
   }, [mode]);
 
   // ✅ Custom theme

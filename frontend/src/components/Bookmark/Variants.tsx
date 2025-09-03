@@ -446,7 +446,14 @@ const Variants: React.FC<Props> = () => {
       <audio ref={audioRef} preload="auto" />
 
       {/* Sticky Navbar */}
-      <AppBar position="fixed" elevation={0} color="primary">
+      <AppBar 
+        position="fixed" 
+        elevation={0} 
+        color="primary"
+        sx={{
+          paddingTop: 'env(safe-area-inset-top)', // Add padding for status bar
+        }}
+      >
         <Toolbar>
           <IconButton
             edge="start"

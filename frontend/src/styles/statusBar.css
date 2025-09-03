@@ -1,0 +1,124 @@
+/* Status Bar Integration Styles */
+
+/* Ensure proper spacing for status bar on mobile devices */
+.status-bar-spacer {
+  height: env(safe-area-inset-top);
+  background: transparent;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Dark mode status bar styling */
+[data-mui-color-scheme="dark"] .status-bar-spacer {
+  background: linear-gradient(180deg, #1a1a2e 0%, transparent 100%);
+}
+
+/* Light mode status bar styling */
+[data-mui-color-scheme="light"] .status-bar-spacer {
+  background: linear-gradient(180deg, #fff5f5 0%, transparent 100%);
+}
+
+/* Ensure content doesn't overlap with status bar */
+body {
+  padding-top: env(safe-area-inset-top);
+}
+
+/* Status bar overlay styles for better icon visibility */
+.status-bar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: env(safe-area-inset-top);
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Dark mode overlay */
+[data-mui-color-scheme="dark"] .status-bar-overlay {
+  background: linear-gradient(180deg, #0f1419 0%, #1a1a2e 50%, transparent 100%);
+}
+
+/* Light mode overlay */
+[data-mui-color-scheme="light"] .status-bar-overlay {
+  background: linear-gradient(180deg, #fef2f2 0%, #fff5f5 50%, transparent 100%);
+}
+
+/* Ensure proper contrast for status bar icons */
+@media (prefers-color-scheme: dark) {
+  .status-bar-spacer,
+  .status-bar-overlay {
+    background: linear-gradient(180deg, #0f1419 0%, #1a1a2e 50%, transparent 100%);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  .status-bar-spacer,
+  .status-bar-overlay {
+    background: linear-gradient(180deg, #fef2f2 0%, #fff5f5 50%, transparent 100%);
+  }
+}
+
+/* Ensure navbar has proper z-index and is not overlapped */
+.navbar, 
+[role="navigation"],
+[data-testid="navbar"] {
+  z-index: 1000 !important;
+  position: relative;
+}
+
+/* Fix for any fixed positioned navbar */
+.navbar-fixed,
+.navbar-sticky {
+  z-index: 1000 !important;
+}
+
+/* Specific fixes for AppBar components */
+.MuiAppBar-root {
+  z-index: 1000 !important;
+}
+
+/* Ensure proper spacing for fixed elements */
+[style*="position: fixed"] {
+  z-index: 1000 !important;
+}
+
+/* Override any conflicting z-index values */
+*[style*="z-index: 9999"],
+*[style*="z-index: 10000"] {
+  z-index: 1000 !important;
+}
+
+/* Ensure navbar content is always visible */
+.navbar *,
+[role="navigation"] *,
+[data-testid="navbar"] * {
+  z-index: 1001 !important;
+  position: relative;
+}
+
+/* BrandName TM text specific styles */
+sup {
+  font-size: inherit !important;
+  line-height: 1 !important;
+  vertical-align: super !important;
+  text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Ensure TM text is visible */
+sup[aria-hidden="true"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+}
