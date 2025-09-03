@@ -19,6 +19,14 @@ const config: CapacitorConfig = {
       style: 'DARK',
       overlaysWebView: true
     },
+    Camera: {
+      // Camera plugin configuration
+      // This enables camera functionality and permissions
+    },
+    Share: {
+      // Share plugin configuration
+      // This enables the native sharing functionality
+    },
     GoogleAuth: {
       scopes: ["profile", "email" ],
       clientId: '770291167384-t41qq7bfttacufj6p3000e4aqimjhpgs.apps.googleusercontent.com', // Web Client ID                    //for Dev

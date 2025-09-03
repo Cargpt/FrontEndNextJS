@@ -16,8 +16,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import { Preferences } from '@capacitor/preferences';
 
-const VAPID_KEY =
-  "BOjWpWNg2UbA9o33HTIKOAAdLkx6GiB5l4Q_4lOwEJOZxDKVuku7HXUOWimqnPdOjzngx1-5rumuKrJz33GpSZs";
+const VAPID_KEY ="BOjWpWNg2UbA9o33HTIKOAAdLkx6GiB5l4Q_4lOwEJOZxDKVuku7HXUOWimqnPdOjzngx1-5rumuKrJz33GpSZs";
 
 
 type StoredMessage = {
