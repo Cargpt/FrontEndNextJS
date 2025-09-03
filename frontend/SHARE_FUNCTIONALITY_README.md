@@ -21,12 +21,26 @@ A reusable component that provides:
 ### WhatsApp Sharing
 - Uses the `https://wa.me/?text=` API
 - Automatically formats the message with title, description, and URL
+- Creates rich link previews with images using Open Graph meta tags from the shared URL
 - Opens in a new tab/window
 
 ### Facebook Sharing
 - Uses the Facebook Share Dialog API
 - Shares the current page URL
+- Automatically displays rich link previews with images using Open Graph meta tags
 - Opens in a new tab/window
+
+### Rich Link Previews with Images
+- When sharing URLs, platforms like WhatsApp and Facebook automatically create rich previews
+- These previews include the image specified in the Open Graph meta tags
+- The image is automatically pulled from the website's Open Graph meta tags
+- No need to manually specify image URLs - the platform handles it automatically
+
+### How Rich Link Previews Work
+- **WhatsApp/Facebook**: Automatically fetch Open Graph meta tags from the shared URL
+- **Open Graph tags**: Include title, description, and image information
+- **Result**: Beautiful card-style previews with images appear automatically
+- **No manual image handling**: The platforms do all the work for you
 
 ### Copy Link
 - Copies the current page URL to clipboard
