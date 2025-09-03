@@ -89,35 +89,44 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
       }}
     >
       <DialogTitle
-       sx={{ 
-
-                  bgcolor: theme.palette.primary.main,
-    color: mode === 'dark' ? '#2196f3' : '#ffffff', // Blue in dark mode, white in light mode
-
-        pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))', minHeight: 56 }}>
+        sx={{
+          bgcolor: theme.palette.primary.main,
+          color: mode === 'dark' ? '#2196f3' : '#ffffff',
+          pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))',
+          minHeight: 56,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          px: 2
+        }}
+      >
         <Button
           variant="outlined"
           onClick={onClose}
           sx={{
-            position: "absolute",
-            left: 'calc(env(safe-area-inset-left, 0px) + 8px)',
-            top: 'calc(env(safe-area-inset-top, 0px) + var(--android-top-gap, 8px) + 8px)',
-            zIndex: 20,
             border: "none",
             minWidth: 0,
             p: 1,
-
-       color: mode === 'dark' ? '#2196f3' : '#ffffff', // Blue in dark mode, white in light mode
-
+            color: mode === 'dark' ? '#2196f3' : '#ffffff',
+            flexShrink: 0
           }}
         >
           <KeyboardBackspaceSharp />
         </Button>
+        
         <Typography
-          sx={{ position: "relative", textAlign: "center", fontWeight: 700, mt: 2 }}
+          sx={{
+            fontWeight: 700,
+            textAlign: "center",
+            flex: 1,
+            mx: 2
+          }}
         >
           <BrandName /> Score
         </Typography>
+        
+        {/* Invisible spacer to balance the layout */}
+        <Box sx={{ width: 40, flexShrink: 0 }} />
       </DialogTitle>
 
       <DialogContent

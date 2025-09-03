@@ -2,13 +2,11 @@
 import { Capacitor } from '@capacitor/core';
 
 export interface PermissionStatus {
-  camera: 'granted' | 'denied' | 'prompt' | 'unavailable';
   location: 'granted' | 'denied' | 'prompt' | 'unavailable';
   notifications: 'granted' | 'denied' | 'prompt' | 'unavailable';
 }
 
 export interface PermissionRequest {
-  camera?: boolean;
   location?: boolean;
   notifications?: boolean;
 }
@@ -25,46 +23,7 @@ export class PermissionsManager {
     return PermissionsManager.instance;
   }
 
-  /**
-   * Request camera permission
-   */
-  public async requestCameraPermission(): Promise<'granted' | 'denied' | 'unavailable'> {
-    try {
-      if (!Capacitor.isNativePlatform()) {
-        // Web platform - use MediaDevices API
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia({ video: true })) {
-          console.log('Camera not available on this device');
-          return 'unavailable';
-        }
 
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        stream.getTracks().forEach(track => track.stop()); // Stop the stream immediately
-        
-        console.log('Camera permission granted');
-        return 'granted';
-      } else {
-        // Native platform - use Capacitor Camera plugin
-        try {
-          const { Camera } = await import('@capacitor/camera');
-          const permission = await Camera.requestPermissions();
-          
-          if (permission.camera === 'granted') {
-            console.log('Camera permission granted on native platform');
-            return 'granted';
-          } else {
-            console.log('Camera permission denied on native platform');
-            return 'denied';
-          }
-        } catch (error) {
-          console.error('Camera plugin not available:', error);
-          return 'unavailable';
-        }
-      }
-    } catch (error) {
-      console.error('Camera permission request failed:', error);
-      return 'denied';
-    }
-  }
 
   /**
    * Request location permission
@@ -164,19 +123,16 @@ export class PermissionsManager {
     }
   }
 
+
+
   /**
    * Request multiple permissions at once
    */
   public async requestPermissions(permissions: PermissionRequest): Promise<PermissionStatus> {
     const result: PermissionStatus = {
-      camera: 'unavailable',
       location: 'unavailable',
       notifications: 'unavailable'
     };
-
-    if (permissions.camera) {
-      result.camera = await this.requestCameraPermission();
-    }
 
     if (permissions.location) {
       result.location = await this.requestLocationPermission();
@@ -194,29 +150,9 @@ export class PermissionsManager {
    */
   public async checkPermissionStatus(): Promise<PermissionStatus> {
     const status: PermissionStatus = {
-      camera: 'unavailable',
       location: 'unavailable',
       notifications: 'unavailable'
     };
-
-    // Check camera permission
-    try {
-      if (!Capacitor.isNativePlatform()) {
-        if (navigator.mediaDevices) {
-          status.camera = 'prompt';
-        }
-      } else {
-        try {
-          const { Camera } = await import('@capacitor/camera');
-          const permission = await Camera.checkPermissions();
-          status.camera = permission.camera as 'granted' | 'denied' | 'prompt';
-        } catch {
-          status.camera = 'unavailable';
-        }
-      }
-    } catch {
-      status.camera = 'unavailable';
-    }
 
     // Check location permission
     try {

@@ -3,7 +3,7 @@ import { permissionsManager } from './permissionsManager';
 /**
  * Simple utility to check if a specific permission is granted
  */
-export const checkPermission = async (permissionType: 'camera' | 'location' | 'notifications'): Promise<boolean> => {
+export const checkPermission = async (permissionType: 'location' | 'notifications'): Promise<boolean> => {
   try {
     const status = await permissionsManager.checkPermissionStatus();
     return status[permissionType] === 'granted';
@@ -35,7 +35,6 @@ export const getPermissionStatus = async () => {
   } catch (error) {
     console.error('Failed to get permission status:', error);
     return {
-      camera: 'unavailable',
       location: 'unavailable',
       notifications: 'unavailable'
     };

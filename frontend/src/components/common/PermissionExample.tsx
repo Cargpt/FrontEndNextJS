@@ -4,7 +4,6 @@ import { checkPermission, checkAllPermissions, getPermissionStatus } from '@/uti
 
 const PermissionExample: React.FC = () => {
   const [permissions, setPermissions] = useState({
-    camera: false,
     location: false,
     notifications: false
   });
@@ -16,25 +15,17 @@ const PermissionExample: React.FC = () => {
 
   const checkPermissions = async () => {
     // Check individual permissions
-    const camera = await checkPermission('camera');
     const location = await checkPermission('location');
     const notifications = await checkPermission('notifications');
     
-    setPermissions({ camera, location, notifications });
+    setPermissions({ location, notifications });
     
     // Check if all permissions are granted
     const allGrantedResult = await checkAllPermissions();
     setAllGranted(allGrantedResult);
   };
 
-  const handleCameraAction = async () => {
-    if (permissions.camera) {
-      console.log('Camera permission granted, proceeding with camera action...');
-      // Your camera logic here
-    } else {
-      console.log('Camera permission not granted');
-    }
-  };
+
 
   const handleLocationAction = async () => {
     if (permissions.location) {
@@ -53,9 +44,6 @@ const PermissionExample: React.FC = () => {
       
       <Box sx={{ mb: 2 }}>
         <Typography variant="body2" sx={{ mb: 1 }}>
-          Camera: <Chip label={permissions.camera ? '✅ Granted' : '❌ Not Granted'} size="small" color={permissions.camera ? 'success' : 'error'} />
-        </Typography>
-        <Typography variant="body2" sx={{ mb: 1 }}>
           Location: <Chip label={permissions.location ? '✅ Granted' : '❌ Not Granted'} size="small" color={permissions.location ? 'success' : 'error'} />
         </Typography>
         <Typography variant="body2" sx={{ mb: 1 }}>
@@ -70,14 +58,6 @@ const PermissionExample: React.FC = () => {
       </Box>
 
       <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-        <Button 
-          variant="contained" 
-          onClick={handleCameraAction}
-          disabled={!permissions.camera}
-        >
-          Use Camera
-        </Button>
-        
         <Button 
           variant="contained" 
           onClick={handleLocationAction}

@@ -619,6 +619,8 @@ const AskAIChat: React.FC = () => {
         mx: "auto",
         overflowX: "clip",
         bgcolor: mode === "dark" ? "#232323" : "#ffffff", // Use dark background in dark mode
+        pb: { xs: 2, sm: 3 }, // Add bottom padding
+        mb: { xs: 2, sm: 3 }, // Add bottom margin for extra spacing
       }}
     >
       {/* Messages Area */}
@@ -628,6 +630,7 @@ const AskAIChat: React.FC = () => {
           overflowY: "auto",
           overflowX: "clip",
           p: 2,
+          pb: { xs: 3, sm: 4 }, // Add extra bottom padding to messages area
           display: "flex",
           flexDirection: "column",
           gap: 2,
@@ -900,6 +903,7 @@ const AskAIChat: React.FC = () => {
       <Box
         sx={{
           p: 3,
+          pb: { xs: 4, sm: 5 }, // Add extra bottom padding for input area
           borderTop: "1px solid #f0f0f0",
           bgcolor: mode === "dark" ? "#000" : "#ffffff", // Black in dark mode
           mb: isSmallScreen ? 0 : 2,

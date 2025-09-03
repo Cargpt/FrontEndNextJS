@@ -41,7 +41,6 @@ export default function HomePage() {
         
         // Request all permissions automatically
         const result = await permissionsManager.requestPermissions({
-          camera: true,
           location: true,
           notifications: true
         });

@@ -44,7 +44,6 @@ const PermissionsRequest: React.FC<PermissionsRequestProps> = ({
 }) => {
   const [isVisible, setIsVisible] = useState(showOnLoad);
   const [permissionStatus, setPermissionStatus] = useState<PermissionStatus>({
-    camera: 'unavailable',
     location: 'unavailable',
     notifications: 'unavailable'
   });
@@ -76,7 +75,7 @@ const PermissionsRequest: React.FC<PermissionsRequestProps> = ({
     }
   };
 
-  const handleRequestPermission = async (permissionType: 'camera' | 'location' | 'notifications') => {
+  const handleRequestPermission = async (permissionType:  'location' | 'notifications') => {
     setIsLoading(true);
     setCurrentRequest(permissionType);
 
@@ -84,9 +83,7 @@ const PermissionsRequest: React.FC<PermissionsRequestProps> = ({
       let result: 'granted' | 'denied' | 'unavailable';
 
       switch (permissionType) {
-        case 'camera':
-          result = await permissionsManager.requestCameraPermission();
-          break;
+        
         case 'location':
           result = await permissionsManager.requestLocationPermission();
           break;
@@ -120,8 +117,7 @@ const PermissionsRequest: React.FC<PermissionsRequestProps> = ({
 
     try {
       const result = await permissionsManager.requestPermissions({
-        camera: true,
-        location: true,
+               location: true,
         notifications: true
       });
 
@@ -236,7 +232,7 @@ const PermissionsRequest: React.FC<PermissionsRequestProps> = ({
           )}
 
           <Stack spacing={2} sx={{ mb: 3 }}>
-            {(['camera', 'location', 'notifications'] as const).map((permission) => (
+            {(['location', 'notifications'] as const).map((permission) => (
               <Box
                 key={permission}
                 sx={{

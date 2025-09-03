@@ -4,7 +4,6 @@ import { permissionsManager, PermissionStatus } from '@/utils/permissionsManager
 
 export const usePermissions = () => {
   const [permissions, setPermissions] = useState<PermissionStatus>({
-    camera: 'unavailable',
     location: 'unavailable',
     notifications: 'unavailable'
   });
@@ -26,7 +25,7 @@ export const usePermissions = () => {
     }
   };
 
-  const hasPermission = (permissionType: 'camera' | 'location' | 'notifications') => {
+  const hasPermission = (permissionType: 'location' | 'notifications') => {
     return permissions[permissionType] === 'granted';
   };
 
