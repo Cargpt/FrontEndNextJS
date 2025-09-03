@@ -1114,8 +1114,8 @@ const TeslaCard: React.FC<CarCardProps> = ({
             title={`Check out this ${carInfo?.BrandName || 'car'} ${carInfo?.ModelName || ''} on AiCarAdvisor!`}
             description="AI-powered car comparison and recommendations"
             image="https://uat.aicaradvisor.com/assets/AICarAdvisor.png"
-            size="small"
-            variant="dropdown"
+            
+        
           />
           </Box>
         </Stack>

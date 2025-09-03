@@ -2376,8 +2376,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
                     title={`Check out this ${carName} comparison on AiCarAdvisor!`}
                     description="AI-powered car comparison with detailed specs and analysis"
                     image="https://uat.aicaradvisor.com/assets/AICarAdvisor.png"
-                    size="small"
-                    variant="dropdown"
+
                   />
                 </Box>
               </Box>
