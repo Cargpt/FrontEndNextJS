@@ -462,6 +462,7 @@ const ChatBox: React.FC = () => {
   }, [bookmark]);
   const isNative = Capacitor.isNativePlatform();
   const isLastMessage = messages.length - 1;
+  const isAndroid = Capacitor.getPlatform() === "android";
 
   const bottomSpacing = `calc(
   ${theme.spacing(isLastMessage ? 6 : 2)} + 
@@ -507,6 +508,11 @@ const ChatBox: React.FC = () => {
                 overflowY: "auto",
                 background: "transparent",
                 marginBottom: isNative ? "2.7rem" : "1.5rem",
+                paddingBottom: isNative ? "calc(80px + env(safe-area-inset-bottom, 20px))" : "calc(60px + env(safe-area-inset-bottom, 20px))",
+                ...(isNative && isAndroid && {
+                  paddingBottom: "calc(100px + env(safe-area-inset-bottom, 30px))",
+                  marginBottom: "3.5rem",
+                }),
 
                 scrollbarWidth: "thin", // Firefox
                 scrollbarColor: "transparent transparent", // Firefox
