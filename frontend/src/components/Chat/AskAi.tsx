@@ -37,6 +37,8 @@ import { useRouter } from "next/navigation";
 import { useCookies } from "react-cookie";
 import { Button } from "@mui/material";
 import { useColorMode } from "@/Context/ColorModeContext";
+import { Capacitor } from "@capacitor/core";
+import { safeAreaBottom } from "@/components/Header/BottomNavigation";
 
 // interface Message {
 //   id: string;
@@ -272,6 +274,9 @@ const AskAIChat: React.FC = () => {
 
   const { mode } = useColorMode();
   console.log(mode);
+
+  const isNative = Capacitor.isNativePlatform();
+  const isAndroid = Capacitor.getPlatform() === "android";
 
   const getTokenFromCookies = () => {
     const name = "token=";
@@ -621,6 +626,10 @@ const AskAIChat: React.FC = () => {
         bgcolor: mode === "dark" ? "#232323" : "#ffffff", // Use dark background in dark mode
         pb: { xs: 2, sm: 3 }, // Add bottom padding
         mb: { xs: 2, sm: 3 }, // Add bottom margin for extra spacing
+        ...(isNative && isAndroid && {
+          mb: { xs: 4, sm: 5 }, // Extra margin for Android
+          pb: { xs: 3, sm: 4 }, // Extra padding for Android
+        }),
       }}
     >
       {/* Messages Area */}
@@ -909,6 +918,10 @@ const AskAIChat: React.FC = () => {
           mb: isSmallScreen ? 0 : 2,
           minWidth: 0,
           boxShadow: "none", // Remove any shadow that could cause a black box effect
+          ...(isNative && isAndroid && {
+            pb: { xs: 5, sm: 6 }, // Extra padding for Android
+            mb: { xs: 3, sm: 4 }, // Extra margin for Android
+          }),
         }}
       >
         {/* Quick prompts row */}
