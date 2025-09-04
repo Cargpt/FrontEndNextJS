@@ -538,10 +538,13 @@ const ChatBox: React.FC = () => {
                   onClick={scrollToBottom}
                   sx={{
                     position: "absolute",
-                    bottom: isNative ? "70px" : "50px", // Adjust as needed
+                    bottom: isNative ? "calc(90px + env(safe-area-inset-bottom, 20px))" : "calc(70px + env(safe-area-inset-bottom, 20px))",
                     left: "50%",
                     transform: "translateX(-50%)",
                     zIndex: 999,
+                    ...(isNative && isAndroid && {
+                      bottom: "calc(100px + env(safe-area-inset-bottom, 30px))",
+                    }),
                   }}
                 >
                   <KeyboardArrowDownIcon />
