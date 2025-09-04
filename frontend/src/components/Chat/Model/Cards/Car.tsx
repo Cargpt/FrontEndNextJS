@@ -1113,7 +1113,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
                       <ShareButtons 
             title={`Check out this ${carInfo?.BrandName || 'car'} ${carInfo?.ModelName || ''} on AiCarAdvisor!`}
             description="AI-powered car comparison and recommendations"
-            image="https://uat.aicaradvisor.com/assets/AICarAdvisor.png"
+            image="https://aicaradvisor.com/assets/AICarAdvisor.png"
             
         
           />

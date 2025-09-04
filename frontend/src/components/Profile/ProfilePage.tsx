@@ -193,7 +193,7 @@ const ProfilePage: React.FC = () => {
           width: 300,
           mx: "auto",
           p: 2,
-          pt: isNative ? "30px":"10px",
+          pt: isNative ? "56px":"10px",
           border: "1px solid #ccc",
           borderRadius: 2,
           textAlign: "center",

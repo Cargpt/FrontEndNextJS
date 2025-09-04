@@ -40,7 +40,7 @@ description = "Get AI-powered car recommendations, compare specs & prices, and b
   const [showCopySuccess, setShowCopySuccess] = useState(false);
 
   const currentUrl =
-    url || (typeof window !== "undefined" ? window.location.href : "");
+    url || (typeof window !== "undefined" ? 'https://aicaradvisor.com' : "");
 
   const open = Boolean(anchorEl);
 
