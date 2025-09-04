@@ -38,11 +38,13 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import CircularProgress from "@mui/material/CircularProgress";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
-import { LightbulbOutline } from "@mui/icons-material";
+import { LightbulbOutline, PictureAsPdf } from "@mui/icons-material";
 import CompareCarsDialog from "./CompareCarsDialog";
 import CompareVsSelector from "./CompareVsSelector";
 import MobileNumberDialog from "@/components/Auth/MobileNumberDialog";
 import ShareButtons from "@/components/common/ShareButtons";
+import CarPDF from "./CarPDF";
+import { downloadPDF, generateCarPDFFilename } from "@/utils/pdfUtils";
 
 type Props = {
   onClick?: () => void;
@@ -91,11 +93,131 @@ const TeslaCard: React.FC<CarCardProps> = ({
   const theme = useTheme();
   const [carInfo, setCarInfo] = useState<any>(null);
   const [dialog, setDialog] = useState<typeProps>({ open: false, type: null });
+  const [imageBase64Map, setImageBase64Map] = useState<{ [key: string]: string }>({});
+  const [imagesLoading, setImagesLoading] = useState(false);
 
   const favouteStates = modelCars.reduce((acc, car, index) => {
     acc[index] = car?.is_bookmarked;
     return acc;
   }, {});
+
+  // Function to pre-fetch all car images and convert to base64
+  const preFetchCarImages = async (cars: any[]) => {
+    setImagesLoading(true);
+    const imageMap: { [key: string]: string } = {};
+    
+    try {
+      for (const car of cars) {
+        if (car?.CarImageDetails && Array.isArray(car.CarImageDetails)) {
+          for (const imageDetail of car.CarImageDetails) {
+            if (imageDetail.CarImageURL && !imageMap[imageDetail.CarImageURL]) {
+              try {
+                console.log('Fetching image:', imageDetail.CarImageURL);
+                
+                // Method 1: Try fetch with proper headers (like CardMedia uses)
+                const response = await fetch(imageDetail.CarImageURL, {
+                  method: 'GET',
+                  headers: {
+                    'Accept': 'image/*',
+                    'Referer': window.location.origin,
+                    'User-Agent': navigator.userAgent,
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                  },
+                  mode: 'cors',
+                  credentials: 'omit'
+                });
+                
+                if (response.ok) {
+                  const blob = await response.blob();
+                  const base64 = await new Promise<string>((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result as string);
+                    reader.onerror = reject;
+                    reader.readAsDataURL(blob);
+                  });
+                  
+                  imageMap[imageDetail.CarImageURL] = base64;
+                  console.log('Successfully converted image to base64 via fetch:', imageDetail.CarImageURL);
+                } else {
+                  console.warn('Fetch failed, trying img element approach...');
+                  throw new Error('Fetch failed');
+                }
+              } catch (error) {
+                console.log('Fetch approach failed, trying img element method:', imageDetail.CarImageURL);
+                
+                // Method 2: Use img element approach (like CardMedia does)
+                try {
+                  const base64 = await new Promise<string>((resolve, reject) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    
+                    img.onload = () => {
+                      try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.naturalWidth;
+                        canvas.height = img.naturalHeight;
+                        
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                          ctx.drawImage(img, 0, 0);
+                          const dataURL = canvas.toDataURL('image/jpeg', 0.8);
+                          resolve(dataURL);
+                        } else {
+                          reject(new Error('Could not get canvas context'));
+                        }
+                      } catch (canvasError) {
+                        reject(canvasError);
+                      }
+                    };
+                    
+                    img.onerror = () => {
+                      reject(new Error('Image failed to load'));
+                    };
+                    
+                    // Set timeout to prevent hanging
+                    setTimeout(() => reject(new Error('Image load timeout')), 10000);
+                    
+                    img.src = imageDetail.CarImageURL;
+                  });
+                  
+                  imageMap[imageDetail.CarImageURL] = base64;
+                  console.log('Successfully converted image to base64 via img element:', imageDetail.CarImageURL);
+                  
+                } catch (imgError) {
+                  console.error('Img element approach also failed:', imgError);
+                  
+                  // Method 3: Final fallback - try no-cors
+                  try {
+                    console.log('Trying no-cors fallback for:', imageDetail.CarImageURL);
+                    const noCorsResponse = await fetch(imageDetail.CarImageURL, {
+                      method: 'GET',
+                      mode: 'no-cors',
+                      credentials: 'omit'
+                    });
+                    
+                    if (noCorsResponse.type === 'opaque') {
+                      console.log('No-cors fallback successful (opaque response)');
+                      imageMap[imageDetail.CarImageURL] = 'no-cors-fallback';
+                    }
+                  } catch (noCorsError) {
+                    console.error('All methods failed for image:', imageDetail.CarImageURL);
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      
+      setImageBase64Map(imageMap);
+      console.log('Image pre-fetching completed. Total images:', Object.keys(imageMap).length);
+    } catch (error) {
+      console.error('Error in image pre-fetching:', error);
+    } finally {
+      setImagesLoading(false);
+    }
+  };
   const [favoriteStates, setFavoriteStates] = useState<{
     [key: number]: boolean;
   }>(favouteStates);
@@ -105,6 +227,7 @@ const TeslaCard: React.FC<CarCardProps> = ({
   const [selectedCarForTestDrive, setSelectedCarForTestDrive] =
     useState<CarDetailsForBooking | null>(null);
   const { showSnackbar } = useSnackbar();
+  const [pdfLoading, setPdfLoading] = useState(false);
 
   const handleMobileSuccess = (resp: any) => {
     if (resp?.mobileNumber) {
@@ -140,6 +263,14 @@ const TeslaCard: React.FC<CarCardProps> = ({
   };
   const [chipsDisabled, setChipsDisabled] = useState(false);
   const [compareChipDisabled, setCompareChipDisabled] = useState(false);
+
+  // Pre-fetch images when component mounts or when modelCars changes
+  useEffect(() => {
+    if (selectedItem && modelCars.length > 0) {
+      console.log('Triggering image pre-fetch for', modelCars.length, 'cars');
+      preFetchCarImages(modelCars);
+    }
+  }, [selectedItem, modelCars]);
 
   const hideSignUP = () => {
     setshowSignUpState(false);
@@ -342,6 +473,116 @@ const TeslaCard: React.FC<CarCardProps> = ({
   const handleCloseCompareDialog = () => {
     setCompareDialogOpen(false);
     setSelectedCarForCompare(null);
+  };
+
+  const handleSaveAsPDF = async () => {
+    // Get all available car data from the current search
+    let allCars: any[] = [];
+    let searchTitle = "Car Recommendations";
+    
+    // Check if we have cars from the current search
+    if (selectedItem && modelCars.length > 0) {
+      allCars = modelCars;
+      
+      // Generate a meaningful title from the search
+      const keys = Object.keys(selectedItem);
+      if (keys.length > 0) {
+        const firstKey = keys[0];
+        const cars = selectedItem[firstKey];
+        if (Array.isArray(cars) && cars.length > 0) {
+          const firstCar = cars[0];
+          searchTitle = `${firstCar.BrandName} ${firstCar.ModelName} Variants`;
+        }
+      }
+    } else if (cars && Object.keys(cars).length > 0) {
+      // Fallback: use all cars from the chat context
+      Object.values(cars).forEach((carGroup: any) => {
+        if (Array.isArray(carGroup)) {
+          allCars = [...allCars, ...carGroup];
+        }
+      });
+      searchTitle = "All Car Recommendations";
+    }
+
+    if (allCars.length === 0) {
+      showSnackbar("No car data available to generate PDF", {
+        vertical: "top",
+        horizontal: "center",
+        color: "error",
+      });
+      return;
+    }
+
+    setPdfLoading(true);
+    try {
+      console.log('Starting PDF generation with data:', { 
+        selectedItem, 
+        modelCars, 
+        allCars: allCars.length,
+        searchTitle 
+      });
+      
+      const filename = generateCarPDFFilename(selectedItem, allCars);
+      const pdfComponent = <CarPDF 
+        selectedItem={selectedItem} 
+        modelCars={allCars}
+        searchTitle={searchTitle}
+        imageBase64Map={imageBase64Map}
+      />;
+      
+      await downloadPDF(pdfComponent, filename);
+      
+      showSnackbar("PDF downloaded successfully!", {
+        vertical: "top",
+        horizontal: "center",
+        color: "success",
+      });
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      
+      // Try to generate a simpler PDF without images as fallback
+      try {
+        console.log('Attempting fallback PDF generation...');
+        const fallbackPdfComponent = <CarPDF 
+          selectedItem={selectedItem} 
+          modelCars={allCars}
+          searchTitle={searchTitle}
+          imageBase64Map={imageBase64Map}
+        />;
+        const filename = generateCarPDFFilename(selectedItem, allCars);
+        
+        await downloadPDF(fallbackPdfComponent, filename);
+        
+        showSnackbar("PDF generated successfully (simplified version)!", {
+          vertical: "top",
+          horizontal: "center",
+          color: "success",
+        });
+      } catch (fallbackError) {
+        console.error("Fallback PDF generation also failed:", fallbackError);
+        
+        let errorMessage = "Failed to generate PDF. Please try again.";
+        if (error instanceof Error) {
+          if (error.message.includes('Image')) {
+            errorMessage = "PDF generation failed due to image loading issues. Please try again later.";
+          } else if (error.message.includes('Network')) {
+            errorMessage = "Network error while generating PDF. Please check your connection.";
+          } else if (error.message.includes('Timeout')) {
+            errorMessage = "PDF generation timed out. Please try again.";
+          } else {
+            errorMessage = `PDF generation failed: ${error.message}`;
+          }
+        }
+        
+        showSnackbar(errorMessage, {
+          vertical: "top",
+          horizontal: "center",
+          color: "error",
+        });
+      }
+    } finally {
+      setPdfLoading(false);
+    }
   };
   const CustomNextArrow = (props: any & { outside?: boolean }) => {
     const { className, onClick, style, outside } = props;
@@ -1099,6 +1340,25 @@ const TeslaCard: React.FC<CarCardProps> = ({
               setMessages(msgs);
             }}
             disabled={allButtonsDisabled || compareChipDisabled}
+            sx={{
+              fontSize: 13,
+              textTransform: "capitalize",
+              borderWidth: 1,
+              flex: { xs: '0 0 auto', sm: '0 auto' },
+              maxWidth: { xs: 'none', sm: 'none' },
+            }}
+          />
+
+          {/* Save as PDF Button */}
+          <Chip
+            label={pdfLoading ? "Generating PDF..." : "Save as PDF"}
+            clickable
+            variant="filled"
+            size="small"
+            color="default"
+            icon={pdfLoading ? <CircularProgress size={16} /> : <PictureAsPdf sx={{ fontSize: 20, mr: 0.5 }} />}
+            onClick={handleSaveAsPDF}
+            disabled={allButtonsDisabled || pdfLoading}
             sx={{
               fontSize: 13,
               textTransform: "capitalize",
