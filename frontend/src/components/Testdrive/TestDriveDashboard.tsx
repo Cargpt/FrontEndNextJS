@@ -33,6 +33,8 @@ import {
   Event as EventIcon,
 } from "@mui/icons-material";
 import { axiosInstance1 } from "@/utils/axiosInstance";
+import { safeAreaBottom } from "../Header/BottomNavigation";
+import { Capacitor } from "@capacitor/core";
 
 interface Booking {
   id: number;
@@ -156,19 +158,20 @@ const TestDriveDashboard: React.FC = () => {
     );
   }
 
+  const isNative = Capacitor.isNativePlatform()
   return (
     <Box 
       sx={{
         p: { xs: 2, md: 4 },
         minHeight: '100vh',
         background: `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.palette.background.paper} 100%)`,
-        marginBottom:10
+        ...safeAreaBottom("5rem")  
       }}
     >
       {/* Header Section */}
       <Box mb={4} textAlign="center">
         <Typography 
-          variant="h4" 
+          variant={isNative ? "h4" : "h5"} 
           gutterBottom 
           sx={{ 
             fontWeight: 700,
@@ -176,7 +179,8 @@ const TestDriveDashboard: React.FC = () => {
             backgroundClip: 'text',
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent',
-            mb: 1
+            mb: 1,
+            mt: isNative ? "15px":"5px",
           }}
         >
           Test Drive Dashboard

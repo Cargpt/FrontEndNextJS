@@ -16,6 +16,8 @@ import {
 import KeyboardBackspaceSharp from "@mui/icons-material/KeyboardBackspaceSharp";
 import { Photo, PhotoCamera } from "@mui/icons-material";
 import { axiosInstance1 } from "@/utils/axiosInstance";
+import FixedHeaderWithBack from "../Navbar/Navbar";
+import { Capacitor } from "@capacitor/core";
 
 interface ProfileData {
   firstName: string;
@@ -179,23 +181,11 @@ const ProfilePage: React.FC = () => {
   });
  }, [cookies.user]);
 
+ const isNative=Capacitor.isNativePlatform()
   return (
     <>
       {/* Top Breadcrumb / Back Button */}
-      <Box sx={{ p: 1, minWidth: "100%", mt: 1 }}>
-        <Breadcrumbs aria-label="breadcrumb">
-          <IconButton
-            onClick={handleBack}
-            sx={{
-              padding: 0.5,
-              borderRadius: 1,
-              backgroundColor: "transparent",
-            }}
-          >
-            <KeyboardBackspaceSharp fontSize="small" />
-          </IconButton>
-        </Breadcrumbs>
-      </Box>
+      <FixedHeaderWithBack backToPrevious={handleBack}/>
 
       {/* Profile Form */}
       <Box
@@ -203,7 +193,7 @@ const ProfilePage: React.FC = () => {
           width: 300,
           mx: "auto",
           p: 2,
-          mt: 2,
+          pt: isNative ? "30px":"10px",
           border: "1px solid #ccc",
           borderRadius: 2,
           textAlign: "center",

@@ -14,6 +14,8 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useAndroidBackClose } from "@/hooks/useAndroidBackClose";
+import { Capacitor } from "@capacitor/core";
+import { safeAreaBottom } from "@/components/Header/BottomNavigation";
 
 type SentimentDialogProps = {
   open: boolean;
@@ -120,6 +122,9 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
 
   const {mode}=useColorMode()
   useAndroidBackClose(open, onClose);
+  const isNative = Capacitor.isNativePlatform();
+  const isAndroid = Capacitor.getPlatform() === "android";
+
   return (
     <Dialog
       open={open}
@@ -135,15 +140,18 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
       display: "flex",
       flexDirection: "column",
       boxShadow: 6,
+
     },
   }}
     >
+      
     
       <DialogTitle sx={{
         bgcolor: theme.palette.primary.main,
         color: mode === 'dark' ? '#2196f3' : '#ffffff',
-        pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))',
-        minHeight: 56,
+        paddingTop: isNative && isAndroid
+        ? 'max(env(safe-area-inset-top, 0px), 2.5vh)'
+        : 'env(safe-area-inset-top, 0px)',        minHeight: 56,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
@@ -183,12 +191,14 @@ const SentimentDialog: React.FC<SentimentDialogProps> = ({
           overflowY: "auto",
           height: "100%",
           p: 3,
+
         }}
       >
         {loading ? (
           <Typography>Loading user review summary...</Typography>
         ) : carDetails && reviewData ? (
-          <Box>
+          <Box
+          sx={{...safeAreaBottom("56px")}}>
             {/* Total Reviews */}
             {reviewData.totalReviews && (
               <Typography

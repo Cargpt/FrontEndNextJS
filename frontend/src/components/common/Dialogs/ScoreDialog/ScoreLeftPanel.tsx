@@ -1,3 +1,4 @@
+import { safeAreaBottom } from "@/components/Header/BottomNavigation";
 import { useColorMode } from "@/Context/ColorModeContext";
 import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import React from "react";
@@ -103,6 +104,7 @@ const ScoreLeftPanel = ({ activeItem, setActiveItem, carDetails }: Props) => {
         },
         scrollbarWidth: "thin",
         scrollbarColor: "#bbb #f0f0f0",
+        ...safeAreaBottom("56px"),
       }}
     >
       {!carDetails ? (

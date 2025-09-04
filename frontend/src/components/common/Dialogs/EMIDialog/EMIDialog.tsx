@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useAndroidBackClose } from "@/hooks/useAndroidBackClose";
+import { Capacitor } from "@capacitor/core";
 
 type EMIDialogProps = {
   open: boolean;
@@ -148,6 +149,9 @@ useEffect(() => {
 }, [open]);
 const {mode}=useColorMode()
   useAndroidBackClose(open, onClose);
+  const isNative = Capacitor.isNativePlatform();
+  const isAndroid = Capacitor.getPlatform() === "android";
+
   return (
     <Dialog
       open={open}
@@ -171,8 +175,9 @@ const {mode}=useColorMode()
         sx={{
           position: "sticky",
           top: 0,
-          pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))',
-          minHeight: 56,
+          paddingTop: isNative && isAndroid
+          ? 'max(env(safe-area-inset-top, 0px), 2.5vh)'
+          : 'env(safe-area-inset-top, 0px)',          minHeight: 56,
           zIndex: 2,
           bgcolor: theme.palette.primary.main,
           color: mode === 'dark' ? '#2196f3' : '#ffffff',

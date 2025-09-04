@@ -218,10 +218,8 @@ const ChatBox: React.FC = () => {
       if (cookies.token) {
         try {
           // Fetch city dealers
-          const dealersResponse = await axiosInstance1.get("/api/dealers/city-dealers/");
-          // Assuming there's a way to set dealer list, e.g., via context or local state
+        
           // setDealerList(dealersResponse.data);
-          console.log("City dealers fetched:", dealersResponse.data);
 
           // Fetch brands
           const brandsResponse = await axiosInstance1.get("/api/cargpt/brands/");

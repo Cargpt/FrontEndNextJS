@@ -42,7 +42,7 @@ import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useColorMode } from "@/Context/ColorModeContext";
 import { useNotifications } from "@/Context/NotificationContext";
 import { v4 as uuidv4 } from "uuid"; // Import uuid for unique ID generation
-
+import { safeAreaBoth } from "../Header/BottomNavigation";
 interface SidebarProps {
   open: boolean;
   onClose: () => void;
@@ -245,6 +245,7 @@ const theme=useTheme()
             justifyContent: "space-between",
             p: 2,
             boxSizing: "border-box",
+            ...safeAreaBoth("56px", "56px"),
           }}
           role="presentation"
         >
