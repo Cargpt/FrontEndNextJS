@@ -64,9 +64,7 @@ const FixedBottomMessage: React.FC<Props> = ({ message }) => {
           boxShadow: 3,
           zIndex: 3,
           fontSize: { xs: '12px', sm: '14px' },
-          paddingBottom: isNative 
-          ? 'max(env(safe-area-inset-bottom, 0px), 56px)'
-          : 'env(safe-area-inset-bottom, 0px)',          // Add bottom safe-area inset, not top
+         // Add bottom safe-area inset, not top
 
         }}
       >
