@@ -218,10 +218,8 @@ const ChatBox: React.FC = () => {
       if (cookies.token) {
         try {
           // Fetch city dealers
-          const dealersResponse = await axiosInstance1.get("/api/dealers/city-dealers/");
-          // Assuming there's a way to set dealer list, e.g., via context or local state
+        
           // setDealerList(dealersResponse.data);
-          console.log("City dealers fetched:", dealersResponse.data);
 
           // Fetch brands
           const brandsResponse = await axiosInstance1.get("/api/cargpt/brands/");
@@ -464,6 +462,7 @@ const ChatBox: React.FC = () => {
   }, [bookmark]);
   const isNative = Capacitor.isNativePlatform();
   const isLastMessage = messages.length - 1;
+  const isAndroid = Capacitor.getPlatform() === "android";
 
   const bottomSpacing = `calc(
   ${theme.spacing(isLastMessage ? 6 : 2)} + 
@@ -509,6 +508,11 @@ const ChatBox: React.FC = () => {
                 overflowY: "auto",
                 background: "transparent",
                 marginBottom: isNative ? "2.7rem" : "1.5rem",
+                paddingBottom: isNative ? "calc(80px + env(safe-area-inset-bottom, 20px))" : "calc(60px + env(safe-area-inset-bottom, 20px))",
+                ...(isNative && isAndroid && {
+                  paddingBottom: "calc(100px + env(safe-area-inset-bottom, 30px))",
+                  marginBottom: "3.5rem",
+                }),
 
                 scrollbarWidth: "thin", // Firefox
                 scrollbarColor: "transparent transparent", // Firefox
@@ -534,10 +538,13 @@ const ChatBox: React.FC = () => {
                   onClick={scrollToBottom}
                   sx={{
                     position: "absolute",
-                    bottom: isNative ? "70px" : "50px", // Adjust as needed
+                    bottom: isNative ? "calc(90px + env(safe-area-inset-bottom, 20px))" : "calc(70px + env(safe-area-inset-bottom, 20px))",
                     left: "50%",
                     transform: "translateX(-50%)",
                     zIndex: 999,
+                    ...(isNative && isAndroid && {
+                      bottom: "calc(100px + env(safe-area-inset-bottom, 30px))",
+                    }),
                   }}
                 >
                   <KeyboardArrowDownIcon />

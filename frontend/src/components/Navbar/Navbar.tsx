@@ -55,6 +55,7 @@ import CityInputDialog from '../Header/CityInputForm';
 import { Geolocation } from '@capacitor/geolocation';
 import { useChats } from '@/Context/ChatContext';
 import { useSnackbar } from '@/Context/SnackbarContext';
+import { safeAreaBoth } from '../Header/BottomNavigation';
 
 type Props = {
   backToPrevious: () => void;
@@ -636,7 +637,7 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
           },
         }}
       >
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ p: 2,  ...safeAreaBoth("50px","56px")}}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
               Chat History

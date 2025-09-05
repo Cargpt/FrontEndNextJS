@@ -3,6 +3,7 @@ import { Dialog, DialogContent, IconButton, useMediaQuery, useTheme } from "@mui
 import LoginForm from "@/components/Auth/Login";
 import { KeyboardBackspaceSharp } from "@mui/icons-material";
 import { useAndroidBackClose } from "@/hooks/useAndroidBackClose";
+import { Capacitor } from "@capacitor/core";
 
 interface LoginDialogProps {
   open: boolean;
@@ -27,6 +28,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose, showSignUp }) 
     };
   }, [onClose]);
 
+  const isNative = Capacitor.isNativePlatform()
   return (
     <Dialog
       open={open}
@@ -54,7 +56,8 @@ const LoginDialog: React.FC<LoginDialogProps> = ({ open, onClose, showSignUp }) 
         onClick={onClose}
         sx={{
           position: "absolute",
-          top: "calc(env(safe-area-inset-top, 0px) + var(--android-top-gap, 8px) + 8px)",
+          top: isNative ? "56px":"10px",
+
           left: "calc(env(safe-area-inset-left, 0px) + 8px)",
           zIndex: 1,
           p: 1,

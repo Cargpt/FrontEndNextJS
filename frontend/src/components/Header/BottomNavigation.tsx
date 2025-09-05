@@ -23,6 +23,30 @@ import { useCookies } from "react-cookie";
 import { Capacitor } from "@capacitor/core";
 import Sidebar from "../Sidebar/Sidebar";
 
+
+
+// safeArea.ts
+export const safeAreaBottom = (fallback = "56px") => {
+  return {
+    paddingBottom: fallback,
+    "@supports (padding: max(0px))": {
+      paddingBottom: `max(env(safe-area-inset-bottom, 0px), ${fallback})`,
+    },
+  };
+};
+
+export const safeAreaBoth = (topFallback = "56px", bottomFallback = "56px") => {
+  return {
+    paddingBottom: bottomFallback,
+    paddingTop: topFallback,
+    "@supports (padding: max(0px))": {
+      paddingBottom: `max(env(safe-area-inset-bottom, 0px), ${bottomFallback})`,
+      paddingTop: `max(env(safe-area-inset-top, 0px), ${topFallback})`,
+    },
+  };
+};
+
+
 const BottomNavigationBar = () => {
   const router = useRouter();
   const { mode } = useColorMode();
@@ -96,9 +120,8 @@ const BottomNavigationBar = () => {
       ? theme.palette.background.paper
       : "#f5f5f5",
     boxShadow: "none",
-    paddingBottom: isNative && isAndroid
-      ? 'max(env(safe-area-inset-bottom, 0px), 2vh)'
-      : 'env(safe-area-inset-bottom, 0px)',
+  ...safeAreaBottom("56px"),
+  
     boxSizing: "border-box",
   }}
 

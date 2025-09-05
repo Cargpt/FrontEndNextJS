@@ -29,6 +29,8 @@ import { useTheme } from "@mui/material/styles";
 import { Capacitor } from "@capacitor/core";
 import VolumeUpOutlinedIcon from '@mui/icons-material/VolumeUpOutlined';
 import VolumeOffOutlinedIcon from '@mui/icons-material/VolumeOffOutlined';
+import { safeAreaBoth } from "../Header/BottomNavigation";
+import FixedHeaderWithBack from "../Navbar/Navbar";
 
 type Car = {
   id: number;
@@ -434,6 +436,7 @@ const Variants: React.FC<Props> = () => {
     }
     return null; // VariantID not found
   }
+  const handleBack = () => router.back();
   
   return (
     <Box
@@ -446,30 +449,14 @@ const Variants: React.FC<Props> = () => {
       <audio ref={audioRef} preload="auto" />
 
       {/* Sticky Navbar */}
-      <AppBar 
-        position="fixed" 
-        elevation={0} 
-        color="primary"
-        sx={{
-          paddingTop: 'env(safe-area-inset-top)', // Add padding for status bar
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            edge="start"
-            color="inherit"
-            onClick={onBack}
-            aria-label="back"
-          >
-            <KeyboardBackspaceSharpIcon />
-          </IconButton>
-          <Typography variant="h6" fontWeight="bold" sx={{ ml: 2 }}>
-            Bookmarks
-          </Typography>
-        </Toolbar>
-      </AppBar>
+      <FixedHeaderWithBack backToPrevious={handleBack}/>
 
-      <Box sx={{ pt: 8, py: 4, px: { xs: 2, md: 6 } }}>
+
+      <Box sx={{  
+        py: 4, 
+        px: { xs: 2, md: 6 },
+        pt: isNative ? "30px":"10px",
+       }} >
         <Stack direction="row" alignItems="center" gap={1} mb={4}>
           <BookmarkBorderIcon sx={{ color: "#1976d2", fontSize: 32 }} />
           <Typography variant="h5" fontWeight="bold" color="primary">

@@ -14,7 +14,10 @@ import {
   Badge,
 } from "@mui/material";
 import KeyboardBackspaceSharp from "@mui/icons-material/KeyboardBackspaceSharp";
-import { PhotoCamera } from "@mui/icons-material";
+import { Photo, PhotoCamera } from "@mui/icons-material";
+import { axiosInstance1 } from "@/utils/axiosInstance";
+import FixedHeaderWithBack from "../Navbar/Navbar";
+import { Capacitor } from "@capacitor/core";
 
 interface ProfileData {
   firstName: string;
@@ -32,20 +35,67 @@ const defaultProfile: ProfileData = {
 
 const ProfilePage: React.FC = () => {
   const [profile, setProfile] = useState<ProfileData>(defaultProfile);
-  const [cookies] = useCookies(["user"]);
+  const [cookies , setCookie] = useCookies(["user"]);
   const router = useRouter();
 
-  useEffect(() => {
-    if (cookies.user) {
-      const profile = {
-        firstName: cookies.user?.first_name || "",
-        lastName: cookies.user?.last_name || "",
-        mobile_no: cookies?.user?.mobile_no_read || cookies?.user?.mobile_no || "",
-        profilePic: cookies.user?.photo || "",
+  const fetchProfileDetails = async () => {
+    try {
+      // Get token from cookies - check root level first since that's where it's stored
+      let token = (cookies as any).token;
+      
+      if (!token) {
+        // Fallback to user object if needed
+        token = cookies.user?.token;
+      }
+      
+      if (!token) {
+        console.error("No authentication token found in cookies");
+        return;
+      }
+      
+      const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
       };
-      setProfile(profile);
+      
+      const response = await fetch(`${baseURL}/api/cargpt/profile-detail/`, {
+        method: "GET",
+        headers,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Update the profile state
+        setProfile({
+          firstName: data.first_name || "",
+          lastName: data.last_name || "",
+          mobile_no: data.mobile_no_read || data.mobile_no || "",
+          profilePic: data.photo || "",
+        });
+        
+        // Save the complete profile data to cookies for future use
+        // Keep the same field names as the API response for consistency
+        setCookie("user", {
+          first_name: data.first_name || "",
+          last_name: data.last_name || "",
+          mobile_no: data.mobile_no_read || data.mobile_no || "",
+          photo: data.photo || "",
+        }, { 
+          path: "/", 
+          maxAge: 60 * 60 * 24 * 365 // 1 year
+        });
+      } else {
+        console.error("Failed to fetch profile details:", response.status, response.statusText);
+      }
+    } catch (error: any) {
+      console.error("Error fetching profile details:", error);
     }
-  }, [cookies.user]);
+  };
+
+  // Empty dependency array means this runs once on mount
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -65,28 +115,77 @@ const ProfilePage: React.FC = () => {
         }));
       };
       fileReader.readAsDataURL(e.target.files[0]);
+      handleImageUpload(e.target.files[0]);
     }
   };
 
   const handleBack = () => router.back();
 
+  const handleImageUpload = async (imageFile: File) => {
+    const formData = new FormData();
+    formData.append("photo", imageFile);
+
+    try {
+      // Get token from cookies - check root level first since that's where it's stored
+      let token = (cookies as any).token;
+      
+      if (!token) {
+        // Fallback to user object if needed
+        token = cookies.user?.token;
+      }
+      
+      if (!token) {
+        console.error("No authentication token found in cookies for image upload");
+        return;
+      }
+      
+      const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "";
+      
+      const headers: Record<string, string> = {
+        "Authorization": `Bearer ${token}`
+        // Note: Don't set Content-Type for FormData - browser will set it automatically with boundary
+      };
+      
+      const response = await fetch(`${baseURL}/api/cargpt/upload-profile-image/`, {
+        method: "POST",
+        headers,
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        // Check for photo_url in the response data
+        if (data && data.photo_url) {
+          const newPhotoUrl = data.photo_url;
+          if (newPhotoUrl) {
+            // Call fetchProfileDetails to refresh the profile data
+            fetchProfileDetails();
+          }
+        } else {
+          console.error("Image upload API call failed or missing photo_url:", data);
+        }
+      } else {
+        console.error("Failed to upload profile image:", response.status, response.statusText);
+      }
+    } catch (error: any) {
+      console.error("Error uploading profile image:", error);
+    }
+  };
+ useEffect(() => { 
+  setProfile({
+    firstName: cookies.user?.first_name || "",
+    lastName: cookies.user?.last_name || "",
+    mobile_no: cookies.user?.mobile_no || "",
+    profilePic: cookies.user?.photo || "",
+  });
+ }, [cookies.user]);
+
+ const isNative=Capacitor.isNativePlatform()
   return (
     <>
       {/* Top Breadcrumb / Back Button */}
-      <Box sx={{ p: 1, minWidth: "100%", mt: 1 }}>
-        <Breadcrumbs aria-label="breadcrumb">
-          <IconButton
-            onClick={handleBack}
-            sx={{
-              padding: 0.5,
-              borderRadius: 1,
-              backgroundColor: "transparent",
-            }}
-          >
-            <KeyboardBackspaceSharp fontSize="small" />
-          </IconButton>
-        </Breadcrumbs>
-      </Box>
+      <FixedHeaderWithBack backToPrevious={handleBack}/>
 
       {/* Profile Form */}
       <Box
@@ -94,7 +193,7 @@ const ProfilePage: React.FC = () => {
           width: 300,
           mx: "auto",
           p: 2,
-          mt: 2,
+          pt: isNative ? "56px":"10px",
           border: "1px solid #ccc",
           borderRadius: 2,
           textAlign: "center",

@@ -20,6 +20,8 @@ import { Capacitor } from "@capacitor/core";
 import { Preferences } from "@capacitor/preferences";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { listenForMessages, requestFirebaseToken } from "@/lib/firebase";
+import GSTAlertPopup from "./common/GSTAlertPopup";
+import { useGSTAlert } from "@/hooks/useGSTAlert";
 type StoredMessage = {
   notification?: {
     title?: string;
@@ -39,6 +41,9 @@ const Main: React.FC = () => {
   const onClick = () => {};
 
     const [cookies, setCookie] = useCookies(["selectedOption", "token"]);
+    
+    // GST Alert functionality
+    const { showAlert, isLoading, dismissAlert, closeAlert } = useGSTAlert();
 
   const handleGuestLogin = async () => {
     const uniqueUserId = uuidv4();
@@ -195,6 +200,15 @@ const Main: React.FC = () => {
 
         
       }
+      
+      {/* GST Alert Popup */}
+      {!isLoading && showAlert && (
+        <GSTAlertPopup
+          open={showAlert}
+          onClose={closeAlert}
+          onDismiss={dismissAlert}
+        />
+      )}
     
       </>
   

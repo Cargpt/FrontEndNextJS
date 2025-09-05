@@ -16,6 +16,8 @@ import ScoreLeftPanel from "./ScoreLeftPanel";
 import ScoreRightPanel from "./ScoreRightPanel";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import { useColorMode } from "@/Context/ColorModeContext";
+import { Capacitor } from "@capacitor/core";
+import { safeAreaBottom } from "@/components/Header/BottomNavigation";
 
 type ScoreDialogProps = {
   open: boolean;
@@ -71,6 +73,9 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
   }, [open]);
 
   useAndroidBackClose(open, onClose);
+  const isNative = Capacitor.isNativePlatform();
+  const isAndroid = Capacitor.getPlatform() === "android";
+
   return (
     <Dialog
       open={open}
@@ -92,8 +97,9 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
         sx={{
           bgcolor: theme.palette.primary.main,
           color: mode === 'dark' ? '#2196f3' : '#ffffff',
-          pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))',
-          minHeight: 56,
+          paddingTop: isNative && isAndroid
+          ? 'max(env(safe-area-inset-top, 0px), 2.5vh)'
+          : 'env(safe-area-inset-top, 0px)',          minHeight: 56,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -132,13 +138,16 @@ const ScoreDialog: React.FC<ScoreDialogProps> = ({ open, onClose, carId }) => {
       <DialogContent
         dividers
         sx={{
+          
           flexGrow: 1,
           display: "flex",
           p: 0,
-          height: "100%", // critical for inner scroll layout
+          height: "100%",
+
         }}
+        
       >
-        <Box display="flex" flex={1} height="100%" overflow="hidden">
+        <Box display="flex" flex={1} height="100%" overflow="hidden" >
           <ScoreLeftPanel
             activeItem={activeItem}
             setActiveItem={setActiveItem}

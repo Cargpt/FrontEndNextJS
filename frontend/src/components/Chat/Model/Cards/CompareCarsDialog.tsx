@@ -46,6 +46,8 @@ import { useAndroidBackClose } from '@/hooks/useAndroidBackClose';
 import { useSnackbar } from '@/Context/SnackbarContext';
 import { useLoginDialog } from '@/Context/LoginDialogContextType';
 import ShareButtons from '@/components/common/ShareButtons';
+import { Capacitor } from '@capacitor/core';
+import { safeAreaBoth, safeAreaBottom } from '@/components/Header/BottomNavigation';
 
 interface CompareCarsDialogProps {
   open: boolean;
@@ -882,7 +884,9 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
         {/* Add-car placeholder card */}
         <Card
           key="add-car-card"
-          sx={{ border: '1px solid', borderColor: 'divider', p: 2 }}
+          sx={{ border: '1px solid', borderColor: 'divider', p: 2 ,                  
+            ...safeAreaBottom("16.1vh"),
+          }}
           variant="outlined"
         >
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -989,7 +993,9 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                 </>
               ) : !isAddingRightCar ? (
                 <>
-                  <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Box sx={{ height: 110, display: 'flex', alignItems: 'center', 
+                    justifyContent: 'center',
+                  }}>
                     <Box
                       onClick={async () => {
                         setIsAddingRightCar(true);
@@ -1903,7 +1909,6 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
   const [imageBoxHeight, setImageBoxHeight] = useState<number>(100);
   const [columnMinHeight, setColumnMinHeight] = useState<number>(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
-
   useEffect(() => {
     if (isMobile) return; // only for desktop
     if (typeof window === 'undefined') return;
@@ -2292,6 +2297,8 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
     </Box>
   );
 };
+const isNative = Capacitor.isNativePlatform();
+const isAndroid = Capacitor.getPlatform() === "android";
 
   return (
     <Dialog
@@ -2335,8 +2342,18 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
       <DialogContent sx={{ p: 0 }}>
         {/* Blue theme navbar */}
         <Box sx={{ position: 'sticky', top: 0, zIndex: 2, mb: 2 }}>
-          <AppBar position="static" color="primary" elevation={0} sx={{ borderBottom: '1px solid', borderColor: 'divider' }}>
-            <Toolbar sx={{ minHeight: { xs: 64, sm: 72 } }}>
+          <AppBar position="static" color="primary" elevation={0} sx={{ 
+            borderBottom: '1px solid', 
+            borderColor: 'divider',
+            ...(isNative   && isAndroid && {
+              paddingTop: 'max(env(safe-area-inset-top, 0px), 2.1vh)',
+            })
+          }}>
+            <Toolbar sx={{ 
+              minHeight: { xs: 64, sm: 72 },
+              alignItems: 'center',
+              gap: 2
+            }}>
               <IconButton
                 edge="start"
                 color="inherit"
@@ -2360,25 +2377,36 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
                 }}
                 aria-label="back"
                 size="small"
-                sx={{ mr: 1 }}
+                sx={{ 
+                  mr: 0,
+                  p: 1,
+                  borderRadius: '50%',
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.1)'
+                  }
+                }}
               >
-                <KeyboardBackspaceSharp />
+                <KeyboardBackspaceSharp sx={{ fontSize: 20 }} />
               </IconButton>
-              <Box>
-                <Typography variant="h6" fontWeight="bold" sx={{ lineHeight: 1 }}>
+              <Box sx={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'flex-start',
+                flex: 1
+              }}>
+                <Typography variant="h6" fontWeight="bold" sx={{ 
+                  lineHeight: 1.2,
+                  fontSize: { xs: '1.1rem', sm: '1.25rem' }
+                }}>
                   Compare Cars
                 </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.9 }}>
+                <Typography variant="body2" sx={{ 
+                  opacity: 0.9,
+                  fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                  mt: 0.5
+                }}>
                   Comparing {carName} with similar cars
                 </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', mt: 1 }}>
-                  <ShareButtons 
-                    title={`Check out this ${carName} comparison on AiCarAdvisor!`}
-                    description="AI-powered car comparison with detailed specs and analysis"
-                    image="https://uat.aicaradvisor.com/assets/AICarAdvisor.png"
-
-                  />
-                </Box>
               </Box>
             </Toolbar>
           </AppBar>
@@ -2397,6 +2425,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
           <Box sx={{ 
             overflowX: 'auto', 
             width: '100%',
+            ...safeAreaBottom("56px"),
             // Mobile: No horizontal scroll for 2 cars, only for 3+ cars
             ...(isMobile && {
               overflowX: ((comparisonData as any)?.additionalCars || []).length === 0 ? 'hidden' : 'auto'
@@ -2405,13 +2434,15 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
             <Box sx={{ 
               minWidth: 'max-content', 
               p: 2,
+
               // Mobile: Center content when only 2 cars
               ...(isMobile && {
                 minWidth: ((comparisonData as any)?.additionalCars || []).length === 0 ? '100%' : 'max-content',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: ((comparisonData as any)?.additionalCars || []).length === 0 ? 'center' : 'flex-start'
-              })
+              }
+            ),
             }}>
               <PairDetailsCard
                 car1={(comparisonData as PairComparisonResponse).car1}

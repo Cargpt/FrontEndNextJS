@@ -19,6 +19,7 @@ import { useAndroidBackClose } from "@/hooks/useAndroidBackClose";
 import { axiosInstance1 } from "@/utils/axiosInstance";
 import useApi from "@/hooks/useApi";
 import { useColorMode } from "@/Context/ColorModeContext";
+import { Capacitor } from "@capacitor/core";
 
 type CarGalleryProps = {
   open: boolean;
@@ -83,6 +84,9 @@ const CarGallery: React.FC<CarGalleryProps> = ({ open, onClose, carId }) => {
   }, [open]);
 const {mode}=useColorMode()
   useAndroidBackClose(open, onClose);
+  const isNative = Capacitor.isNativePlatform();
+  const isAndroid = Capacitor.getPlatform() === "android";
+
   return (
     <Dialog
       open={open}
@@ -106,7 +110,6 @@ const {mode}=useColorMode()
         sx={{
           position: "sticky",
           top: 0,
-          pt: 'calc(var(--android-top-gap, 0px) + env(safe-area-inset-top, 0px))',
           minHeight: 56,
           zIndex: 2,
           bgcolor: theme.palette.primary.main,
@@ -114,7 +117,10 @@ const {mode}=useColorMode()
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          px: 2
+          px: 2,
+          paddingTop: isNative && isAndroid
+          ? 'max(env(safe-area-inset-top, 0px), 2.5vh)'
+          : 'env(safe-area-inset-top, 0px)',
         }}
       >
         <Button

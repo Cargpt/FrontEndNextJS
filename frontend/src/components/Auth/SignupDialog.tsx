@@ -31,6 +31,8 @@ import OtpBoxes from "@/components/common/otp/OtpBoxes";
 import { VisibilityOff, Lock, Person, VpnKey } from "@mui/icons-material";
 import SvgIcon from '@mui/material/SvgIcon';
 import { alpha } from "@mui/material";
+import { safeAreaBoth } from '../Header/BottomNavigation';
+import { Capacitor } from '@capacitor/core';
 
 interface SignupDialogProps {
   open: boolean;
@@ -280,6 +282,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
     return () => clearTimeout(timer);
   }, [resendTimer]);
 
+  const isNative = Capacitor.isNativePlatform()
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth fullScreen={isMobile}>
       {/* Close (Back) button */}
@@ -296,7 +299,7 @@ const SignupDialog: React.FC<SignupDialogProps> = ({ open, onClose, onSuccess })
         }}
         sx={{
           position: "absolute",
-          top: "calc(env(safe-area-inset-top, 0px) + var(--android-top-gap, 8px) + 8px)",
+          top: isNative ? "56px":"10px",
           left: "calc(env(safe-area-inset-left, 0px) + 8px)",
           zIndex: 1,
           p: 1,

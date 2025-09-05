@@ -9,6 +9,7 @@ import {
 } from "@mui/material";
 import { CheckCircle, Cancel, Info } from "@mui/icons-material";
 import { useColorMode } from "@/Context/ColorModeContext";
+import { safeAreaBottom } from "@/components/Header/BottomNavigation";
 
 type Props = {
   activeItem: string;
@@ -168,6 +169,7 @@ const {mode}=useColorMode()
         },
         scrollbarWidth: "thin",
         scrollbarColor: "#bbb #f0f0f0",
+        ...safeAreaBottom("56px"),
       }}
     >
       {/* Section Header */}
