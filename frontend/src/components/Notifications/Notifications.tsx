@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { requestFirebaseToken, listenForMessages } from "../../lib/firebase";
 import { PushNotifications } from "@capacitor/push-notifications";
 import { Capacitor } from "@capacitor/core";
-import { Box, Button, Card, CardContent, CardMedia, TextField, Typography, Chip, Stack } from "@mui/material";
+import { Box, Button, Card, CardContent, CardMedia, TextField, Typography, Chip, Stack, IconButton } from "@mui/material";
 import Navbar from "../../components/Navbar/Navbar";
 import { useRouter } from "next/navigation";
 import NotificationsActiveOutlinedIcon from "@mui/icons-material/NotificationsActiveOutlined";
@@ -133,14 +133,14 @@ export default function Notifications() {
     <Box component="main" sx={{ minHeight: "100vh", bgcolor: 'background.default' }}>
       <Navbar backToPrevious={handleBack} />
       <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: 1200, mx: 'auto', mt: { xs: 2, sm: 2, lg:2 }, pt: 'env(safe-area-inset-top, 0px)' }}>
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, gap: 1.25, mb: 3 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 1.25, mb: 3, flexWrap: 'wrap' }}>
           <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: 16, sm: 22, md: 28 }, display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box component="span" sx={{ fontSize: { xs: 18, sm: 24, md: 28 } }}>📩</Box>
             Notifications
           </Typography>
-          <Stack direction="row" spacing={{ xs: 0.75, sm: 1 }} alignItems="center" sx={{ flexWrap: 'wrap' }}>
+          <Stack direction="row" spacing={1.5} alignItems="center">
             <Chip size="small" label={`💬 ${messages.length}`} color="primary" variant="outlined" />
-            <Button size="small" variant="contained" color="error" startIcon={<DeleteSweepOutlinedIcon fontSize="small" />} onClick={handleClearMessages} sx={{ minWidth: 0, px: 1.25, py: 0.5, fontSize: 12 }}>
+            <Button size="small" variant="contained" color="error" startIcon={<DeleteSweepOutlinedIcon fontSize="small" />} onClick={handleClearMessages} sx={{ borderRadius: '50px', px: 2, py: 0.5, fontSize: 12, minWidth: 'auto' }}>
               Clear
             </Button>
           </Stack>
