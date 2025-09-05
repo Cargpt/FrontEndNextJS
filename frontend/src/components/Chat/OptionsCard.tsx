@@ -447,7 +447,7 @@ const ChatBox: React.FC = () => {
                 maxHeight: "calc(100vh - 120px)", // Adjust this value as needed
                 overflowY: "auto",
                 background: "transparent",
-                marginBottom: isNative ? "2.7rem" : "1.5rem",
+                marginBottom: "1.5rem",
 
                 scrollbarWidth: "thin", // Firefox
         scrollbarColor: "transparent transparent", // Firefox
