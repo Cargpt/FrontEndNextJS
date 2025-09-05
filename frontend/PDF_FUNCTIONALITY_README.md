@@ -118,3 +118,4 @@ This implementation adds PDF generation capability to the Car component using `@
 - PDF preview before download
 - Export to different formats (PNG, JPG)
 - Batch PDF generation for multiple car sets
+
