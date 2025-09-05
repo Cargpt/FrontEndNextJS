@@ -168,7 +168,7 @@ const TestDriveDashboard: React.FC = () => {
         minHeight: '100vh',
         background: `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.palette.background.paper} 100%)`,
         // Extra padding for mobile devices, especially Android
-        pb: isMobile ? (isAndroid ? '8rem' : '6rem') : '4rem',
+        pb: isMobile ? (isAndroid ? '10rem' : '6rem') : '4rem',
         ...safeAreaBottom("5rem")  
       }}
     >
