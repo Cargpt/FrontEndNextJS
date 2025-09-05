@@ -1,3 +1,4 @@
+"use client"
 import React, { useState, useEffect, useRef } from 'react';
 import BrandName from '@/components/common/BrandName';
 import {
@@ -47,7 +48,6 @@ import { useSnackbar } from '@/Context/SnackbarContext';
 import { useLoginDialog } from '@/Context/LoginDialogContextType';
 import ShareButtons from '@/components/common/ShareButtons';
 import { Capacitor } from '@capacitor/core';
-import { safeAreaBoth, safeAreaBottom } from '@/components/Header/BottomNavigation';
 
 interface CompareCarsDialogProps {
   open: boolean;
@@ -884,9 +884,7 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
         {/* Add-car placeholder card */}
         <Card
           key="add-car-card"
-          sx={{ border: '1px solid', borderColor: 'divider', p: 2 ,                  
-            ...safeAreaBottom("16.1vh"),
-          }}
+          sx={{ border: '1px solid', borderColor: 'divider', p: 2 }}
           variant="outlined"
         >
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -1558,6 +1556,21 @@ const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ car1, c
         width: '100%',
         overflowX: 'auto',
         minWidth: 'max-content',
+        scrollbarWidth: 'thin',
+        '&::-webkit-scrollbar': {
+          height: '8px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: mode === 'dark' ? '#333' : '#f1f1f1',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: mode === 'dark' ? '#666' : '#888',
+          borderRadius: '4px',
+          '&:hover': {
+            background: mode === 'dark' ? '#888' : '#555',
+          },
+        }
       })
     }}>
       <Typography variant={isMobile ? "subtitle1" : "h6"} gutterBottom fontWeight="bold" sx={{mb: 2}}>
@@ -1588,11 +1601,13 @@ const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ car1, c
                 cursor: 'pointer',
                 ml: 1,
                 mr: 0.5,
+                
               }}
               onClick={onRequestAddThirdCar}
               aria-label="add car"
             >
-              <AddIcon sx={{ fontSize: 18 }} />
+              <AddIcon sx={{ fontSize: 18 }} /> 
+              
             </Box>
           )}
           {allCars.map((car: any, carIndex: number) => (
@@ -1628,6 +1643,7 @@ const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ car1, c
                 ) : (
                   <FavoriteBorderIcon sx={{ fontSize: 16, color: mode === 'dark' ? '#000' : undefined }} color="action" />
                 )}
+              
               </IconButton>
             </Box>
           ))}
@@ -1687,6 +1703,7 @@ const FeatureComparisonTable: React.FC<FeatureComparisonTableProps> = ({ car1, c
                     const summary = car?.AISummary || car?.data?.AISummary || car?.Car?.AISummary;
                     return summary ? String(summary) : '-';
                   })()}
+                  
                 </Typography>
               ))}
             </Box>
@@ -1973,10 +1990,25 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
       // Mobile: Adjust layout for mobile - show images in row without boxes
       ...(isMobile && {
         flexDirection: 'row',
-        alignItems: 'center',
-        gap: 1,
+        alignItems: 'flex-start',
+        gap: 2,
         pb: 1,
-        overflowX: 'auto'
+        overflowX: 'auto',
+        scrollbarWidth: 'thin',
+        '&::-webkit-scrollbar': {
+          height: '8px',
+        },
+        '&::-webkit-scrollbar-track': {
+          background: mode === 'dark' ? '#333' : '#f1f1f1',
+          borderRadius: '4px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: mode === 'dark' ? '#666' : '#888',
+          borderRadius: '4px',
+          '&:hover': {
+            background: mode === 'dark' ? '#888' : '#555',
+          },
+        }
       })
     }}>
       {isMobile && (
@@ -2047,18 +2079,18 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
         borderColor: 'divider',
         borderRadius: isMobile ? 0 : 2,
         background: isMobile ? 'transparent' : (mode === 'dark' ? 'grey.800' : 'white'),
-        ml: isMobile ? 2.5 : 0,
+        ml: 0,
         mt: isMobile ? 1 : 0,
         ...(isMobile ? {} : { minHeight: columnMinHeight })
       }}>
         <Box className={!isMobile ? 'pc-image-box' : undefined} sx={{ 
-          height: isMobile ? 100 : imageBoxHeight, 
+          height: isMobile ? 120 : imageBoxHeight, 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center', 
           background: 'white',
           mb: isMobile ? 0.5 : 2,
-          pl: isMobile ? 2.5 : 0,
+          pl: 0,
           position: 'relative'
         }}>
           <img 
@@ -2137,7 +2169,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
         ...(isMobile ? {} : { minHeight: columnMinHeight })
       }}>
         <Box className={!isMobile ? 'pc-image-box' : undefined} sx={{ 
-          height: isMobile ? 100 : imageBoxHeight, 
+          height: isMobile ? 120 : imageBoxHeight, 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center', 
@@ -2232,7 +2264,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
                 return (
                   <>
                     <Box className={!isMobile ? 'pc-image-box' : undefined} sx={{ 
-                      height: isMobile ? 100 : imageBoxHeight, 
+                      height: isMobile ? 120 : imageBoxHeight, 
                       display: 'flex', 
                       alignItems: 'center', 
                       justifyContent: 'center', 
@@ -2357,9 +2389,6 @@ const isAndroid = Capacitor.getPlatform() === "android";
           <AppBar position="static" color="primary" elevation={0} sx={{ 
             borderBottom: '1px solid', 
             borderColor: 'divider',
-            ...(isNative   && isAndroid && {
-              paddingTop: 'max(env(safe-area-inset-top, 0px), 2.1vh)',
-            })
           }}>
             <Toolbar sx={{ 
               minHeight: { xs: 64, sm: 72 },
@@ -2437,7 +2466,21 @@ const isAndroid = Capacitor.getPlatform() === "android";
           <Box sx={{ 
             overflowX: 'auto', 
             width: '100%',
-            ...safeAreaBottom("56px"),
+            scrollbarWidth: 'thin',
+            '&::-webkit-scrollbar': {
+              height: '8px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: mode === 'dark' ? '#333' : '#f1f1f1',
+              borderRadius: '4px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: mode === 'dark' ? '#666' : '#888',
+              borderRadius: '4px',
+              '&:hover': {
+                background: mode === 'dark' ? '#888' : '#555',
+              },
+            },
             // Mobile: No horizontal scroll for 2 cars, only for 3+ cars
             ...(isMobile && {
               overflowX: ((comparisonData as any)?.additionalCars || []).length === 0 ? 'hidden' : 'auto'
