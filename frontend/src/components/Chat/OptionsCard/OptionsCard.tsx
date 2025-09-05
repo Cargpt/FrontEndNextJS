@@ -466,8 +466,7 @@ const ChatBox: React.FC = () => {
 
   const bottomSpacing = `calc(
   ${theme.spacing(isLastMessage ? 6 : 2)} + 
-  ${isNative ? theme.spacing(4) : theme.spacing(2)} + 
-  env(safe-area-inset-bottom, 0px)
+  ${theme.spacing(2)}
 
 )`;
 
@@ -507,12 +506,8 @@ const ChatBox: React.FC = () => {
                 maxHeight: "calc(100vh - 120px)", // Adjust this value as needed
                 overflowY: "auto",
                 background: "transparent",
-                marginBottom: isNative ? "2.7rem" : "1.5rem",
-                paddingBottom: isNative ? "calc(80px + env(safe-area-inset-bottom, 20px))" : "calc(60px + env(safe-area-inset-bottom, 20px))",
-                ...(isNative && isAndroid && {
-                  paddingBottom: "calc(100px + env(safe-area-inset-bottom, 30px))",
-                  marginBottom: "3.5rem",
-                }),
+                marginBottom: 0,
+                paddingBottom: 0,
 
                 scrollbarWidth: "thin", // Firefox
                 scrollbarColor: "transparent transparent", // Firefox
@@ -538,13 +533,10 @@ const ChatBox: React.FC = () => {
                   onClick={scrollToBottom}
                   sx={{
                     position: "absolute",
-                    bottom: isNative ? "calc(90px + env(safe-area-inset-bottom, 20px))" : "calc(70px + env(safe-area-inset-bottom, 20px))",
+                    bottom: "70px",
                     left: "50%",
                     transform: "translateX(-50%)",
                     zIndex: 999,
-                    ...(isNative && isAndroid && {
-                      bottom: "calc(100px + env(safe-area-inset-bottom, 30px))",
-                    }),
                   }}
                 >
                   <KeyboardArrowDownIcon />

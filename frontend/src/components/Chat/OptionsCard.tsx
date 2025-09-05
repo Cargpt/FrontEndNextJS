@@ -403,8 +403,7 @@ const ChatBox: React.FC = () => {
 
   const bottomSpacing = `calc(
   ${theme.spacing(isLastMessage ? 6 : 2)} + 
-  ${isNative ? theme.spacing(4) : theme.spacing(2)} + 
-  env(safe-area-inset-bottom, 0px)
+  ${theme.spacing(2)}
 
 )`;
 
@@ -447,7 +446,7 @@ const ChatBox: React.FC = () => {
                 maxHeight: "calc(100vh - 120px)", // Adjust this value as needed
                 overflowY: "auto",
                 background: "transparent",
-                marginBottom: "1.5rem",
+                marginBottom: 0,
 
                 scrollbarWidth: "thin", // Firefox
         scrollbarColor: "transparent transparent", // Firefox
@@ -473,7 +472,7 @@ const ChatBox: React.FC = () => {
                   onClick={scrollToBottom}
                   sx={{
                     position: "absolute",
-                    bottom: isNative ? "70px" : "50px", // Adjust as needed
+                    bottom: "50px", // Adjust as needed
                     left: "50%",
                     transform: "translateX(-50%)",
                     zIndex: 999,
