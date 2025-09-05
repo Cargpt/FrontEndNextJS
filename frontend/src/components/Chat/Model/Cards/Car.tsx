@@ -44,6 +44,7 @@ import CompareVsSelector from "./CompareVsSelector";
 import MobileNumberDialog from "@/components/Auth/MobileNumberDialog";
 import ShareButtons from "@/components/common/ShareButtons";
 import CarPDF from "./CarPDF";
+import CarDetailsPDF from "./CarDetailsPDF";
 import { downloadPDF, generateCarPDFFilename } from "@/utils/pdfUtils";
 
 type Props = {
@@ -475,6 +476,290 @@ const TeslaCard: React.FC<CarCardProps> = ({
     setSelectedCarForCompare(null);
   };
 
+  const handleCarPDF = async (car: any) => {
+    try {
+      setPdfLoading(true);
+      
+      // First, fetch complete car details from API
+      let completeCarData = car;
+      
+      if (car.CarID) {
+        console.log('Making API call with CarID:', car.CarID);
+        try {
+          const response = await axiosInstance1.post('/api/cargpt/car-details/', {
+            car_id: car.CarID
+          });
+          
+          console.log('API response received:', response.data);
+          
+          if (response.data && response.data.data) {
+            completeCarData = response.data.data;
+            console.log('Complete car data fetched from API:', completeCarData);
+            console.log('API Interior data:', completeCarData.Interior);
+            console.log('API Safety data:', completeCarData.Safety);
+          } else {
+            console.log('No data in API response, using existing car data');
+          }
+        } catch (apiError) {
+          console.warn('Failed to fetch complete car details from API, using existing data:', apiError);
+          // Continue with existing car data if API fails
+        }
+      } else {
+        console.log('No CarID found, using existing car data');
+      }
+      
+      // Debug: Log the complete car data to see what we're working with
+      console.log('Complete car data for PDF:', completeCarData);
+      console.log('Interior data:', completeCarData.Interior);
+      console.log('Safety data:', completeCarData.Safety);
+      
+      // Transform car data to match CarDetailsPDF expected structure
+      const transformedCarData = {
+        CarID: completeCarData.CarID || car.CarID || 0,
+        Brand: completeCarData.Brand || car.BrandName || 'Unknown Brand',
+        ModelId: completeCarData.ModelId || car.ModelID || 0,
+        ModelName: completeCarData.ModelName || car.ModelName || 'Unknown Model',
+        ModelYear: completeCarData.ModelYear || car.ModelYear || '2023',
+        Mileage: completeCarData.Mileage || car.Mileage || 'N/A',
+        EmissionNormCompliance: completeCarData.EmissionNormCompliance || car.EmissionNormCompliance || '3',
+        Price: completeCarData.Price || car.Price || 0,
+        VariantID: completeCarData.VariantID || car.VariantID || 0,
+        VariantName: completeCarData.VariantName || car.VariantName || 'Unknown Variant',
+        Engine: completeCarData.Engine || {
+          GearBox: car.GearBox || 5,
+          SportsModeDrive: car.SportsModeDrive || 0,
+          Transmission: car.Transmission || car.Trans_fullform || 'MT',
+          EngineCapacity: car.EngineCapacity || 'Below 1.5L',
+          EngineConf: car.EngineConf || 'Regular',
+          GearConf: car.GearConf || 'MT',
+          DriveType: car.DriveType || 'FWD',
+          MaxPowerBhp: car.MaxPowerBhp || car.MaxPower || '86.8',
+          MaxPowerRpm: car.MaxPowerRpm || 6000,
+          MaxTorqueBhp: car.MaxTorqueBhp || car.MaxTorque || '115.0',
+          MaxTorqueRpm: car.MaxTorqueRpm || 3250,
+          Cylinder: car.Cylinder || 3,
+          Valves: car.Valves || 4,
+          FuelTank: car.FuelTank || 37
+        },
+        Interior: (() => {
+          const interiorData = completeCarData.Interior || car.Interior;
+          console.log('Interior data being used:', interiorData);
+          if (interiorData) {
+            return interiorData;
+          }
+          console.log('Using fallback Interior data');
+          return {
+            Doors: 5,
+            PowerSteering: 1,
+            AC: 1,
+            AutomaticClimateControl: 0,
+            RemoteTrunkOpener: 0,
+            AccessoryPowerOutlet: 1,
+            KeyRemote: 0,
+            LeatherSeats: 0,
+            DualToneDashboard: 1
+          };
+        })(),
+        DRIVERDISPLAY: completeCarData.DRIVERDISPLAY || car.DRIVERDISPLAY || {
+          DigitalTachometer: 0,
+          ElectronicMultiTripmeter: 0,
+          DigitalClock: 1,
+          DigitalOdometer: 1,
+          DigitalFuelGuage: 1,
+          DistanceToEmpty: 1,
+          FuelComsumptionAverage: 1,
+          LastFilledAverage: 1,
+          EngineMalfunctionLight: 1,
+          MobileReminder: 0,
+          ParkingReminder: 0
+        },
+        AutomationsID: completeCarData.AutomationsID || car.AutomationsID || {
+          CruiseControl: 0,
+          CruiseControlSpeeding: 0,
+          AutomaticHeadlamps: 0,
+          RainSensingWiperFront: 0,
+          RainSensingWiperRear: 0,
+          RainMotionSensor: 0,
+          AutoPilot: 0,
+          AutoEngineOff: 0
+        },
+        PARKINGSUPPORT: completeCarData.PARKINGSUPPORT || car.PARKINGSUPPORT || {
+          ParkingSensorsFront: 0,
+          ParkingSensorsRear: 1,
+          ParkingCamera: 0,
+          FollowMeHeadLights: 0,
+          Camera360: 0
+        },
+        EXTERIOR: completeCarData.EXTERIOR || car.EXTERIOR || {
+          AdjustableHeadlights: 1,
+          FogLightsFront: 1,
+          FogLightsRear: 1,
+          PowerAdjustableViewMirror: 1,
+          ElectricFoldingViewMirror: 0,
+          RearWindowWiper: 0,
+          RearWindowDefogger: 0,
+          WheelCovers: 1,
+          PowerAntenna: 0,
+          RearSpoiler: 1,
+          SunRoof: 0,
+          MoonRoof: 0,
+          RearMirrorTurnIndicators: 0,
+          CorneringFoglamps: 0,
+          RoofRail: 0,
+          LEDDRLs: 0,
+          LEDHeadlights: 0,
+          LEDTaillights: 0,
+          DualToneRoof: 0,
+          LuggageHookNet: 0
+        },
+        Luxury: completeCarData.Luxury || car.Luxury || {
+          PowerWindowsFront: 1,
+          PowerWindowsRear: 0,
+          AdjustableSteering: 1,
+          HeightAdjustableDriverSeat: 1,
+          ElectricAdjustableSeat: 0,
+          VentilatedSeats: 0,
+          VanityMirrorNightMode: 0,
+          CosmeticMirror: 1,
+          CosmeticMirrorIllumination: 0,
+          RearReadingLamp: 0,
+          RearSeatHeadrest: 1,
+          AdjustableHeadrestFrontRow: 1,
+          AdjustableHeadrestAllRow: 0,
+          CigaratteLighter: 1,
+          AutoFuelLidOpener: 0,
+          RearSeatCentreArmRest: 0,
+          CupHoldersFront: 1,
+          CupHoldersRear: 0,
+          RearACVents: 0,
+          SeatLumbar: 0,
+          FoldableRearSeat: 1,
+          SmartEntrySystem: 0,
+          KeyLessEntry: 0,
+          ButtonStart: 0,
+          ButtonParkingBreak: 0,
+          GloveBoxCooling: 0,
+          SteeringWheelGearshiftPaddles: 0,
+          USBChargerFront: 1,
+          USBChargerRear: 0,
+          CentralConsoleArmrest: 0,
+          CentralConsoleStorage: 1,
+          RearCurtain: 0,
+          AmbientLED: 0,
+          AmbientLEDShades: 0,
+          Heating: 0,
+          MultiFunctionSteering: 0,
+          LeatherSteeringWheel: 0
+        },
+        Safety: (() => {
+          const safetyData = completeCarData.Safety || car.Safety;
+          console.log('Safety data being used:', safetyData);
+          if (safetyData) {
+            return safetyData;
+          }
+          console.log('Using fallback Safety data');
+          return {
+            AntiLockBrakingSystem: 1,
+            BrakeAssist: 1,
+            CentralLocking: 1,
+            PowerDoorLocks: 1,
+            ChildSafetyLocks: 1,
+            AntiTheftAlarm: 0,
+            DriverAirbag: 1,
+            PassengerAirbag: 1,
+            SideAirbagFront: 1,
+            AirbagCount: 6,
+            RearSeatBelts: 1,
+            SeatBeltWarning: 1,
+            DoorAjarWarning: 1,
+            TractionControl: 1,
+            TyrePressureMonitor: 0,
+            HeadLightReminder: 1,
+            LowFuelWarning: 1,
+            EngineImmobilizer: 1,
+            CrashSensor: 1,
+            EngineCheckWarning: 1,
+            EBD: 1,
+            ElectronicStabilityControl: 1,
+            SpeedSensingAutoDoorLock: 1,
+            ISOFIXChildSeatMounts: 1,
+            HillAssist: 1,
+            GlobalNCAPSafetyRating: 0,
+            GlobalNCAPChildSafetyRating: 0,
+            GPSCarTracker: 0,
+            Indicator360View: 0,
+            OverSpeedIndicator: 1,
+            InsideKeySensor: 0
+          };
+        })(),
+        ENTERTAINMENTANDCONNECT: completeCarData.ENTERTAINMENTANDCONNECT || car.ENTERTAINMENTANDCONNECT || {
+          AudioSystem: 1,
+          RadioFM: 1,
+          RadioAM: 1,
+          InfotainmentLEDScreen: 0,
+          InfotainmentScreenTouch: 0,
+          SpeakersFront: 1,
+          SpeakersRear: 0,
+          WirelessPhoneCharging: 0,
+          Bluetooth: 0,
+          TouchScreen: 0,
+          TouchScreenSize: 0,
+          Connectivity: 0,
+          AndroidAuto: 0,
+          AppleCarPlay: 0,
+          Speakers: 1,
+          Woofers: 0,
+          AuxIn: 0,
+          NavigationSystem: 0
+        },
+        AI_REVIEW: completeCarData.AI_REVIEW || {
+          ReviewSummary: car.AI_REVIEW?.ReviewSummary || car.AISummary || `<strong>Review Summary</strong>: This ${car.BrandName || 'car'} ${car.ModelName || 'model'} offers good value for money with its features and performance.`
+        },
+        total_engin_rating: completeCarData.total_engin_rating || car.total_engin_rating || car.AIScore || 75,
+        engin_rating: completeCarData.engin_rating || car.engin_rating || 25,
+        images: completeCarData.images || car.images || car.CarImageDetails || [
+          {
+            CarImageURL: car.CarImageDetails?.[0]?.CarImageURL || car.images?.[0]?.CarImageURL || '/assets/card-img.png',
+            color: null,
+            Description: null
+          }
+        ]
+      };
+      
+      // Debug: Log the final transformed data being passed to PDF
+      console.log('Final transformed data for PDF:', transformedCarData);
+      console.log('Interior in final data:', transformedCarData.Interior);
+      console.log('Safety in final data:', transformedCarData.Safety);
+      
+      // Generate filename for detailed car PDF
+      const brandName = (car.BrandName || 'Car').replace(/[^a-zA-Z0-9]/g, '');
+      const modelName = (car.ModelName || 'Details').replace(/[^a-zA-Z0-9]/g, '');
+      const variantName = (car.VariantName || '').replace(/[^a-zA-Z0-9]/g, '');
+      const date = new Date().toISOString().split('T')[0];
+      const filename = `${brandName}-${modelName}-${variantName}-detailed-${date}.pdf`;
+      
+      // Use the detailed PDF component with transformed data
+      const pdfComponent = <CarDetailsPDF carData={transformedCarData} />;
+      
+      await downloadPDF(pdfComponent, filename);
+      
+      showSnackbar("Detailed car PDF downloaded successfully!", {
+        vertical: "top",
+        horizontal: "center",
+        color: "success",
+      });
+    } catch (error) {
+      console.error("Error generating car PDF:", error);
+      showSnackbar("Failed to generate PDF. Please try again.", {
+        vertical: "top",
+        horizontal: "center",
+        color: "error",
+      });
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
   const handleSaveAsPDF = async () => {
     // Get all available car data from the current search
     let allCars: any[] = [];
@@ -896,6 +1181,21 @@ const TeslaCard: React.FC<CarCardProps> = ({
                          height={20}
                          style={{ cursor: "pointer" }}
                          onClick={() => handleOpenCompareDialog(car)}
+                         onMouseEnter={(e) => {
+                           e.currentTarget.style.transform = 'scale(1.1)';
+                           e.currentTarget.style.transition = 'transform 0.2s ease';
+                         }}
+                         onMouseLeave={(e) => {
+                           e.currentTarget.style.transform = 'scale(1)';
+                         }}
+                       />
+                       <PictureAsPdf
+                         sx={{ 
+                           cursor: "pointer", 
+                           fontSize: 20,
+                           color: "#e53935"
+                         }}
+                         onClick={() => handleCarPDF(car)}
                          onMouseEnter={(e) => {
                            e.currentTarget.style.transform = 'scale(1.1)';
                            e.currentTarget.style.transition = 'transform 0.2s ease';
