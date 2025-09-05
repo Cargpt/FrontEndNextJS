@@ -1,12 +1,5 @@
 import { Capacitor } from '@capacitor/core';
 
-export interface StatusBarConfig {
-  backgroundColor: string;
-  iconColor: 'light' | 'dark';
-  style: 'light' | 'dark';
-  overlay: boolean;
-}
-
 export class StatusBarManager {
   private static instance: StatusBarManager;
   private isInitialized = false;
@@ -22,11 +15,10 @@ export class StatusBarManager {
 
   public async initialize(): Promise<void> {
     if (this.isInitialized) return;
-    
     try {
       if (Capacitor.isNativePlatform()) {
         const { StatusBar } = await import('@capacitor/status-bar');
-        await StatusBar.setOverlaysWebView({ overlay: true });
+        await StatusBar.setOverlaysWebView({ overlay: false });
         this.isInitialized = true;
       }
     } catch (error) {
@@ -39,27 +31,15 @@ export class StatusBarManager {
 
     try {
       const { StatusBar, Style } = await import('@capacitor/status-bar');
-      
+
       if (theme === 'dark') {
-        // Dark mode: Blue-tinted icons
-        await StatusBar.setStyle({ style: Style.Dark });
-        await StatusBar.setBackgroundColor({ color: '#1a1a2e' }); // Dark blue-tinted background
-        await StatusBar.setOverlaysWebView({ overlay: true });
-        
-        // For Android, set a darker blue background that will make icons appear blue
-        if (Capacitor.getPlatform() === 'android') {
-          await StatusBar.setBackgroundColor({ color: '#0f1419' }); // Very dark blue
-        }
-      } else {
-        // Light mode: Red-tinted icons
+        // Dark theme → dark background + white icons
+        await StatusBar.setBackgroundColor({ color: '#121212' });
         await StatusBar.setStyle({ style: Style.Light });
-        await StatusBar.setBackgroundColor({ color: '#fff5f5' }); // Light red-tinted background
-        await StatusBar.setOverlaysWebView({ overlay: true });
-        
-        // For Android, set a light red background that will make icons appear red
-        if (Capacitor.getPlatform() === 'android') {
-          await StatusBar.setBackgroundColor({ color: '#fef2f2' }); // Very light red
-        }
+      } else {
+        // Light theme → white background + dark icons
+        await StatusBar.setBackgroundColor({ color: '#FFFFFF' });
+        await StatusBar.setStyle({ style: Style.Dark });
       }
     } catch (error) {
       console.warn('StatusBar theme change failed:', error);
@@ -71,10 +51,8 @@ export class StatusBarManager {
 
     try {
       const { StatusBar, Style } = await import('@capacitor/status-bar');
-      
       await StatusBar.setBackgroundColor({ color: backgroundColor });
       await StatusBar.setStyle({ style: iconStyle === 'light' ? Style.Light : Style.Dark });
-      await StatusBar.setOverlaysWebView({ overlay: true });
     } catch (error) {
       console.warn('StatusBar custom color change failed:', error);
     }
@@ -82,7 +60,6 @@ export class StatusBarManager {
 
   public async hide(): Promise<void> {
     if (!Capacitor.isNativePlatform()) return;
-
     try {
       const { StatusBar } = await import('@capacitor/status-bar');
       await StatusBar.hide();
@@ -93,7 +70,6 @@ export class StatusBarManager {
 
   public async show(): Promise<void> {
     if (!Capacitor.isNativePlatform()) return;
-
     try {
       const { StatusBar } = await import('@capacitor/status-bar');
       await StatusBar.show();
@@ -103,5 +79,4 @@ export class StatusBarManager {
   }
 }
 
-// Export singleton instance
 export const statusBarManager = StatusBarManager.getInstance();

@@ -12,6 +12,9 @@ public class MainActivity extends BridgeActivity {
 
     // Register plugin
     registerPlugin(GoogleAuth.class);
+
+
+    
   }
 
 }
