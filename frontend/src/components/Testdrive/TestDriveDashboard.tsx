@@ -159,12 +159,16 @@ const TestDriveDashboard: React.FC = () => {
   }
 
   const isNative = Capacitor.isNativePlatform()
+  const isAndroid = Capacitor.getPlatform() === 'android'
+  
   return (
     <Box 
       sx={{
         p: { xs: 2, md: 4 },
         minHeight: '100vh',
         background: `linear-gradient(135deg, ${theme.palette.background.default} 0%, ${theme.palette.background.paper} 100%)`,
+        // Extra padding for mobile devices, especially Android
+        pb: isMobile ? (isAndroid ? '8rem' : '6rem') : '4rem',
         ...safeAreaBottom("5rem")  
       }}
     >
@@ -190,7 +194,13 @@ const TestDriveDashboard: React.FC = () => {
         </Typography>
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 3 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        flexDirection: { xs: 'column', lg: 'row' }, 
+        gap: 3,
+        // Extra bottom margin for mobile devices
+        mb: isMobile ? (isAndroid ? 4 : 3) : 2
+      }}>
         {/* Right Panel: Booking List - Shows on top for small screens */}
         <Box sx={{ 
           flex: { xs: '1', lg: '1' }, 
@@ -259,6 +269,9 @@ const TestDriveDashboard: React.FC = () => {
                             bgcolor: isSelected ? 'primary.light' : 'action.hover',
                           },
                           transition: 'all 0.2s ease-in-out',
+                          // Extra padding for mobile devices
+                          py: isMobile ? 1.5 : 1,
+                          px: isMobile ? 2 : 1.5,
                         }}
                       >
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
@@ -328,7 +341,9 @@ const TestDriveDashboard: React.FC = () => {
               background: `linear-gradient(145deg, ${theme.palette.background.paper}, ${theme.palette.background.default})`,
               border: `1px solid ${theme.palette.divider}`,
               overflow: 'hidden',
-              boxShadow: 'none'
+              boxShadow: 'none',
+              // Extra padding for mobile devices
+              mb: isMobile ? (isAndroid ? 3 : 2) : 1
 
             }}
           >
