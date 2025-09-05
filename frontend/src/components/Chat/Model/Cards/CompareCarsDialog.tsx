@@ -141,7 +141,7 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
   // Helper to render AI score on two lines
   const renderAIScoreLabel = (score: any) => (
     <span>
-      <BrandName /> Score:
+      AICarAdvisor Score:
       <br />
       {String(score)}
     </span>
@@ -733,7 +733,7 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                     }}
                     sx={{
                       position: 'absolute',
-                      top: isMobile ? -14 : 8,
+                      top: 10,
                       right: 8,
                       zIndex: 1,
                       bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
@@ -801,7 +801,7 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                     }}
                     sx={{
                       position: 'absolute',
-                      top: isMobile ? -14 : 8,
+                      top: 10,
                       right: 8,
                       zIndex: 1,
                       bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
@@ -892,7 +892,7 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
           <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
             {/* Left car (primary) */}
             <Box sx={{ flex: 1, textAlign: 'center' }}>
-              <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+              <Box sx={{ height: 110, width:160, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative',background:"white"  }}>
                 {/* --- PATCH: Uniform image size for mobile --- */}
                 <img
                   src={getCarImage(primary)}
@@ -906,7 +906,7 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                   }}
                   sx={{
                     position: 'absolute',
-                    top: isMobile ? -14 : 8,
+                    top: 10,
                     right: 8,
                     zIndex: 1,
                     bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
@@ -962,7 +962,7 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
             <Box sx={{ flex: 1, textAlign: 'center' }}>
               {selectedRightCar ? (
                 <>
-                  <Box sx={{ height: 110, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                  <Box sx={{ height: 110, width:140, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', background:"white" }}>
                     <img
                       src={getCarImage(selectedRightCar)}
                       alt={selectedRightCar?.ModelName}
@@ -980,13 +980,25 @@ const CompareCarsDialog: React.FC<CompareCarsDialogProps> = ({
                         setVariantOptions([]);
                       }}
                     >
-                      <ClearIcon fontSize="small" />
+                      <ClearIcon fontSize="small" color={mode === 'dark' ? "error" : 'primary'} />
                     </IconButton>
                   </Box>
                   <Typography variant="subtitle1" fontWeight="bold">{selectedRightCar?.BrandName} {selectedRightCar?.ModelName}</Typography>
                   {!isMobile && selectedRightCar?.VariantName && (
                     <Chip label={selectedRightCar.VariantName} size="small" sx={{ ...chipVariantSx, fontSize: '12px', mt: 0.5 }} />
+
                   )}
+                 {primary?.AIScore && (
+                <Typography component="div" sx={{ ...textLineSx }}>
+                  {renderAIScoreLabel(primary.AIScore)}
+                </Typography>
+              )}
+              {primary?.AISummary && (
+                <Typography component="div" sx={{ ...textLineSx }}>
+                  {`User Sentiments: ${primary.AISummary}`}
+                </Typography>
+              )}
+                  
                   <Typography variant="body2" color="text.secondary">{formatPrice(selectedRightCar?.Price || 0)}</Typography>
 
                   {/* Moved button content from here */}
@@ -1972,7 +1984,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
           width: 28,
           height: 28,
           borderRadius: '50%',
-          background: 'transparent',
+          background: 'white',
           border: 'none',
           display: 'flex',
           alignItems: 'center',
@@ -2044,7 +2056,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center', 
-          background: 'transparent',
+          background: 'white',
           mb: isMobile ? 0.5 : 2,
           pl: isMobile ? 2.5 : 0,
           position: 'relative'
@@ -2061,7 +2073,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
             }}
             sx={{
               position: 'absolute',
-              top: isMobile ? -14 : 8,
+              top: 10,
               right: 8,
               zIndex: 1,
               bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
@@ -2129,7 +2141,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center', 
-          background: 'transparent',
+          background: 'white',
           mb: isMobile ? 0.5 : 2,
           pl: 0,
           position: 'relative'
@@ -2146,7 +2158,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
             }}
             sx={{
               position: 'absolute',
-              top: isMobile ? -14 : 8,
+              top: 10,
               right: 8,
               zIndex: 1,
               bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
@@ -2224,7 +2236,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
                       display: 'flex', 
                       alignItems: 'center', 
                       justifyContent: 'center', 
-                      background: 'transparent',
+                      background: 'white',
                       mb: isMobile ? 0.5 : 2,
                       pl: 0,
                       position: 'relative'
@@ -2241,7 +2253,7 @@ const PairDetailsCard = ({ car1, car2, displayCar1, displayCar2, mode, theme, on
                         }}
                         sx={{
                           position: 'absolute',
-                          top: isMobile ? -14 : 8,
+                          top: 10,
                           right: 8,
                           zIndex: 1,
                           bgcolor: mode === 'dark' ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.1)',
