@@ -2,7 +2,7 @@
 
 /* Ensure proper spacing for status bar on mobile devices */
 .status-bar-spacer {
-  height: env(safe-area-inset-top);
+  height: 0px;
   background: transparent;
   position: fixed;
   top: 0;
@@ -25,7 +25,7 @@
 
 /* Ensure content doesn't overlap with status bar */
 body {
-  padding-top: env(safe-area-inset-top);
+  padding-top: 0px;
 }
 
 /* Status bar overlay styles for better icon visibility */
@@ -34,7 +34,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: env(safe-area-inset-top);
+  height: 0px;
   z-index: -1;
   pointer-events: none;
   overflow: hidden;

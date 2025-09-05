@@ -22,6 +22,7 @@
     "@capacitor/share": "^7.0.2",
     "@capacitor/splash-screen": "^7.0.2",
     "@capacitor/status-bar": "^7.0.2",
+    "@capawesome/capacitor-android-edge-to-edge-support": "^7.2.3",
     "@capgo/capacitor-social-login": "^7.11.0",
     "@codetrix-studio/capacitor-google-auth": "^3.4.0-rc.4",
     "@date-io/dayjs": "^3.2.0",

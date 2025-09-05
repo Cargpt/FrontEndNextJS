@@ -21,7 +21,7 @@ const Footer: React.FC = () => {
           width: "100%",
           overflow: "hidden",
           zIndex: 1000,
-          paddingBottom: `env(safe-area-inset-bottom)`,
+          paddingBottom: `0px`,
 
         }}
       >

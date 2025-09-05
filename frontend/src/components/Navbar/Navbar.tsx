@@ -418,16 +418,14 @@ const FixedHeaderWithBack: React.FC<Props> = ({ backToPrevious }) => {
           zIndex: 1000,
           borderBottom: `1px solid ${theme.palette.divider}`,
           boxShadow: "none",
-          paddingTop: isNative && isAndroid
-            ? 'max(env(safe-area-inset-top, 0px), 2.5vh)'
-            : 'env(safe-area-inset-top, 0px)',
+          paddingTop: '0px',
           boxSizing: "border-box",
         }}
         elevation={0}
       >
         <Toolbar
           sx={{
-            left: "calc(env(safe-area-inset-left, 0px) + 8px)",
+            left: "8px",
             zIndex: 3,
             border: "none",
           }}

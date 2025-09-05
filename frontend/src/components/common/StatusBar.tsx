@@ -31,9 +31,9 @@ const StatusBar: React.FC<StatusBarProps> = ({
         <Box 
           className="status-bar-spacer"
           sx={{
-            height: 'env(safe-area-inset-top)',
-            minHeight: 'env(safe-area-inset-top)',
-            maxHeight: 'env(safe-area-inset-top)',
+            height: '0px',
+            minHeight: '0px',
+            maxHeight: '0px',
             background: 'transparent',
             position: 'fixed',
             top: 0,
@@ -55,7 +55,7 @@ const StatusBar: React.FC<StatusBarProps> = ({
             top: 0,
             left: 0,
             right: 0,
-            height: 'env(safe-area-inset-top)',
+            height: '0px',
             zIndex: -1, // Negative z-index to ensure it's behind everything
             pointerEvents: 'none',
             overflow: 'hidden',
